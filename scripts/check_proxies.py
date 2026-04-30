@@ -1,0 +1,477 @@
+#!/usr/bin/env python3
+"""
+Proxy Checker
+─────────────
+Stage 1 : TCP-ping all collected configs (fast pre-filter)
+Stage 2 : HTTP probe through each surviving proxy via xray-core SOCKS5
+          Checks: google.com/generate_204, cloudflare, telegram.org
+Saves top 100 by real HTTP latency.
+"""
+
+import asyncio
+import aiohttp
+import base64
+import json
+import os
+import platform
+import re
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.parse
+import zipfile
+import urllib.request
+from datetime import datetime
+from pathlib import Path
+
+# ── Sources ───────────────────────────────────────────────────────────────────
+SOURCES = [
+    "https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_universal.txt",
+    "https://raw.githubusercontent.com/whoahaow/rjsxrd/refs/heads/main/githubmirror/bypass/bypass-all.txt",
+    "https://key.zarazaex.xyz/sub",
+    "https://raw.githubusercontent.com/Wind7077/vl-auto/refs/heads/main/vless_normal_vpn.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
+]
+
+# ── URLs probed through each proxy ───────────────────────────────────────────
+PROBE_URLS = [
+    "https://www.google.com/generate_204",
+    "https://cp.cloudflare.com/",
+    "https://telegram.org/",
+]
+
+TOP_N               = 100
+OUTPUT_DIR          = Path("output")
+TIMEOUT_TCP         = 3
+TIMEOUT_HTTP        = 10
+MAX_CONCURRENT_TCP  = 150
+MAX_CONCURRENT_HTTP = 25
+SOCKS_BASE_PORT     = 20000
+XRAY_BIN            = Path("/tmp/xray-bin/xray")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Helpers
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def decode_b64(data: str) -> str:
+    data = data.strip()
+    padded = data + "=" * (-len(data) % 4)
+    try:
+        return base64.b64decode(padded).decode("utf-8", errors="ignore")
+    except Exception:
+        return data
+
+
+def extract_configs(text: str) -> list:
+    if re.match(r'^[A-Za-z0-9+/\n\r=]{60,}$', text.strip()):
+        decoded = decode_b64(text)
+        if any(p in decoded for p in ("vless://", "vmess://", "trojan://", "ss://")):
+            text = decoded
+    configs = []
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith(("vless://", "vmess://", "trojan://", "ss://")):
+            configs.append(line)
+    return configs
+
+
+def parse_host_port(uri: str):
+    try:
+        p = urllib.parse.urlparse(uri)
+        if p.hostname and p.port:
+            return p.hostname, p.port
+    except Exception:
+        pass
+    return None
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Stage 1 – TCP ping
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
+    t0 = time.monotonic()
+    try:
+        _, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port), timeout=timeout
+        )
+        lat = (time.monotonic() - t0) * 1000
+        writer.close()
+        try:
+            await writer.wait_closed()
+        except Exception:
+            pass
+        return lat
+    except Exception:
+        return None
+
+
+async def stage1_test(sem, uri):
+    hp = parse_host_port(uri)
+    if not hp:
+        return None
+    host, port = hp
+    async with sem:
+        lat = await tcp_ping(host, port)
+        if lat is None:
+            return None
+        return {"uri": uri, "host": host, "port": port, "tcp_ms": round(lat, 1)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Xray install
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def install_xray() -> bool:
+    if XRAY_BIN.exists():
+        return True
+    print("  📦 Downloading xray-core…")
+    arch = platform.machine().lower()
+    fname = "Xray-linux-arm64-v8a.zip" if arch in ("aarch64", "arm64") else "Xray-linux-64.zip"
+    url = f"https://github.com/XTLS/Xray-core/releases/latest/download/{fname}"
+    tmpzip = Path("/tmp/xray.zip")
+    try:
+        urllib.request.urlretrieve(url, tmpzip)
+        XRAY_BIN.parent.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(tmpzip, "r") as z:
+            z.extractall(XRAY_BIN.parent)
+        XRAY_BIN.chmod(0o755)
+        print("  ✓ xray-core ready")
+        return True
+    except Exception as e:
+        print(f"  ✗ xray install failed: {e}")
+        return False
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Stage 2 – xray config builders
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def make_xray_config(uri: str, socks_port: int) -> dict | None:
+    scheme = uri.split("://")[0].lower()
+
+    try:
+        if scheme == "vless":
+            p = urllib.parse.urlparse(uri)
+            uid    = p.username or ""
+            host   = p.hostname or ""
+            port   = p.port or 443
+            params = dict(urllib.parse.parse_qsl(p.query))
+            flow   = params.get("flow", "")
+            sni    = params.get("sni", params.get("peer", host))
+            fp     = params.get("fp", "chrome")
+            net    = params.get("type", "tcp")
+            sec    = params.get("security", "none")
+            pbk    = params.get("pbk", "")
+            sid    = params.get("sid", "")
+
+            outbound = {
+                "protocol": "vless",
+                "settings": {"vnext": [{"address": host, "port": port,
+                    "users": [{"id": uid, "encryption": "none", "flow": flow}]}]},
+                "streamSettings": {"network": net},
+            }
+            ss = outbound["streamSettings"]
+            if sec == "reality":
+                ss["security"] = "reality"
+                ss["realitySettings"] = {"serverName": sni, "fingerprint": fp,
+                                          "publicKey": pbk, "shortId": sid}
+            elif sec == "tls":
+                ss["security"] = "tls"
+                ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp, "allowInsecure": False}
+            if net == "ws":
+                ss["wsSettings"] = {"path": params.get("path", "/"),
+                                     "headers": {"Host": params.get("host", host)}}
+            elif net == "grpc":
+                ss["grpcSettings"] = {"serviceName": params.get("serviceName", "")}
+
+        elif scheme == "trojan":
+            p    = urllib.parse.urlparse(uri)
+            host = p.hostname or ""
+            port = p.port or 443
+            params = dict(urllib.parse.parse_qsl(p.query))
+            outbound = {
+                "protocol": "trojan",
+                "settings": {"servers": [{"address": host, "port": port,
+                                           "password": p.username or ""}]},
+                "streamSettings": {"network": "tcp", "security": "tls",
+                                   "tlsSettings": {"serverName": params.get("sni", host),
+                                                   "allowInsecure": True}},
+            }
+
+        elif scheme == "vmess":
+            raw  = decode_b64(uri[len("vmess://"):])
+            cfg  = json.loads(raw)
+            host = cfg.get("add", "")
+            port = int(cfg.get("port", 443))
+            net  = cfg.get("net", "tcp")
+            tls  = cfg.get("tls", "")
+            sni  = cfg.get("sni", cfg.get("host", host))
+            outbound = {
+                "protocol": "vmess",
+                "settings": {"vnext": [{"address": host, "port": port,
+                    "users": [{"id": cfg.get("id",""), "alterId": int(cfg.get("aid",0)),
+                               "security": "auto"}]}]},
+                "streamSettings": {"network": net},
+            }
+            ss = outbound["streamSettings"]
+            if tls == "tls":
+                ss["security"] = "tls"
+                ss["tlsSettings"] = {"serverName": sni, "allowInsecure": True}
+            if net == "ws":
+                ss["wsSettings"] = {"path": cfg.get("path", "/"),
+                                     "headers": {"Host": cfg.get("host", host)}}
+
+        elif scheme == "ss":
+            p = urllib.parse.urlparse(uri)
+            userinfo = p.username or ""
+            if ":" not in userinfo:
+                userinfo = decode_b64(userinfo)
+            method, password = userinfo.split(":", 1)
+            outbound = {
+                "protocol": "shadowsocks",
+                "settings": {"servers": [{"address": p.hostname or "", "port": p.port or 443,
+                                           "method": method, "password": password}]},
+                "streamSettings": {"network": "tcp"},
+            }
+        else:
+            return None
+
+    except Exception:
+        return None
+
+    return {
+        "log": {"loglevel": "none"},
+        "inbounds": [{"listen": "127.0.0.1", "port": socks_port, "protocol": "socks",
+                      "settings": {"auth": "noauth", "udp": False}}],
+        "outbounds": [outbound, {"protocol": "freedom", "tag": "direct"}],
+    }
+
+
+async def http_probe_via_socks(socks_port: int) -> float | None:
+    connector = aiohttp.TCPConnector(ssl=False)
+    best = None
+    try:
+        async with aiohttp.ClientSession(connector=connector) as session:
+            for url in PROBE_URLS:
+                t0 = time.monotonic()
+                try:
+                    async with session.get(
+                        url,
+                        proxy=f"socks5://127.0.0.1:{socks_port}",
+                        timeout=aiohttp.ClientTimeout(total=TIMEOUT_HTTP),
+                        allow_redirects=True,
+                    ) as resp:
+                        await resp.read()
+                        if resp.status in (200, 204):
+                            lat = (time.monotonic() - t0) * 1000
+                            if best is None or lat < best:
+                                best = lat
+                            break
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    return best
+
+
+async def stage2_test(sem, idx: int, item: dict) -> dict | None:
+    uri = item["uri"]
+    socks_port = SOCKS_BASE_PORT + idx
+    cfg = make_xray_config(uri, socks_port)
+    if cfg is None:
+        return None
+
+    async with sem:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(cfg, f)
+            cfg_path = f.name
+        proc = None
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                str(XRAY_BIN), "run", "-c", cfg_path,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+            await asyncio.sleep(0.7)
+            http_lat = await http_probe_via_socks(socks_port)
+            if http_lat is None:
+                return None
+            return {**item, "http_ms": round(http_lat, 1)}
+        except Exception:
+            return None
+        finally:
+            if proc:
+                try:
+                    proc.terminate()
+                    await asyncio.wait_for(proc.wait(), timeout=2)
+                except Exception:
+                    try: proc.kill()
+                    except Exception: pass
+            try: os.unlink(cfg_path)
+            except Exception: pass
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Fetch sources
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def fetch_source(session, url: str) -> list:
+    url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
+                 r'raw.githubusercontent.com/\1/\2/refs/heads/\3', url)
+    try:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=20)) as resp:
+            if resp.status == 200:
+                text = await resp.text(encoding="utf-8", errors="ignore")
+                configs = extract_configs(text)
+                print(f"  ✓ {url[:72]}  →  {len(configs)} configs")
+                return configs
+            print(f"  ✗ {url[:72]}  →  HTTP {resp.status}")
+    except Exception as e:
+        print(f"  ✗ {url[:72]}  →  {e}")
+    return []
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Main
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def main():
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    print(f"\n{'='*64}")
+    print(f"  Proxy Checker  |  {ts}")
+    print(f"{'='*64}\n")
+
+    # 1. Download
+    print("📥 Fetching sources…")
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False, limit=20)) as s:
+        batches = await asyncio.gather(*[fetch_source(s, u) for u in SOURCES])
+    all_configs = list(dict.fromkeys(c for b in batches for c in b))
+    print(f"\n📋 Unique configs: {len(all_configs)}\n")
+    if not all_configs:
+        print("⚠️  No configs found. Exiting.")
+        return
+
+    # 2. Stage 1 – TCP ping
+    print(f"🔌 Stage 1 – TCP ping  (concurrency={MAX_CONCURRENT_TCP})…")
+    sem1 = asyncio.Semaphore(MAX_CONCURRENT_TCP)
+    tcp_alive, done = [], 0
+    for coro in asyncio.as_completed([stage1_test(sem1, u) for u in all_configs]):
+        r = await coro
+        done += 1
+        if r:
+            tcp_alive.append(r)
+        if done % 300 == 0:
+            print(f"  … {done}/{len(all_configs)} pinged, {len(tcp_alive)} alive")
+    tcp_alive.sort(key=lambda x: x["tcp_ms"])
+    print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
+
+    # 3. Install xray
+    print("🛠  Preparing xray-core…")
+    xray_ok = install_xray()
+
+    # 4. Stage 2 – HTTP probe
+    candidates = tcp_alive[:300]   # best 300 by TCP latency go to stage 2
+    http_alive = []
+
+    if xray_ok:
+        print(f"\n🌐 Stage 2 – HTTP probe  ({len(candidates)} candidates, concurrency={MAX_CONCURRENT_HTTP})")
+        print(f"   Testing URLs: {' | '.join(PROBE_URLS)}\n")
+        sem2 = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
+        done2 = 0
+        for coro in asyncio.as_completed([stage2_test(sem2, i, it) for i, it in enumerate(candidates)]):
+            r = await coro
+            done2 += 1
+            if r:
+                http_alive.append(r)
+            if done2 % 25 == 0 or done2 == len(candidates):
+                print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} confirmed working")
+        http_alive.sort(key=lambda x: x["http_ms"])
+        top = http_alive[:TOP_N]
+        print(f"\n  ✅ HTTP-working: {len(http_alive)}")
+    else:
+        print("  ⚠️  xray unavailable — saving TCP-alive results only (no URL check)")
+        top = candidates[:TOP_N]
+        for r in top:
+            r["http_ms"] = None
+
+    if not top:
+        print("⚠️  No working proxies found.")
+        return
+
+    # 5. Save
+    uri_lines = [r["uri"] for r in top]
+    (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
+    b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
+    (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
+
+    report = {
+        "updated": ts,
+        "total_fetched": len(all_configs),
+        "tcp_alive": len(tcp_alive),
+        "http_working": len(http_alive) if xray_ok else "n/a",
+        "saved": len(top),
+        "probe_urls": PROBE_URLS,
+        "proxies": top,
+    }
+    (OUTPUT_DIR / "report.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+    rows = "\n".join(
+        "| {n} | `{h}:{p}` | {tcp} ms | {http} |".format(
+            n=i+1, h=r["host"], p=r["port"],
+            tcp=r["tcp_ms"],
+            http=f"{r['http_ms']} ms" if r.get("http_ms") else "—",
+        )
+        for i, r in enumerate(top[:50])
+    )
+    readme_output = f"""# Proxy Check Results
+
+**Updated:** {ts}
+
+| Stat | Value |
+|------|-------|
+| Sources | {len(SOURCES)} |
+| Total configs | {len(all_configs)} |
+| TCP alive | {len(tcp_alive)} |
+| HTTP working (URL check) | {len(http_alive) if xray_ok else "n/a"} |
+| Saved (top {TOP_N}) | {len(top)} |
+
+Probe URLs: {" · ".join(f"`{u}`" for u in PROBE_URLS)}
+
+## Top 50 by HTTP latency
+
+| # | Host:Port | TCP ping | HTTP latency |
+|---|-----------|----------|--------------|
+{rows}
+
+## Files
+
+| File | Description |
+|------|-------------|
+| [`proxies.txt`](proxies.txt) | Plain URI list – import into v2rayN / Nekobox |
+| [`proxies_b64.txt`](proxies_b64.txt) | Base64 subscription link |
+| [`report.json`](report.json) | Full JSON with all latencies |
+
+---
+*Auto-generated every 3 hours by GitHub Actions*
+"""
+    (OUTPUT_DIR / "README.md").write_text(readme_output, encoding="utf-8")
+    Path("README.md").write_text(
+        readme_output.replace("](proxies", "](output/proxies").replace("](report", "](output/report"),
+        encoding="utf-8",
+    )
+
+    print(f"\n📁 Saved to {OUTPUT_DIR}/")
+    print("\n🏆 Top 5 fastest:")
+    for i, r in enumerate(top[:5]):
+        http = f"HTTP {r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
+        print(f"   {i+1}. {r['host']}:{r['port']}  →  {http}")
+    print()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
