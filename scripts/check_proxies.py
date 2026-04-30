@@ -1,10 +1,10 @@
+
 #!/usr/bin/env python3
 """
 Proxy Checker
 ─────────────
-Stage 1 : TCP-ping all collected configs (fast pre-filter)
-Stage 2 : HTTP probe through each surviving proxy via xray-core SOCKS5
-Saves top 100 by real HTTP latency.
+Stage 1 : TCP-ping (быстрый фильтр)
+Stage 2 : curl через xray SOCKS5 — реальная проверка HTTP
 """
 
 import asyncio
@@ -32,25 +32,22 @@ SOURCES = [
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
 ]
 
-# ── URLs probed через каждый прокси ──────────────────────────────────────────
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",            # доступен везде, быстрый
+    "https://cp.cloudflare.com/",
     "https://www.google.com/generate_204",
     "https://telegram.org/",
-    "https://one.one.one.one/",              # Cloudflare DNS over HTTPS
 ]
 
-# ── Фильтры ───────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS = []      # [] = все протоколы (vless, vmess, trojan, ss)
-REQUIRE_REALITY   = False   # False = берём все, не только reality
+ALLOWED_PROTOCOLS   = []     # [] = все
+REQUIRE_REALITY     = False
 
 TOP_N               = 100
 OUTPUT_DIR          = Path("output")
-TIMEOUT_TCP         = 5     # увеличен с 3 до 5
-TIMEOUT_HTTP        = 15    # увеличен с 10 до 15
-MAX_CONCURRENT_TCP  = 200   # увеличен
-MAX_CONCURRENT_HTTP = 40    # увеличен с 25 до 40
-STAGE2_CANDIDATES   = 600   # увеличен с 300 до 600 — больше кандидатов на HTTP-тест
+TIMEOUT_TCP         = 5
+TIMEOUT_HTTP        = 15     # секунд на curl
+MAX_CONCURRENT_TCP  = 200
+MAX_CONCURRENT_HTTP = 30
+STAGE2_CANDIDATES   = 600
 SOCKS_BASE_PORT     = 20000
 XRAY_BIN            = Path("/tmp/xray-bin/xray")
 
@@ -163,7 +160,7 @@ def install_xray() -> bool:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Stage 2 – xray config + HTTP probe
+# Stage 2 – xray config builders
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
@@ -268,31 +265,32 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
     }
 
 
-async def http_probe_via_socks(socks_port: int) -> float | None:
-    best = None
-    try:
-        connector = aiohttp.TCPConnector(ssl=False, force_close=True)
-        async with aiohttp.ClientSession(connector=connector) as session:
-            for url in PROBE_URLS:
-                t0 = time.monotonic()
-                try:
-                    async with session.get(
-                        url,
-                        proxy=f"socks5://127.0.0.1:{socks_port}",
-                        timeout=aiohttp.ClientTimeout(total=TIMEOUT_HTTP),
-                        allow_redirects=True,
-                    ) as resp:
-                        await resp.read()
-                        if resp.status in (200, 204):
-                            lat = (time.monotonic() - t0) * 1000
-                            if best is None or lat < best:
-                                best = lat
-                            break   # достаточно одного успеха
-                except Exception:
-                    pass
-    except Exception:
-        pass
-    return best
+# ── curl-based HTTP probe (надёжнее aiohttp для SOCKS5) ──────────────────────
+
+async def curl_probe(socks_port: int) -> float | None:
+    """Проверяет URL через curl с SOCKS5 прокси. Возвращает латентность или None."""
+    for url in PROBE_URLS:
+        t0 = time.monotonic()
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                "curl", "-s", "-o", "/dev/null",
+                "--socks5-hostname", f"127.0.0.1:{socks_port}",
+                "--max-time", str(TIMEOUT_HTTP),
+                "--connect-timeout", "8",
+                "-w", "%{http_code}",
+                "--insecure",
+                url,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=TIMEOUT_HTTP + 3)
+            code = stdout.decode().strip()
+            if code in ("200", "204", "301", "302"):
+                lat = (time.monotonic() - t0) * 1000
+                return round(lat, 1)
+        except Exception:
+            pass
+    return None
 
 
 async def stage2_test(sem, idx: int, item: dict) -> dict | None:
@@ -301,6 +299,7 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
     cfg = make_xray_config(uri, socks_port)
     if cfg is None:
         return None
+
     async with sem:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(cfg, f)
@@ -309,20 +308,22 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
         try:
             proc = await asyncio.create_subprocess_exec(
                 str(XRAY_BIN), "run", "-c", cfg_path,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
-            await asyncio.sleep(0.8)   # дать xray время запуститься
-            http_lat = await http_probe_via_socks(socks_port)
+            await asyncio.sleep(1.0)   # ждём запуска xray
+
+            http_lat = await curl_probe(socks_port)
             if http_lat is None:
                 return None
-            return {**item, "http_ms": round(http_lat, 1)}
+            return {**item, "http_ms": http_lat}
         except Exception:
             return None
         finally:
             if proc:
                 try:
                     proc.terminate()
-                    await asyncio.wait_for(proc.wait(), timeout=2)
+                    await asyncio.wait_for(proc.wait(), timeout=3)
                 except Exception:
                     try: proc.kill()
                     except Exception: pass
@@ -394,12 +395,12 @@ async def main():
     print("🛠  Preparing xray-core…")
     xray_ok = install_xray()
 
-    # 5. Stage 2 – HTTP probe
+    # 5. Stage 2 – curl через xray SOCKS5
     candidates = tcp_alive[:STAGE2_CANDIDATES]
     http_alive = []
 
     if xray_ok:
-        print(f"\n🌐 Stage 2 – HTTP probe  ({len(candidates)} candidates, concurrency={MAX_CONCURRENT_HTTP})")
+        print(f"\n🌐 Stage 2 – curl probe  ({len(candidates)} candidates, concurrency={MAX_CONCURRENT_HTTP})")
         print(f"   URLs: {' | '.join(PROBE_URLS)}\n")
         sem2 = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
         done2 = 0
@@ -409,7 +410,7 @@ async def main():
             if r:
                 http_alive.append(r)
             if done2 % 50 == 0 or done2 == len(candidates):
-                print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} confirmed working")
+                print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} working")
         http_alive.sort(key=lambda x: x["http_ms"])
         top = http_alive[:TOP_N]
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
@@ -462,15 +463,15 @@ async def main():
 | Total configs | {len(all_configs)} |
 | After filter | {len(filtered)} |
 | TCP alive | {len(tcp_alive)} |
-| HTTP working | {len(http_alive) if xray_ok else "n/a"} |
+| HTTP working (curl) | {len(http_alive) if xray_ok else "n/a"} |
 | Saved top | {len(top)} |
 
 Probe URLs: {" · ".join(f"`{u}`" for u in PROBE_URLS)}
 
 ## Top 50 by HTTP latency
 
-| # | Host:Port | TCP | HTTP |
-|---|-----------|-----|------|
+| # | Host:Port | TCP | HTTP (curl) |
+|---|-----------|-----|-------------|
 {rows}
 
 ## Files
@@ -493,13 +494,14 @@ Probe URLs: {" · ".join(f"`{u}`" for u in PROBE_URLS)}
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
     print(f"   proxies_b64.txt  — base64 подписка")
-    print(f"   report.json      — полный отчёт\n")
-    print("🏆 Топ 5 самых быстрых:")
+    print(f"\n🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
-        http = f"HTTP {r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
+        http = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
         print(f"   {i+1}. {r['host']}:{r['port']}  →  {http}")
     print()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+PYEOF
+echo "Done"
