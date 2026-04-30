@@ -71,9 +71,9 @@ Probe URLs: `https://www.google.com/generate_204` · `https://cp.cloudflare.com/
 
 | File | Description |
 |------|-------------|
-| [`proxies.txt`](output/proxies.txt) | Plain URI list – import into v2rayN / Nekobox |
-| [`proxies_b64.txt`](output/proxies_b64.txt) | Base64 subscription link |
-| [`report.json`](output/report.json) | Full JSON with all latencies |
+| [`proxies.txt`](proxies.txt) | Plain URI list – import into v2rayN / Nekobox |
+| [`proxies_b64.txt`](proxies_b64.txt) | Base64 subscription link |
+| [`report.json`](report.json) | Full JSON with all latencies |
 
 ---
 *Auto-generated every 3 hours by GitHub Actions*
