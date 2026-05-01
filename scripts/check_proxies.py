@@ -46,7 +46,7 @@ REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES = set()   #  ALLOWED_COUNTRIES   = {"NL", "DE", "EE", "RU", "FI"}
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 40
+TOP_N               = 120
 OUTPUT_DIR          = Path("output")
 TIMEOUT_TCP         = 3
 TIMEOUT_CURL        = 10
