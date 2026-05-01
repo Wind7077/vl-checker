@@ -56,6 +56,11 @@ PROBE_URLS = [
 ALLOWED_PROTOCOLS   = []     # [] = все (vless, vmess, trojan, ss)
 REQUIRE_REALITY     = False  # False = берём все, не только reality
 
+# Оставляем только прокси из этих стран (коды ISO 3166-1 alpha-2)
+# Нидерланды, Германия, Эстония, Россия, Финляндия
+ALLOWED_COUNTRIES   = {"NL", "DE", "EE", "RU", "FI"}
+GEO_BATCH_SIZE      = 100   # ip-api.com принимает до 100 IP за раз (бесплатно)
+
 TOP_N               = 100
 OUTPUT_DIR          = Path("output")
 TIMEOUT_TCP         = 5
@@ -111,6 +116,65 @@ def filter_configs(configs: list) -> list:
             if "reality" not in uri.lower():
                 continue
         result.append(uri)
+    return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Geo filter — оставляем только NL, DE, EE, RU, FI
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def geo_filter(items: list) -> list:
+    """
+    Принимает список {"uri":..., "host":..., "port":...}
+    Возвращает только те, чей IP находится в ALLOWED_COUNTRIES.
+    Использует ip-api.com batch API (бесплатно, до 100 IP за запрос).
+    """
+    if not ALLOWED_COUNTRIES:
+        return items
+
+    # собираем уникальные хосты
+    host_map: dict[str, list] = {}   # host -> [items]
+    for item in items:
+        host_map.setdefault(item["host"], []).append(item)
+
+    hosts = list(host_map.keys())
+    print(f"  🌍 Geo lookup для {len(hosts)} уникальных хостов…")
+
+    allowed_hosts: set[str] = set()
+    connector = aiohttp.TCPConnector(ssl=False)
+    async with aiohttp.ClientSession(connector=connector) as session:
+        for i in range(0, len(hosts), GEO_BATCH_SIZE):
+            batch = hosts[i:i + GEO_BATCH_SIZE]
+            payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
+            try:
+                async with session.post(
+                    "http://ip-api.com/batch",
+                    json=payload,
+                    timeout=aiohttp.ClientTimeout(total=20),
+                ) as resp:
+                    if resp.status == 200:
+                        data = await resp.json(content_type=None)
+                        for entry in data:
+                            if entry.get("status") == "success":
+                                cc = entry.get("countryCode", "")
+                                if cc in ALLOWED_COUNTRIES:
+                                    allowed_hosts.add(entry.get("query", ""))
+            except Exception as e:
+                print(f"  ⚠️  geo batch error: {e} — пропускаем фильтр для этой партии")
+                # если geo API не ответил — не отбрасываем хосты
+                allowed_hosts.update(batch)
+            await asyncio.sleep(0.5)   # ip-api rate limit: 15 req/min бесплатно
+
+    result = [item for item in items if item["host"] in allowed_hosts]
+
+    # статистика по странам
+    country_count: dict[str, int] = {}
+    for item in result:
+        cc = item.get("country", "?")
+        country_count[cc] = country_count.get(cc, 0) + 1
+
+    print(f"  ✅ После геофильтра: {len(result)} / {len(items)}")
+    print(f"     Разрешённые страны: {sorted(ALLOWED_COUNTRIES)}")
     return result
 
 
@@ -418,11 +482,16 @@ async def main():
     tcp_alive.sort(key=lambda x: x["tcp_ms"])
     print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
 
-    # 4. Install xray
+    # 4. Geo filter — только NL, DE, EE, RU, FI
+    print(f"🌍 Geo filter  (страны: {sorted(ALLOWED_COUNTRIES)})…")
+    tcp_alive = await geo_filter(tcp_alive)
+    print()
+
+    # 5. Install xray
     print("🛠  Preparing xray-core…")
     xray_ok = install_xray()
 
-    # 5. Stage 2 – curl через xray SOCKS5
+    # 6. Stage 2 – curl через xray SOCKS5
     candidates = tcp_alive[:STAGE2_CANDIDATES]
     http_alive = []
 
