@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — оптимизирован для России (NL, DE, EE, RU, FI)
+Proxy Checker — оптимизирован для России / Telegram
 """
 
 import asyncio
@@ -28,37 +28,34 @@ SOURCES = [
     "https://raw.githubusercontent.com/Wind7077/vl-auto/refs/heads/main/vless_normal_vpn.txt",
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
     "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/vless.txt",
-    "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/trojan.txt",
-    "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/vmess.txt",
     "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
     "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
     "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray",
     "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/vless.txt",
-    "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/trojan.txt",
 ]
 
-# ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
+# ── Probe URLs — проверяем именно Telegram API ────────────────────────────────
 PROBE_URLS = [
-    ("https://api.telegram.org/",               [200, 404]),  # 404 — норма без токена
-    ("https://telegram.org/",                   [200, 301, 302]),
-    ("https://cp.cloudflare.com/",              [200, 204]),
-    ("https://www.google.com/generate_204",     [200, 204]),
+    ("https://api.telegram.org/",            [200, 404]),  # 404 без токена — норма
+    ("https://telegram.org/",                [200, 301, 302]),
+    ("https://cp.cloudflare.com/",           [200, 204]),
+    ("https://www.google.com/generate_204",  [200, 204]),
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS   = ["vless"]
 REQUIRE_REALITY     = True
-ALLOWED_COUNTRIES = set()   #  ALLOWED_COUNTRIES   = {"NL", "DE", "EE", "RU", "FI"}
-GEO_BATCH_SIZE      = 100
+ALLOWED_COUNTRIES   = set()   # set() = выкл, {"NL","DE","EE","RU","FI"} = фильтр
 
-TOP_N               = 40
+TOP_N               = 50
 OUTPUT_DIR          = Path("output")
 TIMEOUT_TCP         = 3
 TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 400
+STAGE2_CANDIDATES   = 600
+MAX_TCP_MS          = 300     # отсекаем прокси медленнее 300ms TCP
 SOCKS_BASE_PORT     = 20000
 
 if sys.platform == "win32":
@@ -107,6 +104,20 @@ def filter_configs(configs: list) -> list:
     return result
 
 
+def sort_by_quality(configs: list) -> list:
+    """Приоритет: reality + chrome/safari fingerprint + порт 443 + xtls-vision."""
+    def score(uri):
+        s = 0
+        u = uri.lower()
+        if "reality" in u:                              s += 10
+        if "fp=chrome" in u or "fp=safari" in u:       s += 5
+        if "flow=xtls-rprx-vision" in u:               s += 4
+        if ":443" in u:                                 s += 3
+        if "fp=firefox" in u:                           s += 2
+        return -s
+    return sorted(configs, key=score)
+
+
 def parse_host_port(uri: str):
     try:
         p = urllib.parse.urlparse(uri)
@@ -135,8 +146,8 @@ async def geo_filter(items: list) -> list:
     allowed_hosts: set[str] = set()
     connector = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=connector) as session:
-        for i in range(0, len(hosts), GEO_BATCH_SIZE):
-            batch = hosts[i:i + GEO_BATCH_SIZE]
+        for i in range(0, len(hosts), 100):
+            batch = hosts[i:i + 100]
             payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
             try:
                 async with session.post(
@@ -148,8 +159,7 @@ async def geo_filter(items: list) -> list:
                         data = await resp.json(content_type=None)
                         for entry in data:
                             if entry.get("status") == "success":
-                                cc = entry.get("countryCode", "")
-                                if cc in ALLOWED_COUNTRIES:
+                                if entry.get("countryCode", "") in ALLOWED_COUNTRIES:
                                     allowed_hosts.add(entry.get("query", ""))
             except Exception as e:
                 print(f"  ⚠️  geo error: {e} — пропускаем фильтр для партии")
@@ -190,6 +200,8 @@ async def stage1_test(sem, uri):
     async with sem:
         lat = await tcp_ping(host, port)
         if lat is None:
+            return None
+        if lat > MAX_TCP_MS:
             return None
         return {"uri": uri, "host": host, "port": port, "tcp_ms": round(lat, 1)}
 
@@ -426,8 +438,8 @@ async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
     ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
     print(f"\n{'='*64}")
-    print(f"  Proxy Checker (RU edition)  |  {ts}")
-    print(f"  Страны: {sorted(ALLOWED_COUNTRIES)}")
+    print(f"  Proxy Checker (RU/Telegram edition)  |  {ts}")
+    print(f"  Reality: {REQUIRE_REALITY}  |  Max TCP: {MAX_TCP_MS}ms  |  Top: {TOP_N}")
     print(f"{'='*64}\n")
 
     # 1. Download
@@ -437,15 +449,20 @@ async def main():
     all_configs = list(dict.fromkeys(c for b in batches for c in b))
     print(f"\n📋 Unique configs: {len(all_configs)}")
 
-    # 2. Filter by protocol
+    # 2. Filter by protocol/reality
     filtered = filter_configs(all_configs)
-    print(f"🔎 After protocol filter: {len(filtered)}\n")
+    print(f"🔎 After protocol filter: {len(filtered)}")
+
+    # 3. Sort by quality (reality + chrome fp + port 443 + xtls-vision)
+    filtered = sort_by_quality(filtered)
+    print(f"⭐ Sorted by quality\n")
+
     if not filtered:
         print("⚠️  No configs after filtering.")
         return
 
-    # 3. Stage 1 – TCP ping
-    print(f"🔌 Stage 1 – TCP ping  (concurrency={MAX_CONCURRENT_TCP})…")
+    # 4. Stage 1 – TCP ping
+    print(f"🔌 Stage 1 – TCP ping  (max {MAX_TCP_MS}ms, concurrency={MAX_CONCURRENT_TCP})…")
     sem1 = asyncio.Semaphore(MAX_CONCURRENT_TCP)
     tcp_alive, done = [], 0
     for coro in asyncio.as_completed([stage1_test(sem1, u) for u in filtered]):
@@ -455,29 +472,31 @@ async def main():
             tcp_alive.append(r)
         if done % 300 == 0:
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
-    tcp_alive.sort(key=lambda x: x["tcp_ms"])
+
+    # сортируем: сначала порт 443/80, потом по tcp_ms
+    tcp_alive.sort(key=lambda x: (0 if x["port"] in (443, 80) else 1, x["tcp_ms"]))
     print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
 
-    # 4. Geo filter — только NL, DE, EE, RU, FI
-    print(f"🌍 Geo filter…")
-    tcp_alive = await geo_filter(tcp_alive)
-    print()
+    # 5. Geo filter
+    if ALLOWED_COUNTRIES:
+        print(f"🌍 Geo filter  {sorted(ALLOWED_COUNTRIES)}…")
+        tcp_alive = await geo_filter(tcp_alive)
+        print()
+        if not tcp_alive:
+            print("⚠️  После геофильтра не осталось прокси.")
+            return
 
-    if not tcp_alive:
-        print("⚠️  После геофильтра не осталось прокси.")
-        return
-
-    # 5. Install xray
+    # 6. Install xray
     print("🛠  Preparing xray-core…")
     xray_ok = install_xray()
 
-    # 6. Stage 2 – curl через xray SOCKS5
+    # 7. Stage 2 – curl через xray SOCKS5
     candidates = tcp_alive[:STAGE2_CANDIDATES]
     http_alive = []
 
     if xray_ok:
         print(f"\n🌐 Stage 2 – curl probe  ({len(candidates)} candidates, concurrency={MAX_CONCURRENT_HTTP})")
-        print(f"   URLs: {' | '.join(u for u, _ in PROBE_URLS)}\n")
+        print(f"   Telegram API + заблокированные в РФ сайты\n")
         sem2 = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
         done2 = 0
         for coro in asyncio.as_completed([stage2_test(sem2, i, it) for i, it in enumerate(candidates)]):
@@ -500,7 +519,7 @@ async def main():
         print("⚠️  No working proxies found.")
         return
 
-    # 7. Save
+    # 8. Save
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
@@ -508,7 +527,11 @@ async def main():
 
     report = {
         "updated": ts,
-        "countries": sorted(ALLOWED_COUNTRIES),
+        "settings": {
+            "reality_only": REQUIRE_REALITY,
+            "max_tcp_ms": MAX_TCP_MS,
+            "countries": sorted(ALLOWED_COUNTRIES) or "all",
+        },
         "total_fetched": len(all_configs),
         "after_filter": len(filtered),
         "tcp_alive": len(tcp_alive),
@@ -527,9 +550,9 @@ async def main():
             tcp=r["tcp_ms"],
             http=f"{r['http_ms']} ms" if r.get("http_ms") else "—",
         )
-        for i, r in enumerate(top[:50])
+        for i, r in enumerate(top)
     )
-    readme_output = f"""# Proxy Check Results (RU edition)
+    readme_output = f"""# Proxy Check Results — RU/Telegram edition
 
 **Updated:** {ts}
 
@@ -538,13 +561,13 @@ async def main():
 | Sources | {len(SOURCES)} |
 | Total configs | {len(all_configs)} |
 | After filter | {len(filtered)} |
-| TCP alive | {len(tcp_alive)} |
+| TCP alive (≤{MAX_TCP_MS}ms) | {len(tcp_alive)} |
 | HTTP working | {len(http_alive) if xray_ok else "n/a"} |
 | Saved top | {len(top)} |
 
-Страны: {", ".join(sorted(ALLOWED_COUNTRIES))}
+Проверяется: Telegram API · Google · Cloudflare
 
-## Top 50 by HTTP latency
+## Top {TOP_N} by HTTP latency
 
 | # | Host:Port | TCP | HTTP |
 |---|-----------|-----|------|
@@ -570,7 +593,7 @@ async def main():
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
     print(f"   proxies_b64.txt  — base64 подписка\n")
-    print("🏆 Топ 5 самых быстрых:")
+    print(f"🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         http = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
         print(f"   {i+1}. {r['host']}:{r['port']}  →  {http}")
