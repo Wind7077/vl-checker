@@ -2,8 +2,8 @@ name: Proxy Checker
 
 on:
   schedule:
-    - cron: "0 */3 * * *"   # every 3 hours
-  workflow_dispatch:          # manual trigger button
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,11 +11,16 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y curl
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -23,7 +28,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python dependencies
-        run: pip install aiohttp aiohttp-socks
+        run: pip install aiohttp
 
       - name: Run proxy checker
         run: python scripts/check_proxies.py
