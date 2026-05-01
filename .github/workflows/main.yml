@@ -1,4 +1,4 @@
-name: vl-checker
+name: Proxy Checker
 
 on:
   schedule:
@@ -11,24 +11,29 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y curl
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install aiohttp aiohttp-socks
+      - name: Install Python dependencies
+        run: pip install aiohttp
 
       - name: Run proxy checker
         run: python scripts/check_proxies.py
 
-      - name: Commit results
+      - name: Commit & push results
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
