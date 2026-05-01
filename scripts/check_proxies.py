@@ -1,10 +1,10 @@
-
 #!/usr/bin/env python3
 """
-Proxy Checker
-─────────────
+Proxy Checker — оптимизирован для России (Ростелеком, МТС, Билайн, Мегафон)
+─────────────────────────────────────────────────────────────────────────────
 Stage 1 : TCP-ping (быстрый фильтр)
 Stage 2 : curl через xray SOCKS5 — реальная проверка HTTP
+          Тестирует именно заблокированные в РФ ресурсы
 """
 
 import asyncio
@@ -15,6 +15,7 @@ import os
 import platform
 import re
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.parse
@@ -30,26 +31,46 @@ SOURCES = [
     "https://key.zarazaex.xyz/sub",
     "https://raw.githubusercontent.com/Wind7077/vl-auto/refs/heads/main/vless_normal_vpn.txt",
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
+    # дополнительные источники специально для РФ
+    "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/vless.txt",
+    "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/trojan.txt",
+    "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/vmess.txt",
+    "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+    "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
+    "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray",
+    "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/vless.txt",
+    "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/trojan.txt",
 ]
 
+# ── Тестируем именно заблокированные в РФ ресурсы ───────────────────────────
+# Если прокси открывает эти сайты — он точно работает для России
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",
-    "https://www.google.com/generate_204",
-    "https://telegram.org/",
+    ("https://telegram.org/",              [200, 301, 302]),
+    ("https://www.youtube.com/generate_204", [200, 204]),
+    ("https://www.google.com/generate_204", [200, 204]),
+    ("https://cp.cloudflare.com/",          [200, 204]),
+    ("https://instagram.com/",              [200, 301, 302]),
 ]
 
-ALLOWED_PROTOCOLS   = []     # [] = все
-REQUIRE_REALITY     = False
+# ── Настройки ─────────────────────────────────────────────────────────────────
+ALLOWED_PROTOCOLS   = []     # [] = все (vless, vmess, trojan, ss)
+REQUIRE_REALITY     = False  # False = берём все, не только reality
 
 TOP_N               = 100
 OUTPUT_DIR          = Path("output")
 TIMEOUT_TCP         = 5
-TIMEOUT_HTTP        = 15     # секунд на curl
+TIMEOUT_CURL        = 20     # увеличен — некоторые рабочие прокси медленные
+TIMEOUT_XRAY_START  = 1.5   # ждём запуска xray
 MAX_CONCURRENT_TCP  = 200
-MAX_CONCURRENT_HTTP = 30
-STAGE2_CANDIDATES   = 600
+MAX_CONCURRENT_HTTP = 35
+STAGE2_CANDIDATES   = 800   # берём больше кандидатов на HTTP-тест
 SOCKS_BASE_PORT     = 20000
-XRAY_BIN            = Path("/tmp/xray-bin/xray")
+
+# xray путь — автоматически под Windows и Linux
+if sys.platform == "win32":
+    XRAY_BIN = Path(r"C:\xray\xray.exe")
+else:
+    XRAY_BIN = Path("/tmp/xray-bin/xray")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -66,8 +87,10 @@ def decode_b64(data: str) -> str:
 
 
 def extract_configs(text: str) -> list:
-    if re.match(r'^[A-Za-z0-9+/\n\r=]{60,}$', text.strip()):
-        decoded = decode_b64(text)
+    # пробуем декодировать base64-подписку
+    stripped = text.strip()
+    if re.match(r'^[A-Za-z0-9+/\n\r=]{60,}$', stripped):
+        decoded = decode_b64(stripped)
         if any(p in decoded for p in ("vless://", "vmess://", "trojan://", "ss://")):
             text = decoded
     configs = []
@@ -135,12 +158,15 @@ async def stage1_test(sem, uri):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Xray install
+# Xray install (только для Linux/CI)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def install_xray() -> bool:
     if XRAY_BIN.exists():
         return True
+    if sys.platform == "win32":
+        print(f"  ⚠️  Положи xray.exe в {XRAY_BIN}")
+        return False
     print("  📦 Downloading xray-core…")
     arch = platform.machine().lower()
     fname = "Xray-linux-arm64-v8a.zip" if arch in ("aarch64", "arm64") else "Xray-linux-64.zip"
@@ -265,27 +291,29 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
     }
 
 
-# ── curl-based HTTP probe (надёжнее aiohttp для SOCKS5) ──────────────────────
-
 async def curl_probe(socks_port: int) -> float | None:
-    """Проверяет URL через curl с SOCKS5 прокси. Возвращает латентность или None."""
-    for url in PROBE_URLS:
+    """curl через SOCKS5 — проверяет заблокированные в РФ сайты."""
+    for url, ok_codes in PROBE_URLS:
         t0 = time.monotonic()
         try:
             proc = await asyncio.create_subprocess_exec(
                 "curl", "-s", "-o", "/dev/null",
                 "--socks5-hostname", f"127.0.0.1:{socks_port}",
-                "--max-time", str(TIMEOUT_HTTP),
-                "--connect-timeout", "8",
+                "--max-time", str(TIMEOUT_CURL),
+                "--connect-timeout", "10",
                 "-w", "%{http_code}",
                 "--insecure",
+                "-L",           # следуем редиректам
+                "-A", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 url,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
             )
-            stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=TIMEOUT_HTTP + 3)
-            code = stdout.decode().strip()
-            if code in ("200", "204", "301", "302"):
+            stdout, _ = await asyncio.wait_for(
+                proc.communicate(), timeout=TIMEOUT_CURL + 5
+            )
+            code = int(stdout.decode().strip() or "0")
+            if code in ok_codes:
                 lat = (time.monotonic() - t0) * 1000
                 return round(lat, 1)
         except Exception:
@@ -311,8 +339,7 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            await asyncio.sleep(1.0)   # ждём запуска xray
-
+            await asyncio.sleep(TIMEOUT_XRAY_START)
             http_lat = await curl_probe(socks_port)
             if http_lat is None:
                 return None
@@ -359,7 +386,7 @@ async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
     ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
     print(f"\n{'='*64}")
-    print(f"  Proxy Checker  |  {ts}")
+    print(f"  Proxy Checker (RU edition)  |  {ts}")
     print(f"  Protocols: {ALLOWED_PROTOCOLS or 'all'}  |  Reality only: {REQUIRE_REALITY}")
     print(f"{'='*64}\n")
 
@@ -401,7 +428,7 @@ async def main():
 
     if xray_ok:
         print(f"\n🌐 Stage 2 – curl probe  ({len(candidates)} candidates, concurrency={MAX_CONCURRENT_HTTP})")
-        print(f"   URLs: {' | '.join(PROBE_URLS)}\n")
+        print(f"   Тестируем заблокированные в РФ сайты…\n")
         sem2 = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
         done2 = 0
         for coro in asyncio.as_completed([stage2_test(sem2, i, it) for i, it in enumerate(candidates)]):
@@ -415,7 +442,7 @@ async def main():
         top = http_alive[:TOP_N]
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
     else:
-        print("  ⚠️  xray unavailable — saving TCP-alive only")
+        print("  ⚠️  xray unavailable — saving TCP-alive only (без проверки URL)")
         top = candidates[:TOP_N]
         for r in top:
             r["http_ms"] = None
@@ -438,7 +465,7 @@ async def main():
         "tcp_alive": len(tcp_alive),
         "http_working": len(http_alive) if xray_ok else "n/a",
         "saved": len(top),
-        "probe_urls": PROBE_URLS,
+        "probe_urls": [u for u, _ in PROBE_URLS],
         "proxies": top,
     }
     (OUTPUT_DIR / "report.json").write_text(
@@ -453,7 +480,8 @@ async def main():
         )
         for i, r in enumerate(top[:50])
     )
-    readme_output = f"""# Proxy Check Results
+    probe_str = " · ".join(f"`{u}`" for u, _ in PROBE_URLS)
+    readme_output = f"""# Proxy Check Results (RU edition)
 
 **Updated:** {ts}
 
@@ -463,15 +491,15 @@ async def main():
 | Total configs | {len(all_configs)} |
 | After filter | {len(filtered)} |
 | TCP alive | {len(tcp_alive)} |
-| HTTP working (curl) | {len(http_alive) if xray_ok else "n/a"} |
+| HTTP working | {len(http_alive) if xray_ok else "n/a"} |
 | Saved top | {len(top)} |
 
-Probe URLs: {" · ".join(f"`{u}`" for u in PROBE_URLS)}
+Probe URLs (заблокированные в РФ): {probe_str}
 
 ## Top 50 by HTTP latency
 
-| # | Host:Port | TCP | HTTP (curl) |
-|---|-----------|-----|-------------|
+| # | Host:Port | TCP | HTTP |
+|---|-----------|-----|------|
 {rows}
 
 ## Files
@@ -493,8 +521,8 @@ Probe URLs: {" · ".join(f"`{u}`" for u in PROBE_URLS)}
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
-    print(f"   proxies_b64.txt  — base64 подписка")
-    print(f"\n🏆 Топ 5 самых быстрых:")
+    print(f"   proxies_b64.txt  — base64 подписка\n")
+    print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         http = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
         print(f"   {i+1}. {r['host']}:{r['port']}  →  {http}")
@@ -503,5 +531,3 @@ Probe URLs: {" · ".join(f"`{u}`" for u in PROBE_URLS)}
 
 if __name__ == "__main__":
     asyncio.run(main())
-PYEOF
-echo "Done"
