@@ -48,7 +48,7 @@ PROBE_URLS = [
 # ── Настройки ─────────────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS   = ["vless"]
 REQUIRE_REALITY     = True
-ALLOWED_COUNTRIES   = {"NL", "DE", "EE", "RU", "FI"}
+ALLOWED_COUNTRIES = set()   #  ALLOWED_COUNTRIES   = {"NL", "DE", "EE", "RU", "FI"}
 GEO_BATCH_SIZE      = 100
 
 TOP_N               = 100
