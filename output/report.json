@@ -1,11 +1,11 @@
 {
-  "updated": "2026-05-05 03:36 UTC",
+  "updated": "2026-05-05 08:22 UTC",
   "countries": [],
-  "total_fetched": 5216,
-  "after_filter": 3715,
-  "tcp_alive": 3248,
-  "http_working": 27,
-  "saved": 27,
+  "total_fetched": 4054,
+  "after_filter": 2531,
+  "tcp_alive": 1930,
+  "http_working": 319,
+  "saved": 80,
   "probe_urls": [
     "https://api.telegram.org/",
     "https://telegram.org/",
@@ -14,193 +14,564 @@
   ],
   "proxies": [
     {
-      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?type=tcp&security=reality&fp=chrome&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&sni=vk.ru&spx=/:#SNI%3A%20vk.ru%20%5B%23%D0%A0%D0%9A%D0%9F%5D%20t.me%2Frjsxrd",
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@grpc1.pineappled.org:2053?type=grpc&security=reality&fp=qq&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&sni=www.apple.com&mode=gun&serviceName=grpc&authority=#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%5B%2ACIDR%5D",
+      "host": "grpc1.pineappled.org",
+      "port": 2053,
+      "tcp_ms": 112.3,
+      "http_ms": 324.6
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?type=xhttp&security=reality&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&sni=ozon.ru&path=/#🏳️ UNKNOWN VLESS 468%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 116.1,
+      "http_ms": 417.6
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.193:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.apple.com&fp=chrome&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%20Germany%20%20%5B12%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "89.106.95.193",
+      "port": 443,
+      "tcp_ms": 103.9,
+      "http_ms": 423.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.206:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%5B%2ACIDR%5D",
+      "host": "89.106.95.206",
+      "port": 443,
+      "tcp_ms": 107.4,
+      "http_ms": 470.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.44:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#🇩🇪 Германия 81 | [WL]%20t.me%2Frjsxrd",
+      "host": "89.106.83.44",
+      "port": 443,
+      "tcp_ms": 106.5,
+      "http_ms": 473.0
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.193:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23209%20t.me%2Frjsxrd",
+      "host": "89.106.95.193",
+      "port": 443,
+      "tcp_ms": 104.4,
+      "http_ms": 475.3
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.49:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23339%20t.me%2Frjsxrd",
+      "host": "89.106.83.49",
+      "port": 443,
+      "tcp_ms": 107.4,
+      "http_ms": 485.9
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.44:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23305%20t.me%2Frjsxrd",
+      "host": "89.106.83.44",
+      "port": 443,
+      "tcp_ms": 111.0,
+      "http_ms": 488.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.203:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23497%20t.me%2Frjsxrd",
+      "host": "89.106.95.203",
+      "port": 443,
+      "tcp_ms": 103.9,
+      "http_ms": 526.6
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.44:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23310%20t.me%2Frjsxrd",
+      "host": "89.106.83.44",
+      "port": 443,
+      "tcp_ms": 113.4,
+      "http_ms": 527.1
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.193:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%5B%2ACIDR%5D",
+      "host": "89.106.95.193",
+      "port": 443,
+      "tcp_ms": 106.7,
+      "http_ms": 528.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.203:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%5B%2ACIDR%5D%20t.me%2Frjsxrd",
+      "host": "89.106.95.203",
+      "port": 443,
+      "tcp_ms": 104.9,
+      "http_ms": 536.4
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.39:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20%5BVL%5D%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%20%232411%20%7C%20%D0%A0%D0%BE%D1%81%D0%A2%D1%83%D0%BD%D0%BD%D0%B5%D0%BB%D1%8C%20t.me%2Frjsxrd",
+      "host": "89.106.83.39",
+      "port": 443,
+      "tcp_ms": 113.0,
+      "http_ms": 536.4
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.203:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%5B%2ACIDR%5D",
+      "host": "89.106.95.203",
+      "port": 443,
+      "tcp_ms": 107.3,
+      "http_ms": 536.6
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.203:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.apple.com&fp=chrome&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%20Germany%20%20%5B07%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "89.106.95.203",
+      "port": 443,
+      "tcp_ms": 104.6,
+      "http_ms": 538.6
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.44:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.apple.com&fp=chrome&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%20Germany%20%20%5B02%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "89.106.83.44",
+      "port": 443,
+      "tcp_ms": 109.4,
+      "http_ms": 538.8
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.59:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.apple.com&fp=chrome&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%20Germany%20%20%5B06%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "89.106.83.59",
+      "port": 443,
+      "tcp_ms": 108.2,
+      "http_ms": 539.9
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.59:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23304%20t.me%2Frjsxrd",
+      "host": "89.106.83.59",
+      "port": 443,
+      "tcp_ms": 110.3,
+      "http_ms": 552.3
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.49:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%B7%F0%9F%87%BA%20LTE%2026%20%7C%20%D1%82%D0%B3%D0%BA%3A%20%40rostunnel%20t.me%2Frjsxrd",
+      "host": "89.106.83.49",
+      "port": 443,
+      "tcp_ms": 107.2,
+      "http_ms": 552.9
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.193:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23393%20t.me%2Frjsxrd",
+      "host": "89.106.95.193",
+      "port": 443,
+      "tcp_ms": 108.3,
+      "http_ms": 565.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.54:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23343%20t.me%2Frjsxrd",
+      "host": "89.106.83.54",
+      "port": 443,
+      "tcp_ms": 114.4,
+      "http_ms": 567.6
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.44:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23344%20t.me%2Frjsxrd",
+      "host": "89.106.83.44",
+      "port": 443,
+      "tcp_ms": 111.7,
+      "http_ms": 569.5
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.4:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%B9%F0%9F%87%B7%20LTE%2056%20%7C%20%D1%82%D0%B3%D0%BA%3A%20%40rostunnel%20t.me%2Frjsxrd",
+      "host": "89.106.83.4",
+      "port": 443,
+      "tcp_ms": 115.3,
+      "http_ms": 574.9
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.54:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23#%F0%9F%87%BA%F0%9F%87%B8%20LTE%2032%20%7C%20%D1%82%D0%B3%D0%BA%3A%20%40rostunnel%20t.me%2Frjsxrd",
+      "host": "89.106.83.54",
+      "port": 443,
+      "tcp_ms": 111.4,
+      "http_ms": 576.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.83.4:443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=chrome&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&sni=www.apple.com#%F0%9F%87%A9%F0%9F%87%AA%20%5BVL%5D%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%20%2315557%20%7C%20%D0%A0%D0%BE%D1%81%D0%A2%D1%83%D0%BD%D0%BD%D0%B5%D0%BB%D1%8C%20t.me%2Frjsxrd",
+      "host": "89.106.83.4",
+      "port": 443,
+      "tcp_ms": 111.2,
+      "http_ms": 577.6
+    },
+    {
+      "uri": "vless://d428091c-e6eb-48f9-9a07-b44eb886ac90@217.18.61.243:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=random&sni=mydogcollections.com&pbk=RsG53RnTZKpPwbKt0mnj3963DinwNFHpk3eWaHH6oG4&sid=653253254366#[362ms Россия RU 🇷🇺 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "217.18.61.243",
+      "port": 443,
+      "tcp_ms": 132.0,
+      "http_ms": 623.0
+    },
+    {
+      "uri": "vless://d428091c-e6eb-48f9-9a07-b44eb886ac90@217.18.61.243:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=random&sni=mydogcollections.com&pbk=RsG53RnTZKpPwbKt0mnj3963DinwNFHpk3eWaHH6oG4&sid=653253254366&spx=%2F#%F0%9F%87%B7%F0%9F%87%BA%20Timeweb%20%E2%80%94%20%2397%20t.me%2Frjsxrd",
+      "host": "217.18.61.243",
+      "port": 443,
+      "tcp_ms": 129.9,
+      "http_ms": 649.0
+    },
+    {
+      "uri": "vless://d428091c-e6eb-48f9-9a07-b44eb886ac90@217.18.61.243:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=random&sni=mydogcollections.com&pbk=RsG53RnTZKpPwbKt0mnj3963DinwNFHpk3eWaHH6oG4&sid=653253254366&spx=%2F#%F0%9F%87%B7%F0%9F%87%BA%20Timeweb%20%E2%80%94%20%2382%20t.me%2Frjsxrd",
+      "host": "217.18.61.243",
+      "port": 443,
+      "tcp_ms": 130.6,
+      "http_ms": 650.0
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f#4Sarina-5448%20t.me%2Frjsxrd",
       "host": "141.11.197.127",
       "port": 55269,
-      "tcp_ms": 146.6,
-      "http_ms": 1014.1
+      "tcp_ms": 103.5,
+      "http_ms": 674.9
     },
     {
-      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.google.com&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%E2%80%94%20%231026%20t.me%2Frjsxrd",
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23801%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 114.2,
+      "http_ms": 677.7
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?type=tcp&security=reality&fp=chrome&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&sni=vk.ru#2325 | 🇳🇱 Netherlands | 🏳️ SNI-VK | VLESS | 📺 YT | TG: @YoutubeUnBlockRu%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 98.2,
+      "http_ms": 682.9
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?type=tcp&security=reality&fp=chrome&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&sni=vk.ru&alpn=http/1.1#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%5BSNI-RU%5D%20vk.ru%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 98.2,
+      "http_ms": 721.0
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f#SNI%3A%20vk.ru%20%5B%23%D0%A0%D0%9A%D0%9F%5D%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 119.8,
+      "http_ms": 727.6
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&spx=/#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20812955%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 107.2,
+      "http_ms": 739.7
+    },
+    {
+      "uri": "vless://c476ac5f-07af-4346-8c42-6fd377a345f7@104.165.205.251:443?encryption=none&flow=xtls-rprx-vision&fp=randomized&pbk=ivgTfLR13A6xBsicIA28OPoav2tXlsstTTmGuETfnSk&security=reality&sid=6d6f13013d3e1d0c&sni=g7.steptofreedom.one&type=tcp#%F0%9F%87%B1%F0%9F%87%BB%20%5BVL%5D%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%239307%20%7C%20%D0%A0%D0%BE%D1%81%D0%A2%D1%83%D0%BD%D0%BD%D0%B5%D0%BB%D1%8C%20t.me%2Frjsxrd",
+      "host": "104.165.205.251",
+      "port": 443,
+      "tcp_ms": 123.7,
+      "http_ms": 740.9
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?type=tcp&security=reality&fp=chrome&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&sni=vk.ru&spx=/:#🇳🇱 NL VLESS 868%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 100.7,
+      "http_ms": 746.1
+    },
+    {
+      "uri": "vless://5b6a67cc-684e-448d-a93d-3335a61be810@pl-free-2.amnesia.pw:443?type=tcp&security=reality&sni=www.ozon.ru&fp=chrome&pbk=TGiarWayhvAmTy5Z26bfEtnmHtRS4YVn03VdRxtm1Es&sid=&flow=xtls-rprx-vision#SNI%3A%20www.ozon.ru%20%5B%23%D0%A0%D0%9A%D0%9F%5D%20t.me%2Frjsxrd",
+      "host": "pl-free-2.amnesia.pw",
+      "port": 443,
+      "tcp_ms": 118.1,
+      "http_ms": 748.0
+    },
+    {
+      "uri": "vless://c476ac5f-07af-4346-8c42-6fd377a345f7@104.165.205.251:443?encryption=none&flow=xtls-rprx-vision&fp=randomized&pbk=ivgTfLR13A6xBsicIA28OPoav2tXlsstTTmGuETfnSk&security=reality&sid=6d6f13013d3e1d0c&sni=g7.steptofreedom.one&type=tcp#%F0%9F%87%B1%F0%9F%87%BB%20Latvia%20%7C%20%F0%9F%8C%90%20%7C%20%5BIPv6%5D%20%5B%2ACIDR%5D",
+      "host": "104.165.205.251",
+      "port": 443,
+      "tcp_ms": 125.8,
+      "http_ms": 752.1
+    },
+    {
+      "uri": "vless://d428091c-e6eb-48f9-9a07-b44eb886ac90@217.18.61.243:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=random&sni=mydogcollections.com&pbk=RsG53RnTZKpPwbKt0mnj3963DinwNFHpk3eWaHH6oG4&sid=653253254366#%F0%9F%87%B7%F0%9F%87%BA%20Timeweb%20%E2%80%94%20%23102%20t.me%2Frjsxrd",
+      "host": "217.18.61.243",
+      "port": 443,
+      "tcp_ms": 129.4,
+      "http_ms": 769.9
+    },
+    {
+      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.google.com&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%E2%80%94%20%231162%20t.me%2Frjsxrd",
       "host": "205.172.56.16",
       "port": 443,
-      "tcp_ms": 64.4,
-      "http_ms": 1138.0
+      "tcp_ms": 22.0,
+      "http_ms": 805.5
     },
     {
-      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.google.com&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd#[94ms US US  @vlesstrojan]%20t.me%2Frjsxrd",
+      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=chrome&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd&sni=www.google.com#[449ms US US  @vlesstrojan]%20t.me%2Frjsxrd",
       "host": "205.172.56.16",
       "port": 443,
-      "tcp_ms": 64.2,
-      "http_ms": 1181.5
+      "tcp_ms": 20.2,
+      "http_ms": 822.6
     },
     {
-      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.google.com&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd#%F0%9F%87%B3%F0%9F%87%B1%20LTE%20149%20%7C%20%D1%82%D0%B3%D0%BA%3A%20%40rostunnel%20t.me%2Frjsxrd",
+      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.google.com&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%E2%80%94%20%23976%20t.me%2Frjsxrd",
       "host": "205.172.56.16",
       "port": 443,
-      "tcp_ms": 64.8,
-      "http_ms": 1227.7
+      "tcp_ms": 20.3,
+      "http_ms": 824.1
     },
     {
-      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.google.com&fp=chrome&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd&flow=xtls-rprx-vision#[208ms US US  @vlesstrojan]%20t.me%2Frjsxrd",
+      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.google.com&fp=chrome&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd&flow=xtls-rprx-vision#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%5B%2ACIDR%5D%20t.me%2Frjsxrd",
       "host": "205.172.56.16",
       "port": 443,
-      "tcp_ms": 64.1,
-      "http_ms": 1229.1
+      "tcp_ms": 20.3,
+      "http_ms": 845.8
     },
     {
-      "uri": "vless://ec9e7b71-72b6-0021-8549-2efb1b21a502@77.83.199.113:443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=chrome&pbk=b4n1pcO8ST3JkGtj8YymXVrW17LEe2EHec5wY7hMMR4&sid=6e3f0a5b&sni=ads.x5.ru&spx=/#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%5BSNI-RU%5D%20ads.x5.ru",
-      "host": "77.83.199.113",
-      "port": 443,
-      "tcp_ms": 48.9,
-      "http_ms": 1237.5
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?type=tcp&security=reality&fp=chrome&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&sni=vk.ru&alpn=http/1.1#🇷🇺 Россия 29 | [WL]%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 107.2,
+      "http_ms": 870.2
     },
     {
-      "uri": "vless://ec9e7b71-72b6-0021-8549-2efb1b21a502@77.83.199.113:443?type=tcp&security=reality&flow=xtls-rprx-vision&pbk=b4n1pcO8ST3JkGtj8YymXVrW17LEe2EHec5wY7hMMR4&sid=6e3f0a5b&sni=ads.x5.ru#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%5BSNI-RU%5D%20ads.x5.ru",
-      "host": "77.83.199.113",
-      "port": 443,
-      "tcp_ms": 49.6,
-      "http_ms": 1248.3
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?type=tcp&security=reality&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&sni=vk.ru#[540ms Нидерланды NL 🇳🇱 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "141.11.197.127",
+      "port": 55269,
+      "tcp_ms": 128.0,
+      "http_ms": 891.8
     },
     {
-      "uri": "vless://7b13eaac-882d-43a0-b19e-6d2e867d624e@185.175.111.86:443?type=grpc&security=reality&fp=safari&pbk=n00VSaVEImUfNI-8882Ecum-Er2KIHLg32Y-MWQGeh8&sid=fad0a8&sni=hcaptcha.com#%F0%9F%87%AB%F0%9F%87%B7%20France%20%5B%2ACIDR%5D%20t.me%2Frjsxrd",
+      "uri": "vless://7b13eaac-882d-43a0-b19e-6d2e867d624e@185.175.111.86:443?type=grpc&security=reality&fp=safari&pbk=n00VSaVEImUfNI-8882Ecum-Er2KIHLg32Y-MWQGeh8&sid=fad0a8&sni=hcaptcha.com#%F0%9F%87%AB%F0%9F%87%B7%20France%20%5B%2ACIDR%5D",
       "host": "185.175.111.86",
       "port": 443,
-      "tcp_ms": 145.7,
-      "http_ms": 1276.3
+      "tcp_ms": 100.9,
+      "http_ms": 916.6
     },
     {
-      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f#1163.%20%F0%9F%87%B3%F0%9F%87%B1%20VLESS%20%7C%20SNI%3A%20vk.ru%20%7C%20TG%3A%20%40wlrustg%20t.me%2Frjsxrd%20t.me%2Frjsxrd",
-      "host": "141.11.197.127",
-      "port": 55269,
-      "tcp_ms": 144.5,
-      "http_ms": 1324.9
-    },
-    {
-      "uri": "vless://7b13eaac-882d-43a0-b19e-6d2e867d624e@185.175.111.86:443?type=grpc&security=reality&fp=safari&pbk=n00VSaVEImUfNI-8882Ecum-Er2KIHLg32Y-MWQGeh8&sid=fad0a8&sni=hcaptcha.com#%F0%9F%87%AB%F0%9F%87%B7%20France%2C%20Paris%20%7C%20%5BBL%5D%20t.me%2Frjsxrd",
-      "host": "185.175.111.86",
-      "port": 443,
-      "tcp_ms": 146.9,
-      "http_ms": 1354.0
-    },
-    {
-      "uri": "vless://c42a39d3-e7a1-4b87-a7f3-be7e3704c996@45.15.129.17:443?encryption=none&type=tcp&security=reality&sni=www.oracle.com&pbk=kGW3p-dzpbVQnV8IM5T63UqRYu2MvI9Yl5K1GLJxWkY&sid=77#426.%20%F0%9F%87%B3%F0%9F%87%B1%20VLESS%20%7C%20SNI%3A%20www.oracle.com%20%7C%20CIDR%3A%20%3F%20%7C%20TG%3A%20%40wlrustg%20t.me%2Frjsxrd",
-      "host": "45.15.129.17",
-      "port": 443,
-      "tcp_ms": 143.5,
-      "http_ms": 1406.4
-    },
-    {
-      "uri": "vless://c42a39d3-e7a1-4b87-a7f3-be7e3704c996@45.15.129.17:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=www.oracle.com&pbk=kGW3p-dzpbVQnV8IM5T63UqRYu2MvI9Yl5K1GLJxWkY&sid=77#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23665%20t.me%2Frjsxrd",
-      "host": "45.15.129.17",
-      "port": 443,
-      "tcp_ms": 145.7,
-      "http_ms": 1427.6
-    },
-    {
-      "uri": "vless://c42a39d3-e7a1-4b87-a7f3-be7e3704c996@45.15.129.17:443?encryption=none&type=tcp&security=reality&fp=qq&sni=www.oracle.com&pbk=kGW3p-dzpbVQnV8IM5T63UqRYu2MvI9Yl5K1GLJxWkY&sid=77#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%5B%2ACIDR%5D",
-      "host": "45.15.129.17",
-      "port": 443,
-      "tcp_ms": 140.8,
-      "http_ms": 1439.2
-    },
-    {
-      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23607%20t.me%2Frjsxrd",
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&headerType=none&security=reality&encryption=none&sni=google.com&fp=qq&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%A8%F0%9F%87%BE%20%20Cyprus%20%20%5B05%5D%20%20MIFA%20t.me%2Frjsxrd",
       "host": "45.15.129.32",
       "port": 443,
-      "tcp_ms": 146.1,
-      "http_ms": 1467.2
+      "tcp_ms": 99.4,
+      "http_ms": 968.6
     },
     {
-      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.google.com&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%E2%80%94%20%23919%20t.me%2Frjsxrd",
-      "host": "205.172.56.16",
-      "port": 443,
-      "tcp_ms": 70.0,
-      "http_ms": 1481.3
-    },
-    {
-      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#423.%20%F0%9F%87%B3%F0%9F%87%B1%20VLESS%20%7C%20SNI%3A%20google.com%20%7C%20CIDR%3A%20%3F%20%7C%20TG%3A%20%40wlrustg%20t.me%2Frjsxrd",
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23654%20t.me%2Frjsxrd",
       "host": "45.15.129.32",
       "port": 443,
-      "tcp_ms": 145.9,
-      "http_ms": 1488.5
+      "tcp_ms": 98.8,
+      "http_ms": 969.5
     },
     {
-      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&security=reality&fp=chrome&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0&sni=google.com#[306ms Нидерланды NL 🇳🇱 @vlesstrojan]%20t.me%2Frjsxrd",
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B5%F0%9F%87%B1%20Poland%20%5B%2ACIDR%5D",
       "host": "45.15.129.32",
       "port": 443,
-      "tcp_ms": 147.0,
-      "http_ms": 1533.8
+      "tcp_ms": 103.4,
+      "http_ms": 973.2
     },
     {
-      "uri": "vless://ec9e7b71-72b6-0021-8549-2efb1b21a502@us.musicperec.ru:443?type=tcp&security=reality&flow=xtls-rprx-vision&pbk=b4n1pcO8ST3JkGtj8YymXVrW17LEe2EHec5wY7hMMR4&sid=6e3f0a5b&sni=ads.x5.ru#%F0%9F%87%BA%F0%9F%87%B8%20United%20States%20%5BSNI-RU%5D%20ads.x5.ru",
-      "host": "us.musicperec.ru",
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23799%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
       "port": 443,
-      "tcp_ms": 140.2,
-      "http_ms": 1569.3
+      "tcp_ms": 99.8,
+      "http_ms": 975.1
     },
     {
-      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&spx=/#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20184972%20t.me%2Frjsxrd",
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23781%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 98.1,
+      "http_ms": 975.8
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B3%F0%9F%87%B1%20%5BVL%5D%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%235240%20%7C%20%D0%A0%D0%BE%D1%81%D0%A2%D1%83%D0%BD%D0%BD%D0%B5%D0%BB%D1%8C%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 96.2,
+      "http_ms": 977.1
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#🇵🇱 Польша 1 | [WL]%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 96.3,
+      "http_ms": 980.1
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23671%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 95.6,
+      "http_ms": 982.5
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B5%F0%9F%87%B1%20LTE%2081%20%7C%20%D1%82%D0%B3%D0%BA%3A%20%40rostunnel%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 96.1,
+      "http_ms": 983.3
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B5%F0%9F%87%B1%20LTE%2082%20%7C%20%D1%82%D0%B3%D0%BA%3A%20%40rostunnel%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 98.7,
+      "http_ms": 985.8
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&security=reality&fp=chrome&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0&sni=google.com#[332ms Нидерланды NL 🇳🇱 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 98.7,
+      "http_ms": 988.1
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&headerType=none&security=reality&encryption=none&sni=google.com&fp=chrome&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%A8%F0%9F%87%BE%20%20Cyprus%20%20%5B04%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 98.7,
+      "http_ms": 988.5
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&security=reality&fp=chrome&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0&sni=google.com#[359ms Нидерланды NL 🇳🇱 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 95.9,
+      "http_ms": 996.3
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&security=reality&fp=qq&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0&sni=google.com#[570ms Нидерланды NL 🇳🇱 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 98.7,
+      "http_ms": 1007.0
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?type=xhttp&security=reality&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&sni=ozon.ru&path=%2F#%F0%9F%87%B8%F0%9F%87%AA%20Sweden%20%7C%20%F0%9F%8C%90%20%7C%20%5BIPv6%5D%20%5BSNI-RU%5D%20ozon.ru%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 115.7,
+      "http_ms": 1010.8
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?type=xhttp&security=reality&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&sni=ozon.ru&path=%252F#[425ms Швеция SE 🇸🇪 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 128.5,
+      "http_ms": 1011.4
+    },
+    {
+      "uri": "vless://6589254d-47ee-4d78-9659-41304c755cce@45.15.129.192:7443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=chrome&pbk=rTp9PEn36FtQFu32jWAPO3r-e1W2px3RGSuhR-L1DVM&sid=&sni=timeweb.cloud#1444 | 🇳🇱 Netherlands | VLESS | 📺 YT | TG: @YoutubeUnBlockRu%20t.me%2Frjsxrd",
+      "host": "45.15.129.192",
+      "port": 7443,
+      "tcp_ms": 99.4,
+      "http_ms": 1012.3
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#574.%20%F0%9F%87%B3%F0%9F%87%B1%20VLESS%20%7C%20SNI%3A%20google.com%20%7C%20CIDR%3A%20%3F%20%7C%20TG%3A%20%40wlrustg%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 98.2,
+      "http_ms": 1014.2
+    },
+    {
+      "uri": "vless://6589254d-47ee-4d78-9659-41304c755cce@45.15.129.192:7443/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=timeweb.cloud&fp=chrome&security=reality&pbk=rTp9PEn36FtQFu32jWAPO3r-e1W2px3RGSuhR-L1DVM&sid=&packetEncoding=xudp#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%5B%2ACIDR%5D",
+      "host": "45.15.129.192",
+      "port": 7443,
+      "tcp_ms": 99.6,
+      "http_ms": 1014.7
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=chrome&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B5%F0%9F%87%B1%20Poland%20%5B%2ACIDR%5D%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 97.9,
+      "http_ms": 1015.1
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#%F0%9F%87%B5%F0%9F%87%B1%20Poland%20%5B%2ACIDR%5D%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 99.2,
+      "http_ms": 1015.1
+    },
+    {
+      "uri": "vless://6589254d-47ee-4d78-9659-41304c755cce@45.15.129.192:7443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=chrome&pbk=rTp9PEn36FtQFu32jWAPO3r-e1W2px3RGSuhR-L1DVM&sid=&sni=timeweb.cloud#%F0%9F%87%B3%F0%9F%87%B1%20%5BVL%5D%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%2315937%20%7C%20%D0%A0%D0%BE%D1%81%D0%A2%D1%83%D0%BD%D0%BD%D0%B5%D0%BB%D1%8C%20t.me%2Frjsxrd",
+      "host": "45.15.129.192",
+      "port": 7443,
+      "tcp_ms": 99.7,
+      "http_ms": 1016.0
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?encryption=none&type=tcp&security=reality&fp=qq&sni=google.com&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0#572.%20%F0%9F%87%B3%F0%9F%87%B1%20VLESS%20%7C%20SNI%3A%20google.com%20%7C%20CIDR%3A%20%3F%20%7C%20TG%3A%20%40wlrustg%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 95.8,
+      "http_ms": 1016.4
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?type=xhttp&security=reality&fp=chrome&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&sni=ozon.ru&path=/#SNI%3A%20ozon.ru%20%5B%23%D0%A0%D0%9A%D0%9F%5D%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 116.8,
+      "http_ms": 1034.6
+    },
+    {
+      "uri": "vless://ae25bb41-dac8-48f0-89a9-f649459ad6ff@195.133.84.136:64003?type=grpc&headerType=none&security=reality&encryption=none&sni=download.docker.com&fp=firefox&pbk=dG1suoqzIlJMu_sHTvWy1RK12ZORBro6NrkqdQ6h7iQ&sid=fbf3edeea8eabbdc&spx=%2Fmac&serviceName=xraygrpc&mode=gun#%F0%9F%8C%90%20Anycast-IP%20%7C%20%5BIPv6%5D%20%7C%20%5BBL%5D",
+      "host": "195.133.84.136",
+      "port": 64003,
+      "tcp_ms": 106.0,
+      "http_ms": 1037.0
+    },
+    {
+      "uri": "vless://3744b1fc-1fa5-4bd9-a901-d97a4214ae70@45.15.129.32:443?type=tcp&security=reality&fp=qq&pbk=qsT9UM8_tjOILuNP9skeOZ0SfXfnj1oTRG-kKoCfqXs&sid=d0&sni=google.com#[329ms Нидерланды NL 🇳🇱 @vlesstrojan]%20t.me%2Frjsxrd",
+      "host": "45.15.129.32",
+      "port": 443,
+      "tcp_ms": 96.5,
+      "http_ms": 1053.7
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@89.106.95.193:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=www.apple.com&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%E2%80%94%20%23273%20t.me%2Frjsxrd",
+      "host": "89.106.95.193",
+      "port": 443,
+      "tcp_ms": 100.8,
+      "http_ms": 1070.8
+    },
+    {
+      "uri": "vless://ae25bb41-dac8-48f0-89a9-f649459ad6ff@195.133.84.136:64003?type=grpc&headerType=none&security=reality&encryption=none&sni=download.docker.com&fp=firefox&pbk=dG1suoqzIlJMu_sHTvWy1RK12ZORBro6NrkqdQ6h7iQ&sid=fbf3edeea8eabbdc&spx=%2Fmac&serviceName=xraygrpc&mode=gun#%F0%9F%87%A9%F0%9F%87%AA%20%20Germany%20%20%5B14%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "195.133.84.136",
+      "port": 64003,
+      "tcp_ms": 113.4,
+      "http_ms": 1081.4
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?type=xhttp&security=reality&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&sni=ozon.ru&path=%252F#2462.%20VLESS%20%7C%20SNI%3A%20ozon.ru%20%7C%20TG%3A%20%40wlrustg%20%7C%20Thanks%3A%20%40rkp_channel%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 128.7,
+      "http_ms": 1091.2
+    },
+    {
+      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&spx=%2F#%F0%9F%87%B3%F0%9F%87%B1%20%5BVL%5D%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%233636%20%7C%20%D0%A0%D0%BE%D1%81%D0%A2%D1%83%D0%BD%D0%BD%D0%B5%D0%BB%D1%8C%20t.me%2Frjsxrd",
       "host": "141.11.197.127",
       "port": 55269,
-      "tcp_ms": 144.7,
-      "http_ms": 1689.4
+      "tcp_ms": 128.5,
+      "http_ms": 1102.5
     },
     {
-      "uri": "vless://c82343d1-3302-4d2a-83c8-241c9d06fa4e@185.219.84.201:443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=chrome&sni=ads.x5.ru&pbk=8h8t5eBWL9oERK7xWHQLFJE5j6sZdgNDQAs3EGnNbho&sid=b76dcf9e1183fe1b#%F0%9F%87%A9%F0%9F%87%AA%20Germany%20%5B%2ACIDR%5D",
-      "host": "185.219.84.201",
+      "uri": "vless://af21b132-d242-45fd-8284-62f539076b4f@212.192.22.222:15320?type=xhttp&security=reality&fp=chrome&pbk=Q2SwghMYOIizCBLteddpXwLxtV3cvHMdiQaUblRJoCA&sid=dd918a4a28ff1597&sni=www.amd.com&extra=null#1712 | 🇱🇹 Lithuania | 🏳️ CIDR-NGENIX | VLESS | 📺 YT | TG: @YoutubeUnBlockRu%20t.me%2Frjsxrd",
+      "host": "212.192.22.222",
+      "port": 15320,
+      "tcp_ms": 123.5,
+      "http_ms": 1102.7
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?type=xhttp&headerType=none&security=reality&encryption=none&sni=ozon.ru&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&path=%2F#SNI%3A%20ozon.ru%20%5B%23%D0%A0%D0%9A%D0%9F%5D%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 119.1,
+      "http_ms": 1112.1
+    },
+    {
+      "uri": "vless://78eaaa97-3502-4850-8cc5-d46244dfbc6b@max4r.skystreamgame.com:8080?encryption=none&security=reality&sni=ozon.ru&pbk=XBePIY00JetBf0pbmcx-Dvu8XsZ-l079GiHf93HhS0Y&sid=6d6f13013d3e1d0c&type=xhttp&path=%2F#🏳️ UNKNOWN VLESS 1829%20t.me%2Frjsxrd",
+      "host": "max4r.skystreamgame.com",
+      "port": 8080,
+      "tcp_ms": 121.4,
+      "http_ms": 1115.0
+    },
+    {
+      "uri": "vless://629d2ccc-3a2a-4dd3-83d2-86b25fc8783e@france.pineappled.org:443?type=tcp&headerType=none&security=reality&encryption=none&sni=www.apple.com&fp=chrome&pbk=V6FabatADtcX7aO9KMjGCadJC4LuQ_5nRViab-z-nFQ&sid=23&spx=%2F&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%20Germany%20%20%5B04%5D%20%20MIFA%20t.me%2Frjsxrd",
+      "host": "france.pineappled.org",
       "port": 443,
-      "tcp_ms": 147.0,
-      "http_ms": 1749.6
-    },
-    {
-      "uri": "vless://c42a39d3-e7a1-4b87-a7f3-be7e3704c996@45.15.129.17:443?encryption=none&type=tcp&security=reality&sni=www.oracle.com&pbk=kGW3p-dzpbVQnV8IM5T63UqRYu2MvI9Yl5K1GLJxWkY&sid=77#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%20%E2%80%94%20%23674%20t.me%2Frjsxrd",
-      "host": "45.15.129.17",
-      "port": 443,
-      "tcp_ms": 145.4,
-      "http_ms": 1852.9
-    },
-    {
-      "uri": "vless://7fbeb76f-2fa1-4a5a-9f99-4dbfaafb4da2@205.172.56.16:443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=chrome&pbk=4v_4RSmE8ztHfQ4EV8Ym6J-6C8ACtYiznTHcdWJw6WA&sid=aabbccdd&sni=www.google.com#[70ms US US  @vlesstrojan]%20t.me%2Frjsxrd",
-      "host": "205.172.56.16",
-      "port": 443,
-      "tcp_ms": 76.0,
-      "http_ms": 1946.2
-    },
-    {
-      "uri": "vless://b1c72117-f193-47ad-ae96-994e3444a6bf@185.125.203.33:443?type=tcp&headerType=none&security=reality&encryption=none&sni=yahoo.com&fp=chrome&pbk=BgDZcLIjx_1FZbLGsaZuu7Pc2dl5OwSd3VErem7ymyA&sid=8c71#%F0%9F%87%B3%F0%9F%87%B1%20The%20Netherlands%2C%20Amsterdam%20%7C%20%5BBL%5D",
-      "host": "185.125.203.33",
-      "port": 443,
-      "tcp_ms": 147.0,
-      "http_ms": 1972.3
-    },
-    {
-      "uri": "vless://16b3f421-887f-45bc-8a60-c35f909093e6@178.248.238.84:40443?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&fp=qq&sni=api-maps.yandex.ru&pbk=ZSzB9TQPGNcCiC0WLmciF5Jc8doJDvdRgbqTi8SCoEM&sid=a1b2c3d4e5f6789a&spx=%2F#%F0%9F%87%B7%F0%9F%87%BA%20Russia%20%7C%20%F0%9F%8C%90%20%5B%2ACIDR%5D",
-      "host": "178.248.238.84",
-      "port": 40443,
-      "tcp_ms": 1.6,
-      "http_ms": 2126.5
-    },
-    {
-      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&spx=/#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20267182%20t.me%2Frjsxrd",
-      "host": "141.11.197.127",
-      "port": 55269,
-      "tcp_ms": 146.1,
-      "http_ms": 2250.5
-    },
-    {
-      "uri": "vless://231e88bb-3a39-4f26-848e-908f83070283@141.11.197.127:55269?encryption=none&type=tcp&security=reality&fp=chrome&sni=vk.ru&pbk=i1e3hqslC-n7XGp72HmDKU7ZuRk72pHbzujbNaYF-0s&sid=8f&spx=/#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20514868%20t.me%2Frjsxrd",
-      "host": "141.11.197.127",
-      "port": 55269,
-      "tcp_ms": 146.9,
-      "http_ms": 4176.6
-    },
-    {
-      "uri": "vless://3e7f67de-648e-4871-b51a-a225214d41ee@47.80.13.96:443?type=tcp&security=reality&encryption=none&fp=chrome&pbk=TRP10HqKUXEQ3O-cfsq93DycfBmbJe9KM36yvSa8Mmw&sni=api.company-target.com#%F0%9F%87%B0%F0%9F%87%B7%20South%20Korea%2C%20Seoul%20%7C%20%5BBL%5D",
-      "host": "47.80.13.96",
-      "port": 443,
-      "tcp_ms": 128.2,
-      "http_ms": 5261.8
+      "tcp_ms": 117.2,
+      "http_ms": 1118.5
     }
   ]
 }
