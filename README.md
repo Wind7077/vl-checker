@@ -1,14 +1,14 @@
 # Proxy Check Results (RU edition)
 
-**Updated:** 2026-05-18 22:07 UTC
+**Updated:** 2026-05-19 04:14 UTC
 
 | Stat | Value |
 |------|-------|
 | Sources | 8 |
-| Total configs | 1086 |
-| After filter | 224 |
-| TCP alive | 176 |
-| HTTP working | 104 |
+| Total configs | 1287 |
+| After filter | 259 |
+| TCP alive | 203 |
+| HTTP working | 134 |
 | Saved top | 80 |
 
 Страны: 
@@ -17,56 +17,56 @@
 
 | # | Host:Port | TCP | HTTP |
 |---|-----------|-----|------|
-| 1 | `pl1-node.vpnspacev.com:443` | 243.8 ms | 709.6 ms |
-| 2 | `deepl.xwhiteness.site:443` | 337.0 ms | 733.3 ms |
-| 3 | `pl2-node.vpnspacev.com:443` | 511.4 ms | 836.3 ms |
-| 4 | `pl1-node.vpnspacev.com:443` | 516.2 ms | 844.3 ms |
-| 5 | `176.109.111.98:443` | 127.2 ms | 895.7 ms |
-| 6 | `176.109.109.166:443` | 128.2 ms | 913.5 ms |
-| 7 | `gbr.nodsvpnspace.com:443` | 367.3 ms | 923.2 ms |
-| 8 | `cloud.globaledgenet.com:443` | 221.8 ms | 961.8 ms |
-| 9 | `gbr.nodsvpnspace.com:443` | 211.8 ms | 967.7 ms |
-| 10 | `89.124.89.49:443` | 94.6 ms | 986.4 ms |
-| 11 | `89.124.89.49:443` | 94.5 ms | 992.7 ms |
-| 12 | `193.168.197.76:6443` | 112.4 ms | 994.2 ms |
-| 13 | `gbr.nodsvpnspace.com:443` | 530.2 ms | 1017.4 ms |
-| 14 | `45.134.15.103:2053` | 92.9 ms | 1042.1 ms |
-| 15 | `lt.safepass.click:443` | 286.3 ms | 1104.2 ms |
-| 16 | `193.168.197.76:8443` | 114.7 ms | 1158.9 ms |
-| 17 | `138.124.182.202:4443` | 155.2 ms | 1176.1 ms |
-| 18 | `login.sempai.site:443` | 391.5 ms | 1184.3 ms |
-| 19 | `78.40.117.202:8080` | 122.1 ms | 1184.3 ms |
-| 20 | `pl.safepass.click:443` | 245.8 ms | 1204.7 ms |
-| 21 | `node2-gr.axmavpn.xyz:8443` | 414.3 ms | 1225.7 ms |
-| 22 | `login.sempai.site:443` | 390.7 ms | 1242.3 ms |
-| 23 | `api-maps.xwhiteness.top:443` | 404.7 ms | 1257.4 ms |
-| 24 | `138.124.182.202:3443` | 155.1 ms | 1296.8 ms |
-| 25 | `195.133.84.136:64003` | 98.8 ms | 1300.9 ms |
-| 26 | `78.40.117.202:8080` | 113.3 ms | 1307.1 ms |
-| 27 | `sw-node.vpnspacev.com:443` | 610.0 ms | 1314.6 ms |
-| 28 | `2.26.90.84:443` | 90.0 ms | 1332.3 ms |
-| 29 | `api.xwhiteness.site:443` | 538.7 ms | 1365.2 ms |
-| 30 | `193.168.197.76:2443` | 111.1 ms | 1372.5 ms |
-| 31 | `nor.kaguya.sbs:443` | 263.4 ms | 1487.5 ms |
-| 32 | `103.27.157.228:8443` | 89.7 ms | 1494.8 ms |
-| 33 | `pl1-node.vpnspacev.com:443` | 358.8 ms | 1528.5 ms |
-| 34 | `138.124.182.202:2443` | 152.5 ms | 1544.9 ms |
-| 35 | `pl2-node.vpnspacev.com:443` | 540.6 ms | 1567.5 ms |
-| 36 | `pl1-node.vpnspacev.com:443` | 589.4 ms | 1599.1 ms |
-| 37 | `pl2-node.vpnspacev.com:443` | 508.4 ms | 1601.5 ms |
-| 38 | `pl1-node.vpnspacev.com:443` | 261.2 ms | 1604.6 ms |
-| 39 | `pl1-node.vpnspacev.com:443` | 457.6 ms | 1607.4 ms |
-| 40 | `pl2-node.vpnspacev.com:443` | 235.8 ms | 1608.2 ms |
-| 41 | `pl2-node.vpnspacev.com:443` | 311.9 ms | 1609.9 ms |
-| 42 | `pl2-node.vpnspacev.com:443` | 418.5 ms | 1612.7 ms |
-| 43 | `pl2-node.vpnspacev.com:443` | 307.5 ms | 1620.3 ms |
-| 44 | `pl2-node.vpnspacev.com:443` | 308.6 ms | 1622.1 ms |
-| 45 | `pl2-node.vpnspacev.com:443` | 500.5 ms | 1627.6 ms |
-| 46 | `pl2-node.vpnspacev.com:443` | 506.5 ms | 1629.4 ms |
-| 47 | `pl1-node.vpnspacev.com:443` | 462.5 ms | 1634.5 ms |
-| 48 | `176.109.109.66:443` | 129.4 ms | 1635.9 ms |
-| 49 | `pl1-node.vpnspacev.com:443` | 594.7 ms | 1639.0 ms |
-| 50 | `pl2-node.vpnspacev.com:443` | 235.8 ms | 1649.7 ms |
+| 1 | `wl4.safepass.click:443` | 169.9 ms | 553.8 ms |
+| 2 | `wl4.safepass.click:443` | 332.4 ms | 576.3 ms |
+| 3 | `wl4.safepass.click:443` | 166.2 ms | 580.2 ms |
+| 4 | `nl5.safepass.click:443` | 341.4 ms | 657.0 ms |
+| 5 | `gb.safepass.click:443` | 318.4 ms | 689.4 ms |
+| 6 | `153.76.116.21:443` | 87.9 ms | 747.6 ms |
+| 7 | `cloud.globaledgenet.com:443` | 258.9 ms | 761.8 ms |
+| 8 | `pl.safepass.click:443` | 217.1 ms | 858.3 ms |
+| 9 | `pl2-node.vpnspacev.com:443` | 337.2 ms | 899.1 ms |
+| 10 | `pl1-node.vpnspacev.com:443` | 396.9 ms | 901.6 ms |
+| 11 | `109.73.199.48:8446` | 1149.4 ms | 903.7 ms |
+| 12 | `it.nodsvpnspace.com:443` | 209.6 ms | 909.9 ms |
+| 13 | `nl-s3.ru:443` | 356.7 ms | 912.0 ms |
+| 14 | `pl.safepass.click:443` | 270.3 ms | 930.3 ms |
+| 15 | `pl1-node.vpnspacev.com:443` | 327.1 ms | 952.2 ms |
+| 16 | `176.109.111.91:443` | 126.3 ms | 992.1 ms |
+| 17 | `195.133.84.136:64003` | 93.5 ms | 998.4 ms |
+| 18 | `de6.safepass.click:443` | 325.0 ms | 1001.5 ms |
+| 19 | `gbr.nodsvpnspace.com:443` | 250.3 ms | 1016.7 ms |
+| 20 | `gbr.nodsvpnspace.com:443` | 404.8 ms | 1026.2 ms |
+| 21 | `193.168.197.76:6443` | 106.7 ms | 1034.5 ms |
+| 22 | `pl1-node.vpnspacev.com:443` | 411.4 ms | 1108.9 ms |
+| 23 | `193.168.197.76:8443` | 100.7 ms | 1153.5 ms |
+| 24 | `193.168.197.76:8443` | 106.5 ms | 1154.3 ms |
+| 25 | `37.9.13.174:443` | 110.6 ms | 1156.7 ms |
+| 26 | `185.215.187.28:443` | 115.2 ms | 1171.7 ms |
+| 27 | `193.168.197.76:6443` | 106.8 ms | 1171.8 ms |
+| 28 | `78.40.117.202:8080` | 127.0 ms | 1176.3 ms |
+| 29 | `37.9.13.174:443` | 116.9 ms | 1205.7 ms |
+| 30 | `login.xwhiteness.site:443` | 278.7 ms | 1244.7 ms |
+| 31 | `wl4.safepass.click:443` | 293.4 ms | 1286.3 ms |
+| 32 | `yt5.safepass.click:443` | 294.5 ms | 1310.1 ms |
+| 33 | `login.xwhiteness.site:443` | 151.7 ms | 1318.6 ms |
+| 34 | `45.134.15.103:2053` | 96.6 ms | 1325.1 ms |
+| 35 | `de1-node.vpnspacev.com:443` | 149.1 ms | 1353.8 ms |
+| 36 | `2.26.90.84:443` | 96.7 ms | 1434.8 ms |
+| 37 | `nor.kaguya.sbs:443` | 222.7 ms | 1446.2 ms |
+| 38 | `193.168.197.76:2443` | 113.0 ms | 1491.0 ms |
+| 39 | `api.xwhiteness.site:443` | 324.6 ms | 1523.1 ms |
+| 40 | `176.124.211.23:8446` | 117.8 ms | 1526.8 ms |
+| 41 | `176.124.211.23:8454` | 117.1 ms | 1531.0 ms |
+| 42 | `wl4.safepass.click:443` | 328.9 ms | 1540.9 ms |
+| 43 | `176.124.211.23:8446` | 119.8 ms | 1559.4 ms |
+| 44 | `api-maps.xwhiteness.top:443` | 115.3 ms | 1575.3 ms |
+| 45 | `pl2-node.vpnspacev.com:443` | 154.5 ms | 1579.2 ms |
+| 46 | `pl2-node.vpnspacev.com:443` | 399.7 ms | 1584.7 ms |
+| 47 | `wl4.safepass.click:9443` | 322.3 ms | 1596.3 ms |
+| 48 | `pl2-node.vpnspacev.com:443` | 158.9 ms | 1603.3 ms |
+| 49 | `pl1-node.vpnspacev.com:443` | 197.0 ms | 1603.4 ms |
+| 50 | `176.109.109.66:443` | 142.7 ms | 1607.3 ms |
 
 ## Files
 
