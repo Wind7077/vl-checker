@@ -1,14 +1,14 @@
 # Proxy Check Results (RU edition)
 
-**Updated:** 2026-05-21 20:03 UTC
+**Updated:** 2026-05-21 22:24 UTC
 
 | Stat | Value |
 |------|-------|
 | Sources | 8 |
-| Total configs | 776 |
-| After filter | 265 |
-| TCP alive | 261 |
-| HTTP working | 167 |
+| Total configs | 939 |
+| After filter | 299 |
+| TCP alive | 296 |
+| HTTP working | 176 |
 | Saved top | 80 |
 
 Страны: 
@@ -17,56 +17,56 @@
 
 | # | Host:Port | TCP | HTTP |
 |---|-----------|-----|------|
-| 1 | `nl.clgate.network:2041` | 164.7 ms | 382.2 ms |
-| 2 | `45.88.78.89:8443` | 12.2 ms | 719.9 ms |
-| 3 | `ru10.myxasecure.space:443` | 580.9 ms | 738.5 ms |
-| 4 | `202.148.52.37:443` | 95.1 ms | 767.7 ms |
-| 5 | `srv185.towersflowerss.com:443` | 473.1 ms | 784.5 ms |
-| 6 | `cloud.globaledgenet.com:443` | 235.3 ms | 814.9 ms |
-| 7 | `tj.skytunnel.pw:8443` | 318.6 ms | 863.6 ms |
-| 8 | `89.208.208.240:443` | 127.9 ms | 903.2 ms |
-| 9 | `usa.clgate.network:2041` | 449.1 ms | 908.6 ms |
-| 10 | `usa.clgate.network:2041` | 475.1 ms | 913.3 ms |
-| 11 | `l10.l-itx.info:7443` | 391.7 ms | 925.8 ms |
-| 12 | `2.26.112.88:42810` | 96.0 ms | 927.8 ms |
-| 13 | `srv185.towersflowerss.com:443` | 688.3 ms | 928.0 ms |
-| 14 | `usa.clgate.network:2041` | 444.2 ms | 939.0 ms |
-| 15 | `usa.clgate.network:2041` | 232.4 ms | 944.9 ms |
-| 16 | `sl.skytunnel.pw:8443` | 371.7 ms | 950.0 ms |
-| 17 | `usa.clgate.network:2041` | 313.5 ms | 950.3 ms |
-| 18 | `us.nodes.rocketnetwork.ru:443` | 466.4 ms | 951.0 ms |
-| 19 | `usa.clgate.network:2041` | 530.8 ms | 953.6 ms |
-| 20 | `nl.clgate.network:2041` | 457.0 ms | 956.8 ms |
-| 21 | `l10-1.l-itx.info:7443` | 221.2 ms | 956.9 ms |
-| 22 | `usa.clgate.network:2041` | 531.3 ms | 959.3 ms |
-| 23 | `usa.clgate.network:2041` | 330.2 ms | 959.7 ms |
-| 24 | `fi.vbn-connect.shop:443` | 488.3 ms | 959.9 ms |
-| 25 | `usa.clgate.network:2041` | 438.7 ms | 977.0 ms |
-| 26 | `usa.clgate.network:2041` | 226.0 ms | 985.5 ms |
-| 27 | `usa.clgate.network:2041` | 437.4 ms | 988.9 ms |
-| 28 | `nl2.clgate.network:2041` | 551.8 ms | 999.6 ms |
-| 29 | `usa.clgate.network:2041` | 244.0 ms | 1005.8 ms |
-| 30 | `nl2.clgate.network:2041` | 520.9 ms | 1009.3 ms |
-| 31 | `nl2.clgate.network:2041` | 142.6 ms | 1023.3 ms |
-| 32 | `nl2.clgate.network:2041` | 584.9 ms | 1028.9 ms |
-| 33 | `nl2.clgate.network:2041` | 145.8 ms | 1036.0 ms |
-| 34 | `de.nodes.rocketnetwork.ru:443` | 690.3 ms | 1073.2 ms |
-| 35 | `nl2.clgate.network:2041` | 368.0 ms | 1147.4 ms |
-| 36 | `nl2.clgate.network:2041` | 255.5 ms | 1159.2 ms |
-| 37 | `se.clgate.network:2041` | 537.3 ms | 1175.2 ms |
-| 38 | `194.156.101.115:443` | 271.2 ms | 1213.3 ms |
-| 39 | `2.26.112.88:42810` | 95.0 ms | 1215.3 ms |
-| 40 | `vltch.mostserv.xyz:443` | 130.9 ms | 1234.9 ms |
-| 41 | `vltch.mostserv.xyz:443` | 493.2 ms | 1246.0 ms |
-| 42 | `vltch.mostserv.xyz:443` | 574.5 ms | 1249.1 ms |
-| 43 | `us.nodes.rocketnetwork.ru:443` | 731.3 ms | 1253.4 ms |
-| 44 | `vltch.mostserv.xyz:443` | 506.4 ms | 1254.5 ms |
-| 45 | `vltch.mostserv.xyz:443` | 491.4 ms | 1254.8 ms |
-| 46 | `vltch.mostserv.xyz:443` | 549.3 ms | 1257.3 ms |
-| 47 | `vltch.mostserv.xyz:443` | 623.9 ms | 1262.3 ms |
-| 48 | `vltch.mostserv.xyz:443` | 573.9 ms | 1263.5 ms |
-| 49 | `vltch.mostserv.xyz:443` | 504.7 ms | 1265.8 ms |
-| 50 | `84.201.180.242:443` | 134.3 ms | 1269.3 ms |
+| 1 | `94.131.121.68:443` | 141.6 ms | 639.9 ms |
+| 2 | `srv185.towersflowerss.com:443` | 936.2 ms | 748.6 ms |
+| 3 | `srv185.towersflowerss.com:443` | 768.8 ms | 749.8 ms |
+| 4 | `ru10.myxasecure.space:443` | 1080.2 ms | 808.1 ms |
+| 5 | `109.120.189.31:443` | 147.9 ms | 831.0 ms |
+| 6 | `109.120.189.31:443` | 145.0 ms | 846.7 ms |
+| 7 | `89.208.209.11:443` | 142.5 ms | 891.1 ms |
+| 8 | `89.208.208.240:443` | 149.8 ms | 892.9 ms |
+| 9 | `fr-3.spectrum.vu:443` | 544.2 ms | 901.1 ms |
+| 10 | `us.nodes.rocketnetwork.ru:443` | 726.1 ms | 911.8 ms |
+| 11 | `us.nodes.rocketnetwork.ru:443` | 731.9 ms | 943.9 ms |
+| 12 | `cloud.globaledgenet.com:443` | 704.2 ms | 967.5 ms |
+| 13 | `cloud.globaledgenet.com:443` | 729.6 ms | 976.1 ms |
+| 14 | `2.26.112.88:42810` | 109.1 ms | 993.2 ms |
+| 15 | `nl.clgate.network:2041` | 160.0 ms | 994.5 ms |
+| 16 | `us.nodes.rocketnetwork.ru:443` | 720.6 ms | 1003.2 ms |
+| 17 | `84.201.180.231:443` | 143.3 ms | 1014.5 ms |
+| 18 | `nl2.clgate.network:2041` | 567.7 ms | 1025.7 ms |
+| 19 | `gb.oneok.name:7443` | 824.8 ms | 1040.2 ms |
+| 20 | `nl2.clgate.network:2041` | 161.5 ms | 1040.7 ms |
+| 21 | `usa.clgate.network:2041` | 193.4 ms | 1057.4 ms |
+| 22 | `usa.clgate.network:2041` | 553.1 ms | 1060.9 ms |
+| 23 | `85.193.90.142:443` | 138.0 ms | 1061.9 ms |
+| 24 | `nl2.clgate.network:2041` | 824.4 ms | 1064.8 ms |
+| 25 | `usa.clgate.network:2041` | 731.1 ms | 1065.8 ms |
+| 26 | `usa.clgate.network:2041` | 665.4 ms | 1067.6 ms |
+| 27 | `nl2.clgate.network:2041` | 257.2 ms | 1072.8 ms |
+| 28 | `de.oneok.name:7443` | 265.1 ms | 1077.6 ms |
+| 29 | `usa.clgate.network:2041` | 658.1 ms | 1083.2 ms |
+| 30 | `nl2.clgate.network:2041` | 817.9 ms | 1084.9 ms |
+| 31 | `usa.clgate.network:2041` | 732.0 ms | 1086.6 ms |
+| 32 | `usa.clgate.network:2041` | 683.3 ms | 1087.1 ms |
+| 33 | `usa.clgate.network:2041` | 679.5 ms | 1088.0 ms |
+| 34 | `nl2.clgate.network:2041` | 841.6 ms | 1091.0 ms |
+| 35 | `usa.clgate.network:2041` | 354.1 ms | 1092.2 ms |
+| 36 | `nl2.clgate.network:2041` | 752.7 ms | 1092.2 ms |
+| 37 | `fr.oneok.name:7443` | 960.3 ms | 1098.2 ms |
+| 38 | `usa.clgate.network:2041` | 757.4 ms | 1099.7 ms |
+| 39 | `usa06.myxasecure.space:443` | 726.6 ms | 1100.3 ms |
+| 40 | `de.clgate.network:2041` | 198.7 ms | 1110.4 ms |
+| 41 | `usa.clgate.network:2041` | 126.7 ms | 1115.2 ms |
+| 42 | `2.26.112.88:42810` | 104.8 ms | 1116.0 ms |
+| 43 | `usa.clgate.network:2041` | 690.6 ms | 1118.9 ms |
+| 44 | `nl2.clgate.network:2041` | 651.5 ms | 1138.0 ms |
+| 45 | `usa.clgate.network:2041` | 571.5 ms | 1155.5 ms |
+| 46 | `de.nodes.rocketnetwork.ru:443` | 939.5 ms | 1159.6 ms |
+| 47 | `202.148.52.37:443` | 104.1 ms | 1193.8 ms |
+| 48 | `l10-1.l-itx.info:7443` | 526.5 ms | 1199.3 ms |
+| 49 | `45.66.161.10:8443` | 98.1 ms | 1205.0 ms |
+| 50 | `202.148.52.37:443` | 103.5 ms | 1210.6 ms |
 
 ## Files
 
