@@ -1,14 +1,14 @@
 # Proxy Check Results (RU edition)
 
-**Updated:** 2026-05-23 21:59 UTC
+**Updated:** 2026-05-24 04:17 UTC
 
 | Stat | Value |
 |------|-------|
 | Sources | 8 |
-| Total configs | 954 |
-| After filter | 239 |
-| TCP alive | 230 |
-| HTTP working | 110 |
+| Total configs | 1104 |
+| After filter | 382 |
+| TCP alive | 364 |
+| HTTP working | 203 |
 | Saved top | 80 |
 
 Страны: 
@@ -17,56 +17,56 @@
 
 | # | Host:Port | TCP | HTTP |
 |---|-----------|-----|------|
-| 1 | `37.9.5.127:443` | 168.9 ms | 852.6 ms |
-| 2 | `pl.nodes.rocketnetwork.ru:443` | 320.2 ms | 903.9 ms |
-| 3 | `pl.nodes.rocketnetwork.ru:443` | 324.9 ms | 1033.7 ms |
-| 4 | `37.9.5.127:443` | 166.6 ms | 1035.7 ms |
-| 5 | `us.nodes.rocketnetwork.ru:443` | 900.1 ms | 1224.0 ms |
-| 6 | `1mik16svvkk.country-24.de-nfast.com:443` | 211.9 ms | 1325.4 ms |
-| 7 | `1mik16svvkk.country-24.de-nfast.com:443` | 209.6 ms | 1393.5 ms |
-| 8 | `1mik16svvkk.country-24.de-nfast.com:443` | 450.4 ms | 1409.9 ms |
-| 9 | `1mik16svvkk.country-24.de-nfast.com:443` | 608.3 ms | 1430.4 ms |
-| 10 | `1mik16svvkk.country-24.de-nfast.com:443` | 256.4 ms | 1464.9 ms |
-| 11 | `wave.sixty.7li7li.vip:1443` | 450.7 ms | 1550.3 ms |
-| 12 | `1mik16svvkk.country-24.de-nfast.com:443` | 855.7 ms | 1565.8 ms |
-| 13 | `fr-u7.vpn-port.com:443` | 341.2 ms | 1579.5 ms |
-| 14 | `83.168.78.176:58730` | 147.1 ms | 1591.1 ms |
-| 15 | `us.nodes.rocketnetwork.ru:443` | 392.4 ms | 1617.7 ms |
-| 16 | `us.nodes.rocketnetwork.ru:443` | 374.3 ms | 1660.3 ms |
-| 17 | `us.nodes.rocketnetwork.ru:443` | 606.8 ms | 1760.2 ms |
-| 18 | `45.151.182.34:443` | 178.0 ms | 1823.6 ms |
-| 19 | `yt5.safepass.click:443` | 202.4 ms | 1895.7 ms |
-| 20 | `194.87.115.225:443` | 136.7 ms | 1908.0 ms |
-| 21 | `158.160.183.70:443` | 184.5 ms | 1958.3 ms |
-| 22 | `de.clickvpn.work:13802` | 172.1 ms | 1959.2 ms |
-| 23 | `158.160.255.35:443` | 182.3 ms | 1988.7 ms |
-| 24 | `158.160.183.70:443` | 176.5 ms | 1991.3 ms |
-| 25 | `51.250.24.232:443` | 178.9 ms | 1994.4 ms |
-| 26 | `178.154.207.56:443` | 179.4 ms | 1999.2 ms |
-| 27 | `185.196.117.80:443` | 136.7 ms | 2000.2 ms |
-| 28 | `158.160.183.70:443` | 178.9 ms | 2004.9 ms |
-| 29 | `51.250.4.2:443` | 179.7 ms | 2005.9 ms |
-| 30 | `158.160.249.158:8443` | 168.2 ms | 2012.7 ms |
-| 31 | `51.250.88.69:51109` | 173.6 ms | 2028.2 ms |
-| 32 | `158.160.255.35:443` | 175.0 ms | 2034.3 ms |
-| 33 | `158.160.150.233:443` | 181.4 ms | 2049.2 ms |
-| 34 | `51.250.97.18:443` | 176.3 ms | 2097.1 ms |
-| 35 | `wl1.xanka.best:443` | 297.8 ms | 2120.5 ms |
-| 36 | `cz-dch.dataload-cdn.ru:8443` | 1495.2 ms | 2242.0 ms |
-| 37 | `wl1.xanka.best:443` | 1027.4 ms | 2291.0 ms |
-| 38 | `am.synatra.net:4430` | 276.6 ms | 2297.2 ms |
-| 39 | `wl1.xanka.best:443` | 294.5 ms | 2301.1 ms |
-| 40 | `45.151.182.34:443` | 181.7 ms | 2364.4 ms |
-| 41 | `178.154.199.246:443` | 181.5 ms | 2373.8 ms |
-| 42 | `wl1.xanka.best:443` | 896.2 ms | 2374.3 ms |
-| 43 | `lv-geo.dataload-cdn.ru:8443` | 1154.5 ms | 2376.3 ms |
-| 44 | `lvx.vles.space:52253` | 977.4 ms | 2389.1 ms |
-| 45 | `wl1.xanka.best:443` | 948.5 ms | 2395.9 ms |
-| 46 | `serv56.strettenvpn.com:7771` | 256.4 ms | 2407.9 ms |
-| 47 | `il2.c2horizon.app:443` | 899.1 ms | 2410.2 ms |
-| 48 | `1mik16svvkk.country-24.de-nfast.com:443` | 876.6 ms | 2414.7 ms |
-| 49 | `il2.c2horizon.app:443` | 886.8 ms | 2416.0 ms |
-| 50 | `51.250.103.104:443` | 175.9 ms | 2490.0 ms |
+| 1 | `lvx.vles.space:52253` | 2512.6 ms | 664.1 ms |
+| 2 | `lvx.vles.space:52253` | 2420.7 ms | 666.6 ms |
+| 3 | `lvx.vles.space:52253` | 2507.2 ms | 669.6 ms |
+| 4 | `russiayt.cloudpath.live:443` | 1733.6 ms | 870.8 ms |
+| 5 | `37.9.5.127:443` | 173.5 ms | 966.8 ms |
+| 6 | `77.110.121.202:23164` | 177.3 ms | 1072.5 ms |
+| 7 | `64.188.71.248:443` | 154.4 ms | 1106.4 ms |
+| 8 | `us.clickvpn.work:443` | 404.6 ms | 1212.8 ms |
+| 9 | `fr.safepass.click:443` | 772.7 ms | 1220.6 ms |
+| 10 | `us.nodes.rocketnetwork.ru:443` | 1853.8 ms | 1251.8 ms |
+| 11 | `nl-u47.vpn-port.com:443` | 431.8 ms | 1253.4 ms |
+| 12 | `atus.nodes.rocketnetwork.ru:443` | 1548.2 ms | 1271.8 ms |
+| 13 | `netherlands-warp.cloudpath.live:443` | 2019.1 ms | 1283.7 ms |
+| 14 | `us.clickvpn.work:443` | 407.1 ms | 1337.8 ms |
+| 15 | `wave.sixty.7li7li.vip:1443` | 1593.8 ms | 1375.9 ms |
+| 16 | `ireland.cloudpath.live:443` | 1900.1 ms | 1379.7 ms |
+| 17 | `de5.safepass.click:443` | 813.9 ms | 1379.8 ms |
+| 18 | `nid.hatvpn.org:443` | 1571.5 ms | 1415.3 ms |
+| 19 | `de5.safepass.click:443` | 703.0 ms | 1422.0 ms |
+| 20 | `fr-u7.vpn-port.com:443` | 2102.3 ms | 1426.2 ms |
+| 21 | `fr-u7.vpn-port.com:443` | 1970.3 ms | 1444.6 ms |
+| 22 | `czech-warp.cloudpath.live:443` | 1411.0 ms | 1453.9 ms |
+| 23 | `ru-1.videoproeditor.com:443` | 2043.5 ms | 1481.8 ms |
+| 24 | `77.90.61.185:43000` | 153.9 ms | 1509.7 ms |
+| 25 | `de-s3.ru:443` | 1337.9 ms | 1510.1 ms |
+| 26 | `netherlands.cloudpath.live:443` | 403.2 ms | 1521.5 ms |
+| 27 | `178.236.254.244:8443` | 149.8 ms | 1527.3 ms |
+| 28 | `france.cloudpath.live:443` | 601.9 ms | 1539.9 ms |
+| 29 | `sk.synatra.net:29726` | 583.4 ms | 1544.8 ms |
+| 30 | `denmark.cloudpath.live:443` | 359.9 ms | 1580.9 ms |
+| 31 | `liechtenstein.cloudpath.live:443` | 1399.5 ms | 1615.4 ms |
+| 32 | `83.168.78.176:58730` | 160.2 ms | 1616.2 ms |
+| 33 | `cl-1.perecm.ru:43439` | 1223.1 ms | 1618.0 ms |
+| 34 | `susp.cloudpath.live:443` | 1741.9 ms | 1622.3 ms |
+| 35 | `pl.synatra.net:58730` | 1127.3 ms | 1628.7 ms |
+| 36 | `slovakia.cloudpath.live:443` | 323.1 ms | 1629.0 ms |
+| 37 | `us.clickvpn.work:443` | 482.6 ms | 1640.8 ms |
+| 38 | `italy-warp.cloudpath.live:443` | 2020.1 ms | 1647.6 ms |
+| 39 | `pl.synatra.net:58730` | 553.5 ms | 1649.8 ms |
+| 40 | `83.168.78.176:58730` | 157.7 ms | 1656.7 ms |
+| 41 | `finland-warp.cloudpath.live:443` | 213.1 ms | 1670.5 ms |
+| 42 | `pl.nodes.rocketnetwork.ru:443` | 512.8 ms | 1681.3 ms |
+| 43 | `pl.xanka.best:443` | 1315.9 ms | 1697.1 ms |
+| 44 | `hungary.cloudpath.live:443` | 361.3 ms | 1698.0 ms |
+| 45 | `romania.cloudpath.live:443` | 28.2 ms | 1699.9 ms |
+| 46 | `fi-u6.vpn-port.com:443` | 1941.0 ms | 1706.5 ms |
+| 47 | `de.clickvpn.work:13802` | 763.2 ms | 1710.3 ms |
+| 48 | `nl-s3.ru:443` | 2072.7 ms | 1710.4 ms |
+| 49 | `germany-warp.cloudpath.live:443` | 1901.8 ms | 1715.2 ms |
+| 50 | `multi1.cloudpath.live:443` | 1921.4 ms | 1719.0 ms |
 
 ## Files
 
