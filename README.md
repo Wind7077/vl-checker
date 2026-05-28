@@ -1,80 +1,67 @@
-# Proxy Check Results (RU edition)
+# vl-checker (RU edition)
 
-**Updated:** 2026-05-28 04:17 UTC
+Автоматический чекер прокси-конфигов с фокусом на обход российской блокировки.  
+Запускается каждые 3 часа через GitHub Actions.
 
-| Stat | Value |
-|------|-------|
-| Sources | 8 |
-| Total configs | 1600 |
-| After filter | 250 |
-| TCP alive | 204 |
-| HTTP working | 76 |
-| Saved top | 76 |
+## Поддерживаемые протоколы
 
-Страны: 
+| Протокол | Описание |
+|----------|----------|
+| **VLESS + Reality** | Основной протокол, лучший обход ТСПУ |
+| **Hysteria2** | UDP/QUIC, обходит DPI иначе чем TCP-протоколы |
+| vmess, trojan, ss | Включаются через `ALLOWED_PROTOCOLS` в скрипте |
 
-## Top 50 by HTTP latency
+## Как добавить источники
 
-| # | Host:Port | TCP | HTTP |
-|---|-----------|-----|------|
-| 1 | `de.clgate.network:443` | 310.7 ms | 646.2 ms |
-| 2 | `134.33.73.249:54254` | 17.2 ms | 762.1 ms |
-| 3 | `45.129.242.162:443` | 160.4 ms | 806.9 ms |
-| 4 | `45.129.242.162:443` | 150.8 ms | 812.0 ms |
-| 5 | `45.85.93.51:443` | 160.2 ms | 943.0 ms |
-| 6 | `85.193.91.14:443` | 187.2 ms | 1098.4 ms |
-| 7 | `2.27.29.81:443` | 158.3 ms | 1143.6 ms |
-| 8 | `64.188.69.120:443` | 161.4 ms | 1191.1 ms |
-| 9 | `64.188.69.120:443` | 161.8 ms | 1268.7 ms |
-| 10 | `nl2.clgate.network:443` | 211.0 ms | 1284.3 ms |
-| 11 | `85.193.91.14:443` | 176.8 ms | 1287.4 ms |
-| 12 | `l6.l-itx.info:7443` | 311.4 ms | 1291.3 ms |
-| 13 | `l6.l-itx.info:7443` | 276.1 ms | 1293.2 ms |
-| 14 | `runode.omuvpn.tech:12443` | 690.3 ms | 1295.0 ms |
-| 15 | `l6.l-itx.info:7443` | 317.5 ms | 1306.0 ms |
-| 16 | `nl-u16.vpn-port.com:443` | 169.6 ms | 1313.3 ms |
-| 17 | `l6.l-itx.info:7443` | 322.8 ms | 1319.0 ms |
-| 18 | `l6.l-itx.info:7443` | 312.3 ms | 1327.1 ms |
-| 19 | `l6.l-itx.info:7443` | 268.5 ms | 1328.6 ms |
-| 20 | `l6.l-itx.info:7443` | 413.2 ms | 1335.6 ms |
-| 21 | `89.117.94.111:54495` | 71.9 ms | 1364.7 ms |
-| 22 | `213.108.2.130:443` | 146.6 ms | 1377.2 ms |
-| 23 | `nl-u16.vpn-port.com:443` | 170.4 ms | 1386.6 ms |
-| 24 | `213.108.2.130:443` | 146.8 ms | 1393.4 ms |
-| 25 | `213.108.2.130:443` | 142.8 ms | 1395.8 ms |
-| 26 | `89.117.94.111:54495` | 72.0 ms | 1397.7 ms |
-| 27 | `213.108.2.130:443` | 146.5 ms | 1415.5 ms |
-| 28 | `81.29.156.195:443` | 153.6 ms | 1417.1 ms |
-| 29 | `2.59.183.167:443` | 147.1 ms | 1451.7 ms |
-| 30 | `89.117.94.111:54495` | 66.8 ms | 1460.5 ms |
-| 31 | `152.53.224.29:7443` | 159.5 ms | 1477.3 ms |
-| 32 | `de.clgate.network:443` | 279.1 ms | 1523.1 ms |
-| 33 | `de.clgate.network:443` | 281.6 ms | 1527.0 ms |
-| 34 | `172.86.93.96:443` | 153.6 ms | 1541.6 ms |
-| 35 | `64.188.69.120:443` | 153.9 ms | 1569.2 ms |
-| 36 | `91.107.185.143:32311` | 166.9 ms | 1607.8 ms |
-| 37 | `109.122.198.76:443` | 158.0 ms | 1629.2 ms |
-| 38 | `modem.yellow1v.store:32311` | 424.6 ms | 1634.2 ms |
-| 39 | `89.110.94.179:443` | 196.6 ms | 1676.3 ms |
-| 40 | `de.clgate.network:443` | 395.2 ms | 1841.5 ms |
-| 41 | `nl2.clgate.network:443` | 210.9 ms | 1866.7 ms |
-| 42 | `45.139.78.77:443` | 195.5 ms | 1905.4 ms |
-| 43 | `se.pink-service.ru:443` | 452.6 ms | 1914.5 ms |
-| 44 | `138.124.115.134:28561` | 156.4 ms | 1924.1 ms |
-| 45 | `bg.buycloud.app:443` | 272.9 ms | 1961.4 ms |
-| 46 | `202.133.89.63:80` | 160.0 ms | 1980.9 ms |
-| 47 | `nl-u16.vpn-port.com:443` | 266.9 ms | 2079.1 ms |
-| 48 | `fi2.clgate.network:443` | 431.2 ms | 2085.4 ms |
-| 49 | `nl.clgate.network:443` | 180.5 ms | 2120.1 ms |
-| 50 | `138.124.244.248:443` | 167.4 ms | 2142.7 ms |
+Редактируй **`sources.yml`** в корне репозитория — добавляй URL в нужный раздел:
 
-## Files
+```yaml
+custom:
+  - url: "https://myserver.example/sub"
+    label: "Мой приватный источник"
+  - url: "https://example.com/configs.txt"
+    label: "Ещё один источник"
+    enabled: false  # временно отключить
+```
 
-| File | Description |
-|------|-------------|
-| [`proxies.txt`](output/proxies.txt) | Plain URI — один на строку |
-| [`proxies_b64.txt`](output/proxies_b64.txt) | Base64 подписка для Karing / v2rayNG |
-| [`report.json`](output/report.json) | Полный JSON с латентностями |
+Скрипт читает все секции (`russia_focused`, `aggregators`, `hysteria2`, `telegram_channels`, `custom`).
 
----
-*Обновляется каждые 3 часа · GitHub Actions*
+## Настройки в `scripts/check_proxies.py`
+
+```python
+ALLOWED_PROTOCOLS = ["vless", "hysteria2"]   # протоколы для проверки
+REQUIRE_REALITY   = True                     # только VLESS+Reality
+ALLOWED_COUNTRIES = set()                    # пусто = без геофильтра
+TOP_N             = 80                       # сколько сохранять
+```
+
+## Результаты
+
+| Файл | Описание |
+|------|----------|
+| [`output/proxies.txt`](output/proxies.txt) | Plain URI, один на строку |
+| [`output/proxies_b64.txt`](output/proxies_b64.txt) | Base64 подписка для Karing / v2rayNG |
+| [`output/report.json`](output/report.json) | Полный JSON с латентностями |
+
+## Алгоритм проверки
+
+```
+sources.yml → fetch → extract_configs → filter_protocols
+    → Stage1: TCP-ping (VLESS/etc) / DNS-resolve (Hysteria2)
+    → geo_filter (опционально)
+    → Stage2: xray-core SOCKS5 + curl (VLESS/vmess/trojan/ss)
+             hysteria2-client SOCKS5 + curl (Hysteria2)
+    → сортировка по HTTP-latency → сохранение top N
+```
+
+## Установка зависимостей
+
+```bash
+pip install aiohttp pyyaml
+```
+
+## Локальный запуск
+
+```bash
+python scripts/check_proxies.py
+```
