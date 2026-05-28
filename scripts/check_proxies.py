@@ -47,7 +47,7 @@ REQUIRE_REALITY     = True                     # False — брать любой
 ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 80
+TOP_N               = 150
 TIMEOUT_TCP         = 3
 TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
