@@ -53,7 +53,7 @@ TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 1000
+STAGE2_CANDIDATES   = 600
 SOCKS_BASE_PORT     = 20000
 
 # UDP-порт для Hysteria2 TCP-ping (Hysteria2 слушает на UDP, поэтому stage2 обязателен)
