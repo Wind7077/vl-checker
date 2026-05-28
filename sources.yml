@@ -1,0 +1,80 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# sources.yml — список источников прокси-конфигов
+# Добавляй новые URL в нужный раздел. Поддерживаемые протоколы:
+#   vless://, vmess://, trojan://, ss://, hysteria2://
+#
+# Формат:
+#   - url: <ссылка>
+#     label: <описание (опционально)>
+#     enabled: true/false  (по умолчанию true)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Специализированные под Россию ─────────────────────────────────────────────
+russia_focused:
+  - url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/BLACK_VLESS_RUS.txt"
+    label: "igareck — VLESS Black RUS"
+
+  - url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-SNI-RU-all.txt"
+    label: "igareck — White SNI RU all"
+
+  - url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
+    label: "igareck — VLESS Reality Mobile RU"
+
+  - url: "https://raw.githubusercontent.com/whoahaow/rjsxrd/refs/heads/main/githubmirror/bypass/bypass-all.txt"
+    label: "whoahaow — bypass-all"
+
+  - url: "https://key.zarazaex.xyz/sub"
+    label: "zarazaex — subscription"
+
+  - url: "https://raw.githubusercontent.com/Wind7077/vl-auto/refs/heads/main/vless_normal_vpn.txt"
+    label: "Wind7077 — vless normal vpn"
+
+# ── Крупные публичные агрегаторы ──────────────────────────────────────────────
+aggregators:
+  - url: "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt"
+    label: "NoMoreWalls — mixed list"
+
+  - url: "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray"
+    label: "mfuu — v2ray mixed"
+
+  - url: "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
+    label: "V2RayAggregator — merged base64"
+
+  - url: "https://raw.githubusercontent.com/freefq/free/master/v2"
+    label: "freefq — v2ray free"
+
+  - url: "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2"
+    label: "aiboboxx — v2ray free"
+
+  - url: "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub"
+    label: "Pawdroid — Free servers"
+
+# ── Hysteria2 ─────────────────────────────────────────────────────────────────
+# Протокол нового поколения на базе QUIC/UDP.
+# Лучше обходит DPI по сравнению с TCP-based протоколами.
+hysteria2:
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hy2"
+    label: "TGParse — Hysteria2"
+
+  - url: "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/hysteria2"
+    label: "V2RayAggregator — Hysteria2"
+
+  - url: "https://raw.githubusercontent.com/yebekhe/TelegramV2rayCollector/main/sub/splitted/hysteria2"
+    label: "TelegramV2rayCollector — Hysteria2"
+
+# ── Telegram-каналы (через RSS/raw) ───────────────────────────────────────────
+# Добавляй ссылки на raw-экспорты Telegram-каналов с конфигами
+telegram_channels: []
+  # Пример:
+  # - url: "https://t.me/s/some_channel"
+  #   label: "some_channel"
+
+# ── Пользовательские ──────────────────────────────────────────────────────────
+# Сюда добавляй свои источники
+custom: []
+  # Пример:
+  # - url: "https://myserver.example/sub"
+  #   label: "My private subscription"
+  # - url: "https://example.com/configs.txt"
+  #   label: "Another source"
+  #   enabled: false   # временно отключить
