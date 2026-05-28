@@ -13,19 +13,14 @@
 russia_focused:
   - url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/BLACK_VLESS_RUS.txt"
     label: "igareck — VLESS Black RUS"
-
   - url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-SNI-RU-all.txt"
     label: "igareck — White SNI RU all"
-
   - url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
     label: "igareck — VLESS Reality Mobile RU"
-
   - url: "https://raw.githubusercontent.com/whoahaow/rjsxrd/refs/heads/main/githubmirror/bypass/bypass-all.txt"
     label: "whoahaow — bypass-all"
-
   - url: "https://key.zarazaex.xyz/sub"
     label: "zarazaex — subscription"
-
   - url: "https://raw.githubusercontent.com/Wind7077/vl-auto/refs/heads/main/vless_normal_vpn.txt"
     label: "Wind7077 — vless normal vpn"
 
@@ -33,60 +28,73 @@ russia_focused:
 aggregators:
   - url: "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt"
     label: "NoMoreWalls — mixed list"
-
   - url: "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray"
     label: "mfuu — v2ray mixed"
-
   - url: "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
     label: "V2RayAggregator — merged base64"
-
   - url: "https://raw.githubusercontent.com/freefq/free/master/v2"
     label: "freefq — v2ray free"
-
   - url: "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2"
     label: "aiboboxx — v2ray free"
-
   - url: "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub"
     label: "Pawdroid — Free servers"
-
   - url: "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/v2ray/all_sub.txt"
-    label: "Pawdroid — Free servers"
+    label: "MatinGhanbari — all_sub"
+
+  - url: "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/V2Ray-Config-By-EbraSha-All-Type.txt"
+    label: "EbraSha — All Type"
+  - url: "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Splitted-By-Protocol/vless.txt"
+    label: "barry-far — VLESS"
+  - url: "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/main/all_configs.txt"
+    label: "SoliSpirit — all configs"
+  - url: "https://raw.githubusercontent.com/Delta-Kronecker/V2ray-Config/main/config/vless.txt"
+    label: "Delta-Kronecker — vless"
+  - url: "https://raw.githubusercontent.com/V2RayRoot/V2RayConfig/main/Config/vless.txt"
+    label: "V2RayRoot — vless"
+  - url: "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/vless.txt"
+    label: "Epodonios — vless"
+  - url: "https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt"
+    label: "Au1rxx — v2ray base64"
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/Proxy-sorter/main/submerge/converted.txt"
+    label: "Surfboardv2ray — Proxy Sorter"
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/Proxy-sorter/main/output/converted.txt"
+    label: "Surfboardv2ray — Proxy Sorter output"
 
 # ── Hysteria2 ─────────────────────────────────────────────────────────────────
-# Протокол нового поколения на базе QUIC/UDP.
-# Лучше обходит DPI по сравнению с TCP-based протоколами.
 hysteria2:
   - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hy2"
     label: "TGParse — Hysteria2"
-
   - url: "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/splitted/hysteria2"
     label: "V2RayAggregator — Hysteria2"
-
   - url: "https://raw.githubusercontent.com/yebekhe/TelegramV2rayCollector/main/sub/splitted/hysteria2"
     label: "TelegramV2rayCollector — Hysteria2"
-
   - url: "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/filtered/subs/hysteria2.txt"
-    label: "My — Hysteria2"
-
+    label: "MatinGhanbari — Hysteria2"
   - url: "https://raw.githubusercontent.com/MohammadBahemmat/V2ray-Collector/refs/heads/main/servers/hysteria2_servers.txt"
-    label: "My — Hysteria 2-3"
-
+    label: "MohammadBahemmat — Hysteria2"
   - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/python/hysteria2"
-    label: "My — Hysteria 2-4"    
+    label: "TGParse — Hysteria2 (python)"
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/python/hy2"
+    label: "TGParse — hy2"
 
-# ── Telegram-каналы (через RSS/raw) ───────────────────────────────────────────
-# Добавляй ссылки на raw-экспорты Telegram-каналов с конфигами
+# ── Telegram-каналы ───────────────────────────────────────────────────────────
 telegram_channels: []
-  # Пример:
-  # - url: "https://t.me/s/some_channel"
-  #   label: "some_channel"
 
 # ── Пользовательские ──────────────────────────────────────────────────────────
-# Сюда добавляй свои источники
-custom: []
-  # Пример:
-  # - url: "https://myserver.example/sub"
-  #   label: "My private subscription"
-  # - url: "https://example.com/configs.txt"
-  #   label: "Another source"
-  #   enabled: false   # временно отключить
+custom:
+  - url: "https://fn09.sp0502.xyz/nodes/00eb5802d8072843e437fafc10a1b6e3"
+    label: "fn09 — custom nodes"
+
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/vless"
+    label: "TGParse — splitted vless"
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/trojan"
+    label: "TGParse — splitted trojan"
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/mixed"
+    label: "TGParse — splitted mixed"
+  - url: "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/ss"
+    label: "TGParse — splitted ss"
+
+  - url: "https://github.com/Au1rxx/free-vpn-subscriptions/raw/main/output/singbox.json"
+    label: "Au1rxx — singbox.json"
+  - url: "https://github.com/Au1rxx/free-vpn-subscriptions/raw/main/output/clash.yaml"
+    label: "Au1rxx — clash.yaml"
