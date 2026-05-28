@@ -1,67 +1,81 @@
-# vl-checker (RU edition)
+# Proxy Check Results (RU edition)
 
-Автоматический чекер прокси-конфигов с фокусом на обход российской блокировки.  
-Запускается каждые 3 часа через GitHub Actions.
+**Updated:** 2026-05-28 09:57 UTC
 
-## Поддерживаемые протоколы
+| Stat | Value |
+|------|-------|
+| Sources | 15 |
+| Total configs | 6612 |
+| After filter | 416 |
+| TCP alive | 338 |
+| HTTP working | 116 |
+| Saved top | 80 |
 
-| Протокол | Описание |
-|----------|----------|
-| **VLESS + Reality** | Основной протокол, лучший обход ТСПУ |
-| **Hysteria2** | UDP/QUIC, обходит DPI иначе чем TCP-протоколы |
-| vmess, trojan, ss | Включаются через `ALLOWED_PROTOCOLS` в скрипте |
+Страны: все
+Протоколы: vless, hysteria2
 
-## Как добавить источники
+## Top 50 by HTTP latency
 
-Редактируй **`sources.yml`** в корне репозитория — добавляй URL в нужный раздел:
+| # | Proto | Host:Port | TCP | HTTP |
+|---|-------|-----------|-----|------|
+| 1 | `vless` | `89.110.94.179:443` | 185.5 ms | 464.2 ms |
+| 2 | `vless` | `45.158.127.5:443` | 9.7 ms | 647.6 ms |
+| 3 | `vless` | `89.110.94.179:443` | 173.7 ms | 744.0 ms |
+| 4 | `vless` | `45.134.218.191:8443` | 132.1 ms | 754.4 ms |
+| 5 | `vless` | `89.110.94.179:443` | 180.2 ms | 904.9 ms |
+| 6 | `vless` | `fr.clgate.network:443` | 175.8 ms | 1071.0 ms |
+| 7 | `vless` | `89.110.94.179:443` | 177.4 ms | 1088.6 ms |
+| 8 | `vless` | `l6.l-itx.info:7443` | 1166.4 ms | 1193.5 ms |
+| 9 | `hysteria2` | `vpn-de-002.fastervpn.world:443` | UDP | 1208.6 ms |
+| 10 | `vless` | `l6.l-itx.info:7443` | 897.3 ms | 1348.9 ms |
+| 11 | `vless` | `l6.l-itx.info:7443` | 818.9 ms | 1349.6 ms |
+| 12 | `vless` | `l6.l-itx.info:7443` | 882.6 ms | 1390.7 ms |
+| 13 | `vless` | `bg.buycloud.app:443` | 2419.8 ms | 1470.8 ms |
+| 14 | `vless` | `109.122.198.76:443` | 152.1 ms | 1497.4 ms |
+| 15 | `vless` | `109.122.198.76:443` | 151.9 ms | 1499.3 ms |
+| 16 | `vless` | `194.226.169.36:443` | 153.9 ms | 1514.8 ms |
+| 17 | `vless` | `109.122.198.76:443` | 146.0 ms | 1535.8 ms |
+| 18 | `vless` | `109.122.198.76:443` | 149.7 ms | 1539.4 ms |
+| 19 | `vless` | `109.122.198.76:443` | 150.4 ms | 1550.2 ms |
+| 20 | `vless` | `109.122.198.76:443` | 149.7 ms | 1552.6 ms |
+| 21 | `vless` | `109.122.198.76:443` | 142.9 ms | 1557.3 ms |
+| 22 | `vless` | `109.122.198.76:443` | 152.2 ms | 1568.3 ms |
+| 23 | `vless` | `109.122.198.76:443` | 146.9 ms | 1580.0 ms |
+| 24 | `vless` | `109.122.198.76:443` | 155.1 ms | 1590.0 ms |
+| 25 | `vless` | `109.122.198.76:443` | 149.6 ms | 1592.8 ms |
+| 26 | `vless` | `150.241.93.46:8443` | 171.8 ms | 1699.2 ms |
+| 27 | `vless` | `31.76.120.162:443` | 166.6 ms | 1700.0 ms |
+| 28 | `vless` | `2.26.2.8:443` | 160.3 ms | 1713.6 ms |
+| 29 | `vless` | `93.123.39.49:8443` | 165.4 ms | 1815.7 ms |
+| 30 | `vless` | `g1.steptofreedom.one:443` | 1361.7 ms | 1827.6 ms |
+| 31 | `vless` | `78.17.6.36:443` | 187.7 ms | 1834.3 ms |
+| 32 | `vless` | `g1.steptofreedom.one:443` | 892.0 ms | 1836.8 ms |
+| 33 | `vless` | `109.122.198.76:443` | 159.8 ms | 1836.8 ms |
+| 34 | `vless` | `213.108.2.130:443` | 130.7 ms | 1889.9 ms |
+| 35 | `vless` | `eeshka.api.dznn.net:443` | 236.7 ms | 1907.5 ms |
+| 36 | `vless` | `213.108.2.130:443` | 131.2 ms | 1937.4 ms |
+| 37 | `vless` | `node.fi1-cosmostechnology.ru:8443` | 1289.1 ms | 1942.5 ms |
+| 38 | `vless` | `213.108.2.130:443` | 141.8 ms | 1953.7 ms |
+| 39 | `vless` | `se.alorvpn.fun:443` | 1492.9 ms | 1971.9 ms |
+| 40 | `vless` | `213.108.2.130:443` | 127.5 ms | 1973.4 ms |
+| 41 | `vless` | `213.108.2.130:443` | 127.7 ms | 1977.7 ms |
+| 42 | `vless` | `213.108.2.130:443` | 136.9 ms | 1987.7 ms |
+| 43 | `vless` | `213.108.2.130:443` | 127.5 ms | 1990.3 ms |
+| 44 | `vless` | `213.108.2.130:443` | 124.6 ms | 2003.1 ms |
+| 45 | `vless` | `213.108.2.130:443` | 128.3 ms | 2015.4 ms |
+| 46 | `vless` | `138.124.244.248:443` | 161.0 ms | 2024.2 ms |
+| 47 | `vless` | `213.108.2.130:443` | 131.5 ms | 2029.3 ms |
+| 48 | `vless` | `213.108.2.130:443` | 128.7 ms | 2036.7 ms |
+| 49 | `vless` | `213.108.2.130:443` | 131.5 ms | 2046.2 ms |
+| 50 | `vless` | `213.108.2.130:443` | 124.4 ms | 2049.2 ms |
 
-```yaml
-custom:
-  - url: "https://myserver.example/sub"
-    label: "Мой приватный источник"
-  - url: "https://example.com/configs.txt"
-    label: "Ещё один источник"
-    enabled: false  # временно отключить
-```
+## Files
 
-Скрипт читает все секции (`russia_focused`, `aggregators`, `hysteria2`, `telegram_channels`, `custom`).
+| File | Description |
+|------|-------------|
+| [`proxies.txt`](output/proxies.txt) | Plain URI — один на строку |
+| [`proxies_b64.txt`](output/proxies_b64.txt) | Base64 подписка для Karing / v2rayNG |
+| [`report.json`](output/report.json) | Полный JSON с латентностями |
 
-## Настройки в `scripts/check_proxies.py`
-
-```python
-ALLOWED_PROTOCOLS = ["vless", "hysteria2"]   # протоколы для проверки
-REQUIRE_REALITY   = True                     # только VLESS+Reality
-ALLOWED_COUNTRIES = set()                    # пусто = без геофильтра
-TOP_N             = 80                       # сколько сохранять
-```
-
-## Результаты
-
-| Файл | Описание |
-|------|----------|
-| [`output/proxies.txt`](output/proxies.txt) | Plain URI, один на строку |
-| [`output/proxies_b64.txt`](output/proxies_b64.txt) | Base64 подписка для Karing / v2rayNG |
-| [`output/report.json`](output/report.json) | Полный JSON с латентностями |
-
-## Алгоритм проверки
-
-```
-sources.yml → fetch → extract_configs → filter_protocols
-    → Stage1: TCP-ping (VLESS/etc) / DNS-resolve (Hysteria2)
-    → geo_filter (опционально)
-    → Stage2: xray-core SOCKS5 + curl (VLESS/vmess/trojan/ss)
-             hysteria2-client SOCKS5 + curl (Hysteria2)
-    → сортировка по HTTP-latency → сохранение top N
-```
-
-## Установка зависимостей
-
-```bash
-pip install aiohttp pyyaml
-```
-
-## Локальный запуск
-
-```bash
-python scripts/check_proxies.py
-```
+---
+*Обновляется каждые 3 часа · GitHub Actions*
