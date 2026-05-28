@@ -42,7 +42,7 @@ PROBE_URLS = [
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan", "ss"]   # добавь "vmess","trojan","ss" при необходимости
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]   # добавь "vmess","trojan","ss" при необходимости
 REQUIRE_REALITY     = True                     # False — брать любой vless
 ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
 GEO_BATCH_SIZE      = 100
