@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
-Original script from Wind7077/vl-checker with ONE fix:
-- Stage 2 candidates are selected RANDOMLY from TCP-alive proxies (not first N after sorting).
-- Added process cleanup for xray/hysteria2.
-All other logic (parsing, filtering, scoring) remains exactly as in the original.
+Proxy Checker — с поддержкой REALITY для vless
 """
 
 import asyncio
@@ -19,31 +16,28 @@ import tempfile
 import time
 import random
 import contextlib
-from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Set
+from typing import Dict, List, Optional, Tuple
+from urllib.parse import urlparse, parse_qs, unquote
 
-# ========== CONFIGURATION (from original, can be overridden by ENV) ==========
+# ========== КОНФИГУРАЦИЯ ==========
 TOP_N = int(os.environ.get("TOP_N", "250"))
-STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "2500"))
+STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "800"))
 MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "200"))
-MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "30"))
-TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "1.0"))
-TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "10"))
-TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "1.0"))
-TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.5"))
+MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "15"))
+TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "3.0"))
+TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "7"))
+TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "0.5"))
+TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.0"))
 
-ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,hysteria2,trojan").split(",")
-REQUIRE_REALITY = os.environ.get("REQUIRE_REALITY", "false").lower() == "true"
-ALLOWED_COUNTRIES = set(filter(None, os.environ.get("ALLOWED_COUNTRIES", "").split(",")))
-
+ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,vmess,trojan,ss,hysteria2").split(",")
 PROBE_URLS = [
     ("https://cp.cloudflare.com/", {200}),
     ("https://ip.sb/", {200}),
     ("https://ifconfig.me/ip", {200}),
 ]
 
-# ========== ORIGINAL UTILITIES (unchanged) ==========
+# ========== УТИЛИТЫ ==========
 def get_xray_path() -> str:
     for cmd in ["./xray", "xray", "/usr/local/bin/xray"]:
         if subprocess.run(["which", cmd], capture_output=True).returncode == 0:
@@ -115,42 +109,87 @@ async def run_curl(socks5_host: str, socks5_port: int, url: str, timeout: float)
     except Exception:
         return False, 0.0
 
-# ========== ORIGINAL PARSING (kept as is from your repo) ==========
-# Note: The original repo had specific parsing functions for vless, trojan, hysteria2.
-# I'm reproducing them based on typical patterns. If your original code differs,
-# please replace this section with your original parsing logic.
-
+# ========== ПАРСИНГ С ПОДДЕРЖКОЙ REALITY ==========
 def parse_vless_uri(uri: str) -> Optional[Dict]:
-    # Original vless parser from your repo
+    """Парсит vless:// URI с поддержкой REALITY параметров"""
     if not uri.startswith("vless://"):
         return None
     try:
-        from urllib.parse import urlparse, unquote
-        parsed = urlparse(uri)
-        host = parsed.hostname
-        port = parsed.port
-        if not host or not port:
-            return None
-        # Build xray config
+        # Убираем vless://
+        uri_content = uri[8:]
+        
+        # Разделяем на user@host:port и параметры
+        if "#" in uri_content:
+            uri_content = uri_content.split("#")[0]
+        
+        # Ищем параметры после ?
+        if "?" in uri_content:
+            base_part, query_part = uri_content.split("?", 1)
+            params = parse_qs(query_part)
+        else:
+            base_part = uri_content
+            params = {}
+        
+        # Извлекаем host и port
+        if "@" in base_part:
+            userpass, hostport = base_part.split("@", 1)
+            user_id = userpass
+        else:
+            hostport = base_part
+            user_id = ""
+        
+        if ":" in hostport:
+            host, port_str = hostport.split(":", 1)
+            port = int(port_str)
+        else:
+            host = hostport
+            port = 443
+        
+        # Извлекаем параметры REALITY
+        security = params.get("security", ["none"])[0]
+        encryption = params.get("encryption", ["none"])[0]
+        flow = params.get("flow", [""])[0]
+        pbk = params.get("pbk", [""])[0]  # public key
+        sid = params.get("sid", [""])[0]   # short id
+        fp = params.get("fp", ["chrome"])[0]  # fingerprint
+        sni = params.get("sni", [""])[0]  # server name
+        
+        # Базовый конфиг
         config = {
             "log": {"loglevel": "warning"},
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}],
             "outbounds": [{
                 "protocol": "vless",
                 "settings": {
                     "vnext": [{
                         "address": host,
                         "port": port,
-                        "users": [{"id": parsed.username or "", "encryption": "none"}]
+                        "users": [{
+                            "id": user_id,
+                            "encryption": encryption,
+                            "flow": flow if flow else "xtls-rprx-vision"
+                        }]
                     }]
                 },
                 "streamSettings": {
                     "network": "tcp",
-                    "security": "tls" if "security=tls" in uri else "none",
-                    "sockopt": {"tcpFastOpen": True}
+                    "security": security,
+                    "tlsSettings": {} if security != "reality" else {
+                        "serverName": sni if sni else "www.cloudflare.com",
+                        "fingerprint": fp,
+                        "realitySettings": {
+                            "publicKey": pbk,
+                            "shortId": sid if sid else ""
+                        }
+                    }
                 }
-            }],
-            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
+            }]
         }
+        
+        # Убираем пустые поля
+        if not flow:
+            del config["outbounds"][0]["settings"]["vnext"][0]["users"][0]["flow"]
+        
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
             "proto": "vless",
@@ -159,14 +198,14 @@ def parse_vless_uri(uri: str) -> Optional[Dict]:
             "uri": uri,
             "config_content": json.dumps(config)
         }
-    except:
+    except Exception as e:
+        print(f"Parse error vless: {e}")
         return None
 
 def parse_trojan_uri(uri: str) -> Optional[Dict]:
     if not uri.startswith("trojan://"):
         return None
     try:
-        from urllib.parse import urlparse
         parsed = urlparse(uri)
         host = parsed.hostname
         port = parsed.port
@@ -183,8 +222,7 @@ def parse_trojan_uri(uri: str) -> Optional[Dict]:
                         "password": parsed.username or ""
                     }]
                 },
-                "streamSettings": {"network": "tcp", "security": "tls"},
-                "sockopt": {"tcpFastOpen": True}
+                "streamSettings": {"network": "tcp", "security": "tls"}
             }],
             "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
         }
@@ -196,14 +234,14 @@ def parse_trojan_uri(uri: str) -> Optional[Dict]:
             "uri": uri,
             "config_content": json.dumps(config)
         }
-    except:
+    except Exception as e:
+        print(f"Parse error trojan: {e}")
         return None
 
 def parse_hysteria2_uri(uri: str) -> Optional[Dict]:
     if not uri.startswith("hysteria2://"):
         return None
     try:
-        from urllib.parse import urlparse
         parsed = urlparse(uri)
         host = parsed.hostname
         port = parsed.port
@@ -223,7 +261,8 @@ def parse_hysteria2_uri(uri: str) -> Optional[Dict]:
             "uri": uri,
             "config_content": json.dumps(config)
         }
-    except:
+    except Exception as e:
+        print(f"Parse error hysteria2: {e}")
         return None
 
 def parse_proxy_uri(uri: str) -> Optional[Dict]:
@@ -233,22 +272,21 @@ def parse_proxy_uri(uri: str) -> Optional[Dict]:
         return parse_trojan_uri(uri)
     if uri.startswith("hysteria2://"):
         return parse_hysteria2_uri(uri)
-    # Add vmess/ss if needed
     return None
 
-# ========== ORIGINAL FETCH & EXTRACT ==========
+# ========== ЗАГРУЗКА ИСТОЧНИКОВ ==========
 async def fetch_source(session: aiohttp.ClientSession, url: str) -> str:
     try:
         async with session.get(url, timeout=30) as resp:
             if resp.status == 200:
                 return await resp.text()
-    except:
+    except Exception:
         pass
     return ""
 
 async def fetch_all_sources(sources_file: str = "sources.txt") -> str:
     if not os.path.exists(sources_file):
-        print(f"Error: {sources_file} not found")
+        print(f"Файл {sources_file} не найден")
         return ""
     with open(sources_file) as f:
         urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
@@ -257,7 +295,7 @@ async def fetch_all_sources(sources_file: str = "sources.txt") -> str:
         results = await asyncio.gather(*tasks)
     return "\n".join(results)
 
-# ========== TCP PING ==========
+# ========== TCP ПИНГ ==========
 async def tcp_ping(host: str, port: int, timeout: float) -> Tuple[bool, float]:
     try:
         start = time.monotonic()
@@ -269,10 +307,10 @@ async def tcp_ping(host: str, port: int, timeout: float) -> Tuple[bool, float]:
         writer.close()
         await writer.wait_closed()
         return True, elapsed * 1000
-    except:
+    except Exception:
         return False, 0.0
 
-# ========== STAGE 2: HTTP TEST ==========
+# ========== HTTP ПРОВЕРКА ==========
 async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
     proto = proxy["proto"]
     config_content = proxy.get("config_content")
@@ -290,7 +328,7 @@ async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
         if proto == "hysteria2":
             async with managed_hysteria2(str(config_path)):
                 await asyncio.sleep(TIMEOUT_HY2_START)
-                for url, allowed_codes in PROBE_URLS:
+                for url, _ in PROBE_URLS:
                     ok, elapsed = await run_curl("127.0.0.1", 1080, url, TIMEOUT_CURL)
                     if ok:
                         success_count += 1
@@ -298,7 +336,7 @@ async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
         else:
             async with managed_xray(str(config_path)):
                 await asyncio.sleep(TIMEOUT_XRAY_START)
-                for url, allowed_codes in PROBE_URLS:
+                for url, _ in PROBE_URLS:
                     ok, elapsed = await run_curl("127.0.0.1", 1080, url, TIMEOUT_CURL)
                     if ok:
                         success_count += 1
@@ -311,10 +349,10 @@ async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
         proxy["reliability"] = success_count / len(PROBE_URLS)
         proxy["success_count"] = success_count
         return proxy
-    except Exception:
+    except Exception as e:
         return None
 
-# ========== MAIN (with the ONLY fix: random selection) ==========
+# ========== ОСНОВНАЯ ФУНКЦИЯ ==========
 async def main():
     print("Loading sources...")
     raw_text = await fetch_all_sources("sources.txt")
@@ -322,18 +360,14 @@ async def main():
         print("No data fetched")
         return
 
-    # Extract URIs – original regex from your repo
-    uri_pattern = re.compile(r'(vless://|trojan://|hysteria2://)[^\s]+')
-    found = uri_pattern.findall(raw_text)
-    uris = []
-    for match in re.finditer(r'(vless://|trojan://|hysteria2://)[^\s]+', raw_text):
-        uris.append(match.group(0))
-    unique_uris = list(set(uris))
-    print(f"Found {len(unique_uris)} unique URIs")
+    # Извлекаем URI
+    pattern = r'(vless://|trojan://|hysteria2://)[^\s]+'
+    full_uris = list(set(re.findall(pattern, raw_text)))
+    print(f"Found {len(full_uris)} unique URIs")
 
-    # Parse
+    # Парсим
     proxies = []
-    for uri in unique_uris:
+    for uri in full_uris:
         proxy = parse_proxy_uri(uri)
         if proxy and proxy["proto"] in ALLOWED_PROTOCOLS:
             proxies.append(proxy)
@@ -343,7 +377,7 @@ async def main():
         print("No proxies to test")
         return
 
-    # Stage 1: TCP ping
+    # TCP пинг
     sem = asyncio.Semaphore(MAX_CONCURRENT_TCP)
     async def ping_one(p):
         async with sem:
@@ -362,12 +396,11 @@ async def main():
         print("No TCP-alive proxies")
         return
 
-    # FIX: random selection instead of first N
-    candidate_count = min(STAGE2_CANDIDATES, len(alive))
-    candidates = random.sample(alive, candidate_count)
-    print(f"Selected {len(candidates)} random candidates for Stage 2 (was: first {STAGE2_CANDIDATES})")
+    # Случайная выборка для Stage 2
+    candidates = random.sample(alive, min(STAGE2_CANDIDATES, len(alive)))
+    print(f"Selected {len(candidates)} random candidates for Stage 2")
 
-    # Stage 2: HTTP test
+    # HTTP проверка
     http_sem = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
@@ -383,9 +416,10 @@ async def main():
 
     if not working:
         print("No working proxies after HTTP check")
+        print("Possible reasons: wrong REALITY config, dead proxies, or xray/hy2 issues")
         return
 
-    # Scoring (original)
+    # Ранжирование
     for p in working:
         score = 0.3 * p["tcp_ms"] + 1.0 * p["http_ms"] - 300 * p["reliability"]
         p["score"] = score
