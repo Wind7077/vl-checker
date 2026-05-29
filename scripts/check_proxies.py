@@ -18,7 +18,7 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ==================== НАСТРОЙКИ ====================
-HTTP_CHECK = 1
+HTTP_CHECK = 0
 TOP_N = 250
 STAGE2_CANDIDATES = 3000            # Увеличил до 3000
 MAX_CONCURRENT_TCP = 250            # Увеличил
