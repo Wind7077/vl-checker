@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — гибкая версия
-HTTP_CHECK = 1 → полная проверка через xray/hy2 (качественные прокси)
-HTTP_CHECK = 0 → только TCP пинг (быстро, но могут быть дохлые)
+Proxy Checker — HTTP проверка включена, оптимизированные URL
 """
 
 import asyncio
@@ -20,22 +18,24 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ==================== НАСТРОЙКИ ====================
-HTTP_CHECK = 1                      # 1 = включить HTTP проверку, 0 = выключить
-
+HTTP_CHECK = 1                      # 1 = включить HTTP проверку (РЕКОМЕНДУЮ)
 TOP_N = 250
-STAGE2_CANDIDATES = 500             # Количество кандидатов для HTTP проверки (если включена)
+STAGE2_CANDIDATES = 800             # Проверяем больше кандидатов
 MAX_CONCURRENT_TCP = 200
 MAX_CONCURRENT_HTTP = 15
 
-TIMEOUT_TCP = 2.5
-TIMEOUT_CURL = 4
+TIMEOUT_TCP = 2.0                   # Уменьшил до 2 сек (быстрее)
+TIMEOUT_CURL = 5                    # 5 сек на HTTP запрос
 TIMEOUT_XRAY_START = 0.5
 TIMEOUT_HY2_START = 1.0
 
 ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
 
+# ЛУЧШИЕ URL ДЛЯ ПРОВЕРКИ (в порядке приоритета)
 PROBE_URLS = [
-    "https://www.mozilla.org/favicon.ico",
+    "https://cp.cloudflare.com/",           # Cloudflare CDN, очень быстрый
+    "http://neverssl.com/",                  # Всегда 200 OK, нет TLS
+    "https://www.google.com/generate_204",   # Google 204 No Content (быстрый)
 ]
 
 # ==================== УТИЛИТЫ ====================
@@ -340,6 +340,7 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
+                    break  # Достаточно одного успешного запроса
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -358,6 +359,7 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
+                    break  # Достаточно одного успешного запроса
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -369,7 +371,7 @@ async def test_http(proxy: dict, tmpdir: Path):
             return None
         
         proxy["http_ms"] = total_time / success
-        proxy["reliability"] = success / len(PROBE_URLS)
+        proxy["reliability"] = 1.0
         return proxy
     except:
         return None
@@ -450,19 +452,18 @@ async def main():
         
         if not working:
             print("No working proxies after HTTP check")
+            print("Tip: Try increasing TIMEOUT_CURL or changing PROBE_URLS")
             return
         
-        for p in working:
-            p["score"] = 0.3 * p["tcp_ms"] + 1.0 * p["http_ms"] - 300 * p["reliability"]
-        
-        working.sort(key=lambda x: x["score"])
+        # Сортируем по TCP пингу (чем меньше, тем лучше)
+        working.sort(key=lambda x: x["tcp_ms"])
         top = working[:TOP_N]
-        print(f"Saving {len(top)} proxies (verified by HTTP)")
+        print(f"Saving {len(top)} verified working proxies")
     else:
         print("HTTP check disabled, saving fastest TCP proxies...")
         alive.sort(key=lambda x: x["tcp_ms"])
         top = alive[:TOP_N]
-        print(f"Saving {len(top)} fastest proxies (TCP only, may contain dead ones)")
+        print(f"Saving {len(top)} fastest proxies (TCP only, may be dead)")
     
     # ========== СОХРАНЕНИЕ ==========
     Path("output").mkdir(exist_ok=True)
@@ -477,8 +478,10 @@ async def main():
     
     print(f"Saved to output/proxies.txt")
     
-    if top:
-        print(f"Fastest proxy: {top[0]['tcp_ms']:.0f}ms")
+    if top and HTTP_CHECK:
+        print(f"\n✅ Working proxies found:")
+        for i, p in enumerate(top[:5]):
+            print(f"  {i+1}. {p['proto']}://{p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms")
 
 if __name__ == "__main__":
     asyncio.run(main())
