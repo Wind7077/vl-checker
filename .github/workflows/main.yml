@@ -42,16 +42,26 @@ jobs:
       - name: Install Python dependencies
         run: pip install aiohttp aiofiles
 
-      - name: Run proxy checker
+      - name: Run proxy checker with debug
         env:
-          STAGE2_CANDIDATES: 800
-          MAX_CONCURRENT_HTTP: 15
-          TIMEOUT_CURL: 7
-          TIMEOUT_XRAY_START: 0.5
-          TIMEOUT_HY2_START: 1.0
+          DEBUG: "true"
+          STAGE2_CANDIDATES: "300"
+          MAX_CONCURRENT_HTTP: "10"
+          TIMEOUT_CURL: "7"
+          ALLOWED_PROTOCOLS: "vless,trojan,hysteria2"
         run: python scripts/check_proxies.py
 
+      - name: Debug output files
+        if: always()
+        run: |
+          echo "=== output/proxies.txt ==="
+          cat output/proxies.txt 2>/dev/null || echo "File not found"
+          echo ""
+          echo "=== output/report.json (first 1000 chars) ==="
+          head -c 1000 output/report.json 2>/dev/null || echo "File not found"
+
       - name: Commit & push results
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
