@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — читает sources.txt
+Proxy Checker — оптимизированная версия
 """
 
 import asyncio
@@ -20,21 +20,22 @@ from urllib.parse import urlparse, parse_qs, unquote
 # ==================== НАСТРОЙКИ ====================
 HTTP_CHECK = 1
 TOP_N = 250
-STAGE2_CANDIDATES = 1500            # Увеличил до 1500
+STAGE2_CANDIDATES = 2500
 MAX_CONCURRENT_TCP = 200
-MAX_CONCURRENT_HTTP = 20
+MAX_CONCURRENT_HTTP = 25
 
 TIMEOUT_TCP = 2.0
-TIMEOUT_CURL = 5
+TIMEOUT_CURL = 4
 TIMEOUT_XRAY_START = 0.5
 TIMEOUT_HY2_START = 1.0
 
 ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
 
+# БЫСТРЫЕ И НАДЁЖНЫЕ URL ДЛЯ ПРОВЕРКИ
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",
-    "http://neverssl.com/",
-    "https://www.google.com/generate_204",
+    "https://cp.cloudflare.com/",           # Cloudflare CDN
+    "https://www.google.com/generate_204",   # Google 204 ответ
+    "https://www.microsoft.com/en-us/robots.txt",  # Маленький текстовый файл
 ]
 
 # ==================== УТИЛИТЫ ====================
@@ -277,7 +278,7 @@ def extract_uris(text: str):
     
     return list(uris)
 
-# ==================== ЗАГРУЗКА ИСТОЧНИКОВ ИЗ sources.txt ====================
+# ==================== ЗАГРУЗКА ИСТОЧНИКОВ ====================
 async def fetch_sources(sources_file: str = "sources.txt"):
     if not os.path.exists(sources_file):
         print(f"File {sources_file} not found")
@@ -342,7 +343,6 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
-                    break
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -361,7 +361,6 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
-                    break
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -373,7 +372,7 @@ async def test_http(proxy: dict, tmpdir: Path):
             return None
         
         proxy["http_ms"] = total_time / success
-        proxy["reliability"] = 1.0
+        proxy["reliability"] = success / len(PROBE_URLS)
         return proxy
     except:
         return None
@@ -401,7 +400,7 @@ async def main():
     
     print("Parsing...")
     proxies = []
-    for uri in uris[:30000]:          # Увеличил до 30,000
+    for uri in uris[:30000]:
         if uri.startswith("vless://") or re.match(r'[a-f0-9]{8}-', uri, re.I):
             p = parse_vless(uri)
             if p and p["proto"] in ALLOWED_PROTOCOLS:
