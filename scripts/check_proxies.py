@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — только TCP проверка, HTTP отключена
-Сохраняет N самых быстрых прокси по TCP пингу
+Proxy Checker — гибкая версия
+HTTP_CHECK = 1 → полная проверка через xray/hy2 (качественные прокси)
+HTTP_CHECK = 0 → только TCP пинг (быстро, но могут быть дохлые)
 """
 
 import asyncio
@@ -19,13 +20,23 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ==================== НАСТРОЙКИ ====================
-TOP_N = 250                      # Сколько сохранять (самые быстрые по TCP)
-STAGE2_CANDIDATES = 0            # 0 = HTTP проверка ОТКЛЮЧЕНА
-MAX_CONCURRENT_TCP = 200         # Параллельных TCP пингов
+HTTP_CHECK = 1                      # 1 = включить HTTP проверку, 0 = выключить
 
-TIMEOUT_TCP = 1.5                # Таймаут TCP пинга (секунды)
+TOP_N = 250
+STAGE2_CANDIDATES = 500             # Количество кандидатов для HTTP проверки (если включена)
+MAX_CONCURRENT_TCP = 200
+MAX_CONCURRENT_HTTP = 15
+
+TIMEOUT_TCP = 2.5
+TIMEOUT_CURL = 4
+TIMEOUT_XRAY_START = 0.5
+TIMEOUT_HY2_START = 1.0
 
 ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
+
+PROBE_URLS = [
+    "https://www.mozilla.org/favicon.ico",
+]
 
 # ==================== УТИЛИТЫ ====================
 def get_xray_path() -> str:
@@ -39,6 +50,27 @@ def get_hysteria2_path() -> str:
         if subprocess.run(["which", cmd], capture_output=True).returncode == 0:
             return cmd
     return "hysteria2"
+
+async def run_curl(url: str, timeout: float):
+    cmd = [
+        "curl", "-s", "-o", "/dev/null", "-w", "%{time_total}",
+        "--socks5-hostname", "127.0.0.1:1080",
+        "--connect-timeout", str(timeout),
+        "--max-time", str(timeout),
+        url
+    ]
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL
+        )
+        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout+2)
+        if proc.returncode == 0:
+            return True, float(stdout.decode().strip() or 0)
+    except:
+        pass
+    return False, 0.0
 
 # ==================== ПАРСИНГ VLESS ====================
 def parse_vless(uri: str):
@@ -286,8 +318,68 @@ async def tcp_ping(host: str, port: int, timeout: float):
     except:
         return False, 0.0
 
+# ==================== HTTP ПРОВЕРКА ====================
+async def test_http(proxy: dict, tmpdir: Path):
+    config_path = tmpdir / f"c_{proxy['id']}.json"
+    async with aiofiles.open(config_path, "w") as f:
+        await f.write(proxy["config"])
+    
+    success = 0
+    total_time = 0.0
+    
+    try:
+        if proxy["proto"] == "hysteria2":
+            proc = await asyncio.create_subprocess_exec(
+                get_hysteria2_path(), "-c", str(config_path),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            await asyncio.sleep(TIMEOUT_HY2_START)
+            for url in PROBE_URLS:
+                ok, t = await run_curl(url, TIMEOUT_CURL)
+                if ok:
+                    success += 1
+                    total_time += t
+            proc.terminate()
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=2)
+            except:
+                proc.kill()
+                await proc.wait()
+        else:
+            proc = await asyncio.create_subprocess_exec(
+                get_xray_path(), "run", "-c", str(config_path),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            await asyncio.sleep(TIMEOUT_XRAY_START)
+            for url in PROBE_URLS:
+                ok, t = await run_curl(url, TIMEOUT_CURL)
+                if ok:
+                    success += 1
+                    total_time += t
+            proc.terminate()
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=2)
+            except:
+                proc.kill()
+                await proc.wait()
+        
+        if success == 0:
+            return None
+        
+        proxy["http_ms"] = total_time / success
+        proxy["reliability"] = success / len(PROBE_URLS)
+        return proxy
+    except:
+        return None
+
 # ==================== MAIN ====================
 async def main():
+    print("=" * 50)
+    print(f"HTTP_CHECK = {HTTP_CHECK} ({'Включена' if HTTP_CHECK else 'Выключена'})")
+    print("=" * 50)
+    
     print("Loading sources...")
     raw = await fetch_sources("sources.txt")
     if not raw:
@@ -339,10 +431,40 @@ async def main():
         print("No alive proxies")
         return
     
-    # Сортируем по скорости TCP пинга (меньше = быстрее)
-    alive.sort(key=lambda x: x["tcp_ms"])
-    top = alive[:TOP_N]
+    # ========== ВЫБОР РЕЖИМА ==========
+    if HTTP_CHECK:
+        print(f"HTTP check enabled, testing {STAGE2_CANDIDATES} random candidates...")
+        candidates = random.sample(alive, min(STAGE2_CANDIDATES, len(alive)))
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            sem2 = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
+            async def test(p):
+                async with sem2:
+                    return await test_http(p, tmp_path)
+            
+            working = await asyncio.gather(*[test(p) for p in candidates])
+            working = [p for p in working if p]
+        
+        print(f"HTTP passed: {len(working)}/{len(candidates)}")
+        
+        if not working:
+            print("No working proxies after HTTP check")
+            return
+        
+        for p in working:
+            p["score"] = 0.3 * p["tcp_ms"] + 1.0 * p["http_ms"] - 300 * p["reliability"]
+        
+        working.sort(key=lambda x: x["score"])
+        top = working[:TOP_N]
+        print(f"Saving {len(top)} proxies (verified by HTTP)")
+    else:
+        print("HTTP check disabled, saving fastest TCP proxies...")
+        alive.sort(key=lambda x: x["tcp_ms"])
+        top = alive[:TOP_N]
+        print(f"Saving {len(top)} fastest proxies (TCP only, may contain dead ones)")
     
+    # ========== СОХРАНЕНИЕ ==========
     Path("output").mkdir(exist_ok=True)
     
     with open("output/proxies.txt", "w") as f:
@@ -353,8 +475,10 @@ async def main():
         for p in top:
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
-    print(f"Saved {len(top)} fastest proxies (by TCP ping) to output/")
-    print(f"Fastest TCP ping: {top[0]['tcp_ms']:.0f}ms" if top else "")
+    print(f"Saved to output/proxies.txt")
+    
+    if top:
+        print(f"Fastest proxy: {top[0]['tcp_ms']:.0f}ms")
 
 if __name__ == "__main__":
     asyncio.run(main())
