@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — универсальный парсер для любых форматов
+Proxy Checker — с полным дебаг-логом
 """
 
 import asyncio
@@ -18,6 +18,15 @@ import random
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse, parse_qs, unquote
+
+# ========== ДЕБАГ-ЛОГ ==========
+DEBUG = os.environ.get("DEBUG", "true").lower() == "true"
+
+def log(msg: str, level: str = "INFO"):
+    if DEBUG:
+        timestamp = time.strftime("%H:%M:%S")
+        print(f"[{timestamp}] {level}: {msg}")
+        sys.stdout.flush()
 
 # ========== КОНФИГУРАЦИЯ ==========
 TOP_N = int(os.environ.get("TOP_N", "250"))
@@ -68,7 +77,8 @@ async def run_curl(url: str, timeout: float) -> Tuple[bool, float]:
         if proc.returncode == 0:
             return True, float(stdout.decode().strip() or 0)
         return False, 0.0
-    except:
+    except Exception as e:
+        log(f"Curl error: {e}", "DEBUG")
         return False, 0.0
 
 # ========== ПАРСИНГ ==========
@@ -156,7 +166,8 @@ def parse_vless(uri: str) -> Optional[Dict]:
             "uri": uri if uri.startswith("vless://") else "vless://" + uri,
             "config": json.dumps(config)
         }
-    except:
+    except Exception as e:
+        log(f"Parse vless error: {e}", "DEBUG")
         return None
 
 def parse_trojan(uri: str) -> Optional[Dict]:
@@ -218,7 +229,8 @@ def parse_trojan(uri: str) -> Optional[Dict]:
             "uri": uri if uri.startswith("trojan://") else "trojan://" + uri,
             "config": json.dumps(config)
         }
-    except:
+    except Exception as e:
+        log(f"Parse trojan error: {e}", "DEBUG")
         return None
 
 def parse_hysteria2(uri: str) -> Optional[Dict]:
@@ -246,26 +258,26 @@ def parse_hysteria2(uri: str) -> Optional[Dict]:
             "uri": uri,
             "config": json.dumps(config)
         }
-    except:
+    except Exception as e:
+        log(f"Parse hysteria2 error: {e}", "DEBUG")
         return None
 
-# ========== УНИВЕРСАЛЬНОЕ ИЗВЛЕЧЕНИЕ ЛЮБЫХ СТРООК ==========
+# ========== УНИВЕРСАЛЬНОЕ ИЗВЛЕЧЕНИЕ ==========
 def extract_all_proxy_strings(text: str) -> List[str]:
-    """Извлекает всё, что похоже на прокси: UUID@HOST:PORT или готовые URI"""
     proxies = set()
     
-    # Ищем UUID (8-4-4-4-12 формат) с последующим @host:port
+    # Ищем UUID@host:port
     uuid_pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}@[a-zA-Z0-9\.\-]+:\d+'
     matches = re.findall(uuid_pattern, text, re.IGNORECASE)
     for m in matches:
         proxies.add(m)
+        log(f"Found UUID format: {m[:50]}...", "DEBUG")
     
-    # Ищем уже готовые URI с протоколами
+    # Ищем готовые URI
     protocol_pattern = r'(vless://|trojan://|hysteria2://|vmess://|ss://)[^\s<>"\'\\\n]+'
-    matches = re.findall(protocol_pattern, text)
-    # Нужно получить полные строки
     for match in re.finditer(protocol_pattern, text):
         proxies.add(match.group(0))
+        log(f"Found URI: {match.group(0)[:80]}...", "DEBUG")
     
     return list(proxies)
 
@@ -305,19 +317,27 @@ SOURCES = [
     "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/trojan_configs.txt",
 ]
 
-async def fetch_source(session: aiohttp.ClientSession, url: str) -> str:
+async def fetch_source(session: aiohttp.ClientSession, url: str, index: int) -> str:
+    log(f"Fetching {index+1}/{len(SOURCES)}: {url[:60]}...")
     try:
         async with session.get(url, timeout=30) as resp:
             if resp.status == 200:
-                return await resp.text()
-    except:
-        pass
+                text = await resp.text()
+                log(f"  OK: {len(text)} bytes from {url[:60]}...")
+                return text
+            else:
+                log(f"  FAIL: HTTP {resp.status} for {url[:60]}...", "WARN")
+    except Exception as e:
+        log(f"  ERROR: {e} for {url[:60]}...", "ERROR")
     return ""
 
 async def fetch_all_sources() -> str:
+    log(f"Fetching {len(SOURCES)} sources...")
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_source(session, url) for url in SOURCES]
+        tasks = [fetch_source(session, url, i) for i, url in enumerate(SOURCES)]
         results = await asyncio.gather(*tasks)
+    total_chars = sum(len(r) for r in results)
+    log(f"Total fetched: {total_chars} chars")
     return "\n".join(results)
 
 # ========== TCP ПИНГ ==========
@@ -380,43 +400,68 @@ async def test_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
         proxy["http_ms"] = total_time / success
         proxy["reliability"] = success / len(PROBE_URLS)
         return proxy
-    except:
+    except Exception as e:
+        log(f"HTTP test error for {proxy['host']}:{proxy['port']}: {e}", "DEBUG")
         return None
 
 # ========== MAIN ==========
 async def main():
-    print("📡 Загрузка источников...")
+    log("="*60)
+    log("STARTING PROXY CHECKER WITH DEBUG")
+    log("="*60)
+    
+    log("📡 Loading sources...")
     raw = await fetch_all_sources()
     
     if not raw:
-        print("❌ Не удалось загрузить данные")
+        log("❌ No data fetched", "ERROR")
         return
     
-    print("🔍 Извлечение прокси-строк...")
+    log(f"📊 Total raw data size: {len(raw)} chars")
+    log(f"📊 First 500 chars of raw data:\n{raw[:500]}")
+    
+    log("🔍 Extracting proxy strings...")
     proxy_strings = extract_all_proxy_strings(raw)
-    print(f"✅ Найдено строк: {len(proxy_strings)}")
+    log(f"✅ Found {len(proxy_strings)} proxy strings")
+    
+    if proxy_strings:
+        log(f"📋 First 5 proxy strings:")
+        for i, ps in enumerate(proxy_strings[:5]):
+            log(f"  {i+1}: {ps[:100]}...")
     
     if not proxy_strings:
-        print("❌ Нет строк для парсинга")
+        log("❌ No proxy strings found", "ERROR")
         return
     
-    print("📦 Парсинг прокси...")
+    log("📦 Parsing proxies...")
     proxies = []
     for ps in proxy_strings:
-        for parser_name, parser in [("vless", parse_vless), ("trojan", parse_trojan), ("hysteria2", parse_hysteria2)]:
-            if ps.startswith(parser_name) or (parser_name == "vless" and re.match(r'[a-f0-9]{8}-', ps, re.I)):
-                p = parser(ps)
-                if p and p["proto"] in ALLOWED_PROTOCOLS:
-                    proxies.append(p)
-                break
+        # Try vless
+        if ps.startswith("vless://") or re.match(r'[a-f0-9]{8}-', ps, re.I):
+            p = parse_vless(ps)
+            if p and p["proto"] in ALLOWED_PROTOCOLS:
+                proxies.append(p)
+                continue
+        # Try trojan
+        if ps.startswith("trojan://"):
+            p = parse_trojan(ps)
+            if p and p["proto"] in ALLOWED_PROTOCOLS:
+                proxies.append(p)
+                continue
+        # Try hysteria2
+        if ps.startswith("hysteria2://"):
+            p = parse_hysteria2(ps)
+            if p and p["proto"] in ALLOWED_PROTOCOLS:
+                proxies.append(p)
+                continue
     
-    print(f"✅ Отфильтровано по протоколам {ALLOWED_PROTOCOLS}: {len(proxies)}")
+    log(f"✅ Parsed {len(proxies)} proxies")
     
     if not proxies:
-        print("❌ Нет прокси после фильтрации")
+        log("❌ No proxies after parsing", "ERROR")
         return
     
-    print(f"🏓 TCP пинг ({len(proxies)} прокси)...")
+    log(f"🏓 TCP ping ({len(proxies)} proxies, concurrency={MAX_CONCURRENT_TCP})...")
     sem = asyncio.Semaphore(MAX_CONCURRENT_TCP)
     async def ping(p):
         async with sem:
@@ -428,30 +473,31 @@ async def main():
     
     results = await asyncio.gather(*[ping(p) for p in proxies])
     alive = [p for p in results if p]
-    print(f"✅ TCP живых: {len(alive)}/{len(proxies)}")
+    log(f"✅ TCP alive: {len(alive)}/{len(proxies)}")
     
     if not alive:
-        print("❌ Нет живых по TCP")
+        log("❌ No TCP-alive proxies", "ERROR")
         return
     
     candidates = random.sample(alive, min(STAGE2_CANDIDATES, len(alive)))
-    print(f"🎲 Отобрано {len(candidates)} кандидатов для полной проверки")
+    log(f"🎲 Selected {len(candidates)} random candidates for Stage 2")
     
-    print(f"🌐 HTTP проверка...")
+    log(f"🌐 HTTP check (concurrency={MAX_CONCURRENT_HTTP})...")
     http_sem = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
-        async def test(p):
+        async def test(p, idx):
             async with http_sem:
+                log(f"  Testing {idx+1}/{len(candidates)}: {p['proto']}://{p['host']}:{p['port']}")
                 return await test_http(p, tmp_path)
         
-        http_results = await asyncio.gather(*[test(p) for p in candidates])
+        http_results = await asyncio.gather(*[test(p, i) for i, p in enumerate(candidates)])
         working = [p for p in http_results if p]
     
-    print(f"✅ HTTP прошли: {len(working)}/{len(candidates)}")
+    log(f"✅ HTTP passed: {len(working)}/{len(candidates)}")
     
     if not working:
-        print("❌ Нет рабочих прокси")
+        log("❌ No working proxies after HTTP check", "ERROR")
         return
     
     for p in working:
@@ -474,7 +520,10 @@ async def main():
     with open(out / "report.json", "w") as f:
         json.dump(top, f, indent=2)
     
-    print(f"💾 Сохранено {len(top)} прокси в output/")
+    log(f"💾 Saved {len(top)} proxies to output/")
+    log("="*60)
+    log("FINISHED")
+    log("="*60)
 
 if __name__ == "__main__":
     asyncio.run(main())
