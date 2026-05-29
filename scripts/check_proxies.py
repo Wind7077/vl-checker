@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — оптимизированная версия
+Proxy Checker — финальная оптимизированная версия
 """
 
 import asyncio
@@ -20,22 +20,20 @@ from urllib.parse import urlparse, parse_qs, unquote
 # ==================== НАСТРОЙКИ ====================
 HTTP_CHECK = 1
 TOP_N = 250
-STAGE2_CANDIDATES = 2500
-MAX_CONCURRENT_TCP = 200
-MAX_CONCURRENT_HTTP = 25
+STAGE2_CANDIDATES = 3000            # Увеличил до 3000
+MAX_CONCURRENT_TCP = 250            # Увеличил
+MAX_CONCURRENT_HTTP = 30            # Увеличил
 
-TIMEOUT_TCP = 2.0
+TIMEOUT_TCP = 1.5                   # Уменьшил для скорости
 TIMEOUT_CURL = 4
-TIMEOUT_XRAY_START = 0.5
-TIMEOUT_HY2_START = 1.0
+TIMEOUT_XRAY_START = 0.3
+TIMEOUT_HY2_START = 0.8
 
 ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
 
-# БЫСТРЫЕ И НАДЁЖНЫЕ URL ДЛЯ ПРОВЕРКИ
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",           # Cloudflare CDN
-    "https://www.google.com/generate_204",   # Google 204 ответ
-    "https://www.microsoft.com/en-us/robots.txt",  # Маленький текстовый файл
+    "https://cp.cloudflare.com/",
+    "https://www.google.com/generate_204",
 ]
 
 # ==================== УТИЛИТЫ ====================
@@ -161,7 +159,7 @@ def parse_vless(uri: str):
             "proto": "vless",
             "host": host,
             "port": port,
-            "uri": uri if uri.startswith("vless://") else "vless://" + uri,
+            "uri": uri,
             "config": json.dumps(config)
         }
     except:
@@ -229,7 +227,7 @@ def parse_trojan(uri: str):
             "proto": "trojan",
             "host": host,
             "port": port,
-            "uri": uri if uri.startswith("trojan://") else "trojan://" + uri,
+            "uri": uri,
             "config": json.dumps(config)
         }
     except:
@@ -343,6 +341,7 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
+                    break
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -361,6 +360,7 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
+                    break
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -372,7 +372,7 @@ async def test_http(proxy: dict, tmpdir: Path):
             return None
         
         proxy["http_ms"] = total_time / success
-        proxy["reliability"] = success / len(PROBE_URLS)
+        proxy["reliability"] = 1.0
         return proxy
     except:
         return None
@@ -400,7 +400,7 @@ async def main():
     
     print("Parsing...")
     proxies = []
-    for uri in uris[:30000]:
+    for uri in uris[:50000]:
         if uri.startswith("vless://") or re.match(r'[a-f0-9]{8}-', uri, re.I):
             p = parse_vless(uri)
             if p and p["proto"] in ALLOWED_PROTOCOLS:
@@ -458,11 +458,12 @@ async def main():
         
         working.sort(key=lambda x: x["tcp_ms"])
         top = working[:TOP_N]
-        print(f"Saving {len(top)} verified working proxies")
         
-        print(f"\n✅ Working proxies found:")
+        print(f"\n✅ {len(top)} working proxies found:")
         for i, p in enumerate(top[:10]):
             print(f"  {i+1}. {p['proto']}://{p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms")
+        if len(top) > 10:
+            print(f"  ... and {len(top)-10} more")
     else:
         alive.sort(key=lambda x: x["tcp_ms"])
         top = alive[:TOP_N]
@@ -478,7 +479,7 @@ async def main():
         for p in top:
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
-    print(f"Saved to output/proxies.txt")
+    print(f"\nSaved to output/proxies.txt")
 
 if __name__ == "__main__":
     asyncio.run(main())
