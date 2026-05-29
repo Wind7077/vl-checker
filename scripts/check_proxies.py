@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — полная версия с парсингом из sources.txt
-Исправлен отбор кандидатов в Stage 2: случайная выборка, а не первые N.
-Добавлена корректная очистка процессов xray/hysteria2.
+Proxy Checker — поддерживает vless, vmess, trojan, ss, hysteria2.
+Исправлен отбор кандидатов в Stage 2: случайная выборка.
 """
 
 import asyncio
@@ -19,10 +18,10 @@ import time
 import random
 import contextlib
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Set
-from urllib.parse import urlparse
+from typing import Dict, List, Optional, Tuple
+from urllib.parse import urlparse, unquote
 
-# ========== КОНФИГУРАЦИЯ (можно переопределить через ENV) ==========
+# ========== КОНФИГУРАЦИЯ ==========
 TOP_N = int(os.environ.get("TOP_N", "250"))
 STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "2500"))
 MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "200"))
@@ -32,7 +31,8 @@ TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "10"))
 TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "1.0"))
 TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.5"))
 
-ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,hysteria2,trojan").split(",")
+# Разрешённые протоколы (можно переопределить через ENV)
+ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,vmess,trojan,ss,hysteria2").split(",")
 REQUIRE_REALITY = os.environ.get("REQUIRE_REALITY", "false").lower() == "true"
 ALLOWED_COUNTRIES = set(filter(None, os.environ.get("ALLOWED_COUNTRIES", "").split(",")))
 
@@ -114,17 +114,130 @@ async def run_curl(socks5_host: str, socks5_port: int, url: str, timeout: float)
     except Exception:
         return False, 0.0
 
-# ========== ПАРСИНГ ПРОКСИ ИЗ URI ==========
+# ========== ПАРСИНГ РАЗНЫХ ТИПОВ ПРОКСИ ==========
+def parse_vmess_uri(uri: str) -> Optional[Dict]:
+    """Парсинг vmess://base64(json)"""
+    if not uri.startswith("vmess://"):
+        return None
+    b64_part = uri[8:]
+    # Добиваем base64 до кратности 4
+    missing_padding = len(b64_part) % 4
+    if missing_padding:
+        b64_part += "=" * (4 - missing_padding)
+    try:
+        decoded = base64.b64decode(b64_part).decode('utf-8')
+        config = json.loads(decoded)
+        host = config.get("add")
+        port = config.get("port")
+        if not host or not port:
+            return None
+        # Формируем конфиг для xray
+        xray_config = {
+            "log": {"loglevel": "warning"},
+            "outbounds": [{
+                "protocol": "vmess",
+                "settings": {
+                    "vnext": [{
+                        "address": host,
+                        "port": port,
+                        "users": [{
+                            "id": config.get("id"),
+                            "alterId": config.get("aid", 0),
+                            "security": config.get("scy", "auto")
+                        }]
+                    }]
+                },
+                "streamSettings": {
+                    "network": config.get("net", "tcp"),
+                    "security": config.get("tls", "none"),
+                    "wsSettings": {"path": config.get("path", "/"), "headers": {"Host": config.get("host", "")}} if config.get("net") == "ws" else None
+                }
+            }],
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
+        }
+        # Убираем None
+        if xray_config["outbounds"][0]["streamSettings"]["wsSettings"] is None:
+            del xray_config["outbounds"][0]["streamSettings"]["wsSettings"]
+        return {
+            "id": base64.b64encode(uri.encode()).decode()[:16],
+            "proto": "vmess",
+            "host": host,
+            "port": port,
+            "uri": uri,
+            "config_content": json.dumps(xray_config)
+        }
+    except Exception:
+        return None
+
+def parse_ss_uri(uri: str) -> Optional[Dict]:
+    """Парсинг ss://base64(method:password)@host:port#tag"""
+    if not uri.startswith("ss://"):
+        return None
+    # Формат: ss://base64(method:password)@host:port
+    try:
+        # Убираем ss://
+        rest = uri[5:]
+        # Отделяем параметры после @
+        if "@" not in rest:
+            # Возможно, строка уже закодирована полностью: ss://base64(method:password@host:port)
+            # Пробуем декодировать всё, что до @
+            pass
+        at_pos = rest.find("@")
+        if at_pos == -1:
+            return None
+        b64_part = rest[:at_pos]
+        host_port = rest[at_pos+1:]
+        # Декодируем b64_part
+        missing_padding = len(b64_part) % 4
+        if missing_padding:
+            b64_part += "=" * (4 - missing_padding)
+        decoded = base64.b64decode(b64_part).decode('utf-8')
+        # decoded имеет вид method:password
+        if ":" not in decoded:
+            return None
+        method, password = decoded.split(":", 1)
+        # Разбираем host:port
+        if ":" not in host_port:
+            return None
+        host, port_str = host_port.split(":", 1)
+        port = int(port_str)
+        # Конфиг для shadowsocks (xray)
+        xray_config = {
+            "log": {"loglevel": "warning"},
+            "outbounds": [{
+                "protocol": "shadowsocks",
+                "settings": {
+                    "servers": [{
+                        "address": host,
+                        "port": port,
+                        "method": method,
+                        "password": password
+                    }]
+                }
+            }],
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
+        }
+        return {
+            "id": base64.b64encode(uri.encode()).decode()[:16],
+            "proto": "ss",
+            "host": host,
+            "port": port,
+            "uri": uri,
+            "config_content": json.dumps(xray_config)
+        }
+    except Exception:
+        return None
+
 def parse_proxy_uri(uri: str) -> Optional[Dict]:
-    """Преобразует URI прокси в словарь с полями: id, proto, host, port, uri, config_content."""
+    """Общий парсер, вызывает соответствующие функции"""
     if uri.startswith("vless://"):
+        # vless парсинг (как ранее)
         parsed = urlparse(uri)
-        proto = "vless"
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
             return None
-        # Базовый конфиг для xray (для проверки достаточно)
+        # Базовый конфиг для xray
         config = {
             "log": {"loglevel": "warning"},
             "outbounds": [{
@@ -145,7 +258,7 @@ def parse_proxy_uri(uri: str) -> Optional[Dict]:
         }
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
-            "proto": proto,
+            "proto": "vless",
             "host": host,
             "port": port,
             "uri": uri,
@@ -153,7 +266,6 @@ def parse_proxy_uri(uri: str) -> Optional[Dict]:
         }
     elif uri.startswith("trojan://"):
         parsed = urlparse(uri)
-        proto = "trojan"
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
@@ -175,7 +287,7 @@ def parse_proxy_uri(uri: str) -> Optional[Dict]:
         }
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
-            "proto": proto,
+            "proto": "trojan",
             "host": host,
             "port": port,
             "uri": uri,
@@ -183,7 +295,6 @@ def parse_proxy_uri(uri: str) -> Optional[Dict]:
         }
     elif uri.startswith("hysteria2://"):
         parsed = urlparse(uri)
-        proto = "hysteria2"
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
@@ -196,12 +307,16 @@ def parse_proxy_uri(uri: str) -> Optional[Dict]:
         }
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
-            "proto": proto,
+            "proto": "hysteria2",
             "host": host,
             "port": port,
             "uri": uri,
             "config_content": json.dumps(config)
         }
+    elif uri.startswith("vmess://"):
+        return parse_vmess_uri(uri)
+    elif uri.startswith("ss://"):
+        return parse_ss_uri(uri)
     else:
         return None
 
@@ -293,14 +408,27 @@ async def main():
 
     # Извлекаем все URI прокси из текста
     uri_pattern = re.compile(r'(vless://|trojan://|hysteria2://|ss://|vmess://)[^\s]+')
-    uris = set(uri_pattern.findall(raw_text))
-    print(f"Найдено уникальных URI: {len(uris)}")
+    found = uri_pattern.findall(raw_text)
+    # findall возвращает кортежи, нужно собрать полные URI
+    uris = []
+    for match in re.finditer(r'(vless://|trojan://|hysteria2://|ss://|vmess://)[^\s]+', raw_text):
+        uris.append(match.group(0))
+    unique_uris = list(set(uris))
+    print(f"Найдено уникальных URI: {len(unique_uris)}")
 
     proxies = []
-    for uri in uris:
+    unsupported = []
+    for uri in unique_uris:
         proxy = parse_proxy_uri(uri)
-        if proxy and proxy["proto"] in ALLOWED_PROTOCOLS:
-            proxies.append(proxy)
+        if proxy:
+            if proxy["proto"] in ALLOWED_PROTOCOLS:
+                proxies.append(proxy)
+            else:
+                print(f"Пропущен (протокол не разрешён): {proxy['proto']} -> {uri[:80]}")
+        else:
+            unsupported.append(uri[:80])
+    if unsupported:
+        print(f"Не удалось распарсить {len(unsupported)} URI (первые 3): {unsupported[:3]}")
 
     print(f"Отфильтровано по протоколам {ALLOWED_PROTOCOLS}: {len(proxies)}")
 
@@ -327,7 +455,7 @@ async def main():
         print("Нет живых по TCP")
         return
 
-    # ГЛАВНОЕ ИСПРАВЛЕНИЕ: случайная выборка кандидатов для Stage 2
+    # СЛУЧАЙНАЯ ВЫБОРКА кандидатов для Stage 2
     candidates = random.sample(alive, min(STAGE2_CANDIDATES, len(alive)))
     print(f"Отобрано {len(candidates)} кандидатов для Stage 2 (случайно)")
 
