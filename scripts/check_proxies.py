@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — HTTP проверка включена, оптимизированные URL
+Proxy Checker — читает sources.txt
 """
 
 import asyncio
@@ -18,24 +18,23 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ==================== НАСТРОЙКИ ====================
-HTTP_CHECK = 1                      # 1 = включить HTTP проверку (РЕКОМЕНДУЮ)
+HTTP_CHECK = 1
 TOP_N = 250
-STAGE2_CANDIDATES = 800             # Проверяем больше кандидатов
+STAGE2_CANDIDATES = 1500            # Увеличил до 1500
 MAX_CONCURRENT_TCP = 200
-MAX_CONCURRENT_HTTP = 15
+MAX_CONCURRENT_HTTP = 20
 
-TIMEOUT_TCP = 2.0                   # Уменьшил до 2 сек (быстрее)
-TIMEOUT_CURL = 5                    # 5 сек на HTTP запрос
+TIMEOUT_TCP = 2.0
+TIMEOUT_CURL = 5
 TIMEOUT_XRAY_START = 0.5
 TIMEOUT_HY2_START = 1.0
 
 ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
 
-# ЛУЧШИЕ URL ДЛЯ ПРОВЕРКИ (в порядке приоритета)
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",           # Cloudflare CDN, очень быстрый
-    "http://neverssl.com/",                  # Всегда 200 OK, нет TLS
-    "https://www.google.com/generate_204",   # Google 204 No Content (быстрый)
+    "https://cp.cloudflare.com/",
+    "http://neverssl.com/",
+    "https://www.google.com/generate_204",
 ]
 
 # ==================== УТИЛИТЫ ====================
@@ -278,13 +277,16 @@ def extract_uris(text: str):
     
     return list(uris)
 
-# ==================== ЗАГРУЗКА ИСТОЧНИКОВ ====================
+# ==================== ЗАГРУЗКА ИСТОЧНИКОВ ИЗ sources.txt ====================
 async def fetch_sources(sources_file: str = "sources.txt"):
     if not os.path.exists(sources_file):
+        print(f"File {sources_file} not found")
         return ""
     
     with open(sources_file) as f:
         urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+    
+    print(f"Loading {len(urls)} sources...")
     
     async with aiohttp.ClientSession() as session:
         tasks = []
@@ -340,7 +342,7 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
-                    break  # Достаточно одного успешного запроса
+                    break
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -359,7 +361,7 @@ async def test_http(proxy: dict, tmpdir: Path):
                 if ok:
                     success += 1
                     total_time += t
-                    break  # Достаточно одного успешного запроса
+                    break
             proc.terminate()
             try:
                 await asyncio.wait_for(proc.wait(), timeout=2)
@@ -379,10 +381,12 @@ async def test_http(proxy: dict, tmpdir: Path):
 # ==================== MAIN ====================
 async def main():
     print("=" * 50)
-    print(f"HTTP_CHECK = {HTTP_CHECK} ({'Включена' if HTTP_CHECK else 'Выключена'})")
+    print(f"HTTP_CHECK = {HTTP_CHECK} ({'ON' if HTTP_CHECK else 'OFF'})")
+    print(f"STAGE2_CANDIDATES = {STAGE2_CANDIDATES}")
+    print(f"MAX_CONCURRENT_HTTP = {MAX_CONCURRENT_HTTP}")
     print("=" * 50)
     
-    print("Loading sources...")
+    print("Loading sources from sources.txt...")
     raw = await fetch_sources("sources.txt")
     if not raw:
         print("No data")
@@ -397,7 +401,7 @@ async def main():
     
     print("Parsing...")
     proxies = []
-    for uri in uris[:10000]:
+    for uri in uris[:30000]:          # Увеличил до 30,000
         if uri.startswith("vless://") or re.match(r'[a-f0-9]{8}-', uri, re.I):
             p = parse_vless(uri)
             if p and p["proto"] in ALLOWED_PROTOCOLS:
@@ -433,7 +437,6 @@ async def main():
         print("No alive proxies")
         return
     
-    # ========== ВЫБОР РЕЖИМА ==========
     if HTTP_CHECK:
         print(f"HTTP check enabled, testing {STAGE2_CANDIDATES} random candidates...")
         candidates = random.sample(alive, min(STAGE2_CANDIDATES, len(alive)))
@@ -452,20 +455,20 @@ async def main():
         
         if not working:
             print("No working proxies after HTTP check")
-            print("Tip: Try increasing TIMEOUT_CURL or changing PROBE_URLS")
             return
         
-        # Сортируем по TCP пингу (чем меньше, тем лучше)
         working.sort(key=lambda x: x["tcp_ms"])
         top = working[:TOP_N]
         print(f"Saving {len(top)} verified working proxies")
+        
+        print(f"\n✅ Working proxies found:")
+        for i, p in enumerate(top[:10]):
+            print(f"  {i+1}. {p['proto']}://{p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms")
     else:
-        print("HTTP check disabled, saving fastest TCP proxies...")
         alive.sort(key=lambda x: x["tcp_ms"])
         top = alive[:TOP_N]
-        print(f"Saving {len(top)} fastest proxies (TCP only, may be dead)")
+        print(f"Saving {len(top)} fastest proxies (TCP only)")
     
-    # ========== СОХРАНЕНИЕ ==========
     Path("output").mkdir(exist_ok=True)
     
     with open("output/proxies.txt", "w") as f:
@@ -477,11 +480,6 @@ async def main():
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
     print(f"Saved to output/proxies.txt")
-    
-    if top and HTTP_CHECK:
-        print(f"\n✅ Working proxies found:")
-        for i, p in enumerate(top[:5]):
-            print(f"  {i+1}. {p['proto']}://{p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms")
 
 if __name__ == "__main__":
     asyncio.run(main())
