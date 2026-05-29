@@ -50,7 +50,7 @@ ALLOWED_COUNTRIES: set[str] = set()
 TOP_N = 250
 
 # Сколько TCP-alive кандидатов передавать в Stage 2 (тяжёлую проверку)
-STAGE2_CANDIDATES = 5000
+STAGE2_CANDIDATES = 600
 
 # Параллелизм
 MAX_CONCURRENT_TCP  = 200   # Stage 1: TCP-пинги
@@ -302,20 +302,35 @@ async def fetch_source(session: aiohttp.ClientSession, url: str) -> list[str]:
         r'raw.githubusercontent.com/\1/\2/refs/heads/\3',
         url,
     )
+    # Лимит: не читаем больше MAX_SOURCE_BYTES (защита от 46MB+ файлов)
+    MAX_SOURCE_BYTES = 8 * 1024 * 1024  # 8 MB — достаточно для любого нормального источника
+    PROTOS = ("vless://", "vmess://", "trojan://", "ss://", "hysteria2://")
+
     try:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=25)) as resp:
-            if resp.status == 200:
-                text = await resp.text(encoding="utf-8", errors="ignore")
-                configs = extract_configs(text)
-                status = f"✓ {len(configs):4d} конфигов"
-            else:
-                configs = []
-                status = f"✗ HTTP {resp.status}"
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=60)) as resp:
+            if resp.status != 200:
+                print(f"  ✗ HTTP {resp.status}  {url[:68]}")
+                return []
+
+            # Стриминговое чтение — не грузим весь файл в память
+            chunks: list[bytes] = []
+            total = 0
+            async for chunk in resp.content.iter_chunked(65536):
+                chunks.append(chunk)
+                total += len(chunk)
+                if total >= MAX_SOURCE_BYTES:
+                    break  # обрезаем
+
+            raw = b"".join(chunks)
+            text = raw.decode("utf-8", errors="ignore")
+
     except Exception as e:
-        configs = []
-        status = f"✗ {type(e).__name__}"
-    short = url[:68]
-    print(f"  {status}  {short}")
+        print(f"  ✗ {type(e).__name__}: {e}  {url[:60]}")
+        return []
+
+    configs = extract_configs(text)
+    truncated = " (обрезан!)" if total >= MAX_SOURCE_BYTES else ""
+    print(f"  ✓ {len(configs):5d} конфигов{truncated}  {url[:65]}")
     return configs
 
 
