@@ -5,9 +5,9 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 TOP_N = int(os.environ.get("TOP_N", "250"))
 STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "200"))
-MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "200"))
+MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "100"))
 MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "5"))
-TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "2.0"))
+TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "1.0"))
 TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "5"))
 ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,trojan,hysteria2").split(",")
 
