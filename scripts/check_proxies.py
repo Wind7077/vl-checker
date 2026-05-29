@@ -36,8 +36,8 @@ ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
 
 # Цели для проверки (быстрые, надёжные)
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",
-    "https://ip.sb/",
+"https://cdn.cloudflare.com/",    
+"https://1.1.1.1/",       
 ]
 
 # ==================== ВСЁ ОСТАЛЬНОЕ НЕ ТРОГАТЬ ====================
