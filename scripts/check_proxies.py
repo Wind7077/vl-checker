@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — оригинальная версия из репозитория Wind7077/vl-checker
-ИСПРАВЛЕНИЕ: отбор кандидатов на Stage 2 теперь случайный (вместо первых N)
+Proxy Checker — универсальный парсер для любых форматов
 """
 
 import asyncio
@@ -16,29 +15,26 @@ import sys
 import tempfile
 import time
 import random
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ========== КОНФИГУРАЦИЯ ==========
 TOP_N = int(os.environ.get("TOP_N", "250"))
-STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "500"))
+STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "300"))
 MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "200"))
-MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "30"))
+MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "10"))
 TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "3.0"))
-TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "10"))
-TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "1.0"))
-TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.5"))
+TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "7"))
+TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "0.5"))
+TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.0"))
 
-ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,hysteria2,trojan").split(",")
-ALLOWED_COUNTRIES = set(filter(None, os.environ.get("ALLOWED_COUNTRIES", "").split(",")))
-REQUIRE_REALITY = os.environ.get("REQUIRE_REALITY", "false").lower() == "true"
+ALLOWED_PROTOCOLS = os.environ.get("ALLOWED_PROTOCOLS", "vless,vmess,trojan,ss,hysteria2").split(",")
 
 PROBE_URLS = [
-    ("https://cp.cloudflare.com/", {200}),
-    ("https://ip.sb/", {200}),
-    ("https://ifconfig.me/ip", {200}),
+    "https://cp.cloudflare.com/",
+    "https://ip.sb/",
+    "https://ifconfig.me/ip",
 ]
 
 # ========== УТИЛИТЫ ==========
@@ -54,10 +50,10 @@ def get_hysteria2_path() -> str:
             return cmd
     return "hysteria2"
 
-async def run_curl(socks5_host: str, socks5_port: int, url: str, timeout: float) -> Tuple[bool, float]:
+async def run_curl(url: str, timeout: float) -> Tuple[bool, float]:
     cmd = [
         "curl", "-s", "-o", "/dev/null", "-w", "%{time_total}",
-        "--socks5-hostname", f"{socks5_host}:{socks5_port}",
+        "--socks5-hostname", "127.0.0.1:1080",
         "--connect-timeout", str(timeout),
         "--max-time", str(timeout),
         url
@@ -75,11 +71,12 @@ async def run_curl(socks5_host: str, socks5_port: int, url: str, timeout: float)
     except:
         return False, 0.0
 
-# ========== ПАРСИНГ PROXY URI ==========
-def parse_vless_uri(uri: str) -> Optional[Dict]:
-    if not uri.startswith("vless://"):
-        return None
+# ========== ПАРСИНГ ==========
+def parse_vless(uri: str) -> Optional[Dict]:
     try:
+        if not uri.startswith("vless://"):
+            uri = "vless://" + uri
+        
         content = uri[8:]
         if "#" in content:
             content = content.split("#")[0]
@@ -156,16 +153,17 @@ def parse_vless_uri(uri: str) -> Optional[Dict]:
             "proto": "vless",
             "host": host,
             "port": port,
-            "uri": uri,
-            "config_content": json.dumps(config)
+            "uri": uri if uri.startswith("vless://") else "vless://" + uri,
+            "config": json.dumps(config)
         }
     except:
         return None
 
-def parse_trojan_uri(uri: str) -> Optional[Dict]:
-    if not uri.startswith("trojan://"):
-        return None
+def parse_trojan(uri: str) -> Optional[Dict]:
     try:
+        if not uri.startswith("trojan://"):
+            uri = "trojan://" + uri
+        
         content = uri[9:]
         if "#" in content:
             content = content.split("#")[0]
@@ -217,16 +215,17 @@ def parse_trojan_uri(uri: str) -> Optional[Dict]:
             "proto": "trojan",
             "host": host,
             "port": port,
-            "uri": uri,
-            "config_content": json.dumps(config)
+            "uri": uri if uri.startswith("trojan://") else "trojan://" + uri,
+            "config": json.dumps(config)
         }
     except:
         return None
 
-def parse_hysteria2_uri(uri: str) -> Optional[Dict]:
-    if not uri.startswith("hysteria2://"):
-        return None
+def parse_hysteria2(uri: str) -> Optional[Dict]:
     try:
+        if not uri.startswith("hysteria2://"):
+            uri = "hysteria2://" + uri
+        
         parsed = urlparse(uri)
         host, port = parsed.hostname, parsed.port
         if not host or not port:
@@ -245,21 +244,67 @@ def parse_hysteria2_uri(uri: str) -> Optional[Dict]:
             "host": host,
             "port": port,
             "uri": uri,
-            "config_content": json.dumps(config)
+            "config": json.dumps(config)
         }
     except:
         return None
 
-def parse_proxy_uri(uri: str) -> Optional[Dict]:
-    if uri.startswith("vless://"):
-        return parse_vless_uri(uri)
-    if uri.startswith("trojan://"):
-        return parse_trojan_uri(uri)
-    if uri.startswith("hysteria2://"):
-        return parse_hysteria2_uri(uri)
-    return None
+# ========== УНИВЕРСАЛЬНОЕ ИЗВЛЕЧЕНИЕ ЛЮБЫХ СТРООК ==========
+def extract_all_proxy_strings(text: str) -> List[str]:
+    """Извлекает всё, что похоже на прокси: UUID@HOST:PORT или готовые URI"""
+    proxies = set()
+    
+    # Ищем UUID (8-4-4-4-12 формат) с последующим @host:port
+    uuid_pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}@[a-zA-Z0-9\.\-]+:\d+'
+    matches = re.findall(uuid_pattern, text, re.IGNORECASE)
+    for m in matches:
+        proxies.add(m)
+    
+    # Ищем уже готовые URI с протоколами
+    protocol_pattern = r'(vless://|trojan://|hysteria2://|vmess://|ss://)[^\s<>"\'\\\n]+'
+    matches = re.findall(protocol_pattern, text)
+    # Нужно получить полные строки
+    for match in re.finditer(protocol_pattern, text):
+        proxies.add(match.group(0))
+    
+    return list(proxies)
 
-# ========== ЗАГРУЗКА ИСТОЧНИКОВ ==========
+# ========== ИСТОЧНИКИ ==========
+SOURCES = [
+    "https://raw.githubusercontent.com/zieng2/wl/main/vless_lite.txt",
+    "https://raw.githubusercontent.com/Delta-Kronecker/V2ray-Config/refs/heads/main/config/sni/protocols/vless_sni.txt",
+    "https://raw.githubusercontent.com/kort0881/vpn-checker-backend/main/checked/RU_Best/ru_white_part1.txt",
+    "https://raw.githubusercontent.com/kort0881/vpn-checker-backend/main/checked/RU_Best/ru_white_part2.txt",
+    "https://raw.githubusercontent.com/kort0881/vpn-checker-backend/main/checked/RU_Best/ru_white_all_part3.txt",
+    "https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_universal.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/BLACK_VLESS_RUS.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-SNI-RU-all.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
+    "https://raw.githubusercontent.com/whoahaow/rjsxrd/refs/heads/main/githubmirror/bypass/bypass-all.txt",
+    "https://raw.githubusercontent.com/AvenCores/goida-vpn-configs/refs/heads/main/configs/vless.txt",
+    "https://raw.githubusercontent.com/AvenCores/goida-vpn-configs/refs/heads/main/configs/vless_reality.txt",
+    "https://raw.githubusercontent.com/AvenCores/goida-vpn-configs/refs/heads/main/configs/vless_reality_tcp.txt",
+    "https://raw.githubusercontent.com/AvenCores/goida-vpn-configs/refs/heads/main/configs/all.txt",
+    "https://raw.githubusercontent.com/Chm0kes/ssclprlist/refs/heads/main/vless_reality.txt",
+    "https://raw.githubusercontent.com/nikita29a/FreeProxyList/refs/heads/main/vless_reality.txt",
+    "https://raw.githubusercontent.com/Delta-Kronecker/V2ray-Config/refs/heads/main/config/vless.txt",
+    "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/filtered/subs/hysteria2.txt",
+    "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/vless.txt",
+    "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/python/hysteria2",
+    "https://raw.githubusercontent.com/Argh73/VpnConfigCollector/refs/heads/main/Splitted-By-Protocol/Hysteria2.txt",
+    "https://raw.githubusercontent.com/nikita29a/FreeProxyList/refs/heads/main/mirror/1.txt",
+    "https://raw.githubusercontent.com/nikita29a/FreeProxyList/refs/heads/main/mirror/2.txt",
+    "https://raw.githubusercontent.com/kort0881/sbornik-vless/main/hysteria2_001.txt",
+    "https://raw.githubusercontent.com/kort0881/sbornik-vless/main/hy2_001.txt",
+    "https://raw.githubusercontent.com/kort0881/sbornik-vless/main/subs/hysteria2_001.txt",
+    "https://raw.githubusercontent.com/4n0nymou3/multi-proxy-config-fetcher/refs/heads/main/configs/proxy_configs.txt",
+    "https://raw.githubusercontent.com/MohammadBahemmat/V2ray-Collector/refs/heads/main/servers/hysteria2_servers.txt",
+    "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/hy2.txt",
+    "https://raw.githubusercontent.com/whoahaow/rjsxrd/refs/heads/main/githubmirror/split-by-protocols/hy2.txt",
+    "https://raw.githubusercontent.com/whoahaow/rjsxrd/refs/heads/main/githubmirror/split-by-protocols/trojan.txt",
+    "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/trojan_configs.txt",
+]
+
 async def fetch_source(session: aiohttp.ClientSession, url: str) -> str:
     try:
         async with session.get(url, timeout=30) as resp:
@@ -269,14 +314,9 @@ async def fetch_source(session: aiohttp.ClientSession, url: str) -> str:
         pass
     return ""
 
-async def fetch_all_sources(sources_file: str = "sources.txt") -> str:
-    if not os.path.exists(sources_file):
-        print(f"Файл {sources_file} не найден")
-        return ""
-    with open(sources_file) as f:
-        urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+async def fetch_all_sources() -> str:
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_source(session, url) for url in urls]
+        tasks = [fetch_source(session, url) for url in SOURCES]
         results = await asyncio.gather(*tasks)
     return "\n".join(results)
 
@@ -295,33 +335,28 @@ async def tcp_ping(host: str, port: int, timeout: float) -> Tuple[bool, float]:
     except:
         return False, 0.0
 
-# ========== HTTP ПРОВЕРКА (STAGE 2) ==========
-async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
-    proto = proxy["proto"]
-    config_content = proxy.get("config_content")
-    if not config_content:
-        return None
-
+# ========== HTTP ПРОВЕРКА ==========
+async def test_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
     config_path = tmpdir / f"config_{proxy['id']}.json"
     async with aiofiles.open(config_path, "w") as f:
-        await f.write(config_content)
-
-    success_count = 0
+        await f.write(proxy["config"])
+    
+    success = 0
     total_time = 0.0
-
+    
     try:
-        if proto == "hysteria2":
+        if proxy["proto"] == "hysteria2":
             proc = await asyncio.create_subprocess_exec(
                 get_hysteria2_path(), "-c", str(config_path),
                 stdout=asyncio.subprocess.DEVNULL,
                 stderr=asyncio.subprocess.DEVNULL
             )
             await asyncio.sleep(TIMEOUT_HY2_START)
-            for url, _ in PROBE_URLS:
-                ok, elapsed = await run_curl("127.0.0.1", 1080, url, TIMEOUT_CURL)
+            for url in PROBE_URLS:
+                ok, t = await run_curl(url, TIMEOUT_CURL)
                 if ok:
-                    success_count += 1
-                    total_time += elapsed
+                    success += 1
+                    total_time += t
             proc.terminate()
             await proc.wait()
         else:
@@ -331,118 +366,115 @@ async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
                 stderr=asyncio.subprocess.DEVNULL
             )
             await asyncio.sleep(TIMEOUT_XRAY_START)
-            for url, _ in PROBE_URLS:
-                ok, elapsed = await run_curl("127.0.0.1", 1080, url, TIMEOUT_CURL)
+            for url in PROBE_URLS:
+                ok, t = await run_curl(url, TIMEOUT_CURL)
                 if ok:
-                    success_count += 1
-                    total_time += elapsed
+                    success += 1
+                    total_time += t
             proc.terminate()
             await proc.wait()
-
-        if success_count == 0:
+        
+        if success == 0:
             return None
-
-        proxy["http_ms"] = total_time / success_count
-        proxy["reliability"] = success_count / len(PROBE_URLS)
-        proxy["success_count"] = success_count
+        
+        proxy["http_ms"] = total_time / success
+        proxy["reliability"] = success / len(PROBE_URLS)
         return proxy
     except:
         return None
 
-# ========== ОСНОВНАЯ ФУНКЦИЯ ==========
+# ========== MAIN ==========
 async def main():
-    print("Loading sources...")
-    raw_text = await fetch_all_sources("sources.txt")
-    if not raw_text:
-        print("No data fetched")
-        return
-
-    # Извлекаем URI
-    pattern = r'(vless://|trojan://|hysteria2://)[^\s]+'
-    full_uris = list(set(re.findall(pattern, raw_text)))
-    print(f"Found {len(full_uris)} unique URIs")
-
-    # Парсим
-    proxies = []
-    for uri in full_uris:
-        proxy = parse_proxy_uri(uri)
-        if proxy and proxy["proto"] in ALLOWED_PROTOCOLS:
-            if REQUIRE_REALITY and proxy["proto"] == "vless":
-                if "reality" not in proxy.get("config_content", "").lower():
-                    continue
-            proxies.append(proxy)
+    print("📡 Загрузка источников...")
+    raw = await fetch_all_sources()
     
-    print(f"After protocol filter ({ALLOWED_PROTOCOLS}): {len(proxies)}")
-
-    if not proxies:
-        print("No proxies to test")
+    if not raw:
+        print("❌ Не удалось загрузить данные")
         return
-
-    # Stage 1: TCP ping
+    
+    print("🔍 Извлечение прокси-строк...")
+    proxy_strings = extract_all_proxy_strings(raw)
+    print(f"✅ Найдено строк: {len(proxy_strings)}")
+    
+    if not proxy_strings:
+        print("❌ Нет строк для парсинга")
+        return
+    
+    print("📦 Парсинг прокси...")
+    proxies = []
+    for ps in proxy_strings:
+        for parser_name, parser in [("vless", parse_vless), ("trojan", parse_trojan), ("hysteria2", parse_hysteria2)]:
+            if ps.startswith(parser_name) or (parser_name == "vless" and re.match(r'[a-f0-9]{8}-', ps, re.I)):
+                p = parser(ps)
+                if p and p["proto"] in ALLOWED_PROTOCOLS:
+                    proxies.append(p)
+                break
+    
+    print(f"✅ Отфильтровано по протоколам {ALLOWED_PROTOCOLS}: {len(proxies)}")
+    
+    if not proxies:
+        print("❌ Нет прокси после фильтрации")
+        return
+    
+    print(f"🏓 TCP пинг ({len(proxies)} прокси)...")
     sem = asyncio.Semaphore(MAX_CONCURRENT_TCP)
-    async def ping_one(p):
+    async def ping(p):
         async with sem:
             ok, ms = await tcp_ping(p["host"], p["port"], TIMEOUT_TCP)
             if ok:
                 p["tcp_ms"] = ms
                 return p
             return None
-
-    tcp_tasks = [ping_one(p) for p in proxies]
-    tcp_results = await asyncio.gather(*tcp_tasks)
-    alive = [p for p in tcp_results if p is not None]
-    print(f"TCP alive: {len(alive)}/{len(proxies)}")
-
+    
+    results = await asyncio.gather(*[ping(p) for p in proxies])
+    alive = [p for p in results if p]
+    print(f"✅ TCP живых: {len(alive)}/{len(proxies)}")
+    
     if not alive:
-        print("No TCP-alive proxies")
+        print("❌ Нет живых по TCP")
         return
-
-    # ========== ЕДИНСТВЕННОЕ ИСПРАВЛЕНИЕ: случайная выборка ==========
-    # Было: candidates = alive[:STAGE2_CANDIDATES]
+    
     candidates = random.sample(alive, min(STAGE2_CANDIDATES, len(alive)))
-    print(f"Selected {len(candidates)} random candidates for Stage 2")
-
-    # Stage 2: HTTP test
+    print(f"🎲 Отобрано {len(candidates)} кандидатов для полной проверки")
+    
+    print(f"🌐 HTTP проверка...")
     http_sem = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
-        async def test_one(p):
+        async def test(p):
             async with http_sem:
-                return await test_proxy_http(p, tmp_path)
-
-        http_tasks = [test_one(p) for p in candidates]
-        http_results = await asyncio.gather(*http_tasks)
-        working = [p for p in http_results if p is not None]
-
-    print(f"HTTP passed: {len(working)}/{len(candidates)}")
-
+                return await test_http(p, tmp_path)
+        
+        http_results = await asyncio.gather(*[test(p) for p in candidates])
+        working = [p for p in http_results if p]
+    
+    print(f"✅ HTTP прошли: {len(working)}/{len(candidates)}")
+    
     if not working:
-        print("No working proxies after HTTP check")
+        print("❌ Нет рабочих прокси")
         return
-
-    # Scoring
+    
     for p in working:
-        score = 0.3 * p["tcp_ms"] + 1.0 * p["http_ms"] - 300 * p["reliability"]
-        p["score"] = score
+        p["score"] = 0.3 * p["tcp_ms"] + 1.0 * p["http_ms"] - 300 * p["reliability"]
+    
     working.sort(key=lambda x: x["score"])
     top = working[:TOP_N]
-
-    out_dir = Path("output")
-    out_dir.mkdir(exist_ok=True)
-
-    with open(out_dir / "proxies.txt", "w") as f:
+    
+    out = Path("output")
+    out.mkdir(exist_ok=True)
+    
+    with open(out / "proxies.txt", "w") as f:
         for p in top:
             f.write(p["uri"] + "\n")
-
-    with open(out_dir / "proxies_b64.txt", "w") as f:
+    
+    with open(out / "proxies_b64.txt", "w") as f:
         for p in top:
-            b64 = base64.b64encode(p["uri"].encode()).decode()
-            f.write(b64 + "\n")
-
-    with open(out_dir / "report.json", "w") as f:
+            f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
+    
+    with open(out / "report.json", "w") as f:
         json.dump(top, f, indent=2)
-
-    print(f"Saved {len(top)} proxies to output/")
+    
+    print(f"💾 Сохранено {len(top)} прокси в output/")
 
 if __name__ == "__main__":
     asyncio.run(main())
