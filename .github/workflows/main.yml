@@ -11,7 +11,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 90            # increased from 30 to 90 minutes
+    timeout-minutes: 90            # увеличен с 30 до 90 минут
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +30,15 @@ jobs:
         run: pip install aiohttp aiofiles
 
       - name: Run proxy checker
+        env:
+          ALLOWED_PROTOCOLS: "vless,hysteria2,trojan"
+          REQUIRE_REALITY: "true"
+          ALLOWED_COUNTRIES: "NL,DE,US"
+          TOP_N: "250"
+          STAGE2_CANDIDATES: "2500"
+          MAX_CONCURRENT_TCP: "200"
+          MAX_CONCURRENT_HTTP: "30"
+          TIMEOUT_TCP: "1.5"
         run: python scripts/check_proxies.py
 
       - name: Commit & push results
