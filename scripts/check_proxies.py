@@ -29,7 +29,7 @@ import time
 import urllib.parse
 import zipfile
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -37,7 +37,7 @@ from pathlib import Path
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Какие протоколы проверять. Убери лишние или добавь "vmess","trojan","ss"
-ALLOWED_PROTOCOLS = ["vless", "hysteria2", "trojan"]
+ALLOWED_PROTOCOLS = ["vless", "hysteria2"]
 
 # True  = vless только с reality (лучший обход ТСПУ)
 # False = любой vless
@@ -78,10 +78,14 @@ PROTO_BONUS: dict[str, int] = {
 # ── Probe-URL: ресурсы заблокированные в РФ ──────────────────────────────────
 # Формат: (url, [допустимые HTTP-коды])
 # Чем больше URL — тем точнее reliability, но дольше Stage 2
+# Probe-URL выбраны так чтобы работать И с GitHub Actions (не блокируют),
+# И являются индикаторами что прокси реально работает для РФ-пользователя.
+# ip.sb / ifconfig.me просто возвращают IP прокси — это надёжный нейтральный тест.
+# cp.cloudflare.com — глобальный CDN, 204 означает что прокси маршрутирует трафик.
 PROBE_URLS = [
-    ("https://api.telegram.org/",           [200, 404]),  # 404 без токена — норма
-    ("https://www.google.com/generate_204", [200, 204]),
-    ("https://cp.cloudflare.com/",          [200, 204]),
+    ("https://cp.cloudflare.com/",   [200, 204]),   # Cloudflare connectivity check
+    ("https://ip.sb/",               [200]),         # возвращает IP — нейтральный
+    ("https://ifconfig.me/ip",       [200]),         # то же, резервный
 ]
 
 GEO_BATCH_SIZE = 100  # ip-api.com batch limit
@@ -160,6 +164,48 @@ def filter_configs(configs: list[str]) -> list[str]:
             continue
         out.append(uri)
     return out
+
+# Нормализует параметры URL для дедупликации: сортирует query-параметры,
+# убирает мусорные ключи (Telegram-реклама, host-реклама), чистит fragment.
+_JUNK_PARAMS = {"telegram", "host", "path_junk"}  # lowercase ключи-мусор
+
+def _canonical_key(uri: str) -> str:
+    """
+    Ключ дедупликации — только значимые части URI.
+    Два конфига с одним UUID/pbk но разными IP/мусором → разные ключи (по IP).
+    Два конфига с одним UUID/IP но разным мусором в fragment/Telegram= → один ключ.
+    """
+    try:
+        scheme = uri.split("://")[0].lower()
+        p = urllib.parse.urlparse(uri)
+        params = dict(urllib.parse.parse_qsl(p.query))
+        # Убираем мусорные параметры (реклама Telegram-каналов)
+        clean = {
+            k: v for k, v in params.items()
+            if k.lower() not in ("telegram", "host_ad")
+            and not v.startswith("Join")
+            and not v.startswith("@")
+            and "---" not in v
+        }
+        # Сортируем параметры для стабильного ключа
+        q = urllib.parse.urlencode(sorted(clean.items()))
+        # Fragment полностью игнорируем (там обычно название/латентность)
+        return f"{scheme}://{p.username}@{p.hostname}:{p.port}?{q}"
+    except Exception:
+        return uri
+
+
+def dedup_configs(configs: list[str]) -> list[str]:
+    """Убирает дубликаты с разным мусором но одинаковой сутью."""
+    seen: set[str] = set()
+    result = []
+    for uri in configs:
+        key = _canonical_key(uri)
+        if key not in seen:
+            seen.add(key)
+            result.append(uri)
+    return result
+
 
 
 def parse_host_port(uri: str) -> tuple[str, int, str] | None:
@@ -626,7 +672,7 @@ async def stage2_worker(sem: asyncio.Semaphore, idx: int, item: dict) -> dict | 
 
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
-    ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     print(f"\n{'═'*64}")
     print(f"  Proxy Checker (RU edition) | {ts}")
@@ -661,7 +707,9 @@ async def main():
 
     # ── 2. Фильтр протоколов ─────────────────────────────────────────────────
     filtered = filter_configs(all_configs)
-    print(f"\n🔎 После фильтра: {len(filtered)}")
+    before_dedup = len(filtered)
+    filtered = dedup_configs(filtered)
+    print(f"\n🔎 После фильтра: {before_dedup} → после дедупликации: {len(filtered)}")
     if not filtered:
         print("⚠️  Ничего не осталось, выход.")
         return
