@@ -18,7 +18,7 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ==================== НАСТРОЙКИ ====================
-HTTP_CHECK = 1                      # 1 = включить HTTP проверку (РЕКОМЕНДУЮ)
+HTTP_CHECK = 0                      # 1 = включить HTTP проверку (РЕКОМЕНДУЮ)
 TOP_N = 250
 STAGE2_CANDIDATES = 800             # Проверяем больше кандидатов
 MAX_CONCURRENT_TCP = 200
