@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — с поддержкой REALITY для vless
+Proxy Checker — улучшенный парсинг всех форматов
 """
 
 import asyncio
@@ -18,14 +18,14 @@ import random
 import contextlib
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-from urllib.parse import urlparse, parse_qs, unquote
+from urllib.parse import urlparse, parse_qs
 
 # ========== КОНФИГУРАЦИЯ ==========
 TOP_N = int(os.environ.get("TOP_N", "250"))
-STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "800"))
+STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "500"))  # уменьшено до 500
 MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "200"))
-MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "15"))
-TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "1.0"))
+MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "10"))
+TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "3.0"))
 TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "7"))
 TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "0.5"))
 TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.0"))
@@ -111,50 +111,46 @@ async def run_curl(socks5_host: str, socks5_port: int, url: str, timeout: float)
 
 # ========== ПАРСИНГ С ПОДДЕРЖКОЙ REALITY ==========
 def parse_vless_uri(uri: str) -> Optional[Dict]:
-    """Парсит vless:// URI с поддержкой REALITY параметров"""
+    """Парсит vless:// URI"""
     if not uri.startswith("vless://"):
         return None
     try:
-        # Убираем vless://
-        uri_content = uri[8:]
+        content = uri[8:]
         
-        # Разделяем на user@host:port и параметры
-        if "#" in uri_content:
-            uri_content = uri_content.split("#")[0]
-        
-        # Ищем параметры после ?
-        if "?" in uri_content:
-            base_part, query_part = uri_content.split("?", 1)
-            params = parse_qs(query_part)
+        # Разбираем параметры
+        if "?" in content:
+            base, query = content.split("?", 1)
+            params = parse_qs(query)
         else:
-            base_part = uri_content
+            base = content
             params = {}
         
-        # Извлекаем host и port
-        if "@" in base_part:
-            userpass, hostport = base_part.split("@", 1)
-            user_id = userpass
+        # Извлекаем uuid@host:port
+        if "@" in base:
+            user_part, host_part = base.split("@", 1)
+            user_id = user_part
         else:
-            hostport = base_part
+            host_part = base
             user_id = ""
         
-        if ":" in hostport:
-            host, port_str = hostport.split(":", 1)
-            port = int(port_str)
+        # Извлекаем host и port
+        if ":" in host_part:
+            host, port_str = host_part.split(":", 1)
+            port = int(port_str.split("#")[0].split("/")[0])
         else:
-            host = hostport
+            host = host_part.split("#")[0]
             port = 443
         
-        # Извлекаем параметры REALITY
+        # Параметры REALITY
         security = params.get("security", ["none"])[0]
         encryption = params.get("encryption", ["none"])[0]
         flow = params.get("flow", [""])[0]
-        pbk = params.get("pbk", [""])[0]  # public key
-        sid = params.get("sid", [""])[0]   # short id
-        fp = params.get("fp", ["chrome"])[0]  # fingerprint
-        sni = params.get("sni", [""])[0]  # server name
+        pbk = params.get("pbk", [""])[0]
+        sid = params.get("sid", [""])[0]
+        fp = params.get("fp", ["chrome"])[0]
+        sni = params.get("sni", [""])[0]
         
-        # Базовый конфиг
+        # Конфиг xray
         config = {
             "log": {"loglevel": "warning"},
             "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}],
@@ -166,29 +162,35 @@ def parse_vless_uri(uri: str) -> Optional[Dict]:
                         "port": port,
                         "users": [{
                             "id": user_id,
-                            "encryption": encryption,
-                            "flow": flow if flow else "xtls-rprx-vision"
+                            "encryption": encryption
                         }]
                     }]
                 },
                 "streamSettings": {
                     "network": "tcp",
-                    "security": security,
-                    "tlsSettings": {} if security != "reality" else {
-                        "serverName": sni if sni else "www.cloudflare.com",
-                        "fingerprint": fp,
-                        "realitySettings": {
-                            "publicKey": pbk,
-                            "shortId": sid if sid else ""
-                        }
-                    }
+                    "security": security
                 }
             }]
         }
         
-        # Убираем пустые поля
-        if not flow:
-            del config["outbounds"][0]["settings"]["vnext"][0]["users"][0]["flow"]
+        # Добавляем flow если есть
+        if flow:
+            config["outbounds"][0]["settings"]["vnext"][0]["users"][0]["flow"] = flow
+        
+        # Добавляем REALITY настройки если нужно
+        if security == "reality" and pbk:
+            config["outbounds"][0]["streamSettings"]["tlsSettings"] = {
+                "serverName": sni if sni else "www.cloudflare.com",
+                "fingerprint": fp,
+                "realitySettings": {
+                    "publicKey": pbk,
+                    "shortId": sid if sid else ""
+                }
+            }
+        elif security == "tls":
+            config["outbounds"][0]["streamSettings"]["tlsSettings"] = {
+                "serverName": sni if sni else host
+            }
         
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
@@ -199,7 +201,65 @@ def parse_vless_uri(uri: str) -> Optional[Dict]:
             "config_content": json.dumps(config)
         }
     except Exception as e:
-        print(f"Parse error vless: {e}")
+        return None
+
+def parse_vmess_uri(uri: str) -> Optional[Dict]:
+    """Парсинг vmess://base64"""
+    if not uri.startswith("vmess://"):
+        return None
+    try:
+        b64 = uri[8:]
+        # Добиваем base64
+        missing = len(b64) % 4
+        if missing:
+            b64 += "=" * (4 - missing)
+        decoded = base64.b64decode(b64).decode('utf-8')
+        cfg = json.loads(decoded)
+        
+        host = cfg.get("add")
+        port = cfg.get("port")
+        if not host or not port:
+            return None
+        
+        xray_config = {
+            "log": {"loglevel": "warning"},
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}],
+            "outbounds": [{
+                "protocol": "vmess",
+                "settings": {
+                    "vnext": [{
+                        "address": host,
+                        "port": port,
+                        "users": [{
+                            "id": cfg.get("id"),
+                            "alterId": cfg.get("aid", 0),
+                            "security": cfg.get("scy", "auto")
+                        }]
+                    }]
+                },
+                "streamSettings": {
+                    "network": cfg.get("net", "tcp"),
+                    "security": cfg.get("tls", "none")
+                }
+            }]
+        }
+        
+        # Добавляем ws настройки если нужно
+        if cfg.get("net") == "ws":
+            xray_config["outbounds"][0]["streamSettings"]["wsSettings"] = {
+                "path": cfg.get("path", "/"),
+                "headers": {"Host": cfg.get("host", "")}
+            }
+        
+        return {
+            "id": base64.b64encode(uri.encode()).decode()[:16],
+            "proto": "vmess",
+            "host": host,
+            "port": port,
+            "uri": uri,
+            "config_content": json.dumps(xray_config)
+        }
+    except Exception:
         return None
 
 def parse_trojan_uri(uri: str) -> Optional[Dict]:
@@ -234,8 +294,58 @@ def parse_trojan_uri(uri: str) -> Optional[Dict]:
             "uri": uri,
             "config_content": json.dumps(config)
         }
-    except Exception as e:
-        print(f"Parse error trojan: {e}")
+    except Exception:
+        return None
+
+def parse_ss_uri(uri: str) -> Optional[Dict]:
+    """Парсинг ss://"""
+    if not uri.startswith("ss://"):
+        return None
+    try:
+        content = uri[5:]
+        if "@" in content:
+            b64_part, host_part = content.split("@", 1)
+            missing = len(b64_part) % 4
+            if missing:
+                b64_part += "=" * (4 - missing)
+            decoded = base64.b64decode(b64_part).decode('utf-8')
+            if ":" in decoded:
+                method, password = decoded.split(":", 1)
+            else:
+                return None
+        else:
+            return None
+        
+        if ":" in host_part:
+            host, port_str = host_part.split(":", 1)
+            port = int(port_str.split("#")[0].split("/")[0])
+        else:
+            return None
+        
+        config = {
+            "log": {"loglevel": "warning"},
+            "outbounds": [{
+                "protocol": "shadowsocks",
+                "settings": {
+                    "servers": [{
+                        "address": host,
+                        "port": port,
+                        "method": method,
+                        "password": password
+                    }]
+                }
+            }],
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
+        }
+        return {
+            "id": base64.b64encode(uri.encode()).decode()[:16],
+            "proto": "ss",
+            "host": host,
+            "port": port,
+            "uri": uri,
+            "config_content": json.dumps(config)
+        }
+    except Exception:
         return None
 
 def parse_hysteria2_uri(uri: str) -> Optional[Dict]:
@@ -261,18 +371,32 @@ def parse_hysteria2_uri(uri: str) -> Optional[Dict]:
             "uri": uri,
             "config_content": json.dumps(config)
         }
-    except Exception as e:
-        print(f"Parse error hysteria2: {e}")
+    except Exception:
         return None
 
-def parse_proxy_uri(uri: str) -> Optional[Dict]:
-    if uri.startswith("vless://"):
-        return parse_vless_uri(uri)
-    if uri.startswith("trojan://"):
-        return parse_trojan_uri(uri)
-    if uri.startswith("hysteria2://"):
-        return parse_hysteria2_uri(uri)
-    return None
+def extract_all_uris(text: str) -> List[str]:
+    """Извлекает все возможные URI из текста"""
+    uris = set()
+    
+    # Паттерны для разных протоколов
+    patterns = [
+        r'vless://[a-zA-Z0-9\-_]+@[a-zA-Z0-9\.\-]+:\d+[^\s<>"\']*',
+        r'vmess://[A-Za-z0-9\+/=]+[^\s<>"\']*',
+        r'trojan://[^@]+@[a-zA-Z0-9\.\-]+:\d+[^\s<>"\']*',
+        r'ss://[A-Za-z0-9\+/=]+@[a-zA-Z0-9\.\-]+:\d+[^\s<>"\']*',
+        r'hysteria2://[^@]+@[a-zA-Z0-9\.\-]+:\d+[^\s<>"\']*',
+        r'vless://[^\s<>"\']+',
+        r'vmess://[^\s<>"\']+',
+        r'trojan://[^\s<>"\']+',
+        r'ss://[^\s<>"\']+',
+        r'hysteria2://[^\s<>"\']+',
+    ]
+    
+    for pattern in patterns:
+        matches = re.findall(pattern, text)
+        uris.update(matches)
+    
+    return list(uris)
 
 # ========== ЗАГРУЗКА ИСТОЧНИКОВ ==========
 async def fetch_source(session: aiohttp.ClientSession, url: str) -> str:
@@ -349,7 +473,7 @@ async def test_proxy_http(proxy: Dict, tmpdir: Path) -> Optional[Dict]:
         proxy["reliability"] = success_count / len(PROBE_URLS)
         proxy["success_count"] = success_count
         return proxy
-    except Exception as e:
+    except Exception:
         return None
 
 # ========== ОСНОВНАЯ ФУНКЦИЯ ==========
@@ -360,17 +484,32 @@ async def main():
         print("No data fetched")
         return
 
-    # Извлекаем URI
-    pattern = r'(vless://|trojan://|hysteria2://)[^\s]+'
-    full_uris = list(set(re.findall(pattern, raw_text)))
-    print(f"Found {len(full_uris)} unique URIs")
+    # Извлекаем все URI улучшенным методом
+    all_uris = extract_all_uris(raw_text)
+    print(f"Found {len(all_uris)} unique URIs")
 
-    # Парсим
+    if not all_uris:
+        print("No URIs found in sources")
+        return
+
+    # Парсим URI
+    parsers = {
+        "vless": parse_vless_uri,
+        "vmess": parse_vmess_uri,
+        "trojan": parse_trojan_uri,
+        "ss": parse_ss_uri,
+        "hysteria2": parse_hysteria2_uri,
+    }
+    
     proxies = []
-    for uri in full_uris:
-        proxy = parse_proxy_uri(uri)
-        if proxy and proxy["proto"] in ALLOWED_PROTOCOLS:
-            proxies.append(proxy)
+    for uri in all_uris[:10000]:  # Ограничиваем для скорости
+        for proto, parser in parsers.items():
+            if uri.startswith(f"{proto}://"):
+                proxy = parser(uri)
+                if proxy and proxy["proto"] in ALLOWED_PROTOCOLS:
+                    proxies.append(proxy)
+                break
+    
     print(f"After protocol filter ({ALLOWED_PROTOCOLS}): {len(proxies)}")
 
     if not proxies:
@@ -416,7 +555,6 @@ async def main():
 
     if not working:
         print("No working proxies after HTTP check")
-        print("Possible reasons: wrong REALITY config, dead proxies, or xray/hy2 issues")
         return
 
     # Ранжирование
