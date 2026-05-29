@@ -165,46 +165,104 @@ def filter_configs(configs: list[str]) -> list[str]:
         out.append(uri)
     return out
 
-# Нормализует параметры URL для дедупликации: сортирует query-параметры,
-# убирает мусорные ключи (Telegram-реклама, host-реклама), чистит fragment.
-_JUNK_PARAMS = {"telegram", "host", "path_junk"}  # lowercase ключи-мусор
+# ── Параметры которые не несут смысловой нагрузки, только реклама ────────────
+_JUNK_PARAM_KEYS = {"telegram", "servisename", "pqv"}
+def _is_junk_value(v: str) -> bool:
+    v = v.strip()
+    return (
+        v.startswith("@")
+        or v.startswith("Join")
+        or v.startswith("Telegram")
+        or "---" in v
+        or "@" in v and v.count("@") > 1   # "telegram-@mainv2ray,telegram-@mainv2ray,..."
+    )
 
-def _canonical_key(uri: str) -> str:
+def _clean_params(params: dict) -> dict:
+    """Убирает рекламный мусор из query-параметров."""
+    return {
+        k: v for k, v in params.items()
+        if k.lower() not in _JUNK_PARAM_KEYS
+        and not _is_junk_value(v)
+    }
+
+def _server_fingerprint(uri: str) -> str | None:
     """
-    Ключ дедупликации — только значимые части URI.
-    Два конфига с одним UUID/pbk но разными IP/мусором → разные ключи (по IP).
-    Два конфига с одним UUID/IP но разным мусором в fragment/Telegram= → один ключ.
+    Отпечаток backend-сервера: uuid + pbk (для vless/reality).
+    Одинаковый uuid+pbk с разными IP = одна ферма = один сервер.
+    Возвращает None если не удаётся определить (пропускаем дедупликацию).
+    """
+    try:
+        scheme = uri.split("://")[0].lower()
+        if scheme not in ("vless", "trojan"):
+            return None
+        p = urllib.parse.urlparse(uri)
+        uid = p.username or ""
+        if not uid or len(uid) < 8:
+            return None
+        params = dict(urllib.parse.parse_qsl(p.query))
+        pbk = params.get("pbk", "")
+        # У trojan нет pbk, дедуплицируем только по uuid+port (менее агрессивно)
+        if scheme == "trojan":
+            return f"trojan:{uid}:{p.port}"
+        # vless без pbk (не reality) — дедуплицируем по uuid+host+port как раньше
+        if not pbk:
+            return None
+        return f"vless:{uid}:{pbk}"
+    except Exception:
+        return None
+
+def _uri_key(uri: str) -> str:
+    """
+    Ключ для дедупликации одинаковых URI с разным мусором:
+    схема + uuid + host + port + чистые параметры (без fragment).
     """
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
-        params = dict(urllib.parse.parse_qsl(p.query))
-        # Убираем мусорные параметры (реклама Telegram-каналов)
-        clean = {
-            k: v for k, v in params.items()
-            if k.lower() not in ("telegram", "host_ad")
-            and not v.startswith("Join")
-            and not v.startswith("@")
-            and "---" not in v
-        }
-        # Сортируем параметры для стабильного ключа
-        q = urllib.parse.urlencode(sorted(clean.items()))
-        # Fragment полностью игнорируем (там обычно название/латентность)
+        params = _clean_params(dict(urllib.parse.parse_qsl(p.query)))
+        q = urllib.parse.urlencode(sorted(params.items()))
         return f"{scheme}://{p.username}@{p.hostname}:{p.port}?{q}"
     except Exception:
         return uri
 
+def dedup_configs(configs: list[str]) -> tuple[list[str], int, int]:
+    """
+    Двухуровневая дедупликация.
 
-def dedup_configs(configs: list[str]) -> list[str]:
-    """Убирает дубликаты с разным мусором но одинаковой сутью."""
-    seen: set[str] = set()
-    result = []
+    Уровень 1 — мусорные клоны (одинаковый сервер, разный fragment/реклама):
+      ключ = scheme+uuid+host+port+clean_params
+      48ff2b70@51.158.206.103?...&host=TELEGRAM  →  дубликат 48ff2b70@51.158.206.103?...
+
+    Уровень 2 — IP-фермы (один backend раздаётся на пул IP):
+      ключ = uuid+pbk
+      48ff2b70@51.158.206.103  и  48ff2b70@51.158.206.29  → одна ферма, берём первый
+
+    Возвращает (результат, удалено_на_ур1, удалено_на_ур2).
+    """
+    # Уровень 1: убираем мусорные клоны
+    seen_uri: set[str] = set()
+    after_l1: list[str] = []
     for uri in configs:
-        key = _canonical_key(uri)
-        if key not in seen:
-            seen.add(key)
-            result.append(uri)
-    return result
+        key = _uri_key(uri)
+        if key not in seen_uri:
+            seen_uri.add(key)
+            after_l1.append(uri)
+    removed_l1 = len(configs) - len(after_l1)
+
+    # Уровень 2: убираем IP-фермы (оставляем первый попавшийся IP)
+    seen_fp: set[str] = set()
+    after_l2: list[str] = []
+    for uri in after_l1:
+        fp = _server_fingerprint(uri)
+        if fp is None:
+            # Не умеем определить ферму → оставляем как есть
+            after_l2.append(uri)
+        elif fp not in seen_fp:
+            seen_fp.add(fp)
+            after_l2.append(uri)
+    removed_l2 = len(after_l1) - len(after_l2)
+
+    return after_l2, removed_l1, removed_l2
 
 
 
@@ -708,8 +766,11 @@ async def main():
     # ── 2. Фильтр протоколов ─────────────────────────────────────────────────
     filtered = filter_configs(all_configs)
     before_dedup = len(filtered)
-    filtered = dedup_configs(filtered)
-    print(f"\n🔎 После фильтра: {before_dedup} → после дедупликации: {len(filtered)}")
+    filtered, rem_l1, rem_l2 = dedup_configs(filtered)
+    print(f"\n🔎 После фильтра протоколов : {before_dedup}")
+    print(f"   −мусорные клоны (L1)      : −{rem_l1}")
+    print(f"   −IP-фермы (L2, uuid+pbk)  : −{rem_l2}")
+    print(f"   = уникальных серверов      : {len(filtered)}")
     if not filtered:
         print("⚠️  Ничего не осталось, выход.")
         return
