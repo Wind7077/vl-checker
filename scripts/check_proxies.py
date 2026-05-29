@@ -303,7 +303,7 @@ async def fetch_source(session: aiohttp.ClientSession, url: str) -> list[str]:
         url,
     )
     # Лимит: не читаем больше MAX_SOURCE_BYTES (защита от 46MB+ файлов)
-    MAX_SOURCE_BYTES = 8 * 1024 * 1024  # 8 MB — достаточно для любого нормального источника
+    MAX_SOURCE_BYTES = 20 * 1024 * 1024  # было 8MB
     PROTOS = ("vless://", "vmess://", "trojan://", "ss://", "hysteria2://")
 
     try:
