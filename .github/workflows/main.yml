@@ -43,6 +43,12 @@ jobs:
         run: pip install aiohttp aiofiles
 
       - name: Run proxy checker
+        env:
+          STAGE2_CANDIDATES: 800
+          MAX_CONCURRENT_HTTP: 15
+          TIMEOUT_CURL: 7
+          TIMEOUT_XRAY_START: 0.5
+          TIMEOUT_HY2_START: 1.0
         run: python scripts/check_proxies.py
 
       - name: Commit & push results
