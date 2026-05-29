@@ -21,10 +21,10 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 # ========== НАСТРОЙКИ ==========
 TOP_N = int(os.environ.get("TOP_N", "250"))
-STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "500"))
+STAGE2_CANDIDATES = int(os.environ.get("STAGE2_CANDIDATES", "1500"))
 MAX_CONCURRENT_TCP = int(os.environ.get("MAX_CONCURRENT_TCP", "150"))
 MAX_CONCURRENT_HTTP = int(os.environ.get("MAX_CONCURRENT_HTTP", "10"))
-TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "2.5"))
+TIMEOUT_TCP = float(os.environ.get("TIMEOUT_TCP", "1.5"))
 TIMEOUT_CURL = float(os.environ.get("TIMEOUT_CURL", "6"))
 TIMEOUT_XRAY_START = float(os.environ.get("TIMEOUT_XRAY_START", "0.5"))
 TIMEOUT_HY2_START = float(os.environ.get("TIMEOUT_HY2_START", "1.0"))
