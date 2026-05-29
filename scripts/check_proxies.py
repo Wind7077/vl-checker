@@ -83,9 +83,8 @@ PROTO_BONUS: dict[str, int] = {
 # ip.sb / ifconfig.me просто возвращают IP прокси — это надёжный нейтральный тест.
 # cp.cloudflare.com — глобальный CDN, 204 означает что прокси маршрутирует трафик.
 PROBE_URLS = [
-    ("https://cp.cloudflare.com/",   [200, 204]),   # Cloudflare connectivity check
-    ("https://ip.sb/",               [200]),         # возвращает IP — нейтральный
-    ("https://ifconfig.me/ip",       [200]),         # то же, резервный
+    ("https://cp.cloudflare.com/", [200, 204]),
+    ("https://www.google.com/generate_204", [204]),
 ]
 
 GEO_BATCH_SIZE = 100  # ip-api.com batch limit
