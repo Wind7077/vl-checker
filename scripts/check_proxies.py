@@ -50,7 +50,7 @@ ALLOWED_COUNTRIES: set[str] = set()
 TOP_N = 250
 
 # Сколько TCP-alive кандидатов передавать в Stage 2 (тяжёлую проверку)
-STAGE2_CANDIDATES = 600
+STAGE2_CANDIDATES = 2000
 
 # Параллелизм
 MAX_CONCURRENT_TCP  = 200   # Stage 1: TCP-пинги
