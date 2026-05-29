@@ -23,7 +23,7 @@ STAGE2_CANDIDATES = 800
 MAX_CONCURRENT_TCP = 200
 MAX_CONCURRENT_HTTP = 15
 
-TIMEOUT_TCP = 2.0
+TIMEOUT_TCP = 2.5
 TIMEOUT_CURL = 4
 TIMEOUT_XRAY_START = 0.5
 TIMEOUT_HY2_START = 1.0
@@ -264,19 +264,17 @@ def parse_hysteria2(uri: str):
 def extract_uris(text: str):
     uris = set()
     
-    # UUID@host:port формат
     uuid_pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}@[a-zA-Z0-9\.\-]+:\d+'
     for match in re.finditer(uuid_pattern, text, re.IGNORECASE):
         uris.add(match.group(0))
     
-    # Полные URI
     protocol_pattern = r'(vless://|trojan://|hysteria2://)[^\s<>"\'\\\n]+'
     for match in re.finditer(protocol_pattern, text):
         uris.add(match.group(0))
     
     return list(uris)
 
-# ==================== ЗАГРУЗКА ИСТОЧНИКОВ ====================
+# ==================== ЗАГРУЗКА ИСТОЧНИКОВ (ИСПРАВЛЕНО) ====================
 async def fetch_sources(sources_file: str = "sources.txt"):
     if not os.path.exists(sources_file):
         return ""
