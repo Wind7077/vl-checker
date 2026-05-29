@@ -28,7 +28,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python dependencies
-        run: pip install aiohttp pyyaml
+        run: pip install aiohttp
 
       - name: Run proxy checker
         run: python scripts/check_proxies.py
