@@ -37,7 +37,7 @@ from pathlib import Path
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Какие протоколы проверять. Убери лишние или добавь "vmess","trojan","ss"
-ALLOWED_PROTOCOLS = ["vless", "hysteria2"]
+ALLOWED_PROTOCOLS = ["vless", "hysteria2", "trojan", "ss"]
 
 # True  = vless только с reality (лучший обход ТСПУ)
 # False = любой vless
