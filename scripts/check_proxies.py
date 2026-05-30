@@ -28,6 +28,18 @@ try:
 except ImportError:
     HAS_GEOIP2 = False
 
+# Российские домены и хостинги — если hostname матчит, считаем RU
+# даже если IP резолвится в CDN
+RU_HOSTNAME_PATTERNS = [
+    ".ru", ".su", ".рф",
+    "selectel", "timeweb", "beget", "reg.ru", "ruvds",
+    "hoster.ru", "majordomo", "spaceweb", "fornex",
+    "vdsina", "adminvps", "sprinthost", "ihc.ru",
+    "jino.ru", "sweb.ru", "netangels", "hostiman",
+    "masterhost", "infobox", "nic.ru", "2domains",
+    "fastvps", "cheapvps.ru", "vps.house",
+]
+
 # Российские AS-номера крупных хостингов и провайдеров
 # Используются как дополнительная проверка поверх GeoIP
 RU_ASN = {
@@ -697,7 +709,10 @@ async def main():
     else:
         print(f"  ⚠️  {RU_NETS_FILE.name} не найден — будет скачан из RIPE")
 
-    def _ip_in_ru(ip_str: str) -> bool:
+    def _is_ru(ip_str: str) -> bool:
+        # Только проверка по IP в RIPE-подсетях.
+        # Hostname и SNI не используем — SNI типа rutube.ru/cdp.x5.ru
+        # это маскировка, а не реальное расположение сервера.
         if not ip_str:
             return False
         try:
@@ -707,10 +722,15 @@ async def main():
             return False
 
     for host, ip in host_to_ip.items():
-        host_to_cc[host] = "RU" if _ip_in_ru(ip) else ""
+        host_to_cc[host] = "RU" if _is_ru(ip) else ""
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
     print(f"  ✅ RIPE lookup: определено {len(host_to_ip)} хостов, RU={ru_count}")
+    print("  🔍 RU хосты (host → ip):")
+    for host, cc in sorted(host_to_cc.items()):
+        if cc == "RU":
+            ip = host_to_ip.get(host, "?")
+            print(f"     {host} → {ip}")
 
     # Fallback для неопределённых — db-ip если установлен
     unknown = [h for h, cc in host_to_cc.items() if not cc]
