@@ -602,7 +602,15 @@ async def main():
             if done2 % 50 == 0 or done2 == len(candidates):
                 print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} working")
         http_alive.sort(key=lambda x: x["http_ms"])
-        top = http_alive[:TOP_N]
+        # дедупликация по хосту — берём лучший результат на каждый хост
+        seen_hosts: set[str] = set()
+        deduped: list = []
+        for r in http_alive:
+            if r["host"] not in seen_hosts:
+                seen_hosts.add(r["host"])
+                deduped.append(r)
+        top = deduped[:TOP_N]
+        print(f"  🔀 После дедупликации по хосту: {len(deduped)} уникальных серверов")
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
 
         working_protos: dict[str, int] = {}
