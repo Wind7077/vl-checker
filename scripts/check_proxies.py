@@ -48,7 +48,7 @@ ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
 TOP_N               = 250
-TIMEOUT_TCP         = 2
+TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 6
 TIMEOUT_XRAY_START  = 0.8
 MAX_CONCURRENT_TCP  = 200
