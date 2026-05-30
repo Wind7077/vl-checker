@@ -28,13 +28,22 @@ jobs:
           chmod +x hysteria2
           sudo mv hysteria2 /usr/local/bin/
 
+      - name: Download GeoIP database (db-ip.com, no registration)
+        run: |
+          MONTH=$(date +%Y-%m)
+          curl -L "https://download.db-ip.com/free/dbip-country-lite-${MONTH}.mmdb.gz" \
+            -o dbip.mmdb.gz
+          gunzip dbip.mmdb.gz
+          mv dbip.mmdb GeoLite2-Country.mmdb
+          echo "GeoIP DB size: $(du -h GeoLite2-Country.mmdb | cut -f1)"
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install Python packages
-        run: pip install aiohttp
+        run: pip install aiohttp geoip2
 
       - name: Run checker
         run: python scripts/check_proxies.py
