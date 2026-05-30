@@ -20,6 +20,13 @@ import urllib.parse
 import zipfile
 import urllib.request
 from datetime import datetime, timezone
+
+# GeoIP — локальная база MaxMind GeoLite2 (без внешних запросов)
+try:
+    import geoip2.database as _geoip2_db
+    HAS_GEOIP2 = True
+except ImportError:
+    HAS_GEOIP2 = False
 from pathlib import Path
 
 # ── Пути ──────────────────────────────────────────────────────────────────────
@@ -27,6 +34,7 @@ SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
+GEOIP_DB     = REPO_ROOT / "GeoLite2-Country.mmdb"
 
 # ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
 PROBE_URLS = [
@@ -620,28 +628,52 @@ async def main():
     print("\n🌍 Определяем страны для финального топа…")
     host_to_cc: dict[str, str] = {}
     top_hosts = list({r["host"] for r in top})
-    try:
-        connector_geo = aiohttp.TCPConnector(ssl=False)
-        async with aiohttp.ClientSession(connector=connector_geo) as geo_s:
-            for i in range(0, len(top_hosts), GEO_BATCH_SIZE):
-                batch = top_hosts[i:i + GEO_BATCH_SIZE]
-                payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
+
+    if HAS_GEOIP2 and GEOIP_DB.exists():
+        # ── Локальная база MaxMind GeoLite2 — быстро, без сети ──────────────
+        import socket as _socket
+        try:
+            reader = _geoip2_db.Reader(str(GEOIP_DB))
+            for host in top_hosts:
                 try:
-                    async with geo_s.post(
-                        "http://ip-api.com/batch",
-                        json=payload,
-                        timeout=aiohttp.ClientTimeout(total=20),
-                    ) as resp:
-                        if resp.status == 200:
-                            data = await resp.json(content_type=None)
-                            for entry in data:
-                                if entry.get("status") == "success":
-                                    host_to_cc[entry["query"]] = entry.get("countryCode", "")
-                except Exception as e:
-                    print(f"  ⚠️  geo batch error: {e}")
-                await asyncio.sleep(0.3)
-    except Exception as e:
-        print(f"  ⚠️  geo lookup недоступен: {e} — ru.txt будет пустым")
+                    # резолвим hostname → IP если нужно
+                    ip = _socket.gethostbyname(host)
+                    cc = reader.country(ip).country.iso_code or ""
+                    host_to_cc[host] = cc
+                except Exception:
+                    host_to_cc[host] = ""
+            reader.close()
+            print(f"  ✅ GeoLite2: определено {sum(1 for v in host_to_cc.values() if v)} / {len(top_hosts)} хостов")
+        except Exception as e:
+            print(f"  ⚠️  GeoLite2 ошибка: {e}")
+    else:
+        # ── Fallback: ip-api.com (может быть недоступен на GitHub Actions) ──
+        if not HAS_GEOIP2:
+            print("  ⚠️  geoip2 не установлен. Добавь в workflow: pip install geoip2")
+        elif not GEOIP_DB.exists():
+            print(f"  ⚠️  {GEOIP_DB.name} не найден. Добавь в workflow шаг скачивания базы.")
+        try:
+            connector_geo = aiohttp.TCPConnector(ssl=False)
+            async with aiohttp.ClientSession(connector=connector_geo) as geo_s:
+                for i in range(0, len(top_hosts), GEO_BATCH_SIZE):
+                    batch = top_hosts[i:i + GEO_BATCH_SIZE]
+                    payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
+                    try:
+                        async with geo_s.post(
+                            "http://ip-api.com/batch",
+                            json=payload,
+                            timeout=aiohttp.ClientTimeout(total=20),
+                        ) as resp:
+                            if resp.status == 200:
+                                data = await resp.json(content_type=None)
+                                for entry in data:
+                                    if entry.get("status") == "success":
+                                        host_to_cc[entry["query"]] = entry.get("countryCode", "")
+                    except Exception as e:
+                        print(f"  ⚠️  geo batch error: {e}")
+                    await asyncio.sleep(0.3)
+        except Exception as e:
+            print(f"  ⚠️  geo lookup недоступен: {e} — ru.txt будет пустым")
 
     for r in top:
         cc = host_to_cc.get(r["host"], "")
