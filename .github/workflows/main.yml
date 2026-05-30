@@ -12,6 +12,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +34,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python packages
-        run: pip install aiohttp aiofiles
+        run: pip install aiohttp
 
       - name: Run checker
         run: python scripts/check_proxies.py
@@ -42,6 +43,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/ README.md
+          git add output/
           git diff --cached --quiet || git commit -m "update proxies $(date -u '+%Y-%m-%d %H:%M')"
+          git pull --rebase origin main
           git push
