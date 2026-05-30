@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — финальная оптимизированная версия
+Proxy Checker — восстановленная версия с оригинальным парсером из коммита d5f7e54
 """
 
 import asyncio
@@ -18,13 +18,13 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
 # ==================== НАСТРОЙКИ ====================
-HTTP_CHECK = 0
+HTTP_CHECK = 1
 TOP_N = 250
-STAGE2_CANDIDATES = 3000            # Увеличил до 3000
-MAX_CONCURRENT_TCP = 250            # Увеличил
-MAX_CONCURRENT_HTTP = 30            # Увеличил
+STAGE2_CANDIDATES = 3000
+MAX_CONCURRENT_TCP = 250
+MAX_CONCURRENT_HTTP = 30
 
-TIMEOUT_TCP = 1.5                   # Уменьшил для скорости
+TIMEOUT_TCP = 1.5
 TIMEOUT_CURL = 4
 TIMEOUT_XRAY_START = 0.3
 TIMEOUT_HY2_START = 0.8
@@ -70,89 +70,63 @@ async def run_curl(url: str, timeout: float):
         pass
     return False, 0.0
 
-# ==================== ПАРСИНГ VLESS ====================
+# ==================== ПАРСИНГ VLESS (ОРИГИНАЛ ИЗ КОММИТА) ====================
 def parse_vless(uri: str):
+    if not uri.startswith("vless://"):
+        return None
     try:
-        if not uri.startswith("vless://"):
-            uri = "vless://" + uri
+        parsed = urlparse(uri)
+        host = parsed.hostname
+        port = parsed.port
+        if not host or not port:
+            return None
         
-        content = uri[8:]
-        if "#" in content:
-            content = content.split("#")[0]
+        # Парсим параметры
+        params = parse_qs(parsed.query)
         
-        if "?" in content:
-            base, query = content.split("?", 1)
-            params = parse_qs(query)
-        else:
-            base, params = content, {}
-        
-        if "@" in base:
-            user_id, hostport = base.split("@", 1)
-        else:
-            hostport, user_id = base, ""
-        
-        if ":" in hostport:
-            host, port_str = hostport.split(":", 1)
-            port = int(port_str.split("/")[0])
-        else:
-            host, port = hostport, 443
-        
-        security = params.get("security", ["none"])[0]
-        encryption = params.get("encryption", ["none"])[0]
-        flow = params.get("flow", [""])[0]
-        pbk = params.get("pbk", [""])[0]
-        sid = params.get("sid", [""])[0]
-        fp = params.get("fp", ["chrome"])[0]
-        sni = params.get("sni", [""])[0]
-        network = params.get("type", ["tcp"])[0]
-        ws_path = params.get("path", [""])[0]
-        ws_host = params.get("host", [""])[0]
-        allow_insecure = "allowInsecure" in params
-        
-        if ws_path and "%" in ws_path:
-            ws_path = unquote(ws_path)
-        
-        outbound = {
-            "protocol": "vless",
-            "settings": {
-                "vnext": [{
-                    "address": host,
-                    "port": port,
-                    "users": [{"id": user_id, "encryption": encryption}]
-                }]
-            },
-            "streamSettings": {"network": network, "security": security}
-        }
-        
-        if flow:
-            outbound["settings"]["vnext"][0]["users"][0]["flow"] = flow
-        
-        if network == "ws":
-            outbound["streamSettings"]["wsSettings"] = {
-                "path": ws_path or "/",
-                "headers": {"Host": ws_host or sni or host}
-            }
-        
-        if security == "reality" and pbk:
-            outbound["streamSettings"]["tlsSettings"] = {
-                "serverName": sni or "www.cloudflare.com",
-                "fingerprint": fp,
-                "allowInsecure": allow_insecure,
-                "realitySettings": {"publicKey": pbk, "shortId": sid or ""}
-            }
-        elif security == "tls":
-            outbound["streamSettings"]["tlsSettings"] = {
-                "serverName": sni or host,
-                "allowInsecure": allow_insecure
-            }
-            if fp:
-                outbound["streamSettings"]["tlsSettings"]["fingerprint"] = fp
-        
+        # Формируем конфиг для xray
         config = {
             "log": {"loglevel": "warning"},
-            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}],
-            "outbounds": [outbound]
+            "outbounds": [{
+                "protocol": "vless",
+                "settings": {
+                    "vnext": [{
+                        "address": host,
+                        "port": port,
+                        "users": [{
+                            "id": parsed.username or "",
+                            "encryption": params.get("encryption", ["none"])[0],
+                            "flow": params.get("flow", [""])[0]
+                        }]
+                    }]
+                },
+                "streamSettings": {
+                    "network": params.get("type", ["tcp"])[0],
+                    "security": params.get("security", ["none"])[0],
+                    "wsSettings": {
+                        "path": params.get("path", ["/"])[0],
+                        "headers": {"Host": params.get("host", [host])[0]}
+                    } if params.get("type", ["tcp"])[0] == "ws" else None,
+                    "tlsSettings": {
+                        "serverName": params.get("sni", [host])[0],
+                        "allowInsecure": params.get("allowInsecure", ["false"])[0].lower() == "true"
+                    } if params.get("security", ["none"])[0] in ["tls", "reality"] else None,
+                    "realitySettings": {
+                        "publicKey": params.get("pbk", [""])[0],
+                        "shortId": params.get("sid", [""])[0]
+                    } if params.get("security", ["none"])[0] == "reality" else None
+                }
+            }],
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
         }
+        
+        # Убираем None значения
+        if config["outbounds"][0]["streamSettings"].get("wsSettings") is None:
+            del config["outbounds"][0]["streamSettings"]["wsSettings"]
+        if config["outbounds"][0]["streamSettings"].get("tlsSettings") is None:
+            del config["outbounds"][0]["streamSettings"]["tlsSettings"]
+        if config["outbounds"][0]["streamSettings"].get("realitySettings") is None:
+            del config["outbounds"][0]["streamSettings"]["realitySettings"]
         
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
@@ -162,65 +136,52 @@ def parse_vless(uri: str):
             "uri": uri,
             "config": json.dumps(config)
         }
-    except:
+    except Exception as e:
         return None
 
-# ==================== ПАРСИНГ TROJAN ====================
+# ==================== ПАРСИНГ TROJAN (ОРИГИНАЛ ИЗ КОММИТА) ====================
 def parse_trojan(uri: str):
+    if not uri.startswith("trojan://"):
+        return None
     try:
-        if not uri.startswith("trojan://"):
-            uri = "trojan://" + uri
+        parsed = urlparse(uri)
+        host = parsed.hostname
+        port = parsed.port
+        if not host or not port:
+            return None
         
-        content = uri[9:]
-        if "#" in content:
-            content = content.split("#")[0]
-        
-        if "?" in content:
-            base, query = content.split("?", 1)
-            params = parse_qs(query)
-        else:
-            base, params = content, {}
-        
-        if "@" in base:
-            password, hostport = base.split("@", 1)
-            password = unquote(password)
-        else:
-            hostport, password = base, ""
-        
-        if ":" in hostport:
-            host, port_str = hostport.split(":", 1)
-            port = int(port_str.split("/")[0])
-        else:
-            host, port = hostport, 443
-        
-        network = params.get("type", ["tcp"])[0]
-        ws_path = params.get("path", [""])[0]
-        ws_host = params.get("host", [""])[0]
-        sni = params.get("sni", [""])[0]
-        allow_insecure = "allowInsecure" in params
-        
-        outbound = {
-            "protocol": "trojan",
-            "settings": {"servers": [{"address": host, "port": port, "password": password}]},
-            "streamSettings": {"network": network, "security": "tls"}
-        }
-        
-        if network == "ws":
-            outbound["streamSettings"]["wsSettings"] = {
-                "path": ws_path or "/",
-                "headers": {"Host": ws_host or sni or host}
-            }
-        
-        outbound["streamSettings"]["tlsSettings"] = {
-            "serverName": sni or host,
-            "allowInsecure": allow_insecure
-        }
+        params = parse_qs(parsed.query)
         
         config = {
             "log": {"loglevel": "warning"},
-            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}],
-            "outbounds": [outbound]
+            "outbounds": [{
+                "protocol": "trojan",
+                "settings": {
+                    "servers": [{
+                        "address": host,
+                        "port": port,
+                        "password": parsed.username or ""
+                    }]
+                },
+                "streamSettings": {
+                    "network": params.get("type", ["tcp"])[0],
+                    "security": "tls",
+                    "wsSettings": {
+                        "path": params.get("path", ["/"])[0],
+                        "headers": {"Host": params.get("host", [host])[0]}
+                    } if params.get("type", ["tcp"])[0] == "ws" else None,
+                    "tlsSettings": {
+                        "serverName": params.get("sni", [host])[0],
+                        "allowInsecure": params.get("allowInsecure", ["false"])[0].lower() == "true"
+                    }
+                }
+            }],
+            "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
         }
+        
+        # Убираем None значения
+        if config["outbounds"][0]["streamSettings"].get("wsSettings") is None:
+            del config["outbounds"][0]["streamSettings"]["wsSettings"]
         
         return {
             "id": base64.b64encode(uri.encode()).decode()[:16],
@@ -230,7 +191,7 @@ def parse_trojan(uri: str):
             "uri": uri,
             "config": json.dumps(config)
         }
-    except:
+    except Exception as e:
         return None
 
 # ==================== ПАРСИНГ HYSTERIA2 ====================
@@ -372,7 +333,7 @@ async def test_http(proxy: dict, tmpdir: Path):
             return None
         
         proxy["http_ms"] = total_time / success
-        proxy["reliability"] = 1.0
+        proxy["reliability"] = success / len(PROBE_URLS)
         return proxy
     except:
         return None
@@ -401,7 +362,7 @@ async def main():
     print("Parsing...")
     proxies = []
     for uri in uris[:50000]:
-        if uri.startswith("vless://") or re.match(r'[a-f0-9]{8}-', uri, re.I):
+        if uri.startswith("vless://"):
             p = parse_vless(uri)
             if p and p["proto"] in ALLOWED_PROTOCOLS:
                 proxies.append(p)
@@ -411,6 +372,11 @@ async def main():
                 proxies.append(p)
         elif uri.startswith("hysteria2://"):
             p = parse_hysteria2(uri)
+            if p and p["proto"] in ALLOWED_PROTOCOLS:
+                proxies.append(p)
+        elif re.match(r'[a-f0-9]{8}-', uri, re.I):
+            # Если строка похожа на UUID, пробуем как vless
+            p = parse_vless(uri)
             if p and p["proto"] in ALLOWED_PROTOCOLS:
                 proxies.append(p)
     
