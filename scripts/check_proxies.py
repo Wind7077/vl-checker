@@ -2,6 +2,7 @@
 """
 Proxy Checker — оптимизирован для России (RU edition)
 Поддерживаемые протоколы: vless, vmess, trojan, ss, hysteria2
+Источники: sources.txt (одна строка = один URL, # = комментарий)
 """
 
 import asyncio
@@ -18,33 +19,27 @@ import time
 import urllib.parse
 import zipfile
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-
-try:
-    import yaml
-    HAS_YAML = True
-except ImportError:
-    HAS_YAML = False
 
 # ── Пути ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
-SOURCES_FILE = REPO_ROOT / "sources.yml"
+SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
 
 # ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
 PROBE_URLS = [
-    ("https://api.telegram.org/",               [200, 404]),   # 404 — норма без токена
-    ("https://telegram.org/",                   [200, 301, 302]),
-    ("https://cp.cloudflare.com/",              [200, 204]),
-    ("https://www.google.com/generate_204",     [200, 204]),
+    ("https://api.telegram.org/",           [200, 404]),   # 404 — норма без токена
+    ("https://telegram.org/",               [200, 301, 302]),
+    ("https://cp.cloudflare.com/",          [200, 204]),
+    ("https://www.google.com/generate_204", [200, 204]),
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]   # добавь "vmess","trojan","ss" при необходимости
-REQUIRE_REALITY     = True                     # False — брать любой vless
-ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]   # добавь "vmess","ss" при необходимости
+REQUIRE_REALITY     = True                 # False — брать любой vless
+ALLOWED_COUNTRIES   = set()               # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
 GEO_BATCH_SIZE      = 100
 
 TOP_N               = 280
@@ -56,7 +51,6 @@ MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 2400
 SOCKS_BASE_PORT     = 20000
 
-# UDP-порт для Hysteria2 TCP-ping (Hysteria2 слушает на UDP, поэтому stage2 обязателен)
 HYSTERIA2_PROBE_TIMEOUT = 12
 
 if sys.platform == "win32":
@@ -68,49 +62,32 @@ else:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Загрузка источников из sources.yml
+# Загрузка источников из sources.txt
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
-    """Читает sources.yml и возвращает плоский список включённых URL."""
+    """Читает sources.txt — одна строка = один URL, строки с # игнорируются."""
     if not SOURCES_FILE.exists():
         print(f"  ⚠️  {SOURCES_FILE} не найден, используем встроенный список")
         return _builtin_sources()
 
-    if not HAS_YAML:
-        print("  ⚠️  PyYAML не установлен (pip install pyyaml) — парсим sources.yml вручную")
-        return _parse_sources_simple()
-
-    with open(SOURCES_FILE, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-
     urls = []
-    for section_name, entries in data.items():
-        if not isinstance(entries, list):
-            continue
-        for item in entries:
-            if not isinstance(item, dict):
-                continue
-            url = item.get("url", "").strip()
-            if url and item.get("enabled", True):
-                urls.append(url)
+    with open(SOURCES_FILE, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                urls.append(line)
+
+    if not urls:
+        print("  ⚠️  sources.txt пуст, используем встроенный список")
+        return _builtin_sources()
 
     print(f"  📄 Загружено {len(urls)} источников из {SOURCES_FILE.name}")
     return urls
 
 
-def _parse_sources_simple() -> list[str]:
-    """Резервный парсер без PyYAML — ищет строки '  url: \"...\"'."""
-    urls = []
-    with open(SOURCES_FILE, encoding="utf-8") as f:
-        for line in f:
-            m = re.match(r'\s+url:\s+"([^"]+)"', line)
-            if m:
-                urls.append(m.group(1))
-    return urls
-
-
 def _builtin_sources() -> list[str]:
+    """Запасной список на случай отсутствия sources.txt."""
     return [
         "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/BLACK_VLESS_RUS.txt",
         "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-SNI-RU-all.txt",
@@ -161,7 +138,7 @@ def filter_configs(configs: list) -> list:
 
 
 def parse_host_port(uri: str):
-    """Возвращает (host, port) или None. Для hysteria2 берём UDP-порт."""
+    """Возвращает (host, port, proto_type) или None."""
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -179,30 +156,10 @@ def parse_host_port(uri: str):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Hysteria2 helpers
+# Hysteria 2
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def parse_hysteria2(uri: str) -> dict | None:
-    """Парсит hysteria2://password@host:port?param=value#name"""
-    try:
-        p = urllib.parse.urlparse(uri)
-        params = dict(urllib.parse.parse_qsl(p.query))
-        return {
-            "host":      p.hostname or "",
-            "port":      p.port or 443,
-            "auth":      p.username or p.password or "",
-            "sni":       params.get("sni", p.hostname or ""),
-            "insecure":  params.get("insecure", "0") == "1",
-            "obfs":      params.get("obfs", ""),
-            "obfs_password": params.get("obfs-password", ""),
-            "name":      urllib.parse.unquote(p.fragment or ""),
-        }
-    except Exception:
-        return None
-
-
 def install_hysteria2() -> bool:
-    """Скачивает hysteria2 бинарник с GitHub Releases."""
     if HY2_BIN.exists():
         return True
     if sys.platform == "win32":
@@ -210,10 +167,7 @@ def install_hysteria2() -> bool:
         return False
     print("  📦 Downloading hysteria2…")
     arch = platform.machine().lower()
-    if arch in ("aarch64", "arm64"):
-        fname = "hysteria-linux-arm64"
-    else:
-        fname = "hysteria-linux-amd64"
+    fname = "hysteria-linux-arm64" if arch in ("aarch64", "arm64") else "hysteria-linux-amd64"
     url = f"https://github.com/apernet/hysteria/releases/latest/download/{fname}"
     try:
         HY2_BIN.parent.mkdir(parents=True, exist_ok=True)
@@ -226,14 +180,30 @@ def install_hysteria2() -> bool:
         return False
 
 
+def parse_hysteria2(uri: str) -> dict | None:
+    try:
+        p = urllib.parse.urlparse(uri)
+        params = dict(urllib.parse.parse_qsl(p.query))
+        return {
+            "host":          p.hostname or "",
+            "port":          p.port or 443,
+            "auth":          p.username or p.password or "",
+            "sni":           params.get("sni", p.hostname or ""),
+            "insecure":      params.get("insecure", "0") == "1",
+            "obfs":          params.get("obfs", ""),
+            "obfs_password": params.get("obfs-password", ""),
+        }
+    except Exception:
+        return None
+
+
 async def hy2_probe(item: dict) -> dict | None:
-    """Проверяет hysteria2-сервер через клиент hysteria2 + curl."""
     uri  = item["uri"]
     cfg  = parse_hysteria2(uri)
     if not cfg:
         return None
 
-    socks_port = item.get("_socks_port", 20100 + hash(uri) % 10000)
+    socks_port = item.get("_socks_port", SOCKS_BASE_PORT + 10000 + hash(uri) % 9000)
 
     hy2_config = {
         "server": f"{cfg['host']}:{cfg['port']}",
@@ -242,9 +212,7 @@ async def hy2_probe(item: dict) -> dict | None:
             "sni":      cfg["sni"],
             "insecure": cfg["insecure"],
         },
-        "socks5": {
-            "listen": f"127.0.0.1:{socks_port}",
-        },
+        "socks5": {"listen": f"127.0.0.1:{socks_port}"},
     }
     if cfg["obfs"] == "salamander":
         hy2_config["obfs"] = {
@@ -263,9 +231,7 @@ async def hy2_probe(item: dict) -> dict | None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        await asyncio.sleep(1.5)     # hysteria2 поднимается чуть дольше xray
-
-        t0 = time.monotonic()
+        await asyncio.sleep(1.5)
         http_lat = await asyncio.wait_for(
             _curl_through_socks(socks_port),
             timeout=HYSTERIA2_PROBE_TIMEOUT,
@@ -273,9 +239,7 @@ async def hy2_probe(item: dict) -> dict | None:
         if http_lat is None:
             return None
         return {**item, "http_ms": http_lat, "proto": "hysteria2"}
-    except asyncio.TimeoutError:
-        return None
-    except Exception:
+    except (asyncio.TimeoutError, Exception):
         return None
     finally:
         if proc:
@@ -290,8 +254,11 @@ async def hy2_probe(item: dict) -> dict | None:
             pass
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# Curl через SOCKS5
+# ═══════════════════════════════════════════════════════════════════════════════
+
 async def _curl_through_socks(socks_port: int) -> float | None:
-    """Общий вспомогательный метод для curl через SOCKS5."""
     for url, ok_codes in PROBE_URLS:
         t0 = time.monotonic()
         try:
@@ -353,7 +320,7 @@ async def geo_filter(items: list) -> list:
                                 if cc in ALLOWED_COUNTRIES:
                                     allowed_hosts.add(entry.get("query", ""))
             except Exception as e:
-                print(f"  ⚠️  geo error: {e} — пропускаем фильтр для партии")
+                print(f"  ⚠️  geo error: {e} — пропускаем партию")
                 allowed_hosts.update(batch)
             await asyncio.sleep(0.5)
 
@@ -363,7 +330,7 @@ async def geo_filter(items: list) -> list:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Stage 1 – TCP ping  (hysteria2 идёт по отдельному пути — UDP)
+# Stage 1 – TCP ping
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
@@ -390,9 +357,7 @@ async def stage1_test(sem, uri):
     host, port, proto_type = hp
     async with sem:
         if proto_type == "udp":
-            # Hysteria2 — TCP-пинг не подходит, помечаем как "pre-stage2"
-            # Можно сделать UDP-пинг, но это ненадёжно без handshake;
-            # поэтому просто проверяем резолвинг хоста
+            # Hysteria2 — TCP-пинг бесполезен, проверяем только DNS
             try:
                 loop = asyncio.get_event_loop()
                 await asyncio.wait_for(
@@ -439,7 +404,7 @@ def install_xray() -> bool:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Stage 2 – xray config builders  (vless / vmess / trojan / ss)
+# Stage 2 – xray config builders (vless / vmess / trojan / ss)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
@@ -543,15 +508,10 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
     }
 
 
-async def curl_probe(socks_port: int) -> float | None:
-    return await _curl_through_socks(socks_port)
-
-
 async def stage2_test(sem, idx: int, item: dict) -> dict | None:
     uri    = item["uri"]
     scheme = uri.split("://")[0].lower()
 
-    # Hysteria2 обрабатываем отдельно
     if scheme == "hysteria2":
         item["_socks_port"] = SOCKS_BASE_PORT + 10000 + idx
         async with sem:
@@ -576,7 +536,7 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
             await asyncio.sleep(TIMEOUT_XRAY_START)
             try:
                 http_lat = await asyncio.wait_for(
-                    curl_probe(socks_port),
+                    _curl_through_socks(socks_port),
                     timeout=TIMEOUT_CURL + 5,
                 )
             except asyncio.TimeoutError:
@@ -625,7 +585,8 @@ async def fetch_source(session, url: str) -> list:
 
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
-    ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
     print(f"\n{'='*64}")
     print(f"  Proxy Checker (RU edition)  |  {ts}")
     print(f"  Протоколы: {ALLOWED_PROTOCOLS}")
@@ -644,7 +605,6 @@ async def main():
     all_configs = list(dict.fromkeys(c for b in batches for c in b))
     print(f"\n📋 Unique configs: {len(all_configs)}")
 
-    # Статистика по протоколам
     proto_counts: dict[str, int] = {}
     for c in all_configs:
         proto = c.split("://")[0].lower()
@@ -669,7 +629,7 @@ async def main():
             tcp_alive.append(r)
         if done % 300 == 0:
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
-    # Hysteria2 в Stage1 имеет tcp_ms=0, поэтому сортируем с учётом этого
+    # hysteria2 идут последними (tcp_ms=0 означает UDP-only)
     tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x["tcp_ms"]))
     print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
 
@@ -685,11 +645,10 @@ async def main():
     # 5. Install binaries
     print("🛠  Preparing binaries…")
     xray_ok = install_xray()
-    # Hysteria2 нужен только если есть конфиги
-    hy2_configs_exist = any(i["uri"].startswith("hysteria2://") for i in tcp_alive[:STAGE2_CANDIDATES])
-    hy2_ok = install_hysteria2() if hy2_configs_exist else False
+    hy2_needed = any(i["uri"].startswith("hysteria2://") for i in tcp_alive[:STAGE2_CANDIDATES])
+    hy2_ok = install_hysteria2() if hy2_needed else False
 
-    # 6. Stage 2 – curl через xray/hysteria2 SOCKS5
+    # 6. Stage 2 – curl probe
     candidates = tcp_alive[:STAGE2_CANDIDATES]
     http_alive = []
 
@@ -709,7 +668,6 @@ async def main():
         top = http_alive[:TOP_N]
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
 
-        # Статистика по протоколам среди рабочих
         working_protos: dict[str, int] = {}
         for r in http_alive:
             p = r.get("proto", r["uri"].split("://")[0].lower())
@@ -792,7 +750,7 @@ async def main():
 *Обновляется каждые 3 часа · GitHub Actions*
 """
     (OUTPUT_DIR / "README.md").write_text(readme_output, encoding="utf-8")
-    Path(REPO_ROOT / "README.md").write_text(
+    (REPO_ROOT / "README.md").write_text(
         readme_output.replace("](proxies", "](output/proxies").replace("](report", "](output/report"),
         encoding="utf-8",
     )
@@ -810,3 +768,8 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+PYEOF
+echo "done"
+
+
+
