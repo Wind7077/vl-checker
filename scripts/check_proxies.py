@@ -48,7 +48,7 @@ TIMEOUT_CURL        = 3
 TIMEOUT_XRAY_START  = 0.5
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 35
-STAGE2_CANDIDATES   = 2000
+STAGE2_CANDIDATES   = 5000
 SOCKS_BASE_PORT     = 20000
 
 HYSTERIA2_PROBE_TIMEOUT = 12
@@ -560,7 +560,13 @@ async def main():
             tcp_alive.append(r)
         if done % 300 == 0:
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
-    tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x["tcp_ms"]))
+    # hysteria2 (tcp_ms=0) идут последними в stage2 — у них нет TCP
+    # vless/trojan сортируем по латентности, но vless приоритетнее trojan
+    _proto_priority = {"vless": 0, "trojan": 1, "hysteria2": 2}
+    tcp_alive.sort(key=lambda x: (
+        _proto_priority.get(x.get("proto", ""), 9),
+        x["tcp_ms"]
+    ))
     print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
 
     if not tcp_alive:
@@ -614,25 +620,28 @@ async def main():
     print("\n🌍 Определяем страны для финального топа…")
     host_to_cc: dict[str, str] = {}
     top_hosts = list({r["host"] for r in top})
-    connector_geo = aiohttp.TCPConnector(ssl=False)
-    async with aiohttp.ClientSession(connector=connector_geo) as geo_s:
-        for i in range(0, len(top_hosts), GEO_BATCH_SIZE):
-            batch = top_hosts[i:i + GEO_BATCH_SIZE]
-            payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
-            try:
-                async with geo_s.post(
-                    "http://ip-api.com/batch",
-                    json=payload,
-                    timeout=aiohttp.ClientTimeout(total=20),
-                ) as resp:
-                    if resp.status == 200:
-                        data = await resp.json(content_type=None)
-                        for entry in data:
-                            if entry.get("status") == "success":
-                                host_to_cc[entry["query"]] = entry.get("countryCode", "")
-            except Exception as e:
-                print(f"  ⚠️  geo error: {e}")
-            await asyncio.sleep(0.3)
+    try:
+        connector_geo = aiohttp.TCPConnector(ssl=False)
+        async with aiohttp.ClientSession(connector=connector_geo) as geo_s:
+            for i in range(0, len(top_hosts), GEO_BATCH_SIZE):
+                batch = top_hosts[i:i + GEO_BATCH_SIZE]
+                payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
+                try:
+                    async with geo_s.post(
+                        "http://ip-api.com/batch",
+                        json=payload,
+                        timeout=aiohttp.ClientTimeout(total=20),
+                    ) as resp:
+                        if resp.status == 200:
+                            data = await resp.json(content_type=None)
+                            for entry in data:
+                                if entry.get("status") == "success":
+                                    host_to_cc[entry["query"]] = entry.get("countryCode", "")
+                except Exception as e:
+                    print(f"  ⚠️  geo batch error: {e}")
+                await asyncio.sleep(0.3)
+    except Exception as e:
+        print(f"  ⚠️  geo lookup недоступен: {e} — ru.txt будет пустым")
 
     for r in top:
         cc = host_to_cc.get(r["host"], "")
