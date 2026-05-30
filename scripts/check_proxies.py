@@ -42,13 +42,13 @@ REQUIRE_REALITY     = True                     # False — брать любой
 ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 80
-TIMEOUT_TCP         = 3
+TOP_N               = 250
+TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 400
+STAGE2_CANDIDATES   = 1000
 SOCKS_BASE_PORT     = 20000
 
 HYSTERIA2_PROBE_TIMEOUT = 12
