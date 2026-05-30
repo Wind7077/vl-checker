@@ -634,15 +634,7 @@ async def main():
             if done2 % 50 == 0 or done2 == len(candidates):
                 print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} working")
         http_alive.sort(key=lambda x: x["http_ms"])
-        # дедупликация по хосту — берём лучший результат на каждый хост
-        seen_hosts: set[str] = set()
-        deduped: list = []
-        for r in http_alive:
-            if r["host"] not in seen_hosts:
-                seen_hosts.add(r["host"])
-                deduped.append(r)
-        top = deduped[:TOP_N]
-        print(f"  🔀 После дедупликации по хосту: {len(deduped)} уникальных серверов")
+        top = http_alive[:TOP_N * 4]  # берём с запасом для геофильтра
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
 
         working_protos: dict[str, int] = {}
@@ -750,24 +742,43 @@ async def main():
         except Exception as e:
             print(f"  ⚠️  geo lookup недоступен: {e} — ru.txt будет пустым")
 
+    def _dedup(items):
+        """Дедупликация по хосту — лучший результат на сервер (уже отсортировано)."""
+        seen: set[str] = set()
+        result = []
+        for r in items:
+            if r["host"] not in seen:
+                seen.add(r["host"])
+                result.append(r)
+        return result
+
+    ru_items, other_items = [], []
     for r in top:
         cc = host_to_cc.get(r["host"], "")
         if cc == "RU":
-            ru_uris.append(r["uri"])
+            ru_items.append(r)
         else:
-            other_uris.append(r["uri"])
+            other_items.append(r)
 
-    print(f"  🇷🇺 RU: {len(ru_uris)}  |  🌐 Остальные: {len(other_uris)}")
+    ru_items    = _dedup(ru_items)[:TOP_N]
+    other_items = _dedup(other_items)[:TOP_N]
+
+    print(f"  🇷🇺 RU: {len(ru_items)}  |  🌐 Остальные: {len(other_items)}")
 
     # ── Сохранение ────────────────────────────────────────────────────────────
-    (OUTPUT_DIR / "proxies.txt").write_text("\n".join(other_uris) + "\n", encoding="utf-8")
-    (OUTPUT_DIR / "ru.txt").write_text("\n".join(ru_uris) + "\n", encoding="utf-8")
+    (OUTPUT_DIR / "proxies.txt").write_text(
+        "\n".join(r["uri"] for r in other_items) + "\n", encoding="utf-8"
+    )
+    (OUTPUT_DIR / "ru.txt").write_text(
+        "\n".join(r["uri"] for r in ru_items) + "\n", encoding="utf-8"
+    )
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
-    print(f"   proxies.txt — {len(other_uris)} URI (не-RU)")
-    print(f"   ru.txt      — {len(ru_uris)} URI (RU)\n")
+    print(f"   proxies.txt — {len(other_items)} уникальных URI (не-RU)")
+    print(f"   ru.txt      — {len(ru_items)} уникальных URI (RU)\n")
+    all_top = sorted(ru_items + other_items, key=lambda x: x.get("http_ms") or 9999)
     print("🏆 Топ 5 самых быстрых:")
-    for i, r in enumerate(top[:5]):
+    for i, r in enumerate(all_top[:5]):
         proto = r.get("proto", r["uri"].split("://")[0].lower())
         http  = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
         cc    = host_to_cc.get(r["host"], "??")
