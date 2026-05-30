@@ -1,214 +1,81 @@
-# Project X
+# Proxy Check Results (RU edition)
 
-[Project X](https://github.com/XTLS) originates from XTLS protocol, providing a set of network tools such as [Xray-core](https://github.com/XTLS/Xray-core) and [REALITY](https://github.com/XTLS/REALITY).
+**Updated:** 2026-05-30 06:22 UTC
 
-[README](https://github.com/XTLS/Xray-core#readme) is open, so feel free to submit your project [here](https://github.com/XTLS/Xray-core/pulls).
+| Stat | Value |
+|------|-------|
+| Sources | 5 |
+| Total configs | 1064 |
+| After filter | 460 |
+| TCP alive | 367 |
+| HTTP working | 234 |
+| Saved top | 80 |
 
-## Sponsors
+Страны: все
+Протоколы: vless, hysteria2
 
-[![Remnawave](https://github.com/user-attachments/assets/a22d34ae-01ee-441c-843a-85356748ed1e)](https://docs.rw)
+## Top 50 by HTTP latency
 
-[![Happ](https://github.com/user-attachments/assets/14055dab-e8bb-48bd-89e8-962709e4098e)](https://happ.su)
+| # | Proto | Host:Port | TCP | HTTP |
+|---|-------|-----------|-----|------|
+| 1 | `vless` | `194.58.41.65:443` | 152.7 ms | 530.2 ms |
+| 2 | `vless` | `95.182.80.130:16146` | 142.0 ms | 536.4 ms |
+| 3 | `vless` | `194.58.41.65:443` | 152.7 ms | 688.2 ms |
+| 4 | `vless` | `95.85.228.146:8443` | 133.9 ms | 751.9 ms |
+| 5 | `vless` | `151.242.191.161:443` | 153.7 ms | 776.5 ms |
+| 6 | `vless` | `95.85.227.157:443` | 152.5 ms | 796.1 ms |
+| 7 | `vless` | `185.121.12.178:8443` | 264.8 ms | 883.5 ms |
+| 8 | `vless` | `46.149.71.46:443` | 168.3 ms | 903.1 ms |
+| 9 | `vless` | `fr.clgate.network:443` | 804.7 ms | 965.8 ms |
+| 10 | `vless` | `fr.clgate.network:443` | 827.0 ms | 971.6 ms |
+| 11 | `vless` | `nl2.nvrsk-not-news.ru:41698` | 1161.7 ms | 975.1 ms |
+| 12 | `vless` | `fr.clgate.network:443` | 803.6 ms | 975.7 ms |
+| 13 | `vless` | `fr.clgate.network:443` | 898.5 ms | 976.8 ms |
+| 14 | `vless` | `fr.clgate.network:443` | 790.9 ms | 986.7 ms |
+| 15 | `vless` | `fr.clgate.network:443` | 808.0 ms | 991.1 ms |
+| 16 | `vless` | `fr.clgate.network:443` | 785.0 ms | 993.0 ms |
+| 17 | `vless` | `fr.clgate.network:443` | 153.1 ms | 1002.8 ms |
+| 18 | `vless` | `151.242.191.161:443` | 154.5 ms | 1008.3 ms |
+| 19 | `vless` | `fr.clgate.network:443` | 847.9 ms | 1011.9 ms |
+| 20 | `vless` | `fr.clgate.network:443` | 151.9 ms | 1011.9 ms |
+| 21 | `vless` | `151.242.191.161:443` | 154.3 ms | 1033.1 ms |
+| 22 | `vless` | `fr.clgate.network:443` | 150.8 ms | 1035.7 ms |
+| 23 | `vless` | `5.23.48.135:443` | 161.1 ms | 1141.9 ms |
+| 24 | `vless` | `94.183.229.160:443` | 128.1 ms | 1147.6 ms |
+| 25 | `vless` | `151.240.151.159:443` | 128.7 ms | 1163.7 ms |
+| 26 | `hysteria2` | `hy2.123266.xyz:33333` | UDP | 1243.3 ms |
+| 27 | `vless` | `45.149.234.236:443` | 125.0 ms | 1249.1 ms |
+| 28 | `vless` | `g10.steptofsvo.com:443` | 177.6 ms | 1249.2 ms |
+| 29 | `vless` | `198.105.115.65:443` | 133.1 ms | 1260.4 ms |
+| 30 | `vless` | `93.152.224.115:443` | 134.1 ms | 1276.2 ms |
+| 31 | `vless` | `5.180.46.86:443` | 135.1 ms | 1276.8 ms |
+| 32 | `vless` | `198.105.115.65:443` | 130.6 ms | 1278.7 ms |
+| 33 | `vless` | `216.234.141.24:443` | 37.8 ms | 1287.1 ms |
+| 34 | `vless` | `198.105.115.65:443` | 130.7 ms | 1292.8 ms |
+| 35 | `vless` | `216.234.141.24:443` | 33.7 ms | 1306.4 ms |
+| 36 | `vless` | `216.234.141.24:443` | 33.7 ms | 1326.6 ms |
+| 37 | `vless` | `5.180.46.85:443` | 128.2 ms | 1330.9 ms |
+| 38 | `vless` | `95.85.228.146:8443` | 131.9 ms | 1345.0 ms |
+| 39 | `vless` | `216.234.141.24:443` | 33.1 ms | 1349.0 ms |
+| 40 | `vless` | `216.234.141.24:443` | 33.1 ms | 1363.5 ms |
+| 41 | `vless` | `5.180.46.88:443` | 134.7 ms | 1365.2 ms |
+| 42 | `vless` | `213.176.77.65:443` | 135.2 ms | 1366.9 ms |
+| 43 | `vless` | `95.85.228.146:8443` | 124.7 ms | 1367.8 ms |
+| 44 | `vless` | `216.234.141.24:443` | 33.2 ms | 1379.5 ms |
+| 45 | `vless` | `95.85.228.146:8443` | 132.0 ms | 1383.6 ms |
+| 46 | `vless` | `198.105.115.65:443` | 131.4 ms | 1390.3 ms |
+| 47 | `vless` | `216.234.141.24:443` | 40.2 ms | 1400.5 ms |
+| 48 | `vless` | `89.208.208.92:9443` | 165.8 ms | 1413.9 ms |
+| 49 | `vless` | `185.11.135.99:443` | 126.5 ms | 1418.1 ms |
+| 50 | `vless` | `45.192.12.207:443` | 144.7 ms | 1418.5 ms |
 
-[![BlancVPN](https://github.com/user-attachments/assets/9145ea7d-5da3-446e-8143-710dba4292c3)](https://blanc.link/VMTSDqW)
+## Files
 
-[**Sponsor Xray-core**](https://github.com/XTLS/Xray-core/issues/3668)
+| File | Description |
+|------|-------------|
+| [`proxies.txt`](output/proxies.txt) | Plain URI — один на строку |
+| [`proxies_b64.txt`](output/proxies_b64.txt) | Base64 подписка для Karing / v2rayNG |
+| [`report.json`](output/report.json) | Полный JSON с латентностями |
 
-## Donation & NFTs
-
-### [Collect a Project X NFT to support the development of Project X!](https://opensea.io/item/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/1)
-
-[<img alt="Project X NFT" width="150px" src="https://raw2.seadn.io/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/7fa9ce900fb39b44226348db330e32/8b7fa9ce900fb39b44226348db330e32.svg" />](https://opensea.io/item/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/1)
-
-- **TRX(Tron)/USDT/USDC: `TNrDh5VSfwd4RPrwsohr6poyNTfFefNYan`**
-- **TON: `UQApeV-u2gm43aC1uP76xAC1m6vCylstaN1gpfBmre_5IyTH`**
-- **BTC: `1JpqcziZZuqv3QQJhZGNGBVdCBrGgkL6cT`**
-- **XMR: `4ABHQZ3yJZkBnLoqiKvb3f8eqUnX4iMPb6wdant5ZLGQELctcerceSGEfJnoCk6nnyRZm73wrwSgvZ2WmjYLng6R7sR67nq`**
-- **SOL/USDT/USDC: `3x5NuXHzB5APG6vRinPZcsUv5ukWUY1tBGRSJiEJWtZa`**
-- **ETH/USDT/USDC: `0xDc3Fe44F0f25D13CACb1C4896CD0D321df3146Ee`**
-- **Project X NFT: https://opensea.io/item/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/1**
-- **VLESS NFT: https://opensea.io/collection/vless**
-- **REALITY NFT: https://opensea.io/item/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/2**
-- **Related links: [VLESS Post-Quantum Encryption](https://github.com/XTLS/Xray-core/pull/5067), [XHTTP: Beyond REALITY](https://github.com/XTLS/Xray-core/discussions/4113), [Announcement of NFTs by Project X](https://github.com/XTLS/Xray-core/discussions/3633)**
-
-## License
-
-[Mozilla Public License Version 2.0](https://github.com/XTLS/Xray-core/blob/main/LICENSE)
-
-## Documentation
-
-[Project X Official Website](https://xtls.github.io)
-
-## Telegram
-
-[Project X](https://t.me/projectXray)
-
-[Project X Channel](https://t.me/projectXtls)
-
-[Project VLESS](https://t.me/projectVless) (Русский)
-
-[Project XHTTP](https://t.me/projectXhttp) (Persian)
-
-## Installation
-
-- Linux Script
-  - [XTLS/Xray-install](https://github.com/XTLS/Xray-install) (**Official**)
-  - [tempest](https://github.com/team-cloudchaser/tempest) (supports [`systemd`](https://systemd.io) and [OpenRC](https://github.com/OpenRC/openrc); Linux-only)
-- Docker
-  - [ghcr.io/xtls/xray-core](https://ghcr.io/xtls/xray-core) (**Official**)
-  - [teddysun/xray](https://hub.docker.com/r/teddysun/xray)
-  - [wulabing/xray_docker](https://github.com/wulabing/xray_docker)
-- Web Panel
-  - [Remnawave](https://github.com/remnawave/panel)
-  - [3X-UI](https://github.com/MHSanaei/3x-ui)
-  - [PasarGuard](https://github.com/PasarGuard/panel)
-  - [Xray-UI](https://github.com/qist/xray-ui)
-  - [X-Panel](https://github.com/xeefei/X-Panel)
-  - [Marzban](https://github.com/Gozargah/Marzban)
-  - [Hiddify](https://github.com/hiddify/Hiddify-Manager)
-  - [TX-UI](https://github.com/AghayeCoder/tx-ui)
-  - [CELERITY](https://github.com/ClickDevTech/CELERITY-panel)
-- One Click
-  - [Xray-REALITY](https://github.com/zxcvos/Xray-script), [xray-reality](https://github.com/sajjaddg/xray-reality), [reality-ezpz](https://github.com/aleskxyz/reality-ezpz)
-  - [Xray_bash_onekey](https://github.com/hello-yunshu/Xray_bash_onekey), [XTool](https://github.com/LordPenguin666/XTool), [VPainLess](https://github.com/vpainless/vpainless)
-  - [v2ray-agent](https://github.com/mack-a/v2ray-agent), [Xray_onekey](https://github.com/wulabing/Xray_onekey), [ProxySU](https://github.com/proxysu/ProxySU)
-- Magisk
-  - [NetProxy-Magisk](https://github.com/Fanju6/NetProxy-Magisk)
-  - [Xray4Magisk](https://github.com/Asterisk4Magisk/Xray4Magisk)
-  - [Xray_For_Magisk](https://github.com/E7KMbb/Xray_For_Magisk)
-- Homebrew
-  - `brew install xray`
-
-## Usage
-
-- Example
-  - [VLESS-XTLS-uTLS-REALITY](https://github.com/XTLS/REALITY#readme)
-  - [VLESS-TCP-XTLS-Vision](https://github.com/XTLS/Xray-examples/tree/main/VLESS-TCP-XTLS-Vision)
-  - [All-in-One-fallbacks-Nginx](https://github.com/XTLS/Xray-examples/tree/main/All-in-One-fallbacks-Nginx)
-- Xray-examples
-  - [XTLS/Xray-examples](https://github.com/XTLS/Xray-examples)
-  - [chika0801/Xray-examples](https://github.com/chika0801/Xray-examples)
-  - [lxhao61/integrated-examples](https://github.com/lxhao61/integrated-examples)
-- Tutorial
-  - [XTLS Vision](https://github.com/chika0801/Xray-install)
-  - [REALITY (English)](https://cscot.pages.dev/2023/03/02/Xray-REALITY-tutorial/)
-  - [XTLS-Iran-Reality (English)](https://github.com/SasukeFreestyle/XTLS-Iran-Reality)
-  - [Xray REALITY with 'steal oneself' (English)](https://computerscot.github.io/vless-xtls-utls-reality-steal-oneself.html)
-  - [Xray with WireGuard inbound (English)](https://g800.pages.dev/wireguard)
-
-## GUI Clients
-
-- OpenWrt
-  - [PassWall](https://github.com/Openwrt-Passwall/openwrt-passwall), [PassWall 2](https://github.com/Openwrt-Passwall/openwrt-passwall2)
-  - [ShadowSocksR Plus+](https://github.com/fw876/helloworld)
-  - [luci-app-xray](https://github.com/yichya/luci-app-xray) ([openwrt-xray](https://github.com/yichya/openwrt-xray))
-- Asuswrt-Merlin
-  - [XRAYUI](https://github.com/DanielLavrushin/asuswrt-merlin-xrayui)
-  - [fancyss](https://github.com/hq450/fancyss)
-- Windows
-  - [v2rayN](https://github.com/2dust/v2rayN)
-  - [Furious](https://github.com/LorenEteval/Furious)
-  - [Invisible Man - Xray](https://github.com/InvisibleManVPN/InvisibleMan-XRayClient)
-  - [AnyPortal](https://github.com/AnyPortal/AnyPortal)
-  - [GenyConnect](https://github.com/genyleap/GenyConnect)
-- Android
-  - [v2rayNG](https://github.com/2dust/v2rayNG)
-  - [X-flutter](https://github.com/XTLS/X-flutter)
-  - [SaeedDev94/Xray](https://github.com/SaeedDev94/Xray)
-  - [SimpleXray](https://github.com/lhear/SimpleXray)
-  - [XrayFA](https://github.com/Q7DF1/XrayFA)
-  - [AnyPortal](https://github.com/AnyPortal/AnyPortal)
-  - [NetProxy-Magisk](https://github.com/Fanju6/NetProxy-Magisk)
-- iOS & macOS arm64 & tvOS
-  - [Happ](https://apps.apple.com/app/happ-proxy-utility/id6504287215) | [Happ RU](https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973) | [Happ tvOS](https://apps.apple.com/us/app/happ-proxy-utility-for-tv/id6748297274)
-  - [Streisand](https://apps.apple.com/app/streisand/id6450534064)
-  - [OneXray](https://github.com/OneXray/OneXray)
-  - [INCY](https://apps.apple.com/en/app/incy/id6756943388)
-- macOS arm64 & x64
-  - [Happ](https://apps.apple.com/app/happ-proxy-utility/id6504287215) | [Happ RU](https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973)
-  - [V2rayU](https://github.com/yanue/V2rayU)
-  - [V2RayXS](https://github.com/tzmax/V2RayXS)
-  - [Furious](https://github.com/LorenEteval/Furious)
-  - [OneXray](https://github.com/OneXray/OneXray)
-  - [GoXRay](https://github.com/goxray/desktop)
-  - [AnyPortal](https://github.com/AnyPortal/AnyPortal)
-  - [v2rayN](https://github.com/2dust/v2rayN)
-  - [GenyConnect](https://github.com/genyleap/GenyConnect)
-  - [INCY](https://apps.apple.com/en/app/incy/id6756943388)
-- Linux
-  - [v2rayA](https://github.com/v2rayA/v2rayA)
-  - [Furious](https://github.com/LorenEteval/Furious)
-  - [GorzRay](https://github.com/ketetefid/GorzRay)
-  - [GoXRay](https://github.com/goxray/desktop)
-  - [AnyPortal](https://github.com/AnyPortal/AnyPortal)
-  - [v2rayN](https://github.com/2dust/v2rayN)
-  - [GenyConnect](https://github.com/genyleap/GenyConnect)
-
-## Others that support VLESS, XTLS, REALITY, XUDP, PLUX...
-
-- iOS & macOS arm64 & tvOS
-  - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118)
-  - [Loon](https://apps.apple.com/us/app/loon/id1373567447)
-  - [Egern](https://apps.apple.com/us/app/egern/id1616105820)
-  - [Quantumult X](https://apps.apple.com/us/app/quantumult-x/id1443988620)
-- Xray Tools
-  - [xray-knife](https://github.com/lilendian0x00/xray-knife)
-  - [xray-checker](https://github.com/kutovoys/xray-checker)
-- Xray Wrapper
-  - [XTLS/libXray](https://github.com/XTLS/libXray)
-  - [xtls-sdk](https://github.com/remnawave/xtls-sdk)
-  - [xtlsapi](https://github.com/hiddify/xtlsapi)
-  - [AndroidLibXrayLite](https://github.com/2dust/AndroidLibXrayLite)
-  - [Xray-core-python](https://github.com/LorenEteval/Xray-core-python)
-  - [xray-api](https://github.com/XVGuardian/xray-api)
-- [XrayR](https://github.com/XrayR-project/XrayR)
-  - [XrayR-release](https://github.com/XrayR-project/XrayR-release)
-  - [XrayR-V2Board](https://github.com/missuo/XrayR-V2Board)
-- Cores
-  - [Amnezia VPN](https://github.com/amnezia-vpn)
-  - [mihomo](https://github.com/MetaCubeX/mihomo)
-  - [sing-box](https://github.com/SagerNet/sing-box)
-
-## Contributing
-
-[Code of Conduct](https://github.com/XTLS/Xray-core/blob/main/CODE_OF_CONDUCT.md)
-
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/XTLS/Xray-core)
-
-## Credits
-
-- [Xray-core v1.0.0](https://github.com/XTLS/Xray-core/releases/tag/v1.0.0) was forked from [v2fly-core 9a03cc5](https://github.com/v2fly/v2ray-core/commit/9a03cc5c98d04cc28320fcee26dbc236b3291256), and we have made & accumulated a huge number of enhancements over time, check [the release notes for each version](https://github.com/XTLS/Xray-core/releases).
-- For third-party projects used in [Xray-core](https://github.com/XTLS/Xray-core), check your local or [the latest go.mod](https://github.com/XTLS/Xray-core/blob/main/go.mod).
-
-## One-line Compilation
-
-### Windows (PowerShell)
-
-```powershell
-$env:CGO_ENABLED=0
-go build -o xray.exe -trimpath -buildvcs=false -ldflags="-s -w -buildid=" -v ./main
-```
-
-### Linux / macOS
-
-```bash
-CGO_ENABLED=0 go build -o xray -trimpath -buildvcs=false -ldflags="-s -w -buildid=" -v ./main
-```
-
-### Reproducible Releases
-
-Make sure that you are using the same Go version, and remember to set the git commit id (7 bytes):
-
-```bash
-CGO_ENABLED=0 go build -o xray -trimpath -buildvcs=false -gcflags="all=-l=4" -ldflags="-X github.com/xtls/xray-core/core.build=REPLACE -s -w -buildid=" -v ./main
-```
-
-If you are compiling a 32-bit MIPS/MIPSLE target, use this command instead:
-
-```bash
-CGO_ENABLED=0 go build -o xray -trimpath -buildvcs=false -gcflags="-l=4" -ldflags="-X github.com/xtls/xray-core/core.build=REPLACE -s -w -buildid=" -v ./main
-```
-
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/XTLS/Xray-core.svg)](https://starchart.cc/XTLS/Xray-core)
+---
+*Обновляется каждые 3 часа · GitHub Actions*
