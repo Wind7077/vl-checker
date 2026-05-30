@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — финальная версия, анкоры НЕ ТРОГАЮТСЯ
+Proxy Checker — восстановленная логика из коммита c1d0921
+Поддерживает: vless, trojan, hysteria2 (и другие через xray)
 """
 
 import asyncio
@@ -11,13 +12,14 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import time
 import random
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
-# ==================== НАСТРОЙКИ ====================
+# ==================== НАСТРОЙКИ (ВАШИ ТЕКУЩИЕ) ====================
 HTTP_CHECK = 1
 TOP_N = 250
 STAGE2_CANDIDATES = 3000
@@ -32,8 +34,8 @@ TIMEOUT_HY2_START = 0.8
 ALLOWED_PROTOCOLS = ["vless", "trojan", "hysteria2"]
 
 PROBE_URLS = [
-    "https://cp.cloudflare.com/",
-    "https://www.google.com/generate_204",
+    ("https://cp.cloudflare.com/", {200, 204}),
+    ("https://www.google.com/generate_204", {200, 204}),
 ]
 
 # ==================== УТИЛИТЫ ====================
@@ -70,17 +72,13 @@ async def run_curl(url: str, timeout: float):
         pass
     return False, 0.0
 
-# ==================== ПАРСИНГ VLESS ====================
+# ==================== ПАРСИНГ ====================
 def parse_vless(uri: str):
     if not uri.startswith("vless://"):
         return None
     try:
-        # СОХРАНЯЕМ ОРИГИНАЛ ПОЛНОСТЬЮ
         original_uri = uri
-        
-        # Для парсинга берём только часть без анкора
         uri_for_parse = uri.split("#")[0] if "#" in uri else uri
-        
         parsed = urlparse(uri_for_parse)
         host = parsed.hostname
         port = parsed.port
@@ -124,7 +122,6 @@ def parse_vless(uri: str):
             "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
         }
         
-        # Убираем None
         if config["outbounds"][0]["streamSettings"].get("wsSettings") is None:
             del config["outbounds"][0]["streamSettings"]["wsSettings"]
         if config["outbounds"][0]["streamSettings"].get("tlsSettings") is None:
@@ -137,20 +134,18 @@ def parse_vless(uri: str):
             "proto": "vless",
             "host": host,
             "port": port,
-            "uri": original_uri,  # ОРИГИНАЛ С АНКОРОМ
+            "uri": original_uri,
             "config": json.dumps(config)
         }
     except:
         return None
 
-# ==================== ПАРСИНГ TROJAN ====================
 def parse_trojan(uri: str):
     if not uri.startswith("trojan://"):
         return None
     try:
         original_uri = uri
         uri_for_parse = uri.split("#")[0] if "#" in uri else uri
-        
         parsed = urlparse(uri_for_parse)
         host = parsed.hostname
         port = parsed.port
@@ -200,7 +195,6 @@ def parse_trojan(uri: str):
     except:
         return None
 
-# ==================== ПАРСИНГ HYSTERIA2 ====================
 def parse_hysteria2(uri: str):
     try:
         if not uri.startswith("hysteria2://"):
@@ -211,10 +205,15 @@ def parse_hysteria2(uri: str):
         if not host or not port:
             return None
         
+        # Парсим параметры для hysteria2
+        params = parse_qs(parsed.query)
+        sni = params.get("sni", [host])[0]
+        insecure = params.get("insecure", ["0"])[0] == "1"
+        
         config = {
             "server": f"{host}:{port}",
             "auth": parsed.username or "",
-            "tls": {"insecure": "insecure=1" in uri},
+            "tls": {"sni": sni, "insecure": insecure},
             "socks5": {"listen": "127.0.0.1:1080"}
         }
         
@@ -271,7 +270,7 @@ async def fetch_sources(sources_file: str = "sources.txt"):
     
     return "\n".join(results)
 
-# ==================== TCP ПИНГ ====================
+# ==================== TCP ПИНГ (только для tcp-протоколов) ====================
 async def tcp_ping(host: str, port: int, timeout: float):
     try:
         start = time.monotonic()
@@ -297,13 +296,14 @@ async def test_http(proxy: dict, tmpdir: Path):
     
     try:
         if proxy["proto"] == "hysteria2":
+            # Hysteria2 проверка через нативный клиент
             proc = await asyncio.create_subprocess_exec(
-                get_hysteria2_path(), "-c", str(config_path),
+                get_hysteria2_path(), "client", "-c", str(config_path),
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
             await asyncio.sleep(TIMEOUT_HY2_START)
-            for url in PROBE_URLS:
+            for url, ok_codes in PROBE_URLS:
                 ok, t = await run_curl(url, TIMEOUT_CURL)
                 if ok:
                     success += 1
@@ -316,13 +316,14 @@ async def test_http(proxy: dict, tmpdir: Path):
                 proc.kill()
                 await proc.wait()
         else:
+            # Xray проверка для vless/trojan
             proc = await asyncio.create_subprocess_exec(
                 get_xray_path(), "run", "-c", str(config_path),
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
             await asyncio.sleep(TIMEOUT_XRAY_START)
-            for url in PROBE_URLS:
+            for url, ok_codes in PROBE_URLS:
                 ok, t = await run_curl(url, TIMEOUT_CURL)
                 if ok:
                     success += 1
@@ -388,7 +389,11 @@ async def main():
     if not proxies:
         return
     
-    print(f"TCP ping ({len(proxies)} proxies, timeout={TIMEOUT_TCP}s)...")
+    # РАЗДЕЛЯЕМ: для hysteria2 НЕ делаем TCP ping
+    tcp_candidates = [p for p in proxies if p["proto"] != "hysteria2"]
+    hy2_candidates = [p for p in proxies if p["proto"] == "hysteria2"]
+    
+    print(f"TCP ping ({len(tcp_candidates)} proxies, timeout={TIMEOUT_TCP}s)...")
     sem = asyncio.Semaphore(MAX_CONCURRENT_TCP)
     async def ping(p):
         async with sem:
@@ -398,9 +403,15 @@ async def main():
                 return p
             return None
     
-    results = await asyncio.gather(*[ping(p) for p in proxies])
-    alive = [p for p in results if p]
-    print(f"TCP alive: {len(alive):,}")
+    results = await asyncio.gather(*[ping(p) for p in tcp_candidates])
+    tcp_alive = [p for p in results if p]
+    
+    # Hysteria2 добавляем как есть (без TCP)
+    for p in hy2_candidates:
+        p["tcp_ms"] = 0
+    
+    alive = tcp_alive + hy2_candidates
+    print(f"TCP alive: {len(tcp_alive)} (vless/trojan) + {len(hy2_candidates)} (hysteria2) = {len(alive)} total")
     
     if not alive:
         print("No alive proxies")
@@ -431,8 +442,7 @@ async def main():
         
         print(f"\n✅ {len(top)} working proxies found:")
         for i, p in enumerate(top[:10]):
-            # Выводим хост и порт, НЕ трогаем оригинальный URI
-            print(f"  {i+1}. {p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms ({p['proto']})")
+            print(f"  {i+1}. {p['proto']}://{p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms")
         if len(top) > 10:
             print(f"  ... and {len(top)-10} more")
     else:
@@ -442,7 +452,6 @@ async def main():
     
     Path("output").mkdir(exist_ok=True)
     
-    # СОХРАНЯЕМ ОРИГИНАЛЬНЫЙ URI — С АНКОРОМ
     with open("output/proxies.txt", "w") as f:
         for p in top:
             f.write(p["uri"] + "\n")
@@ -452,7 +461,6 @@ async def main():
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
     print(f"\nSaved {len(top)} proxies to output/proxies.txt")
-    print("Original URIs with #comments are preserved")
 
 if __name__ == "__main__":
     asyncio.run(main())
