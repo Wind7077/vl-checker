@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — с сохранением оригинальных URI (комментариев)
+Proxy Checker — сохраняет оригинальные URI с анкорами (#названия)
 """
 
 import asyncio
@@ -70,15 +70,15 @@ async def run_curl(url: str, timeout: float):
         pass
     return False, 0.0
 
-# ==================== ПАРСИНГ VLESS (С СОХРАНЕНИЕМ КОММЕНТАРИЯ) ====================
+# ==================== ПАРСИНГ VLESS ====================
 def parse_vless(uri: str):
     if not uri.startswith("vless://"):
         return None
     try:
-        # Сохраняем оригинальный URI целиком (с #comment)
+        # Сохраняем оригинальный URI целиком
         original_uri = uri
         
-        # Для парсинга параметров используем версию без комментария
+        # Для парсинга используем версию без фрагмента
         uri_without_fragment = uri.split("#")[0] if "#" in uri else uri
         
         parsed = urlparse(uri_without_fragment)
@@ -143,7 +143,7 @@ def parse_vless(uri: str):
     except Exception as e:
         return None
 
-# ==================== ПАРСИНГ TROJAN (С СОХРАНЕНИЕМ КОММЕНТАРИЯ) ====================
+# ==================== ПАРСИНГ TROJAN ====================
 def parse_trojan(uri: str):
     if not uri.startswith("trojan://"):
         return None
@@ -186,7 +186,6 @@ def parse_trojan(uri: str):
             "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
         }
         
-        # Убираем None значения
         if config["outbounds"][0]["streamSettings"].get("wsSettings") is None:
             del config["outbounds"][0]["streamSettings"]["wsSettings"]
         
@@ -433,9 +432,8 @@ async def main():
         
         print(f"\n✅ {len(top)} working proxies found:")
         for i, p in enumerate(top[:10]):
-            # Показываем короткую версию URI для вывода
-            short_uri = p['uri'][:80] + "..." if len(p['uri']) > 80 else p['uri']
-            print(f"  {i+1}. {short_uri} - {p['tcp_ms']:.0f}ms")
+            # Для вывода используем host:port, НЕ МЕНЯЕМ uri
+            print(f"  {i+1}. {p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms ({p['proto']})")
         if len(top) > 10:
             print(f"  ... and {len(top)-10} more")
     else:
@@ -445,6 +443,7 @@ async def main():
     
     Path("output").mkdir(exist_ok=True)
     
+    # Сохраняем ОРИГИНАЛЬНЫЙ URI — без изменений, с анкорами
     with open("output/proxies.txt", "w") as f:
         for p in top:
             f.write(p["uri"] + "\n")
@@ -454,7 +453,7 @@ async def main():
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
     print(f"\nSaved {len(top)} proxies to output/proxies.txt")
-    print("(Original URIs with comments preserved)")
+    print("Original URIs with #comments preserved")
 
 if __name__ == "__main__":
     asyncio.run(main())
