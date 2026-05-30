@@ -77,7 +77,7 @@ PROBE_URLS = [
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
 REQUIRE_REALITY     = False
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
@@ -661,39 +661,73 @@ async def main():
     host_to_cc: dict[str, str] = {}
     top_hosts = list({r["host"] for r in top})
 
-    if HAS_GEOIP2 and GEOIP_DB.exists():
-        # ── Локальная база GeoLite2 с параллельным DNS-резолвом ─────────────
-        import socket as _socket
+    # ── RIPE + локальный файл RU-подсетей — максимальная точность ──────────
+    import socket as _socket
+    import ipaddress as _ipaddress
+    import struct as _struct
 
-        async def _resolve(host: str) -> str:
-            """Резолвим hostname → IP асинхронно."""
-            try:
-                loop = asyncio.get_event_loop()
-                infos = await asyncio.wait_for(
-                    loop.getaddrinfo(host, None, family=_socket.AF_INET), timeout=3
-                )
-                return infos[0][4][0]
-            except Exception:
-                return host  # уже IP или резолв не удался
+    RU_NETS_FILE = REPO_ROOT / "ru_nets.txt"
 
+    async def _resolve(host: str) -> str:
         try:
-            # Параллельный резолв всех хостов
-            ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
-            host_to_ip = dict(zip(top_hosts, ips))
+            loop = asyncio.get_event_loop()
+            infos = await asyncio.wait_for(
+                loop.getaddrinfo(host, None, family=_socket.AF_INET), timeout=3
+            )
+            return infos[0][4][0]
+        except Exception:
+            return ""
 
-            country_reader = _geoip2_db.Reader(str(GEOIP_DB))
-            # ASN база — если есть рядом
+    # Параллельный DNS-резолв
+    ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
+    host_to_ip = dict(zip(top_hosts, ips))
+
+    # Загружаем список RU-подсетей
+    ru_nets: list[_ipaddress.IPv4Network] = []
+    if RU_NETS_FILE.exists():
+        with open(RU_NETS_FILE) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    try:
+                        ru_nets.append(_ipaddress.IPv4Network(line, strict=False))
+                    except Exception:
+                        pass
+        print(f"  📋 Загружено {len(ru_nets)} RU-подсетей из {RU_NETS_FILE.name}")
+    else:
+        print(f"  ⚠️  {RU_NETS_FILE.name} не найден — будет скачан из RIPE")
+
+    def _ip_in_ru(ip_str: str) -> bool:
+        if not ip_str:
+            return False
+        try:
+            ip = _ipaddress.IPv4Address(ip_str)
+            return any(ip in net for net in ru_nets)
+        except Exception:
+            return False
+
+    for host, ip in host_to_ip.items():
+        host_to_cc[host] = "RU" if _ip_in_ru(ip) else ""
+
+    ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
+    print(f"  ✅ RIPE lookup: определено {len(host_to_ip)} хостов, RU={ru_count}")
+
+    # Fallback для неопределённых — db-ip если установлен
+    unknown = [h for h, cc in host_to_cc.items() if not cc]
+    if unknown and HAS_GEOIP2 and GEOIP_DB.exists():
+        try:
+            reader = _geoip2_db.Reader(str(GEOIP_DB))
             asn_db = GEOIP_DB.parent / "GeoLite2-ASN.mmdb"
             asn_reader = _geoip2_db.Reader(str(asn_db)) if asn_db.exists() else None
-
-            for host, ip in host_to_ip.items():
+            for host in unknown:
+                ip = host_to_ip.get(host, "")
+                if not ip:
+                    continue
                 cc = ""
                 try:
-                    cc = country_reader.country(ip).country.iso_code or ""
+                    cc = reader.country(ip).country.iso_code or ""
                 except Exception:
                     pass
-
-                # Дополнительная проверка по ASN если country сказал не-RU
                 if cc != "RU" and asn_reader:
                     try:
                         asn = asn_reader.asn(ip).autonomous_system_number
@@ -701,46 +735,12 @@ async def main():
                             cc = "RU"
                     except Exception:
                         pass
-
                 host_to_cc[host] = cc
-
-            country_reader.close()
+            reader.close()
             if asn_reader:
                 asn_reader.close()
-
-            ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
-            det_count = sum(1 for v in host_to_cc.values() if v)
-            print(f"  ✅ GeoLite2: определено {det_count}/{len(top_hosts)} хостов, RU={ru_count}")
         except Exception as e:
-            print(f"  ⚠️  GeoLite2 ошибка: {e}")
-    else:
-        # ── Fallback: ip-api.com (может быть недоступен на GitHub Actions) ──
-        if not HAS_GEOIP2:
-            print("  ⚠️  geoip2 не установлен. Добавь в workflow: pip install geoip2")
-        elif not GEOIP_DB.exists():
-            print(f"  ⚠️  {GEOIP_DB.name} не найден. Добавь в workflow шаг скачивания базы.")
-        try:
-            connector_geo = aiohttp.TCPConnector(ssl=False)
-            async with aiohttp.ClientSession(connector=connector_geo) as geo_s:
-                for i in range(0, len(top_hosts), GEO_BATCH_SIZE):
-                    batch = top_hosts[i:i + GEO_BATCH_SIZE]
-                    payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
-                    try:
-                        async with geo_s.post(
-                            "http://ip-api.com/batch",
-                            json=payload,
-                            timeout=aiohttp.ClientTimeout(total=20),
-                        ) as resp:
-                            if resp.status == 200:
-                                data = await resp.json(content_type=None)
-                                for entry in data:
-                                    if entry.get("status") == "success":
-                                        host_to_cc[entry["query"]] = entry.get("countryCode", "")
-                    except Exception as e:
-                        print(f"  ⚠️  geo batch error: {e}")
-                    await asyncio.sleep(0.3)
-        except Exception as e:
-            print(f"  ⚠️  geo lookup недоступен: {e} — ru.txt будет пустым")
+            print(f"  ⚠️  db-ip fallback error: {e}")
 
     def _dedup(items):
         """Дедупликация по хосту — лучший результат на сервер (уже отсортировано)."""
