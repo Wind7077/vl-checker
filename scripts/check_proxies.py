@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — восстановленная версия с оригинальным парсером из коммита d5f7e54
+Proxy Checker — с сохранением оригинальных URI (комментариев)
 """
 
 import asyncio
@@ -70,21 +70,25 @@ async def run_curl(url: str, timeout: float):
         pass
     return False, 0.0
 
-# ==================== ПАРСИНГ VLESS (ОРИГИНАЛ ИЗ КОММИТА) ====================
+# ==================== ПАРСИНГ VLESS (С СОХРАНЕНИЕМ КОММЕНТАРИЯ) ====================
 def parse_vless(uri: str):
     if not uri.startswith("vless://"):
         return None
     try:
-        parsed = urlparse(uri)
+        # Сохраняем оригинальный URI целиком (с #comment)
+        original_uri = uri
+        
+        # Для парсинга параметров используем версию без комментария
+        uri_without_fragment = uri.split("#")[0] if "#" in uri else uri
+        
+        parsed = urlparse(uri_without_fragment)
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
             return None
         
-        # Парсим параметры
         params = parse_qs(parsed.query)
         
-        # Формируем конфиг для xray
         config = {
             "log": {"loglevel": "warning"},
             "outbounds": [{
@@ -129,22 +133,25 @@ def parse_vless(uri: str):
             del config["outbounds"][0]["streamSettings"]["realitySettings"]
         
         return {
-            "id": base64.b64encode(uri.encode()).decode()[:16],
+            "id": base64.b64encode(original_uri.encode()).decode()[:16],
             "proto": "vless",
             "host": host,
             "port": port,
-            "uri": uri,
+            "uri": original_uri,
             "config": json.dumps(config)
         }
     except Exception as e:
         return None
 
-# ==================== ПАРСИНГ TROJAN (ОРИГИНАЛ ИЗ КОММИТА) ====================
+# ==================== ПАРСИНГ TROJAN (С СОХРАНЕНИЕМ КОММЕНТАРИЯ) ====================
 def parse_trojan(uri: str):
     if not uri.startswith("trojan://"):
         return None
     try:
-        parsed = urlparse(uri)
+        original_uri = uri
+        uri_without_fragment = uri.split("#")[0] if "#" in uri else uri
+        
+        parsed = urlparse(uri_without_fragment)
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
@@ -184,11 +191,11 @@ def parse_trojan(uri: str):
             del config["outbounds"][0]["streamSettings"]["wsSettings"]
         
         return {
-            "id": base64.b64encode(uri.encode()).decode()[:16],
+            "id": base64.b64encode(original_uri.encode()).decode()[:16],
             "proto": "trojan",
             "host": host,
             "port": port,
-            "uri": uri,
+            "uri": original_uri,
             "config": json.dumps(config)
         }
     except Exception as e:
@@ -375,7 +382,6 @@ async def main():
             if p and p["proto"] in ALLOWED_PROTOCOLS:
                 proxies.append(p)
         elif re.match(r'[a-f0-9]{8}-', uri, re.I):
-            # Если строка похожа на UUID, пробуем как vless
             p = parse_vless(uri)
             if p and p["proto"] in ALLOWED_PROTOCOLS:
                 proxies.append(p)
@@ -427,7 +433,9 @@ async def main():
         
         print(f"\n✅ {len(top)} working proxies found:")
         for i, p in enumerate(top[:10]):
-            print(f"  {i+1}. {p['proto']}://{p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms")
+            # Показываем короткую версию URI для вывода
+            short_uri = p['uri'][:80] + "..." if len(p['uri']) > 80 else p['uri']
+            print(f"  {i+1}. {short_uri} - {p['tcp_ms']:.0f}ms")
         if len(top) > 10:
             print(f"  ... and {len(top)-10} more")
     else:
@@ -445,7 +453,8 @@ async def main():
         for p in top:
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
-    print(f"\nSaved to output/proxies.txt")
+    print(f"\nSaved {len(top)} proxies to output/proxies.txt")
+    print("(Original URIs with comments preserved)")
 
 if __name__ == "__main__":
     asyncio.run(main())
