@@ -709,28 +709,49 @@ async def main():
     else:
         print(f"  ⚠️  {RU_NETS_FILE.name} не найден — будет скачан из RIPE")
 
-    def _is_ru(ip_str: str) -> bool:
-        # Только проверка по IP в RIPE-подсетях.
-        # Hostname и SNI не используем — SNI типа rutube.ru/cdp.x5.ru
-        # это маскировка, а не реальное расположение сервера.
+    # Подсети зарубежных хостингов которые ошибочно попадают в RIPE как RU
+    # (Contabo, некоторые блоки OVH/Hetzner перепроданные российским реселлерам)
+    KNOWN_NON_RU: list[_ipaddress.IPv4Network] = []
+    for cidr in [
+        "45.144.220.0/22",   # Contabo NL/DE
+        "45.144.224.0/20",   # Contabo NL/DE
+        "45.88.0.0/16",      # Contabo NL
+        "5.181.0.0/16",      # Zomro/DataLine NL/UA
+        "94.103.0.0/16",     # Serverius NL
+        "85.192.0.0/16",     # Delis LLC — регистрация RU но ДЦ за рубежом
+    ]:
+        try:
+            KNOWN_NON_RU.append(_ipaddress.IPv4Network(cidr))
+        except Exception:
+            pass
+
+    # Префиксы доменов явно указывающие на зарубежные ДЦ
+    NON_RU_HOST_PREFIXES = ("de.", "nl.", "fr.", "fi.", "pl.", "hr.", "us.", "uk.",
+                             "at.", "ch.", "se.", "cz.", "lt.", "lv.", "ee.")
+
+    def _is_ru(host: str, ip_str: str) -> bool:
+        # 1. Если хост начинается с явно зарубежного префикса — не RU
+        h = host.lower()
+        for pfx in NON_RU_HOST_PREFIXES:
+            if h.startswith(pfx):
+                return False
+        # 2. Проверяем IP по RIPE
         if not ip_str:
             return False
         try:
             ip = _ipaddress.IPv4Address(ip_str)
+            # Исключаем известные зарубежные блоки
+            if any(ip in net for net in KNOWN_NON_RU):
+                return False
             return any(ip in net for net in ru_nets)
         except Exception:
             return False
 
     for host, ip in host_to_ip.items():
-        host_to_cc[host] = "RU" if _is_ru(ip) else ""
+        host_to_cc[host] = "RU" if _is_ru(host, ip) else ""
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
     print(f"  ✅ RIPE lookup: определено {len(host_to_ip)} хостов, RU={ru_count}")
-    print("  🔍 RU хосты (host → ip):")
-    for host, cc in sorted(host_to_cc.items()):
-        if cc == "RU":
-            ip = host_to_ip.get(host, "?")
-            print(f"     {host} → {ip}")
 
     # Fallback для неопределённых — db-ip если установлен
     unknown = [h for h, cc in host_to_cc.items() if not cc]
