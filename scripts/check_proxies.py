@@ -37,18 +37,18 @@ PROBE_URLS = [
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
-REQUIRE_REALITY     = False
-ALLOWED_COUNTRIES   = set()
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]   # добавь "vmess","trojan","ss" при необходимости
+REQUIRE_REALITY     = True                     # False — брать любой vless
+ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 250
-TIMEOUT_TCP         = 1
-TIMEOUT_CURL        = 3
-TIMEOUT_XRAY_START  = 0.5
+TOP_N               = 80
+TIMEOUT_TCP         = 3
+TIMEOUT_CURL        = 10
+TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
-MAX_CONCURRENT_HTTP = 35
-STAGE2_CANDIDATES   = 2000
+MAX_CONCURRENT_HTTP = 20
+STAGE2_CANDIDATES   = 400
 SOCKS_BASE_PORT     = 20000
 
 HYSTERIA2_PROBE_TIMEOUT = 12
