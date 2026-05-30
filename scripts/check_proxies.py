@@ -37,18 +37,18 @@ PROBE_URLS = [
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]   # добавь "vmess","trojan","ss" при необходимости
-REQUIRE_REALITY     = True                     # False — брать любой vless
-ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
+REQUIRE_REALITY     = False
+ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
 TOP_N               = 250
 TIMEOUT_TCP         = 1
-TIMEOUT_CURL        = 10
-TIMEOUT_XRAY_START  = 1.0
+TIMEOUT_CURL        = 3
+TIMEOUT_XRAY_START  = 0.5
 MAX_CONCURRENT_TCP  = 200
-MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 1000
+MAX_CONCURRENT_HTTP = 35
+STAGE2_CANDIDATES   = 2000
 SOCKS_BASE_PORT     = 20000
 
 HYSTERIA2_PROBE_TIMEOUT = 12
@@ -604,19 +604,55 @@ async def main():
         print("⚠️  No working proxies found.")
         return
 
-    uri_lines = [r["uri"] for r in top]
-    (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
-    b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
-    (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
+    # ── Геолукап финального топа для разделения RU / остальные ──────────────
+    ru_uris: list[str] = []
+    other_uris: list[str] = []
+
+    print("\n🌍 Определяем страны для финального топа…")
+    host_to_cc: dict[str, str] = {}
+    top_hosts = list({r["host"] for r in top})
+    connector_geo = aiohttp.TCPConnector(ssl=False)
+    async with aiohttp.ClientSession(connector=connector_geo) as geo_s:
+        for i in range(0, len(top_hosts), GEO_BATCH_SIZE):
+            batch = top_hosts[i:i + GEO_BATCH_SIZE]
+            payload = [{"query": h, "fields": "query,countryCode,status"} for h in batch]
+            try:
+                async with geo_s.post(
+                    "http://ip-api.com/batch",
+                    json=payload,
+                    timeout=aiohttp.ClientTimeout(total=20),
+                ) as resp:
+                    if resp.status == 200:
+                        data = await resp.json(content_type=None)
+                        for entry in data:
+                            if entry.get("status") == "success":
+                                host_to_cc[entry["query"]] = entry.get("countryCode", "")
+            except Exception as e:
+                print(f"  ⚠️  geo error: {e}")
+            await asyncio.sleep(0.3)
+
+    for r in top:
+        cc = host_to_cc.get(r["host"], "")
+        if cc == "RU":
+            ru_uris.append(r["uri"])
+        else:
+            other_uris.append(r["uri"])
+
+    print(f"  🇷🇺 RU: {len(ru_uris)}  |  🌐 Остальные: {len(other_uris)}")
+
+    # ── Сохранение ────────────────────────────────────────────────────────────
+    (OUTPUT_DIR / "proxies.txt").write_text("\n".join(other_uris) + "\n", encoding="utf-8")
+    (OUTPUT_DIR / "ru.txt").write_text("\n".join(ru_uris) + "\n", encoding="utf-8")
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
-    print(f"   proxies.txt      — {len(top)} URI")
-    print(f"   proxies_b64.txt  — base64 подписка\n")
+    print(f"   proxies.txt — {len(other_uris)} URI (не-RU)")
+    print(f"   ru.txt      — {len(ru_uris)} URI (RU)\n")
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         proto = r.get("proto", r["uri"].split("://")[0].lower())
         http  = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
-        print(f"   {i+1}. [{proto}] {r['host']}:{r['port']}  →  {http}")
+        cc    = host_to_cc.get(r["host"], "??")
+        print(f"   {i+1}. [{proto}][{cc}] {r['host']}:{r['port']}  →  {http}")
     print()
 
 
