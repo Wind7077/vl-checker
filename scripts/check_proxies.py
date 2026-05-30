@@ -27,6 +27,38 @@ try:
     HAS_GEOIP2 = True
 except ImportError:
     HAS_GEOIP2 = False
+
+# Российские AS-номера крупных хостингов и провайдеров
+# Используются как дополнительная проверка поверх GeoIP
+RU_ASN = {
+    # Крупные хостинги
+    197695,   # Reg.ru
+    47541,    # Selectel
+    9123,     # TimeWeb
+    51659,    # RUVDS
+    205638,   # Beget
+    12695,    # DataLine
+    8334,     # Masterhost
+    48282,    # AdminVPS
+    61178,    # SprintHost
+    44812,    # ITL
+    49505,    # Selectel (второй блок)
+    # Мобильные операторы
+    25159,    # Сбербанк-Телеком
+    8359,     # МТС
+    16345,    # ВымпелКом (Билайн)
+    25513,    # МегаФон
+    31133,    # МегаФон (второй блок)
+    20632,    # Tele2
+    # Крупные ISP
+    3216,     # Билайн (ПАО ВымпелКом)
+    8470,     # Macomnet
+    13238,    # Yandex
+    5387,     # МТС (второй блок)
+    42610,    # Rostelecom
+    12389,    # Rostelecom (основной)
+    21479,    # Нетворк Медиа
+}
 from pathlib import Path
 
 # ── Пути ──────────────────────────────────────────────────────────────────────
@@ -638,20 +670,55 @@ async def main():
     top_hosts = list({r["host"] for r in top})
 
     if HAS_GEOIP2 and GEOIP_DB.exists():
-        # ── Локальная база MaxMind GeoLite2 — быстро, без сети ──────────────
+        # ── Локальная база GeoLite2 с параллельным DNS-резолвом ─────────────
         import socket as _socket
+
+        async def _resolve(host: str) -> str:
+            """Резолвим hostname → IP асинхронно."""
+            try:
+                loop = asyncio.get_event_loop()
+                infos = await asyncio.wait_for(
+                    loop.getaddrinfo(host, None, family=_socket.AF_INET), timeout=3
+                )
+                return infos[0][4][0]
+            except Exception:
+                return host  # уже IP или резолв не удался
+
         try:
-            reader = _geoip2_db.Reader(str(GEOIP_DB))
-            for host in top_hosts:
+            # Параллельный резолв всех хостов
+            ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
+            host_to_ip = dict(zip(top_hosts, ips))
+
+            country_reader = _geoip2_db.Reader(str(GEOIP_DB))
+            # ASN база — если есть рядом
+            asn_db = GEOIP_DB.parent / "GeoLite2-ASN.mmdb"
+            asn_reader = _geoip2_db.Reader(str(asn_db)) if asn_db.exists() else None
+
+            for host, ip in host_to_ip.items():
+                cc = ""
                 try:
-                    # резолвим hostname → IP если нужно
-                    ip = _socket.gethostbyname(host)
-                    cc = reader.country(ip).country.iso_code or ""
-                    host_to_cc[host] = cc
+                    cc = country_reader.country(ip).country.iso_code or ""
                 except Exception:
-                    host_to_cc[host] = ""
-            reader.close()
-            print(f"  ✅ GeoLite2: определено {sum(1 for v in host_to_cc.values() if v)} / {len(top_hosts)} хостов")
+                    pass
+
+                # Дополнительная проверка по ASN если country сказал не-RU
+                if cc != "RU" and asn_reader:
+                    try:
+                        asn = asn_reader.asn(ip).autonomous_system_number
+                        if asn in RU_ASN:
+                            cc = "RU"
+                    except Exception:
+                        pass
+
+                host_to_cc[host] = cc
+
+            country_reader.close()
+            if asn_reader:
+                asn_reader.close()
+
+            ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
+            det_count = sum(1 for v in host_to_cc.values() if v)
+            print(f"  ✅ GeoLite2: определено {det_count}/{len(top_hosts)} хостов, RU={ru_count}")
         except Exception as e:
             print(f"  ⚠️  GeoLite2 ошибка: {e}")
     else:
