@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — сохраняет оригинальные URI с анкорами (#названия)
+Proxy Checker — финальная версия, анкоры НЕ ТРОГАЮТСЯ
 """
 
 import asyncio
@@ -75,13 +75,13 @@ def parse_vless(uri: str):
     if not uri.startswith("vless://"):
         return None
     try:
-        # Сохраняем оригинальный URI целиком
+        # СОХРАНЯЕМ ОРИГИНАЛ ПОЛНОСТЬЮ
         original_uri = uri
         
-        # Для парсинга используем версию без фрагмента
-        uri_without_fragment = uri.split("#")[0] if "#" in uri else uri
+        # Для парсинга берём только часть без анкора
+        uri_for_parse = uri.split("#")[0] if "#" in uri else uri
         
-        parsed = urlparse(uri_without_fragment)
+        parsed = urlparse(uri_for_parse)
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
@@ -124,7 +124,7 @@ def parse_vless(uri: str):
             "inbounds": [{"port": 1080, "protocol": "socks", "settings": {"udp": True}}]
         }
         
-        # Убираем None значения
+        # Убираем None
         if config["outbounds"][0]["streamSettings"].get("wsSettings") is None:
             del config["outbounds"][0]["streamSettings"]["wsSettings"]
         if config["outbounds"][0]["streamSettings"].get("tlsSettings") is None:
@@ -137,10 +137,10 @@ def parse_vless(uri: str):
             "proto": "vless",
             "host": host,
             "port": port,
-            "uri": original_uri,
+            "uri": original_uri,  # ОРИГИНАЛ С АНКОРОМ
             "config": json.dumps(config)
         }
-    except Exception as e:
+    except:
         return None
 
 # ==================== ПАРСИНГ TROJAN ====================
@@ -149,9 +149,9 @@ def parse_trojan(uri: str):
         return None
     try:
         original_uri = uri
-        uri_without_fragment = uri.split("#")[0] if "#" in uri else uri
+        uri_for_parse = uri.split("#")[0] if "#" in uri else uri
         
-        parsed = urlparse(uri_without_fragment)
+        parsed = urlparse(uri_for_parse)
         host = parsed.hostname
         port = parsed.port
         if not host or not port:
@@ -197,7 +197,7 @@ def parse_trojan(uri: str):
             "uri": original_uri,
             "config": json.dumps(config)
         }
-    except Exception as e:
+    except:
         return None
 
 # ==================== ПАРСИНГ HYSTERIA2 ====================
@@ -349,7 +349,6 @@ async def main():
     print("=" * 50)
     print(f"HTTP_CHECK = {HTTP_CHECK} ({'ON' if HTTP_CHECK else 'OFF'})")
     print(f"STAGE2_CANDIDATES = {STAGE2_CANDIDATES}")
-    print(f"MAX_CONCURRENT_HTTP = {MAX_CONCURRENT_HTTP}")
     print("=" * 50)
     
     print("Loading sources from sources.txt...")
@@ -432,7 +431,7 @@ async def main():
         
         print(f"\n✅ {len(top)} working proxies found:")
         for i, p in enumerate(top[:10]):
-            # Для вывода используем host:port, НЕ МЕНЯЕМ uri
+            # Выводим хост и порт, НЕ трогаем оригинальный URI
             print(f"  {i+1}. {p['host']}:{p['port']} - {p['tcp_ms']:.0f}ms ({p['proto']})")
         if len(top) > 10:
             print(f"  ... and {len(top)-10} more")
@@ -443,7 +442,7 @@ async def main():
     
     Path("output").mkdir(exist_ok=True)
     
-    # Сохраняем ОРИГИНАЛЬНЫЙ URI — без изменений, с анкорами
+    # СОХРАНЯЕМ ОРИГИНАЛЬНЫЙ URI — С АНКОРОМ
     with open("output/proxies.txt", "w") as f:
         for p in top:
             f.write(p["uri"] + "\n")
@@ -453,7 +452,7 @@ async def main():
             f.write(base64.b64encode(p["uri"].encode()).decode() + "\n")
     
     print(f"\nSaved {len(top)} proxies to output/proxies.txt")
-    print("Original URIs with #comments preserved")
+    print("Original URIs with #comments are preserved")
 
 if __name__ == "__main__":
     asyncio.run(main())
