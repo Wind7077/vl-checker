@@ -57,8 +57,11 @@ if sys.platform == "win32":
     XRAY_BIN = Path(r"C:\xray\xray.exe")
     HY2_BIN  = Path(r"C:\hysteria\hysteria.exe")
 else:
-    XRAY_BIN = Path("/tmp/xray-bin/xray")
-    HY2_BIN  = Path("/tmp/hysteria-bin/hysteria")
+    # Сначала ищем в PATH (/usr/local/bin — установлено workflow),
+    # fallback — скачиваем сами в /tmp
+    import shutil as _shutil
+    XRAY_BIN = Path(_shutil.which("xray") or "/tmp/xray-bin/xray")
+    HY2_BIN  = Path(_shutil.which("hysteria2") or "/tmp/hysteria-bin/hysteria")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
