@@ -28,37 +28,13 @@ jobs:
           chmod +x hysteria2
           sudo mv hysteria2 /usr/local/bin/
 
-      - name: Build RU subnet list from RIPE
-        run: |
-          # RIPE — официальный реестр IP-адресов для России и Европы
-          # Фильтруем строки: RU|ipv4|<ip>|<count>|...
-          curl -s "https://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-latest" \
-            | awk -F'|' '$2=="RU" && $3=="ipv4" {
-                split($4, a, "."); split($5, b);
-                # конвертируем count → prefix length
-                n = $5 + 0;
-                bits = 32;
-                while (n > 1) { n /= 2; bits-- }
-                print $4 "/" bits
-              }' > ru_nets.txt
-          echo "# RU subnets from RIPE, generated $(date -u)" | cat - ru_nets.txt > tmp && mv tmp ru_nets.txt
-          echo "Строк в ru_nets.txt: $(wc -l < ru_nets.txt)"
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install Python packages
-        run: pip install aiohttp geoip2
-
-      - name: Download GeoIP databases (db-ip.com, fallback)
-        run: |
-          MONTH=$(date +%Y-%m)
-          curl -sL "https://download.db-ip.com/free/dbip-country-lite-${MONTH}.mmdb.gz" -o dbip-country.mmdb.gz && \
-            gunzip dbip-country.mmdb.gz && mv dbip-country.mmdb GeoLite2-Country.mmdb || true
-          curl -sL "https://download.db-ip.com/free/dbip-asn-lite-${MONTH}.mmdb.gz" -o dbip-asn.mmdb.gz && \
-            gunzip dbip-asn.mmdb.gz && mv dbip-asn.mmdb GeoLite2-ASN.mmdb || true
+        run: pip install aiohttp
 
       - name: Run checker
         run: python scripts/check_proxies.py
