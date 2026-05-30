@@ -105,12 +105,15 @@ def extract_configs(text: str) -> list:
     stripped = text.strip()
     if re.match(r'^[A-Za-z0-9+/\n\r=]{60,}$', stripped):
         decoded = decode_b64(stripped)
-        if any(p in decoded for p in ("vless://", "vmess://", "trojan://", "ss://", "hysteria2://")):
+        if any(p in decoded for p in ("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://")):
             text = decoded
     configs = []
     for line in text.splitlines():
         line = line.strip()
-        if line.startswith(("vless://", "vmess://", "trojan://", "ss://", "hysteria2://")):
+        if line.startswith(("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://")):
+            # нормализуем hy2:// → hysteria2://
+            if line.startswith("hy2://"):
+                line = "hysteria2://" + line[6:]
             configs.append(line)
     return configs
 
@@ -563,7 +566,7 @@ async def main():
 
     print("🛠  Preparing binaries…")
     xray_ok = install_xray()
-    hy2_needed = any(i["uri"].startswith("hysteria2://") for i in tcp_alive[:STAGE2_CANDIDATES])
+    hy2_needed = any(i["uri"].startswith(("hysteria2://", "hy2://")) for i in tcp_alive[:STAGE2_CANDIDATES])
     hy2_ok = install_hysteria2() if hy2_needed else False
 
     candidates = tcp_alive[:STAGE2_CANDIDATES]
