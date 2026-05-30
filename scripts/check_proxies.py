@@ -673,12 +673,9 @@ async def main():
     host_to_cc: dict[str, str] = {}
     top_hosts = list({r["host"] for r in top})
 
-    # ── RIPE + локальный файл RU-подсетей — максимальная точность ──────────
+    # ── Онлайн-верификация страны через несколько API ───────────────────────
     import socket as _socket
-    import ipaddress as _ipaddress
-    import struct as _struct
-
-    RU_NETS_FILE = REPO_ROOT / "ru_nets.txt"
+    import json as _json
 
     async def _resolve(host: str) -> str:
         try:
@@ -688,100 +685,62 @@ async def main():
             )
             return infos[0][4][0]
         except Exception:
-            return ""
+            return host
+
+    async def _get_country(session: aiohttp.ClientSession, ip: str) -> str:
+        apis = [
+            ("https://ipinfo.io/{}/country", "plain"),
+            ("https://ip2c.org/{}", "ip2c"),
+            ("https://api.country.is/{}", "json"),
+        ]
+        for url_tpl, fmt in apis:
+            try:
+                async with session.get(
+                    url_tpl.format(ip),
+                    timeout=aiohttp.ClientTimeout(total=8),
+                    headers={"User-Agent": "curl/7.88"},
+                ) as resp:
+                    if resp.status != 200:
+                        continue
+                    text = (await resp.text()).strip()
+                    if fmt == "plain" and len(text) == 2 and text.isalpha():
+                        return text.upper()
+                    if fmt == "ip2c" and ";" in text:
+                        parts = text.split(";")
+                        if len(parts) >= 2 and len(parts[1]) == 2:
+                            return parts[1].upper()
+                    if fmt == "json" and "{" in text:
+                        cc = _json.loads(text).get("country", "")
+                        if len(cc) == 2:
+                            return cc.upper()
+            except Exception:
+                continue
+        return ""
 
     # Параллельный DNS-резолв
     ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
     host_to_ip = dict(zip(top_hosts, ips))
 
-    # Загружаем список RU-подсетей
-    ru_nets: list[_ipaddress.IPv4Network] = []
-    if RU_NETS_FILE.exists():
-        with open(RU_NETS_FILE) as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#"):
-                    try:
-                        ru_nets.append(_ipaddress.IPv4Network(line, strict=False))
-                    except Exception:
-                        pass
-        print(f"  📋 Загружено {len(ru_nets)} RU-подсетей из {RU_NETS_FILE.name}")
-    else:
-        print(f"  ⚠️  {RU_NETS_FILE.name} не найден — будет скачан из RIPE")
+    # Параллельный geo-запрос (не более 10 одновременно)
+    print(f"  🌐 Запрашиваем страны для {len(top_hosts)} хостов...")
+    geo_sem = asyncio.Semaphore(10)
 
-    # Подсети зарубежных хостингов которые ошибочно попадают в RIPE как RU
-    # (Contabo, некоторые блоки OVH/Hetzner перепроданные российским реселлерам)
-    KNOWN_NON_RU: list[_ipaddress.IPv4Network] = []
-    for cidr in [
-        "45.144.220.0/22",   # Contabo NL/DE
-        "45.144.224.0/20",   # Contabo NL/DE
-        "45.88.0.0/16",      # Contabo NL
-        "5.181.0.0/16",      # Zomro/DataLine NL/UA
-        "94.103.0.0/16",     # Serverius NL
-        "85.192.0.0/16",     # Delis LLC — регистрация RU но ДЦ за рубежом
-    ]:
-        try:
-            KNOWN_NON_RU.append(_ipaddress.IPv4Network(cidr))
-        except Exception:
-            pass
+    async def _bounded(session, host, ip):
+        async with geo_sem:
+            return host, await _get_country(session, ip)
 
-    # Префиксы доменов явно указывающие на зарубежные ДЦ
-    NON_RU_HOST_PREFIXES = ("de.", "nl.", "fr.", "fi.", "pl.", "hr.", "us.", "uk.",
-                             "at.", "ch.", "se.", "cz.", "lt.", "lv.", "ee.")
+    async with aiohttp.ClientSession(
+        connector=aiohttp.TCPConnector(ssl=False, limit=20)
+    ) as geo_session:
+        geo_results = await asyncio.gather(*[
+            _bounded(geo_session, h, ip) for h, ip in host_to_ip.items()
+        ])
 
-    def _is_ru(host: str, ip_str: str) -> bool:
-        # 1. Если хост начинается с явно зарубежного префикса — не RU
-        h = host.lower()
-        for pfx in NON_RU_HOST_PREFIXES:
-            if h.startswith(pfx):
-                return False
-        # 2. Проверяем IP по RIPE
-        if not ip_str:
-            return False
-        try:
-            ip = _ipaddress.IPv4Address(ip_str)
-            # Исключаем известные зарубежные блоки
-            if any(ip in net for net in KNOWN_NON_RU):
-                return False
-            return any(ip in net for net in ru_nets)
-        except Exception:
-            return False
-
-    for host, ip in host_to_ip.items():
-        host_to_cc[host] = "RU" if _is_ru(host, ip) else ""
+    for host, cc in geo_results:
+        host_to_cc[host] = cc
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
-    print(f"  ✅ RIPE lookup: определено {len(host_to_ip)} хостов, RU={ru_count}")
-
-    # Fallback для неопределённых — db-ip если установлен
-    unknown = [h for h, cc in host_to_cc.items() if not cc]
-    if unknown and HAS_GEOIP2 and GEOIP_DB.exists():
-        try:
-            reader = _geoip2_db.Reader(str(GEOIP_DB))
-            asn_db = GEOIP_DB.parent / "GeoLite2-ASN.mmdb"
-            asn_reader = _geoip2_db.Reader(str(asn_db)) if asn_db.exists() else None
-            for host in unknown:
-                ip = host_to_ip.get(host, "")
-                if not ip:
-                    continue
-                cc = ""
-                try:
-                    cc = reader.country(ip).country.iso_code or ""
-                except Exception:
-                    pass
-                if cc != "RU" and asn_reader:
-                    try:
-                        asn = asn_reader.asn(ip).autonomous_system_number
-                        if asn in RU_ASN:
-                            cc = "RU"
-                    except Exception:
-                        pass
-                host_to_cc[host] = cc
-            reader.close()
-            if asn_reader:
-                asn_reader.close()
-        except Exception as e:
-            print(f"  ⚠️  db-ip fallback error: {e}")
+    print(f"  ✅ Geo API: определено {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} хостов, RU={ru_count}")
 
     def _dedup(items):
         """Дедупликация по хосту — лучший результат на сервер (уже отсортировано)."""
