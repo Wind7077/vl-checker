@@ -687,60 +687,114 @@ async def main():
         except Exception:
             return host
 
-    async def _get_country(session: aiohttp.ClientSession, ip: str) -> str:
-        apis = [
-            ("https://ipinfo.io/{}/country", "plain"),
-            ("https://ip2c.org/{}", "ip2c"),
-            ("https://api.country.is/{}", "json"),
-        ]
-        for url_tpl, fmt in apis:
-            try:
-                async with session.get(
-                    url_tpl.format(ip),
-                    timeout=aiohttp.ClientTimeout(total=8),
-                    headers={"User-Agent": "curl/7.88"},
-                ) as resp:
-                    if resp.status != 200:
-                        continue
-                    text = (await resp.text()).strip()
-                    if fmt == "plain" and len(text) == 2 and text.isalpha():
-                        return text.upper()
-                    if fmt == "ip2c" and ";" in text:
-                        parts = text.split(";")
-                        if len(parts) >= 2 and len(parts[1]) == 2:
-                            return parts[1].upper()
-                    if fmt == "json" and "{" in text:
-                        cc = _json.loads(text).get("country", "")
-                        if len(cc) == 2:
-                            return cc.upper()
-            except Exception:
-                continue
-        return ""
+    # Российские org-строки из ipinfo — Yandex Cloud регистрируется как RU-org
+    # даже если физически ДЦ в NL/DE/FI
+    RU_ORGS = (
+        "yandex", "selectel", "beget", "timeweb", "ruvds",
+        "reg.ru", "masterhost", "sprinthost", "fornex",
+        "serveroid", "hostmaster", "dataline", "vdsina",
+        "adminvps", "sweb", "jino", "netangels", "ihc",
+        "fastvps", "majordomo", "spaceweb", "hostiman",
+        "infobox", "nic.ru", "2domains", "vps.house",
+        "cheapvps", "infra.market", "sber", "rostelecom",
+        "megafon", "mts ", "vimpelcom", "beeline",
+        "as13238",   # Yandex LLC
+        "as47541",   # Selectel
+        "as9123",    # TimeWeb
+        "as51659",   # RUVDS
+        "as197695",  # Reg.ru
+        "as12389",   # Rostelecom
+        "as42610",   # Rostelecom
+        "as8359",    # MTS
+        "as25513",   # MegaFon
+        "as31133",   # MegaFon
+        "as3216",    # Vimpelcom/Beeline
+    )
 
     # Параллельный DNS-резолв
     ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
     host_to_ip = dict(zip(top_hosts, ips))
 
-    # Параллельный geo-запрос (не более 10 одновременно)
-    print(f"  🌐 Запрашиваем страны для {len(top_hosts)} хостов...")
-    geo_sem = asyncio.Semaphore(10)
+    # ── Батчевый запрос к ip-api.com (100 IP за раз, бесплатно, без лимитов) ─
+    # Возвращает: countryCode, org, isp — всё что нужно
+    print(f"  🌐 Запрашиваем страны для {len(top_hosts)} хостов (ip-api.com batch)...")
 
-    async def _bounded(session, host, ip):
-        async with geo_sem:
-            return host, await _get_country(session, ip)
+    unique_ips = list({ip for ip in host_to_ip.values() if ip})
+    ip_to_data: dict[str, dict] = {}
 
     async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=False, limit=20)
+        connector=aiohttp.TCPConnector(ssl=False, limit=10)
     ) as geo_session:
-        geo_results = await asyncio.gather(*[
-            _bounded(geo_session, h, ip) for h, ip in host_to_ip.items()
-        ])
+        for i in range(0, len(unique_ips), 100):
+            batch = unique_ips[i:i + 100]
+            payload = [{"query": ip, "fields": "query,countryCode,org,isp,status"} for ip in batch]
+            for attempt in range(3):
+                try:
+                    async with geo_session.post(
+                        "http://ip-api.com/batch",
+                        json=payload,
+                        timeout=aiohttp.ClientTimeout(total=15),
+                    ) as resp:
+                        if resp.status == 200:
+                            for entry in _json.loads(await resp.text()):
+                                if entry.get("status") == "success":
+                                    ip_to_data[entry["query"]] = entry
+                            break
+                        await asyncio.sleep(1)
+                except Exception:
+                    await asyncio.sleep(1)
+            await asyncio.sleep(0.3)  # уважаем rate limit
 
-    for host, cc in geo_results:
-        host_to_cc[host] = cc
+    def _is_ru_data(data: dict) -> bool:
+        """RU если страна RU ИЛИ org/isp принадлежит российской компании."""
+        if data.get("countryCode", "") == "RU":
+            return True
+        org = (data.get("org", "") + " " + data.get("isp", "")).lower()
+        return any(r in org for r in RU_ORGS)
+
+    for host, ip in host_to_ip.items():
+        data = ip_to_data.get(ip, {})
+        if data:
+            host_to_cc[host] = "RU" if _is_ru_data(data) else data.get("countryCode", "")
+        else:
+            host_to_cc[host] = ""
+
+    # Fallback для неопределённых — ipinfo.io
+    unknown_hosts = [h for h, cc in host_to_cc.items() if not cc]
+    if unknown_hosts:
+        async with aiohttp.ClientSession(
+            connector=aiohttp.TCPConnector(ssl=False, limit=10)
+        ) as fb_session:
+            fb_sem = asyncio.Semaphore(10)
+
+            async def _ipinfo(host: str, ip: str) -> tuple[str, str]:
+                async with fb_sem:
+                    try:
+                        _token = os.environ.get("IPINFO_TOKEN", "")
+                        _url = f"https://ipinfo.io/{ip}/json?token={_token}" if _token                                else f"https://ipinfo.io/{ip}/json"
+                        async with fb_session.get(
+                            _url, timeout=aiohttp.ClientTimeout(total=8),
+                            headers={"User-Agent": "curl/7.88"},
+                        ) as resp:
+                            if resp.status == 200:
+                                d = _json.loads(await resp.text())
+                                country = d.get("country", "").upper()
+                                org = d.get("org", "").lower()
+                                if country == "RU" or any(r in org for r in RU_ORGS):
+                                    return host, "RU"
+                                return host, country
+                    except Exception:
+                        pass
+                    return host, ""
+
+            fb_results = await asyncio.gather(*[
+                _ipinfo(h, host_to_ip[h]) for h in unknown_hosts if host_to_ip.get(h)
+            ])
+            for host, cc in fb_results:
+                host_to_cc[host] = cc
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
-    print(f"  ✅ Geo API: определено {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} хостов, RU={ru_count}")
+    print(f"  ✅ Geo: определено {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} хостов, RU={ru_count}")
 
     def _dedup(items):
         """Дедупликация по хосту — лучший результат на сервер (уже отсортировано)."""
