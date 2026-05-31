@@ -687,29 +687,48 @@ async def main():
         except Exception:
             return host
 
-    # Российские org-строки из ipinfo — Yandex Cloud регистрируется как RU-org
-    # даже если физически ДЦ в NL/DE/FI
-    RU_ORGS = (
+    # Российские AS-номера (точное совпадение) и org-ключевые слова
+    # ipinfo.io отдаёт org как "AS13238 Yandex LLC"
+    RU_AS_NUMBERS = {
+        "13238",   # Yandex LLC
+        "47541",   # Selectel
+        "9123",    # TimeWeb
+        "51659",   # RUVDS
+        "197695",  # Reg.ru
+        "12389",   # Rostelecom
+        "42610",   # Rostelecom
+        "8359",    # MTS
+        "25513",   # MegaFon
+        "31133",   # MegaFon
+        "3216",    # Vimpelcom/Beeline
+        "8470",    # Macomnet
+        "44812",   # ITL/AdminVPS
+        "49505",   # Selectel second block
+        "205638",  # Beget
+        "48282",   # AdminVPS
+        "61178",   # SprintHost
+        "8334",    # Masterhost
+    }
+    RU_ORG_KEYWORDS = (
         "yandex", "selectel", "beget", "timeweb", "ruvds",
         "reg.ru", "masterhost", "sprinthost", "fornex",
-        "serveroid", "hostmaster", "dataline", "vdsina",
-        "adminvps", "sweb", "jino", "netangels", "ihc",
-        "fastvps", "majordomo", "spaceweb", "hostiman",
-        "infobox", "nic.ru", "2domains", "vps.house",
-        "cheapvps", "infra.market", "sber", "rostelecom",
-        "megafon", "mts ", "vimpelcom", "beeline",
-        "as13238",   # Yandex LLC
-        "as47541",   # Selectel
-        "as9123",    # TimeWeb
-        "as51659",   # RUVDS
-        "as197695",  # Reg.ru
-        "as12389",   # Rostelecom
-        "as42610",   # Rostelecom
-        "as8359",    # MTS
-        "as25513",   # MegaFon
-        "as31133",   # MegaFon
-        "as3216",    # Vimpelcom/Beeline
+        "dataline", "vdsina", "adminvps", "sweb.ru",
+        "jino.ru", "netangels", "fastvps", "majordomo",
+        "spaceweb", "infobox", "rostelecom", "megafon",
     )
+
+    def _org_is_ru(org: str) -> bool:
+        """Проверяет org-строку из ipinfo вида 'AS13238 Yandex LLC'."""
+        if not org:
+            return False
+        org_lower = org.lower()
+        # Извлекаем AS-номер точно: "AS13238 ..." → "13238"
+        import re as _re
+        m = _re.match(r"as(\d+)", org_lower)
+        if m and m.group(1) in RU_AS_NUMBERS:
+            return True
+        # Проверяем ключевые слова в названии компании
+        return any(kw in org_lower for kw in RU_ORG_KEYWORDS)
 
     # Параллельный DNS-резолв
     ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
@@ -750,7 +769,7 @@ async def main():
         if data.get("countryCode", "") == "RU":
             return True
         org = (data.get("org", "") + " " + data.get("isp", "")).lower()
-        return any(r in org for r in RU_ORGS)
+        return _org_is_ru(org)
 
     for host, ip in host_to_ip.items():
         data = ip_to_data.get(ip, {})
