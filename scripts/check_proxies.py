@@ -273,12 +273,13 @@ async def hy2_probe(item: dict) -> dict | None:
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
         await asyncio.sleep(1.5)
-        http_lat = await asyncio.wait_for(
+        result = await asyncio.wait_for(
             _curl_through_socks(socks_port), timeout=HYSTERIA2_PROBE_TIMEOUT
         )
-        if http_lat is None:
+        if result is None:
             return None
-        return {**item, "http_ms": http_lat, "proto": "hysteria2"}
+        http_lat, exit_ip = result
+        return {**item, "http_ms": http_lat, "exit_ip": exit_ip, "proto": "hysteria2"}
     except Exception:
         return None
     finally:
@@ -298,7 +299,8 @@ async def hy2_probe(item: dict) -> dict | None:
 # Curl через SOCKS5
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def _curl_through_socks(socks_port: int) -> float | None:
+async def _curl_through_socks(socks_port: int) -> tuple[float, str] | None:
+    """Возвращает (латентность_мс, выходной_IP) или None если не работает."""
     for url, ok_codes in PROBE_URLS:
         t0 = time.monotonic()
         try:
@@ -316,7 +318,26 @@ async def _curl_through_socks(socks_port: int) -> float | None:
             stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=TIMEOUT_CURL + 3)
             code = int(stdout.decode().strip() or "0")
             if code in ok_codes:
-                return round((time.monotonic() - t0) * 1000, 1)
+                lat = round((time.monotonic() - t0) * 1000, 1)
+                # Получаем реальный выходной IP через прокси
+                exit_ip = ""
+                try:
+                    proc2 = await asyncio.create_subprocess_exec(
+                        "curl", "-s",
+                        "--socks5-hostname", f"127.0.0.1:{socks_port}",
+                        "--max-time", "5",
+                        "--connect-timeout", "3",
+                        "https://ipinfo.io/ip",
+                        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                    )
+                    out2, _ = await asyncio.wait_for(proc2.communicate(), timeout=8)
+                    exit_ip = out2.decode().strip()
+                    # валидируем что это IP
+                    import ipaddress as _ipa
+                    _ipa.IPv4Address(exit_ip)
+                except Exception:
+                    exit_ip = ""
+                return lat, exit_ip
         except Exception:
             pass
     return None
@@ -523,14 +544,15 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
             )
             await asyncio.sleep(TIMEOUT_XRAY_START)
             try:
-                http_lat = await asyncio.wait_for(
+                result = await asyncio.wait_for(
                     _curl_through_socks(socks_port), timeout=TIMEOUT_CURL + 5
                 )
             except asyncio.TimeoutError:
                 return None
-            if http_lat is None:
+            if result is None:
                 return None
-            return {**item, "http_ms": http_lat}
+            http_lat, exit_ip = result
+            return {**item, "http_ms": http_lat, "exit_ip": exit_ip}
         except Exception:
             return None
         finally:
@@ -673,23 +695,23 @@ async def main():
     host_to_cc: dict[str, str] = {}
     top_hosts = list({r["host"] for r in top})
 
-    # ── Онлайн-верификация страны через несколько API ───────────────────────
-    import socket as _socket
-    import json as _json
+    # ── Определяем страну по реальному выходному IP из Stage 2 ─────────────
+    # exit_ip получен через curl прямо через прокси — это абсолютно точно.
+    # Никаких API, никаких DNS, никаких фрагментов — только реальный трафик.
 
-    async def _resolve(host: str) -> str:
-        try:
-            loop = asyncio.get_event_loop()
-            infos = await asyncio.wait_for(
-                loop.getaddrinfo(host, None, family=_socket.AF_INET), timeout=3
-            )
-            return infos[0][4][0]
-        except Exception:
-            return host
+    exit_ip_by_host: dict[str, str] = {}
+    for r in top:
+        ei = r.get("exit_ip", "")
+        if ei:
+            exit_ip_by_host[r["host"]] = ei
+
+    # Для хостов у которых exit_ip есть — определяем страну через ipinfo
+    hosts_with_ip   = [h for h in top_hosts if exit_ip_by_host.get(h)]
+    hosts_no_ip     = [h for h in top_hosts if not exit_ip_by_host.get(h)]
+
+    print(f"  🌐 Определяем страну для {len(hosts_with_ip)} хостов по exit_ip...")
 
     async def _get_country(session: aiohttp.ClientSession, ip: str) -> str:
-        """Возвращает двухбуквенный код страны для IP. Только country, без org-эвристик."""
-        # ipinfo.io
         try:
             _token = os.environ.get("IPINFO_TOKEN", "")
             _url = f"https://ipinfo.io/{ip}/country?token={_token}" if _token else f"https://ipinfo.io/{ip}/country"
@@ -701,9 +723,9 @@ async def main():
                         return cc.upper()
         except Exception:
             pass
-        # ip2c.org fallback
         try:
-            async with session.get(f"https://ip2c.org/{ip}", timeout=aiohttp.ClientTimeout(total=8),
+            async with session.get(f"https://ip2c.org/{ip}",
+                                   timeout=aiohttp.ClientTimeout(total=8),
                                    headers={"User-Agent": "curl/7.88"}) as resp:
                 if resp.status == 200:
                     parts = (await resp.text()).strip().split(";")
@@ -713,24 +735,6 @@ async def main():
             pass
         return ""
 
-    # Параллельный DNS-резолв всех хостов
-    import socket as _socket
-
-    async def _resolve(host: str) -> str:
-        try:
-            loop = asyncio.get_event_loop()
-            infos = await asyncio.wait_for(
-                loop.getaddrinfo(host, None, family=_socket.AF_INET), timeout=3
-            )
-            return infos[0][4][0]
-        except Exception:
-            return host
-
-    ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
-    host_to_ip = dict(zip(top_hosts, ips))
-
-    # Параллельный geo-запрос (не более 10 одновременно)
-    print(f"  🌐 Запрашиваем страны для {len(top_hosts)} хостов...")
     geo_sem = asyncio.Semaphore(10)
 
     async def _bounded(session, host, ip):
@@ -741,17 +745,20 @@ async def main():
         connector=aiohttp.TCPConnector(ssl=False, limit=20)
     ) as geo_session:
         geo_results = await asyncio.gather(*[
-            _bounded(geo_session, h, ip) for h, ip in host_to_ip.items()
+            _bounded(geo_session, h, exit_ip_by_host[h])
+            for h in hosts_with_ip
         ])
 
     for host, cc in geo_results:
         host_to_cc[host] = cc
 
+    # Хосты без exit_ip — помечаем как неизвестные (не кладём в ru.txt)
+    for host in hosts_no_ip:
+        host_to_cc[host] = ""
+
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
-    print(f"  ✅ Geo API: {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} определено, RU={ru_count}")
-    for h, cc in sorted(host_to_cc.items()):
-        if cc == "RU":
-            print(f"     RU: {h} → {host_to_ip.get(h,"?")}")
+    print(f"  ✅ Итого: RU={ru_count}/{len(top_hosts)}")
+
 
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
