@@ -749,6 +749,9 @@ async def main():
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
     print(f"  ✅ Geo API: {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} определено, RU={ru_count}")
+    for h, cc in sorted(host_to_cc.items()):
+        if cc == "RU":
+            print(f"     RU: {h} → {host_to_ip.get(h,"?")}")
 
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
