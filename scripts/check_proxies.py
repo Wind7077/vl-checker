@@ -687,89 +687,31 @@ async def main():
         except Exception:
             return host
 
-    # Российские AS-номера (точное совпадение) и org-ключевые слова
-    # ipinfo.io отдаёт org как "AS13238 Yandex LLC"
-    RU_AS_NUMBERS = {
-        "13238",   # Yandex LLC
-        "47541",   # Selectel
-        "9123",    # TimeWeb
-        "51659",   # RUVDS
-        "197695",  # Reg.ru
-        "12389",   # Rostelecom
-        "42610",   # Rostelecom
-        "8359",    # MTS
-        "25513",   # MegaFon
-        "31133",   # MegaFon
-        "3216",    # Vimpelcom/Beeline
-        "8470",    # Macomnet
-        "44812",   # ITL/AdminVPS
-        "49505",   # Selectel second block
-        "205638",  # Beget
-        "48282",   # AdminVPS
-        "61178",   # SprintHost
-        "8334",    # Masterhost
-    }
-    RU_ORG_KEYWORDS = (
-        "yandex", "selectel", "beget", "timeweb", "ruvds",
-        "reg.ru", "masterhost", "sprinthost", "fornex",
-        "dataline", "vdsina", "adminvps", "sweb.ru",
-        "jino.ru", "netangels", "fastvps", "majordomo",
-        "spaceweb", "infobox", "rostelecom", "megafon",
-    )
-
-    def _org_is_ru(org: str) -> bool:
-        """Проверяет org-строку из ipinfo вида 'AS13238 Yandex LLC'."""
-        if not org:
-            return False
-        org_lower = org.lower()
-        # Извлекаем AS-номер точно: "AS13238 ..." → "13238"
-        import re as _re
-        m = _re.match(r"as(\d+)", org_lower)
-        if m and m.group(1) in RU_AS_NUMBERS:
-            return True
-        # Проверяем ключевые слова в названии компании
-        return any(kw in org_lower for kw in RU_ORG_KEYWORDS)
-
-    # Параллельный DNS-резолв
-    ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
-    host_to_ip = dict(zip(top_hosts, ips))
-
-    # ── Батчевый запрос к ip-api.com (100 IP за раз, бесплатно, без лимитов) ─
-    # Возвращает: countryCode, org, isp — всё что нужно
-    print(f"  🌐 Запрашиваем страны для {len(top_hosts)} хостов (ip-api.com batch)...")
-
-    unique_ips = list({ip for ip in host_to_ip.values() if ip})
-    ip_to_data: dict[str, dict] = {}
-
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=False, limit=10)
-    ) as geo_session:
-        for i in range(0, len(unique_ips), 100):
-            batch = unique_ips[i:i + 100]
-            payload = [{"query": ip, "fields": "query,countryCode,org,isp,status"} for ip in batch]
-            for attempt in range(3):
-                try:
-                    async with geo_session.post(
-                        "http://ip-api.com/batch",
-                        json=payload,
-                        timeout=aiohttp.ClientTimeout(total=15),
-                    ) as resp:
-                        if resp.status == 200:
-                            for entry in _json.loads(await resp.text()):
-                                if entry.get("status") == "success":
-                                    ip_to_data[entry["query"]] = entry
-                            break
-                        await asyncio.sleep(1)
-                except Exception:
-                    await asyncio.sleep(1)
-            await asyncio.sleep(0.3)  # уважаем rate limit
-
-    def _is_ru_data(data: dict) -> bool:
-        """RU если страна RU ИЛИ org/isp принадлежит российской компании."""
-        if data.get("countryCode", "") == "RU":
-            return True
-        org = (data.get("org", "") + " " + data.get("isp", "")).lower()
-        return _org_is_ru(org)
+    async def _get_country(session: aiohttp.ClientSession, ip: str) -> str:
+        """Возвращает двухбуквенный код страны для IP. Только country, без org-эвристик."""
+        # ipinfo.io
+        try:
+            _token = os.environ.get("IPINFO_TOKEN", "")
+            _url = f"https://ipinfo.io/{ip}/country?token={_token}" if _token else f"https://ipinfo.io/{ip}/country"
+            async with session.get(_url, timeout=aiohttp.ClientTimeout(total=8),
+                                   headers={"User-Agent": "curl/7.88"}) as resp:
+                if resp.status == 200:
+                    cc = (await resp.text()).strip()
+                    if len(cc) == 2 and cc.isalpha():
+                        return cc.upper()
+        except Exception:
+            pass
+        # ip2c.org fallback
+        try:
+            async with session.get(f"https://ip2c.org/{ip}", timeout=aiohttp.ClientTimeout(total=8),
+                                   headers={"User-Agent": "curl/7.88"}) as resp:
+                if resp.status == 200:
+                    parts = (await resp.text()).strip().split(";")
+                    if len(parts) >= 2 and len(parts[1]) == 2:
+                        return parts[1].upper()
+        except Exception:
+            pass
+        return ""
 
     for host, ip in host_to_ip.items():
         data = ip_to_data.get(ip, {})
