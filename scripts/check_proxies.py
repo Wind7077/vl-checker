@@ -713,46 +713,43 @@ async def main():
             pass
         return ""
 
-    for host, ip in host_to_ip.items():
-        data = ip_to_data.get(ip, {})
-        if data:
-            host_to_cc[host] = "RU" if _is_ru_data(data) else data.get("countryCode", "")
-        else:
-            host_to_cc[host] = ""
+    # Параллельный DNS-резолв всех хостов
+    import socket as _socket
 
-    # Fallback для неопределённых — ipinfo.io
-    unknown_hosts = [h for h, cc in host_to_cc.items() if not cc]
-    if unknown_hosts:
-        async with aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(ssl=False, limit=10)
-        ) as fb_session:
-            fb_sem = asyncio.Semaphore(10)
+    async def _resolve(host: str) -> str:
+        try:
+            loop = asyncio.get_event_loop()
+            infos = await asyncio.wait_for(
+                loop.getaddrinfo(host, None, family=_socket.AF_INET), timeout=3
+            )
+            return infos[0][4][0]
+        except Exception:
+            return host
 
-            async def _ipinfo(host: str, ip: str) -> tuple[str, str]:
-                async with fb_sem:
-                    try:
-                        _token = os.environ.get("IPINFO_TOKEN", "")
-                        _url = f"https://ipinfo.io/{ip}/json?token={_token}" if _token                                else f"https://ipinfo.io/{ip}/json"
-                        async with fb_session.get(
-                            _url, timeout=aiohttp.ClientTimeout(total=8),
-                            headers={"User-Agent": "curl/7.88"},
-                        ) as resp:
-                            if resp.status == 200:
-                                d = _json.loads(await resp.text())
-                                country = d.get("country", "").upper()
-                                org = d.get("org", "").lower()
-                                if country == "RU" or any(r in org for r in RU_ORGS):
-                                    return host, "RU"
-                                return host, country
-                    except Exception:
-                        pass
-                    return host, ""
+    ips = await asyncio.gather(*[_resolve(h) for h in top_hosts])
+    host_to_ip = dict(zip(top_hosts, ips))
 
-            fb_results = await asyncio.gather(*[
-                _ipinfo(h, host_to_ip[h]) for h in unknown_hosts if host_to_ip.get(h)
-            ])
-            for host, cc in fb_results:
-                host_to_cc[host] = cc
+    # Параллельный geo-запрос (не более 10 одновременно)
+    print(f"  🌐 Запрашиваем страны для {len(top_hosts)} хостов...")
+    geo_sem = asyncio.Semaphore(10)
+
+    async def _bounded(session, host, ip):
+        async with geo_sem:
+            return host, await _get_country(session, ip)
+
+    async with aiohttp.ClientSession(
+        connector=aiohttp.TCPConnector(ssl=False, limit=20)
+    ) as geo_session:
+        geo_results = await asyncio.gather(*[
+            _bounded(geo_session, h, ip) for h, ip in host_to_ip.items()
+        ])
+
+    for host, cc in geo_results:
+        host_to_cc[host] = cc
+
+    ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
+    print(f"  ✅ Geo API: {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} определено, RU={ru_count}")
+
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
     print(f"  ✅ Geo: определено {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} хостов, RU={ru_count}")
