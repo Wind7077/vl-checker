@@ -1,6 +1,6 @@
 # Clash Meta / Mihomo / FClash subscription
 # Label    : Global (non-RU)
-# Updated  : 2026-06-01 22:57 UTC
+# Updated  : 2026-06-02 02:47 UTC
 # Proxies  : 57
 # Protocols: vless, hysteria2, trojan
 # ────────────────────────────────────────────────────
@@ -22,80 +22,67 @@ dns:
     - tls://1.0.0.1:853
 
 proxies:
-  - name: VLESS-001-108.2ms-82.29.130.68
+  - name: VLESS-001-107.3ms-185.193.29.40
     type: vless
-    server: 82.29.130.68
-    port: 852
-    uuid: 9f854aa6-7882-4da9-84be-90637c1645a1
+    server: 185.193.29.40
+    port: 8880
+    uuid: 6202b230-417c-4d8e-b624-0f71afa9c75d
     udp: true
-    network: grpc
-    tls: true
-    servername: www.amd.com
-    client-fingerprint: edge
-    reality-opts:
-      public-key: FoCmMBurpqNaVQWlRvyuS1um0ftKxXMnnKNbnHpe-G8
-      short-id: ""
-    grpc-opts:
-      grpc-service-name: ""
-  - name: HYSTERIA2-002-225.9ms-hy2.123266.xyz
-    type: hysteria2
-    server: hy2.123266.xyz
-    port: 33333
-    password: bce6c821-200d-421f-bf3d-7159e5246ea0
-    sni: hy2.123266.xyz
-    skip-cert-verify: true
+    network: ws
+    ws-opts:
+      path: "/?ed=2560"
+      headers: {Host: vms.lifetime08.workers.dev}
+  - name: VLESS-002-116.3ms-135.84.75.50
+    type: vless
+    server: 135.84.75.50
+    port: 8880
+    uuid: 6202b230-417c-4d8e-b624-0f71afa9c75d
     udp: true
-  - name: VLESS-003-233.9ms-38.55.146.153
+    network: ws
+    ws-opts:
+      path: "/?ed=2560"
+      headers: {Host: vms.lifetime08.workers.dev}
+  - name: VLESS-003-123.4ms-45.80.110.50
+    type: vless
+    server: 45.80.110.50
+    port: 8880
+    uuid: 6202b230-417c-4d8e-b624-0f71afa9c75d
+    udp: true
+    network: ws
+    ws-opts:
+      path: /
+      headers: {Host: vms.lifetime51.workers.dev}
+  - name: VLESS-004-257.2ms-38.55.146.153
     type: vless
     server: 38.55.146.153
     port: 13000
     uuid: b852270a-1283-4ea8-8a2f-5bae8e644a3e
     udp: true
-  - name: VLESS-004-260.9ms-178.62.87.183
+  - name: VLESS-005-284.1ms-178.62.87.183
     type: vless
     server: 178.62.87.183
     port: 27774
     uuid: c83014e0-ad3e-4ebd-9e8f-8f7a1f6088d6
     udp: true
-  - name: VLESS-005-261.8ms-206.189.20.90
+  - name: VLESS-006-284.3ms-206.189.20.90
     type: vless
     server: 206.189.20.90
     port: 27774
     uuid: c83014e0-ad3e-4ebd-9e8f-8f7a1f6088d6
     udp: true
-  - name: VLESS-006-268.9ms-159.65.92.206
+  - name: VLESS-007-289.3ms-159.65.92.206
     type: vless
     server: 159.65.92.206
     port: 27774
     uuid: c83014e0-ad3e-4ebd-9e8f-8f7a1f6088d6
     udp: true
-  - name: VLESS-007-300.4ms-194.59.183.234
+  - name: VLESS-008-303.7ms-194.59.183.234
     type: vless
     server: 194.59.183.234
     port: 666
     uuid: 56aaf8cd-d2fb-5211-bc9b-c242ee37d429
     udp: true
-  - name: VLESS-008-307.7ms-91.107.255.167
-    type: vless
-    server: 91.107.255.167
-    port: 24391
-    uuid: 7d8584e3-410b-4667-a9b3-9a6465d4f999
-    udp: true
-  - name: VLESS-009-309.0ms-91.107.189.143
-    type: vless
-    server: 91.107.189.143
-    port: 29039
-    uuid: 16c6faa4-1162-49ca-acf7-059afdf1ecd3
-    udp: true
-  - name: HYSTERIA2-010-314.2ms-62.210.124.146
-    type: hysteria2
-    server: 62.210.124.146
-    port: 22000
-    password: dongtaiwang.com
-    sni: www.microsoft.com
-    skip-cert-verify: true
-    udp: true
-  - name: VLESS-011-323.9ms-47.251.25.74
+  - name: VLESS-009-308.8ms-47.251.25.74
     type: vless
     server: 47.251.25.74
     port: 443
@@ -108,120 +95,65 @@ proxies:
     reality-opts:
       public-key: H56cOJhw0xw76lDEpt7IuJJmVGemK6_CK34KtHwDMX8
       short-id: ""
-  - name: VLESS-012-335.3ms-3.65.207.158
+  - name: VLESS-010-311.7ms-91.107.255.167
     type: vless
-    server: 3.65.207.158
-    port: 443
-    uuid: 0a335b4d-7a02-4989-a16d-424d265a6420
+    server: 91.107.255.167
+    port: 24391
+    uuid: 7d8584e3-410b-4667-a9b3-9a6465d4f999
     udp: true
-  - name: VLESS-013-347.0ms-193.233.23.121
+  - name: VLESS-011-311.8ms-91.107.189.143
     type: vless
-    server: 193.233.23.121
-    port: 40611
-    uuid: f5a25ee5-ff24-41b0-80e8-ccafdc866614
+    server: 91.107.189.143
+    port: 29039
+    uuid: 16c6faa4-1162-49ca-acf7-059afdf1ecd3
     udp: true
-  - name: VLESS-014-349.4ms-193.233.23.196
+  - name: VLESS-012-360.0ms-204.216.216.23
+    type: vless
+    server: 204.216.216.23
+    port: 10086
+    uuid: 9f0285ee-20ca-4953-bcdb-86a920652923
+    udp: true
+  - name: VLESS-013-372.4ms-193.233.23.196
     type: vless
     server: 193.233.23.196
     port: 26048
     uuid: 3007b043-acdf-43a4-900e-c7c015406f89
     udp: true
-  - name: VLESS-015-351.3ms-51.89.229.134
-    type: vless
-    server: 51.89.229.134
-    port: 443
-    uuid: 53821f3c-5b03-456a-89f3-f8379f130752
-    udp: true
-    tls: true
-    servername: www.samsung.com
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: 4e4FI0siWxFtLCRCVDQurn1wLTuvKWhRY0zj1SaUcyw
-      short-id: a13a7cc5
-  - name: VLESS-016-375.9ms-151.115.164.134
-    type: vless
-    server: 151.115.164.134
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-017-380.4ms-155.117.127.137
+  - name: VLESS-014-379.8ms-155.117.127.137
     type: vless
     server: 155.117.127.137
     port: 443
     uuid: 5a20b5d0-3a98-4792-9559-95f4e24277ec
     udp: true
-  - name: VLESS-018-389.8ms-3.71.187.131
+  - name: VLESS-015-398.1ms-188.137.230.245
     type: vless
-    server: 3.71.187.131
-    port: 443
-    uuid: 8ecccb71-95ec-4a12-cbc5-ffc32c4d5ded
+    server: 188.137.230.245
+    port: 8880
+    uuid: 762ca06a-daba-4510-8533-7ba0667fb1f1
     udp: true
-  - name: VLESS-019-391.9ms-151.115.164.110
+    network: ws
+    ws-opts:
+      path: /
+      headers: {Host: 188.137.230.245}
+  - name: VLESS-016-404.1ms-151.115.164.116
     type: vless
-    server: 151.115.164.110
+    server: 151.115.164.116
     port: 8880
     uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
     udp: true
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-020-400.8ms-151.115.164.117
+  - name: VLESS-017-404.3ms-sca9.myfymain.com
     type: vless
-    server: 151.115.164.117
+    server: sca9.myfymain.com
     port: 8880
     uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
     udp: true
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-021-408.6ms-151.115.164.37
-    type: vless
-    server: 151.115.164.37
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-022-409.4ms-151.115.164.126
-    type: vless
-    server: 151.115.164.126
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-023-411.4ms-cdn-de-1.bigbossvpn.online
-    type: vless
-    server: cdn-de-1.bigbossvpn.online
-    port: 8443
-    uuid: 6ef2cd26-bd6c-45ee-88b6-ef4240cb012c
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: deepl.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: OAKZv1BA4SuH3tEQGf24i9ZJiKbYQoWoVZwrUdARQwU
-      short-id: 14a3a07e185c653f
-  - name: VLESS-024-413.6ms-147.90.14.161
-    type: vless
-    server: 147.90.14.161
-    port: 8443
-    uuid: a8f7bfbc-4bb8-4f10-ac8f-93e0ce4cc46a
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.cloudflare.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: TxeJaR7AeMcpnSi8A45lOSc8xMSFlYu6x7mHjeQMQWU
-      short-id: 4adcbc3df6cdd138
-  - name: VLESS-025-414.3ms-food.artmisserver.site
+  - name: VLESS-018-405.5ms-food.artmisserver.site
     type: vless
     server: food.artmisserver.site
     port: 8443
@@ -231,38 +163,78 @@ proxies:
     ws-opts:
       path: /
       headers: {Host: ap.isowli.ir}
-  - name: VLESS-026-418.8ms-sca9.myfymain.com
+  - name: VLESS-019-405.6ms-151.115.164.110
     type: vless
-    server: sca9.myfymain.com
+    server: 151.115.164.110
     port: 8880
     uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
     udp: true
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-027-420.2ms-31.58.76.181
+  - name: VLESS-020-407.5ms-85.93.10.109
     type: vless
-    server: 31.58.76.181
-    port: 5984
-    uuid: 2397be53-f62b-42f7-80fe-5d22627c03a9
+    server: 85.93.10.109
+    port: 443
+    uuid: bda6af97-8d40-4ca4-a62d-69c05a844caa
     udp: true
     flow: xtls-rprx-vision
     tls: true
-    servername: surfvpn24.ru
-    client-fingerprint: chrome
+    servername: currency.rest
+    client-fingerprint: random
     reality-opts:
-      public-key: eNxDsVVIsWFYlD2-wdwdDNe1jOWCBoLUzctbJJdnFyk
-      short-id: c19de8fa
-  - name: VLESS-028-423.9ms-sca8.myfymain.com
+      public-key: jxFvY1W8mS7K8aKMJIsJwbA0MyO4WujHiOVUO-H4T2c
+      short-id: ""
+  - name: VLESS-021-408.8ms-151.115.164.37
     type: vless
-    server: sca8.myfymain.com
+    server: 151.115.164.37
     port: 8880
     uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
     udp: true
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-029-424.7ms-sca17.myfymain.com
+  - name: VLESS-022-410.1ms-151.115.164.126
+    type: vless
+    server: 151.115.164.126
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-023-411.6ms-151.115.164.134
+    type: vless
+    server: 151.115.164.134
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-024-413.3ms-germany02.anotherboring.top
+    type: vless
+    server: germany02.anotherboring.top
+    port: 443
+    uuid: 8f76336d-e564-41e2-9c09-7a15536f356a
+    udp: true
+    flow: xtls-rprx-vision
+    tls: true
+    servername: germany02.anotherboring.top
+    client-fingerprint: qq
+    reality-opts:
+      public-key: zN9kS4_czte2L8NhB0046IASVAJd0CJJY2jgI2Qq4wg
+      short-id: bb705d46cd253646
+  - name: VLESS-025-417.8ms-sca15.myfymain.com
+    type: vless
+    server: sca15.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-026-417.9ms-sca17.myfymain.com
     type: vless
     server: sca17.myfymain.com
     port: 8880
@@ -271,13 +243,89 @@ proxies:
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-030-427.4ms-109.120.132.142
+  - name: VLESS-027-418.6ms-sca13.myfymain.com
     type: vless
-    server: 109.120.132.142
-    port: 40617
-    uuid: d8d05386-e381-40a4-bb63-715c208b3ed3
+    server: sca13.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
     udp: true
-  - name: VLESS-031-430.9ms-151.115.164.132
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-028-419.2ms-151.115.164.117
+    type: vless
+    server: 151.115.164.117
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-029-422.9ms-3.71.187.131
+    type: vless
+    server: 3.71.187.131
+    port: 443
+    uuid: 8ecccb71-95ec-4a12-cbc5-ffc32c4d5ded
+    udp: true
+  - name: VLESS-030-423.4ms-sca20.myfymain.com
+    type: vless
+    server: sca20.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-031-425.8ms-sca8.myfymain.com
+    type: vless
+    server: sca8.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-032-426.4ms-172.86.67.73
+    type: vless
+    server: 172.86.67.73
+    port: 443
+    uuid: c55a51d9-48bd-11f1-941f-54db13ea7d40
+    udp: true
+    flow: xtls-rprx-vision
+    tls: true
+    servername: www.akamai.com
+    client-fingerprint: randomized
+    reality-opts:
+      public-key: gydLdekl4sNcE2j7vueKJJhpYWTBxlGs_VQ6-ZH55iQ
+      short-id: ""
+  - name: VLESS-033-426.6ms-sca12.myfymain.com
+    type: vless
+    server: sca12.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-034-429.7ms-sca10.myfymain.com
+    type: vless
+    server: sca10.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-035-432.3ms-sca11.myfymain.com
+    type: vless
+    server: sca11.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    udp: true
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-036-439.9ms-151.115.164.132
     type: vless
     server: 151.115.164.132
     port: 8880
@@ -286,45 +334,26 @@ proxies:
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-032-431.2ms-roz2r.skystreamgame.com
+  - name: VLESS-037-448.5ms-accountdb.ir
     type: vless
-    server: roz2r.skystreamgame.com
-    port: 8443
-    uuid: 22768339-9096-48aa-9109-ff28141145b9
+    server: accountdb.ir
+    port: 80
+    uuid: af77d53f-a0e4-456e-b977-696bf081dcc8
     udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: roz2r.skystreamgame.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: QHkXBS2ENHV0khgY9VBYi8_9bpfqnUYDcfQN4cW5Qg0
-      short-id: 4326
-  - name: VLESS-033-437.9ms-194.60.86.185
+    network: ws
+    ws-opts:
+      path: /
+      headers: {Host: g1.nybaz.space}
+  - name: VLESS-038-449.6ms-sca19.myfymain.com
     type: vless
-    server: 194.60.86.185
-    port: 4443
-    uuid: 1379aed6-0a11-4533-97ee-f7df8026510a
+    server: sca19.myfymain.com
+    port: 8880
+    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
     udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: m.vk.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: NCNqme8sDO4TA0jitmR9v0FE9ZaELiNV2pmrY13ZK3I
-      short-id: 355d395e
-  - name: VLESS-034-444.0ms-83.228.226.72
-    type: vless
-    server: 83.228.226.72
-    port: 34129
-    uuid: a1ee1f7f-deb9-48e4-9a97-6f565949817d
-    udp: true
-    tls: true
-    servername: www.nvidia.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: iQnJ9plqBA9JIc8tnQGYaiuE3EnhOxl9jWGnVyJTWV0
-      short-id: 5d9b8a
-  - name: VLESS-035-470.7ms-pl.sywl3.us
+    network: grpc
+    grpc-opts:
+      grpc-service-name: ""
+  - name: VLESS-039-452.0ms-pl.sywl3.us
     type: vless
     server: pl.sywl3.us
     port: 443
@@ -337,42 +366,35 @@ proxies:
     reality-opts:
       public-key: xy8AHr_xZCNqFOuLq_t2fe4oLlrv5iu38uCQ1hUJ40w
       short-id: 954c99065465428d
-  - name: VLESS-036-472.6ms-130.49.219.124
+  - name: VLESS-040-452.5ms-109.120.132.142
     type: vless
-    server: 130.49.219.124
-    port: 443
-    uuid: d4ca8f1f-45b2-486c-8944-b6524887e656
+    server: 109.120.132.142
+    port: 40617
+    uuid: d8d05386-e381-40a4-bb63-715c208b3ed3
     udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: dl.google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: YJBjpcuIbJ02pKPB2BMI64i_29nMBTI9jo2gdLX8zQg
-      short-id: 16ab14
-  - name: VLESS-037-474.1ms-46.36.219.69
+  - name: VLESS-041-457.1ms-bc-de-wc.ray-balance.space
     type: vless
-    server: 46.36.219.69
-    port: 8443
-    uuid: 14a59796-6db6-4c48-b4d5-2c7b875074c1
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: vk.ru
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: rFb2hsGZE0KGim0_MMIfeKMnYTjKH2llqtN4uDUaTj0
-      short-id: 4d05e319
-  - name: VLESS-038-474.4ms-sca13.myfymain.com
-    type: vless
-    server: sca13.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
+    server: bc-de-wc.ray-balance.space
+    port: 4443
+    uuid: 0eca1f22-e5a1-4888-a0fa-c2345e87cf2f
     udp: true
     network: grpc
     grpc-opts:
       grpc-service-name: ""
-  - name: VLESS-039-488.8ms-81.177.212.216
+  - name: VLESS-042-498.9ms-hu01.bearbeer.digital
+    type: vless
+    server: hu01.bearbeer.digital
+    port: 443
+    uuid: 017510da-8b42-49de-8ea9-ab60e3e9072e
+    udp: true
+    flow: xtls-rprx-vision
+    tls: true
+    servername: hu01.bearbeer.digital
+    client-fingerprint: qq
+    reality-opts:
+      public-key: z-TKWOWgZLfzQ-wNdwXQqVwaUgCmbchM2Xtrk1NGynU
+      short-id: ""
+  - name: VLESS-043-499.8ms-81.177.212.216
     type: vless
     server: 81.177.212.216
     port: 443
@@ -385,182 +407,52 @@ proxies:
     reality-opts:
       public-key: wSjV1yR_rhDUdoNbM9zIXNGLASLp9RorComnyoayo2c
       short-id: ""
-  - name: VLESS-040-491.8ms-89.22.236.213
+  - name: VLESS-044-505.6ms-89.22.236.213
     type: vless
     server: 89.22.236.213
     port: 54346
     uuid: IR_NETLIFY
     udp: true
-  - name: VLESS-041-523.3ms-de.corsair-web.space
+  - name: VLESS-045-510.3ms-144.31.2.49
     type: vless
-    server: de.corsair-web.space
-    port: 8443
-    uuid: a845ce7c-ea10-47b0-8de4-92810260eeab
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: mozilla.org
-    client-fingerprint: random
-    reality-opts:
-      public-key: TNsQJHoX2M2u07a6oEPb3tY9U08Aph4Qvdk76dAZdio
-      short-id: 82ed5803a8047a3e
-  - name: VLESS-042-537.0ms-95.128.157.212
-    type: vless
-    server: 95.128.157.212
-    port: 510
-    uuid: f3d08978-e457-43a3-b062-d74e4328833d
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdn.vkvideo.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: gTLxGPaumAT1gY3dEXIbZcr0Ocspb1hdrEG5oBkPOA8
-      short-id: ""
-  - name: VLESS-043-573.3ms-78.17.3.113
-    type: vless
-    server: 78.17.3.113
+    server: 144.31.2.49
     port: 443
-    uuid: ec9a9c43-0d86-420c-a5e5-9f20a6a83ba6
+    uuid: bda6af97-8d40-4ca4-a62d-69c05a844caa
     udp: true
+    flow: xtls-rprx-vision
     tls: true
-    servername: ozon.ru
-    client-fingerprint: chrome
+    servername: files.pythonhosted.org
+    client-fingerprint: firefox
     reality-opts:
-      public-key: zOi7yEDq1jccA285Ax-V8Fu8JxOmTXqCsDY034OoUUU
-      short-id: 15d10c9b72c2f0a7
-  - name: VLESS-044-579.1ms-77.239.112.88
+      public-key: f7gW_x4XOC-Y-p2r__GCsFA2AmaofJyp5afcAfGc2wA
+      short-id: b7c9bcde4b3ef655
+  - name: VLESS-046-515.4ms-5.183.253.171
     type: vless
-    server: 77.239.112.88
+    server: 5.183.253.171
     port: 443
-    uuid: f099abc1-eb01-4171-a94f-566563f6b3b1
+    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
     udp: true
     flow: xtls-rprx-vision
     tls: true
-    servername: www.ya.ru
+    servername: eh.vk.com
     client-fingerprint: chrome
     reality-opts:
-      public-key: o2SrzDoX5tfMpju7B-RSxsb7eo6-hdV1vRFP8VA-dUA
-      short-id: ""
-  - name: VLESS-045-600.6ms-212.100.171.194
+      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
+      short-id: 8248954896
+  - name: VLESS-047-524.5ms-81.19.139.35
     type: vless
-    server: 212.100.171.194
-    port: 48862
-    uuid: da9f6ce2-aaba-47dd-be50-5afd17331fd9
-    udp: true
-  - name: VLESS-046-619.6ms-vrubg.mostserv.xyz
-    type: vless
-    server: vrubg.mostserv.xyz
+    server: 81.19.139.35
     port: 443
-    uuid: 0ddc1b7c-ce23-000a-8ede-8a9e19f02fb7
+    uuid: bda6af97-8d40-4ca4-a62d-69c05a844caa
     udp: true
     flow: xtls-rprx-vision
     tls: true
-    servername: vrubg.mostserv.xyz
-    client-fingerprint: chrome
+    servername: community.cloudflare.steamstatic.com
+    client-fingerprint: safari
     reality-opts:
-      public-key: 3WzSgL8uXA3vE3IHrfdBpJmOO4MYrsWpczDSY_jJRjI
-      short-id: 226509f017e4c36d
-  - name: VLESS-047-709.5ms-47.91.94.112
-    type: vless
-    server: 47.91.94.112
-    port: 10040
-    uuid: e4e7866d-920b-4a53-a8e2-6ae9b2a42fc2
-    udp: true
-  - name: VLESS-048-742.1ms-144.31.96.48
-    type: vless
-    server: 144.31.96.48
-    port: 443
-    uuid: 96e429ef-7e1d-4239-a4c8-c5a4861bbded
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ya.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: nPcUKydxoRI66O3tT9O4QCZpLjOBvkGsiXG7pDX1BBw
-      short-id: 6ba85179e30d4fc2
-  - name: VLESS-049-747.5ms-de2.avaravpn.online
-    type: vless
-    server: de2.avaravpn.online
-    port: 8443
-    uuid: 0a84e278-a837-446c-8cd2-59c3b787e13e
-    udp: true
-    tls: true
-    servername: max.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: G2T9PF3w5e4AP-Shkea5_-leYkGMvojH2YewWGR_5hI
-      short-id: 8c0de80ec8e0e438
-  - name: VLESS-050-749.6ms-am.synatra.net
-    type: vless
-    server: am.synatra.net
-    port: 4430
-    uuid: 435954ab-38f3-40bf-b303-77e3f6576fa0
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: deepl.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: ve_gRq67ZmwVXig3oTSuvgh0UHLktlcwyI5XYP4UMyg
-      short-id: 657e6f4ccdb8a092
-  - name: VLESS-051-932.5ms-vsgch.mostserv.xyz
-    type: vless
-    server: vsgch.mostserv.xyz
-    port: 443
-    uuid: 0ddc1b7c-ce23-4a30-8ede-8a9e19f02fb7
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: vsgch.mostserv.xyz
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 3WzSgL8uXA3vE3IHrfdBpJmOO4MYrsWpczDSY_jJRjI
-      short-id: 226509f017e4c36d
-  - name: VLESS-052-1043.0ms-ss.l00l00.vip
-    type: vless
-    server: ss.l00l00.vip
-    port: 2096
-    uuid: ba2630d8-d6c4-49ff-b5d5-2c24330dd245
-    udp: true
-    network: grpc
-    tls: true
-    servername: id.vk.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
-      short-id: ""
-    grpc-opts:
-      grpc-service-name: vless-grpc-reality
-  - name: VLESS-053-1253.1ms-151.115.164.116
-    type: vless
-    server: 151.115.164.116
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-054-1630.6ms-217.60.252.90
-    type: vless
-    server: 217.60.252.90
-    port: 25645
-    uuid: 1b16b6f8-b8dd-43d7-84f9-8eb8a7e15504
-    udp: true
-    tls: true
-    servername: www.yahoo.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: GnAQ0pqW4HGqMuOY7crTmcQ56FuABKPP9YaiJzOS3X8
-      short-id: d6372f1a0a
-  - name: VLESS-055-2476.3ms-204.216.216.23
-    type: vless
-    server: 204.216.216.23
-    port: 10086
-    uuid: 9f0285ee-20ca-4953-bcdb-86a920652923
-    udp: true
-  - name: VLESS-056-2576.4ms-31.207.5.73
+      public-key: cBMmEvgDlDdm7m_qD-Z_zLws1L87YxaQLtUYoxgLzyU
+      short-id: a4bc3bcc15567d6e
+  - name: VLESS-048-548.5ms-31.207.5.73
     type: vless
     server: 31.207.5.73
     port: 443
@@ -572,7 +464,7 @@ proxies:
     reality-opts:
       public-key: HlxgAXuwwby0lujjT2LKBPF0udWK4SVjtMPyKtiNdEw
       short-id: 232cd9a21e42
-  - name: VLESS-057-4069.9ms-cz.sywl3.us
+  - name: VLESS-049-558.1ms-cz.sywl3.us
     type: vless
     server: cz.sywl3.us
     port: 43871
@@ -585,68 +477,134 @@ proxies:
     reality-opts:
       public-key: NfzNEMSQ8amDS2-iP2ov3ep4tRRP_RO3KMEZ9Fz2dwM
       short-id: a3f9c12e
+  - name: VLESS-050-558.5ms-ru.c2horizon.app
+    type: vless
+    server: ru.c2horizon.app
+    port: 443
+    uuid: 545a440f-daf8-4873-b231-54e384a17a4c
+    udp: true
+  - name: VLESS-051-599.6ms-212.100.171.194
+    type: vless
+    server: 212.100.171.194
+    port: 48862
+    uuid: da9f6ce2-aaba-47dd-be50-5afd17331fd9
+    udp: true
+  - name: VLESS-052-663.8ms-193.233.23.121
+    type: vless
+    server: 193.233.23.121
+    port: 40611
+    uuid: f5a25ee5-ff24-41b0-80e8-ccafdc866614
+    udp: true
+  - name: VLESS-053-928.5ms-18.141.49.252
+    type: vless
+    server: 18.141.49.252
+    port: 35308
+    uuid: 779d227c-f7be-4b9d-a4a9-1197c734b4e7
+    udp: true
+    flow: xtls-rprx-vision
+    tls: true
+    servername: www.tesla.com
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 4g1kpdmdbN6aNxeBYMj9WherunH9JSXsI_nKZTDiewE
+      short-id: fef8dcb8cafe30
+  - name: VLESS-054-945.7ms-18.140.170.243
+    type: vless
+    server: 18.140.170.243
+    port: 27307
+    uuid: b2fe41d5-a1b4-44e8-908a-84c59a70a3d8
+    udp: true
+    flow: xtls-rprx-vision
+    tls: true
+    servername: www.tesla.com
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: dIAHCrK3tbiMaFFKoPh89_eSpe8ws-rhT0rXV-RHxQQ
+      short-id: 64a35319e5db75
+  - name: VLESS-055-946.9ms-vpn.smartrahand.com
+    type: vless
+    server: vpn.smartrahand.com
+    port: 2026
+    uuid: 491bd18b-c1d1-4ec4-94d2-e1a13193d4da
+    udp: true
+  - name: VLESS-056-3732.1ms-47.91.94.112
+    type: vless
+    server: 47.91.94.112
+    port: 10040
+    uuid: e4e7866d-920b-4a53-a8e2-6ae9b2a42fc2
+    udp: true
+  - name: HYSTERIA2-057-4186.1ms-tw.9966690.xyz
+    type: hysteria2
+    server: tw.9966690.xyz
+    port: 40000
+    password: a7c5d30b-ce9b-4e34-b5cb-66f8308790ef
+    sni: tw.9966690.xyz
+    skip-cert-verify: true
+    udp: true
+    obfs: salamander
+    obfs-password: "YzgyOTkwNDk4ZTU2NT6iNA=="
 
 proxy-groups:
   - name: "🚀 Auto"
     type: url-test
     proxies:
-    - VLESS-001-108.2ms-82.29.130.68
-    - HYSTERIA2-002-225.9ms-hy2.123266.xyz
-    - VLESS-003-233.9ms-38.55.146.153
-    - VLESS-004-260.9ms-178.62.87.183
-    - VLESS-005-261.8ms-206.189.20.90
-    - VLESS-006-268.9ms-159.65.92.206
-    - VLESS-007-300.4ms-194.59.183.234
-    - VLESS-008-307.7ms-91.107.255.167
-    - VLESS-009-309.0ms-91.107.189.143
-    - HYSTERIA2-010-314.2ms-62.210.124.146
-    - VLESS-011-323.9ms-47.251.25.74
-    - VLESS-012-335.3ms-3.65.207.158
-    - VLESS-013-347.0ms-193.233.23.121
-    - VLESS-014-349.4ms-193.233.23.196
-    - VLESS-015-351.3ms-51.89.229.134
-    - VLESS-016-375.9ms-151.115.164.134
-    - VLESS-017-380.4ms-155.117.127.137
-    - VLESS-018-389.8ms-3.71.187.131
-    - VLESS-019-391.9ms-151.115.164.110
-    - VLESS-020-400.8ms-151.115.164.117
-    - VLESS-021-408.6ms-151.115.164.37
-    - VLESS-022-409.4ms-151.115.164.126
-    - VLESS-023-411.4ms-cdn-de-1.bigbossvpn.online
-    - VLESS-024-413.6ms-147.90.14.161
-    - VLESS-025-414.3ms-food.artmisserver.site
-    - VLESS-026-418.8ms-sca9.myfymain.com
-    - VLESS-027-420.2ms-31.58.76.181
-    - VLESS-028-423.9ms-sca8.myfymain.com
-    - VLESS-029-424.7ms-sca17.myfymain.com
-    - VLESS-030-427.4ms-109.120.132.142
-    - VLESS-031-430.9ms-151.115.164.132
-    - VLESS-032-431.2ms-roz2r.skystreamgame.com
-    - VLESS-033-437.9ms-194.60.86.185
-    - VLESS-034-444.0ms-83.228.226.72
-    - VLESS-035-470.7ms-pl.sywl3.us
-    - VLESS-036-472.6ms-130.49.219.124
-    - VLESS-037-474.1ms-46.36.219.69
-    - VLESS-038-474.4ms-sca13.myfymain.com
-    - VLESS-039-488.8ms-81.177.212.216
-    - VLESS-040-491.8ms-89.22.236.213
-    - VLESS-041-523.3ms-de.corsair-web.space
-    - VLESS-042-537.0ms-95.128.157.212
-    - VLESS-043-573.3ms-78.17.3.113
-    - VLESS-044-579.1ms-77.239.112.88
-    - VLESS-045-600.6ms-212.100.171.194
-    - VLESS-046-619.6ms-vrubg.mostserv.xyz
-    - VLESS-047-709.5ms-47.91.94.112
-    - VLESS-048-742.1ms-144.31.96.48
-    - VLESS-049-747.5ms-de2.avaravpn.online
-    - VLESS-050-749.6ms-am.synatra.net
-    - VLESS-051-932.5ms-vsgch.mostserv.xyz
-    - VLESS-052-1043.0ms-ss.l00l00.vip
-    - VLESS-053-1253.1ms-151.115.164.116
-    - VLESS-054-1630.6ms-217.60.252.90
-    - VLESS-055-2476.3ms-204.216.216.23
-    - VLESS-056-2576.4ms-31.207.5.73
-    - VLESS-057-4069.9ms-cz.sywl3.us
+    - VLESS-001-107.3ms-185.193.29.40
+    - VLESS-002-116.3ms-135.84.75.50
+    - VLESS-003-123.4ms-45.80.110.50
+    - VLESS-004-257.2ms-38.55.146.153
+    - VLESS-005-284.1ms-178.62.87.183
+    - VLESS-006-284.3ms-206.189.20.90
+    - VLESS-007-289.3ms-159.65.92.206
+    - VLESS-008-303.7ms-194.59.183.234
+    - VLESS-009-308.8ms-47.251.25.74
+    - VLESS-010-311.7ms-91.107.255.167
+    - VLESS-011-311.8ms-91.107.189.143
+    - VLESS-012-360.0ms-204.216.216.23
+    - VLESS-013-372.4ms-193.233.23.196
+    - VLESS-014-379.8ms-155.117.127.137
+    - VLESS-015-398.1ms-188.137.230.245
+    - VLESS-016-404.1ms-151.115.164.116
+    - VLESS-017-404.3ms-sca9.myfymain.com
+    - VLESS-018-405.5ms-food.artmisserver.site
+    - VLESS-019-405.6ms-151.115.164.110
+    - VLESS-020-407.5ms-85.93.10.109
+    - VLESS-021-408.8ms-151.115.164.37
+    - VLESS-022-410.1ms-151.115.164.126
+    - VLESS-023-411.6ms-151.115.164.134
+    - VLESS-024-413.3ms-germany02.anotherboring.top
+    - VLESS-025-417.8ms-sca15.myfymain.com
+    - VLESS-026-417.9ms-sca17.myfymain.com
+    - VLESS-027-418.6ms-sca13.myfymain.com
+    - VLESS-028-419.2ms-151.115.164.117
+    - VLESS-029-422.9ms-3.71.187.131
+    - VLESS-030-423.4ms-sca20.myfymain.com
+    - VLESS-031-425.8ms-sca8.myfymain.com
+    - VLESS-032-426.4ms-172.86.67.73
+    - VLESS-033-426.6ms-sca12.myfymain.com
+    - VLESS-034-429.7ms-sca10.myfymain.com
+    - VLESS-035-432.3ms-sca11.myfymain.com
+    - VLESS-036-439.9ms-151.115.164.132
+    - VLESS-037-448.5ms-accountdb.ir
+    - VLESS-038-449.6ms-sca19.myfymain.com
+    - VLESS-039-452.0ms-pl.sywl3.us
+    - VLESS-040-452.5ms-109.120.132.142
+    - VLESS-041-457.1ms-bc-de-wc.ray-balance.space
+    - VLESS-042-498.9ms-hu01.bearbeer.digital
+    - VLESS-043-499.8ms-81.177.212.216
+    - VLESS-044-505.6ms-89.22.236.213
+    - VLESS-045-510.3ms-144.31.2.49
+    - VLESS-046-515.4ms-5.183.253.171
+    - VLESS-047-524.5ms-81.19.139.35
+    - VLESS-048-548.5ms-31.207.5.73
+    - VLESS-049-558.1ms-cz.sywl3.us
+    - VLESS-050-558.5ms-ru.c2horizon.app
+    - VLESS-051-599.6ms-212.100.171.194
+    - VLESS-052-663.8ms-193.233.23.121
+    - VLESS-053-928.5ms-18.141.49.252
+    - VLESS-054-945.7ms-18.140.170.243
+    - VLESS-055-946.9ms-vpn.smartrahand.com
+    - VLESS-056-3732.1ms-47.91.94.112
+    - HYSTERIA2-057-4186.1ms-tw.9966690.xyz
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
@@ -655,63 +613,63 @@ proxy-groups:
   - name: "🌐 Select"
     type: select
     proxies:
-    - VLESS-001-108.2ms-82.29.130.68
-    - HYSTERIA2-002-225.9ms-hy2.123266.xyz
-    - VLESS-003-233.9ms-38.55.146.153
-    - VLESS-004-260.9ms-178.62.87.183
-    - VLESS-005-261.8ms-206.189.20.90
-    - VLESS-006-268.9ms-159.65.92.206
-    - VLESS-007-300.4ms-194.59.183.234
-    - VLESS-008-307.7ms-91.107.255.167
-    - VLESS-009-309.0ms-91.107.189.143
-    - HYSTERIA2-010-314.2ms-62.210.124.146
-    - VLESS-011-323.9ms-47.251.25.74
-    - VLESS-012-335.3ms-3.65.207.158
-    - VLESS-013-347.0ms-193.233.23.121
-    - VLESS-014-349.4ms-193.233.23.196
-    - VLESS-015-351.3ms-51.89.229.134
-    - VLESS-016-375.9ms-151.115.164.134
-    - VLESS-017-380.4ms-155.117.127.137
-    - VLESS-018-389.8ms-3.71.187.131
-    - VLESS-019-391.9ms-151.115.164.110
-    - VLESS-020-400.8ms-151.115.164.117
-    - VLESS-021-408.6ms-151.115.164.37
-    - VLESS-022-409.4ms-151.115.164.126
-    - VLESS-023-411.4ms-cdn-de-1.bigbossvpn.online
-    - VLESS-024-413.6ms-147.90.14.161
-    - VLESS-025-414.3ms-food.artmisserver.site
-    - VLESS-026-418.8ms-sca9.myfymain.com
-    - VLESS-027-420.2ms-31.58.76.181
-    - VLESS-028-423.9ms-sca8.myfymain.com
-    - VLESS-029-424.7ms-sca17.myfymain.com
-    - VLESS-030-427.4ms-109.120.132.142
-    - VLESS-031-430.9ms-151.115.164.132
-    - VLESS-032-431.2ms-roz2r.skystreamgame.com
-    - VLESS-033-437.9ms-194.60.86.185
-    - VLESS-034-444.0ms-83.228.226.72
-    - VLESS-035-470.7ms-pl.sywl3.us
-    - VLESS-036-472.6ms-130.49.219.124
-    - VLESS-037-474.1ms-46.36.219.69
-    - VLESS-038-474.4ms-sca13.myfymain.com
-    - VLESS-039-488.8ms-81.177.212.216
-    - VLESS-040-491.8ms-89.22.236.213
-    - VLESS-041-523.3ms-de.corsair-web.space
-    - VLESS-042-537.0ms-95.128.157.212
-    - VLESS-043-573.3ms-78.17.3.113
-    - VLESS-044-579.1ms-77.239.112.88
-    - VLESS-045-600.6ms-212.100.171.194
-    - VLESS-046-619.6ms-vrubg.mostserv.xyz
-    - VLESS-047-709.5ms-47.91.94.112
-    - VLESS-048-742.1ms-144.31.96.48
-    - VLESS-049-747.5ms-de2.avaravpn.online
-    - VLESS-050-749.6ms-am.synatra.net
-    - VLESS-051-932.5ms-vsgch.mostserv.xyz
-    - VLESS-052-1043.0ms-ss.l00l00.vip
-    - VLESS-053-1253.1ms-151.115.164.116
-    - VLESS-054-1630.6ms-217.60.252.90
-    - VLESS-055-2476.3ms-204.216.216.23
-    - VLESS-056-2576.4ms-31.207.5.73
-    - VLESS-057-4069.9ms-cz.sywl3.us
+    - VLESS-001-107.3ms-185.193.29.40
+    - VLESS-002-116.3ms-135.84.75.50
+    - VLESS-003-123.4ms-45.80.110.50
+    - VLESS-004-257.2ms-38.55.146.153
+    - VLESS-005-284.1ms-178.62.87.183
+    - VLESS-006-284.3ms-206.189.20.90
+    - VLESS-007-289.3ms-159.65.92.206
+    - VLESS-008-303.7ms-194.59.183.234
+    - VLESS-009-308.8ms-47.251.25.74
+    - VLESS-010-311.7ms-91.107.255.167
+    - VLESS-011-311.8ms-91.107.189.143
+    - VLESS-012-360.0ms-204.216.216.23
+    - VLESS-013-372.4ms-193.233.23.196
+    - VLESS-014-379.8ms-155.117.127.137
+    - VLESS-015-398.1ms-188.137.230.245
+    - VLESS-016-404.1ms-151.115.164.116
+    - VLESS-017-404.3ms-sca9.myfymain.com
+    - VLESS-018-405.5ms-food.artmisserver.site
+    - VLESS-019-405.6ms-151.115.164.110
+    - VLESS-020-407.5ms-85.93.10.109
+    - VLESS-021-408.8ms-151.115.164.37
+    - VLESS-022-410.1ms-151.115.164.126
+    - VLESS-023-411.6ms-151.115.164.134
+    - VLESS-024-413.3ms-germany02.anotherboring.top
+    - VLESS-025-417.8ms-sca15.myfymain.com
+    - VLESS-026-417.9ms-sca17.myfymain.com
+    - VLESS-027-418.6ms-sca13.myfymain.com
+    - VLESS-028-419.2ms-151.115.164.117
+    - VLESS-029-422.9ms-3.71.187.131
+    - VLESS-030-423.4ms-sca20.myfymain.com
+    - VLESS-031-425.8ms-sca8.myfymain.com
+    - VLESS-032-426.4ms-172.86.67.73
+    - VLESS-033-426.6ms-sca12.myfymain.com
+    - VLESS-034-429.7ms-sca10.myfymain.com
+    - VLESS-035-432.3ms-sca11.myfymain.com
+    - VLESS-036-439.9ms-151.115.164.132
+    - VLESS-037-448.5ms-accountdb.ir
+    - VLESS-038-449.6ms-sca19.myfymain.com
+    - VLESS-039-452.0ms-pl.sywl3.us
+    - VLESS-040-452.5ms-109.120.132.142
+    - VLESS-041-457.1ms-bc-de-wc.ray-balance.space
+    - VLESS-042-498.9ms-hu01.bearbeer.digital
+    - VLESS-043-499.8ms-81.177.212.216
+    - VLESS-044-505.6ms-89.22.236.213
+    - VLESS-045-510.3ms-144.31.2.49
+    - VLESS-046-515.4ms-5.183.253.171
+    - VLESS-047-524.5ms-81.19.139.35
+    - VLESS-048-548.5ms-31.207.5.73
+    - VLESS-049-558.1ms-cz.sywl3.us
+    - VLESS-050-558.5ms-ru.c2horizon.app
+    - VLESS-051-599.6ms-212.100.171.194
+    - VLESS-052-663.8ms-193.233.23.121
+    - VLESS-053-928.5ms-18.141.49.252
+    - VLESS-054-945.7ms-18.140.170.243
+    - VLESS-055-946.9ms-vpn.smartrahand.com
+    - VLESS-056-3732.1ms-47.91.94.112
+    - HYSTERIA2-057-4186.1ms-tw.9966690.xyz
 
 rules:
   - GEOIP,RU,DIRECT
