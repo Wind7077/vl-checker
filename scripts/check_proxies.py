@@ -603,8 +603,8 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                     "users": [{"id": uid, "encryption": "none", "flow": flow}]}]},
                 "streamSettings": {"network": net},
             }
-            ss = outbound["streamSettings"]
-if sec == "reality":
+            ss = outbound["streamSettings"].  
+            if sec == "reality":
                 ss["security"] = "reality"
                 ss["realitySettings"] = {
                     "serverName": sni, "fingerprint": fp,
