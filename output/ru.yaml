@@ -5,7 +5,17 @@ log-level: info
 external-controller: '127.0.0.1:9090'
 
 proxies:
-  - name: "1. 5.183.253.171:443"
+  - name: "🇷🇺 1. 5.42.126.157:443"
+    type: vless
+    server: "5.42.126.157"
+    port: 443
+    uuid: "029a4bc6-4557-4b6b-a5fc-6232e943e43b"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 2. 5.183.253.171:443"
     type: vless
     server: "5.183.253.171"
     port: 443
@@ -16,18 +26,7 @@ proxies:
     reality-opts:
       public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
       short-id: "8248954896"
-  - name: "2. 89.208.208.92:9443"
-    type: vless
-    server: "89.208.208.92"
-    port: 9443
-    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
-      short-id: "689def22fcb54e86"
-  - name: "3. 5.183.253.171:443"
+  - name: "🇷🇺 3. 5.183.253.171:443"
     type: vless
     server: "5.183.253.171"
     port: 443
@@ -38,7 +37,7 @@ proxies:
     reality-opts:
       public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
       short-id: "8248954896"
-  - name: "4. 5.183.253.171:443"
+  - name: "🇷🇺 4. 5.183.253.171:443"
     type: vless
     server: "5.183.253.171"
     port: 443
@@ -49,7 +48,7 @@ proxies:
     reality-opts:
       public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
       short-id: "8248954896"
-  - name: "5. 5.183.253.171:443"
+  - name: "🇷🇺 5. 5.183.253.171:443"
     type: vless
     server: "5.183.253.171"
     port: 443
@@ -60,7 +59,7 @@ proxies:
     reality-opts:
       public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
       short-id: "8248954896"
-  - name: "6. 5.183.253.171:443"
+  - name: "🇷🇺 6. 5.183.253.171:443"
     type: vless
     server: "5.183.253.171"
     port: 443
@@ -71,7 +70,7 @@ proxies:
     reality-opts:
       public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
       short-id: "8248954896"
-  - name: "7. 5.183.253.171:443"
+  - name: "🇷🇺 7. 5.183.253.171:443"
     type: vless
     server: "5.183.253.171"
     port: 443
@@ -82,7 +81,7 @@ proxies:
     reality-opts:
       public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
       short-id: "8248954896"
-  - name: "8. 217.26.24.101:23151"
+  - name: "🇷🇺 8. 217.26.24.101:23151"
     type: vless
     server: "217.26.24.101"
     port: 23151
@@ -92,163 +91,7 @@ proxies:
     client-fingerprint: "chrome"
     reality-opts:
       public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "9. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "10. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "11. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "12. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "13. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "14. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "15. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "16. 51.250.108.162:443"
-    type: vless
-    server: "51.250.108.162"
-    port: 443
-    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "17. 51.250.102.69:443"
-    type: vless
-    server: "51.250.102.69"
-    port: 443
-    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "18. 51.250.24.222:443"
-    type: vless
-    server: "51.250.24.222"
-    port: 443
-    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "19. 194.93.0.180:47200"
-    type: vless
-    server: "194.93.0.180"
-    port: 47200
-    uuid: "ffaa8e95-74e2-4ef4-8974-69dd3651b6f9"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "firefox"
-    reality-opts:
-      public-key: "aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE"
-      short-id: "b2a9bd658fc81dc6"
-  - name: "20. 51.250.104.246:443"
-    type: vless
-    server: "51.250.104.246"
-    port: 443
-    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "21. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "22. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "23. 193.168.46.180:443"
-    type: vless
-    server: "193.168.46.180"
-    port: 443
-    uuid: "8d960f2a-c5ac-4533-bcef-2e9a8e934b47"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    reality-opts:
-      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
-      short-id: "c1a7e9b4711d5f60"
-  - name: "24. 193.168.46.180:443"
+  - name: "🇷🇺 9. 193.168.46.180:443"
     type: vless
     server: "193.168.46.180"
     port: 443
@@ -259,18 +102,37 @@ proxies:
     reality-opts:
       public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
       short-id: "c1a7e9b4711d5f60"
-  - name: "25. 193.168.46.180:443"
+  - name: "🇷🇺 10. 217.26.24.101:23151"
     type: vless
-    server: "193.168.46.180"
-    port: 443
-    uuid: "b89b33e8-a82a-4ac0-9dfc-4937102b0b7f"
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
     network: "tcp"
     flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
+    client-fingerprint: "chrome"
     reality-opts:
-      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
-      short-id: "c1a7e9b4711d5f60"
-  - name: "26. 193.168.46.180:443"
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 11. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 12. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 13. 193.168.46.180:443"
     type: vless
     server: "193.168.46.180"
     port: 443
@@ -281,73 +143,7 @@ proxies:
     reality-opts:
       public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
       short-id: "c1a7e9b4711d5f60"
-  - name: "27. 51.250.103.104:443"
-    type: vless
-    server: "51.250.103.104"
-    port: 443
-    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "28. 193.168.46.180:443"
-    type: vless
-    server: "193.168.46.180"
-    port: 443
-    uuid: "aef1a22d-78eb-4dec-96d6-2f6c0b42de89"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    reality-opts:
-      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
-      short-id: "c1a7e9b4711d5f60"
-  - name: "29. 193.168.46.180:443"
-    type: vless
-    server: "193.168.46.180"
-    port: 443
-    uuid: "8d960f2a-c5ac-4533-bcef-2e9a8e934b47"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    reality-opts:
-      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
-      short-id: "c1a7e9b4711d5f60"
-  - name: "30. 193.168.46.180:443"
-    type: vless
-    server: "193.168.46.180"
-    port: 443
-    uuid: "d417d638-de4c-4ccd-8489-abf67d6ccb06"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    reality-opts:
-      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
-      short-id: "c1a7e9b4711d5f60"
-  - name: "31. 37.9.4.224:443"
-    type: vless
-    server: "37.9.4.224"
-    port: 443
-    uuid: "73369fb8-172e-49dd-adcc-27ed61c195ef"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "uL4x8EbCl080G43kFlv8nbpEyseWi1Dc_bl8F7lWtm8"
-      short-id: "aa03ec59c9695e91"
-  - name: "32. 85.208.85.227:443"
-    type: vless
-    server: "85.208.85.227"
-    port: 443
-    uuid: "f4e98990-648f-448a-9264-64040b413811"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI"
-      short-id: "1f7b8197dcce92"
-  - name: "33. 51.250.97.18:443"
+  - name: "🇷🇺 14. 51.250.97.18:443"
     type: vless
     server: "51.250.97.18"
     port: 443
@@ -358,19 +154,19 @@ proxies:
     reality-opts:
       public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
       short-id: "8ec792bfd725be8a"
-  - name: "34. 83.229.14.125:13569"
+  - name: "🇷🇺 15. 217.26.24.101:23151"
     type: vless
-    server: "83.229.14.125"
-    port: 13569
-    uuid: "7283d2d5-7b14-431b-9d1f-96f2dac4a97b"
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
     network: "tcp"
     flow: "xtls-rprx-vision"
     client-fingerprint: "chrome"
     reality-opts:
-      public-key: "Xl6notHrxamdPvx0cZGGPRQOT-PR1rkjryRazI9i1VI"
-  - name: "35. 51.250.24.232:443"
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 16. 51.250.24.222:443"
     type: vless
-    server: "51.250.24.232"
+    server: "51.250.24.222"
     port: 443
     uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
     network: "tcp"
@@ -379,109 +175,102 @@ proxies:
     reality-opts:
       public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
       short-id: "8ec792bfd725be8a"
-  - name: "36. 83.229.14.125:13569"
+  - name: "🇷🇺 17. 217.26.24.101:23151"
     type: vless
-    server: "83.229.14.125"
-    port: 13569
-    uuid: "7283d2d5-7b14-431b-9d1f-96f2dac4a97b"
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
     network: "tcp"
     flow: "xtls-rprx-vision"
     client-fingerprint: "chrome"
     reality-opts:
-      public-key: "Xl6notHrxamdPvx0cZGGPRQOT-PR1rkjryRazI9i1VI"
-  - name: "37. 45.12.75.242:26424"
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 18. 217.26.24.101:23151"
     type: vless
-    server: "45.12.75.242"
-    port: 26424
-    uuid: "633f424e-2b11-48da-a6b3-a849dd71456f"
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
     network: "tcp"
+    flow: "xtls-rprx-vision"
     client-fingerprint: "chrome"
     reality-opts:
-      public-key: "l8AubqcxQO-HRFJy4pZL1vbLOo-eXit69s-XulSELE0"
-      short-id: "23103e1e"
-  - name: "38. 85.208.85.227:443"
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 19. 193.168.46.180:443"
+    type: vless
+    server: "193.168.46.180"
+    port: 443
+    uuid: "aef1a22d-78eb-4dec-96d6-2f6c0b42de89"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
+      short-id: "c1a7e9b4711d5f60"
+  - name: "🇷🇺 20. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 21. 193.168.46.180:443"
+    type: vless
+    server: "193.168.46.180"
+    port: 443
+    uuid: "8d960f2a-c5ac-4533-bcef-2e9a8e934b47"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
+      short-id: "c1a7e9b4711d5f60"
+  - name: "🇷🇺 22. 193.168.46.180:443"
+    type: vless
+    server: "193.168.46.180"
+    port: 443
+    uuid: "8d960f2a-c5ac-4533-bcef-2e9a8e934b47"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
+      short-id: "c1a7e9b4711d5f60"
+  - name: "🇷🇺 23. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 24. 85.208.85.227:443"
     type: vless
     server: "85.208.85.227"
     port: 443
     uuid: "f4e98990-648f-448a-9264-64040b413811"
     network: "tcp"
     flow: "xtls-rprx-vision"
-    client-fingerprint: "firefox"
+    client-fingerprint: "chrome"
     reality-opts:
       public-key: "FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI"
       short-id: "1f7b8197dcce92"
-  - name: "39. 51.250.43.93:443"
+  - name: "🇷🇺 25. 51.250.108.162:443"
     type: vless
-    server: "51.250.43.93"
+    server: "51.250.108.162"
     port: 443
-    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
+    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
     network: "tcp"
     flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
+    client-fingerprint: "safari"
     reality-opts:
-      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
-  - name: "40. 83.229.14.125:13569"
-    type: vless
-    server: "83.229.14.125"
-    port: 13569
-    uuid: "7283d2d5-7b14-431b-9d1f-96f2dac4a97b"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "Xl6notHrxamdPvx0cZGGPRQOT-PR1rkjryRazI9i1VI"
-  - name: "41. 45.12.75.242:26424"
-    type: vless
-    server: "45.12.75.242"
-    port: 26424
-    uuid: "633f424e-2b11-48da-a6b3-a849dd71456f"
-    network: "tcp"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "l8AubqcxQO-HRFJy4pZL1vbLOo-eXit69s-XulSELE0"
-      short-id: "23103e1e"
-  - name: "42. 51.250.43.93:443"
-    type: vless
-    server: "51.250.43.93"
-    port: 443
-    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
-  - name: "43. 81.200.151.140:443"
-    type: vless
-    server: "81.200.151.140"
-    port: 443
-    uuid: "444b1cdd-78aa-45e6-b78e-3f49832919f4"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "9U3G1RoTSE9hCxwfIBt7XoPl_F6JAa4M88DeD65MkSE"
-      short-id: "c4fbdb88bb56cbcc"
-  - name: "44. 51.250.43.93:443"
-    type: vless
-    server: "51.250.43.93"
-    port: 443
-    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
-  - name: "45. 51.250.43.93:443"
-    type: vless
-    server: "51.250.43.93"
-    port: 443
-    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    reality-opts:
-      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
-  - name: "46. 82.202.157.207:443"
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 26. 82.202.157.207:443"
     type: vless
     server: "82.202.157.207"
     port: 443
@@ -492,137 +281,238 @@ proxies:
     reality-opts:
       public-key: "pSM8cZd3BzdI5gp0UJaufCEFUjamTpYtHcbFudbk11s"
       short-id: "b224c00dc01d6c96"
+  - name: "🇷🇺 27. 85.208.85.227:443"
+    type: vless
+    server: "85.208.85.227"
+    port: 443
+    uuid: "f4e98990-648f-448a-9264-64040b413811"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "firefox"
+    reality-opts:
+      public-key: "FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI"
+      short-id: "1f7b8197dcce92"
+  - name: "🇷🇺 28. 89.208.208.92:9443"
+    type: vless
+    server: "89.208.208.92"
+    port: 9443
+    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
+      short-id: "689def22fcb54e86"
+  - name: "🇷🇺 29. 51.250.104.246:443"
+    type: vless
+    server: "51.250.104.246"
+    port: 443
+    uuid: "834b7652-d85d-4bb9-bd3d-7f6d92fc50d0"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 30. 5.42.126.157:443"
+    type: vless
+    server: "5.42.126.157"
+    port: 443
+    uuid: "029a4bc6-4557-4b6b-a5fc-6232e943e43b"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 31. 89.169.39.55:443"
+    type: vless
+    server: "89.169.39.55"
+    port: 443
+    uuid: "c61ec320-29f1-4e00-9272-8b676e6957b4"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "Lbug_wz0y9xgKeDK44D9kuUap0fXzNKyv_nMJxnZRzU"
+      short-id: "08000000"
+  - name: "🇷🇺 32. 5.42.126.157:443"
+    type: vless
+    server: "5.42.126.157"
+    port: 443
+    uuid: "029a4bc6-4557-4b6b-a5fc-6232e943e43b"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 33. 89.208.208.92:9443"
+    type: vless
+    server: "89.208.208.92"
+    port: 9443
+    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
+      short-id: "689def22fcb54e86"
+  - name: "🇷🇺 34. 92.53.104.60:443"
+    type: vless
+    server: "92.53.104.60"
+    port: 443
+    uuid: "5481bfe3-bf42-425c-b561-cb9d64bff7ff"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "k9LT9ptqXEI8Jnyc6-uUXVXht_6DGIPSyUnyQ_wzYSs"
+      short-id: "faab089683c474b7"
+  - name: "🇷🇺 35. 89.208.208.92:7443"
+    type: vless
+    server: "89.208.208.92"
+    port: 7443
+    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
+    network: "grpc"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "_AXs-QnufIq918tbb2pwM3MDbe7kQ6i0cIHDMLwPmGs"
+      short-id: "3210e0eee6605048"
+    grpc-opts:
+      grpc-service-name: "grpc"
+  - name: "🇷🇺 36. 217.149.25.106:443"
+    type: vless
+    server: "217.149.25.106"
+    port: 443
+    uuid: "029a4bc6-4557-4b6b-a5fc-6232e943e43b"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 37. 89.208.208.92:9443"
+    type: vless
+    server: "89.208.208.92"
+    port: 9443
+    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    reality-opts:
+      public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
+      short-id: "689def22fcb54e86"
 
 proxy-groups:
-  - name: "🚀 Выбор"
+  - name: "🚀 Выбор (RU Only)"
     type: select
     proxies:
       - "🔯 Fallback"
       - "🎯 Auto"
-      - "1. 5.183.253.171:443"
-      - "2. 89.208.208.92:9443"
-      - "3. 5.183.253.171:443"
-      - "4. 5.183.253.171:443"
-      - "5. 5.183.253.171:443"
-      - "6. 5.183.253.171:443"
-      - "7. 5.183.253.171:443"
-      - "8. 217.26.24.101:23151"
-      - "9. 217.26.24.101:23151"
-      - "10. 217.26.24.101:23151"
-      - "11. 217.26.24.101:23151"
-      - "12. 217.26.24.101:23151"
-      - "13. 217.26.24.101:23151"
-      - "14. 217.26.24.101:23151"
-      - "15. 217.26.24.101:23151"
-      - "16. 51.250.108.162:443"
-      - "17. 51.250.102.69:443"
-      - "18. 51.250.24.222:443"
-      - "19. 194.93.0.180:47200"
-      - "20. 51.250.104.246:443"
+      - "🇷🇺 1. 5.42.126.157:443"
+      - "🇷🇺 2. 5.183.253.171:443"
+      - "🇷🇺 3. 5.183.253.171:443"
+      - "🇷🇺 4. 5.183.253.171:443"
+      - "🇷🇺 5. 5.183.253.171:443"
+      - "🇷🇺 6. 5.183.253.171:443"
+      - "🇷🇺 7. 5.183.253.171:443"
+      - "🇷🇺 8. 217.26.24.101:23151"
+      - "🇷🇺 9. 193.168.46.180:443"
+      - "🇷🇺 10. 217.26.24.101:23151"
+      - "🇷🇺 11. 217.26.24.101:23151"
+      - "🇷🇺 12. 217.26.24.101:23151"
+      - "🇷🇺 13. 193.168.46.180:443"
+      - "🇷🇺 14. 51.250.97.18:443"
+      - "🇷🇺 15. 217.26.24.101:23151"
+      - "🇷🇺 16. 51.250.24.222:443"
+      - "🇷🇺 17. 217.26.24.101:23151"
+      - "🇷🇺 18. 217.26.24.101:23151"
+      - "🇷🇺 19. 193.168.46.180:443"
+      - "🇷🇺 20. 217.26.24.101:23151"
   - name: "🔯 Fallback"
     type: fallback
     url: "https://cp.cloudflare.com/"
     interval: 300
     proxies:
-      - "1. 5.183.253.171:443"
-      - "2. 89.208.208.92:9443"
-      - "3. 5.183.253.171:443"
-      - "4. 5.183.253.171:443"
-      - "5. 5.183.253.171:443"
-      - "6. 5.183.253.171:443"
-      - "7. 5.183.253.171:443"
-      - "8. 217.26.24.101:23151"
-      - "9. 217.26.24.101:23151"
-      - "10. 217.26.24.101:23151"
-      - "11. 217.26.24.101:23151"
-      - "12. 217.26.24.101:23151"
-      - "13. 217.26.24.101:23151"
-      - "14. 217.26.24.101:23151"
-      - "15. 217.26.24.101:23151"
-      - "16. 51.250.108.162:443"
-      - "17. 51.250.102.69:443"
-      - "18. 51.250.24.222:443"
-      - "19. 194.93.0.180:47200"
-      - "20. 51.250.104.246:443"
-      - "21. 217.26.24.101:23151"
-      - "22. 217.26.24.101:23151"
-      - "23. 193.168.46.180:443"
-      - "24. 193.168.46.180:443"
-      - "25. 193.168.46.180:443"
-      - "26. 193.168.46.180:443"
-      - "27. 51.250.103.104:443"
-      - "28. 193.168.46.180:443"
-      - "29. 193.168.46.180:443"
-      - "30. 193.168.46.180:443"
-      - "31. 37.9.4.224:443"
-      - "32. 85.208.85.227:443"
-      - "33. 51.250.97.18:443"
-      - "34. 83.229.14.125:13569"
-      - "35. 51.250.24.232:443"
-      - "36. 83.229.14.125:13569"
-      - "37. 45.12.75.242:26424"
-      - "38. 85.208.85.227:443"
-      - "39. 51.250.43.93:443"
-      - "40. 83.229.14.125:13569"
-      - "41. 45.12.75.242:26424"
-      - "42. 51.250.43.93:443"
-      - "43. 81.200.151.140:443"
-      - "44. 51.250.43.93:443"
-      - "45. 51.250.43.93:443"
-      - "46. 82.202.157.207:443"
+      - "🇷🇺 1. 5.42.126.157:443"
+      - "🇷🇺 2. 5.183.253.171:443"
+      - "🇷🇺 3. 5.183.253.171:443"
+      - "🇷🇺 4. 5.183.253.171:443"
+      - "🇷🇺 5. 5.183.253.171:443"
+      - "🇷🇺 6. 5.183.253.171:443"
+      - "🇷🇺 7. 5.183.253.171:443"
+      - "🇷🇺 8. 217.26.24.101:23151"
+      - "🇷🇺 9. 193.168.46.180:443"
+      - "🇷🇺 10. 217.26.24.101:23151"
+      - "🇷🇺 11. 217.26.24.101:23151"
+      - "🇷🇺 12. 217.26.24.101:23151"
+      - "🇷🇺 13. 193.168.46.180:443"
+      - "🇷🇺 14. 51.250.97.18:443"
+      - "🇷🇺 15. 217.26.24.101:23151"
+      - "🇷🇺 16. 51.250.24.222:443"
+      - "🇷🇺 17. 217.26.24.101:23151"
+      - "🇷🇺 18. 217.26.24.101:23151"
+      - "🇷🇺 19. 193.168.46.180:443"
+      - "🇷🇺 20. 217.26.24.101:23151"
+      - "🇷🇺 21. 193.168.46.180:443"
+      - "🇷🇺 22. 193.168.46.180:443"
+      - "🇷🇺 23. 217.26.24.101:23151"
+      - "🇷🇺 24. 85.208.85.227:443"
+      - "🇷🇺 25. 51.250.108.162:443"
+      - "🇷🇺 26. 82.202.157.207:443"
+      - "🇷🇺 27. 85.208.85.227:443"
+      - "🇷🇺 28. 89.208.208.92:9443"
+      - "🇷🇺 29. 51.250.104.246:443"
+      - "🇷🇺 30. 5.42.126.157:443"
+      - "🇷🇺 31. 89.169.39.55:443"
+      - "🇷🇺 32. 5.42.126.157:443"
+      - "🇷🇺 33. 89.208.208.92:9443"
+      - "🇷🇺 34. 92.53.104.60:443"
+      - "🇷🇺 35. 89.208.208.92:7443"
+      - "🇷🇺 36. 217.149.25.106:443"
+      - "🇷🇺 37. 89.208.208.92:9443"
   - name: "🎯 Auto"
     type: url-test
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
     proxies:
-      - "1. 5.183.253.171:443"
-      - "2. 89.208.208.92:9443"
-      - "3. 5.183.253.171:443"
-      - "4. 5.183.253.171:443"
-      - "5. 5.183.253.171:443"
-      - "6. 5.183.253.171:443"
-      - "7. 5.183.253.171:443"
-      - "8. 217.26.24.101:23151"
-      - "9. 217.26.24.101:23151"
-      - "10. 217.26.24.101:23151"
-      - "11. 217.26.24.101:23151"
-      - "12. 217.26.24.101:23151"
-      - "13. 217.26.24.101:23151"
-      - "14. 217.26.24.101:23151"
-      - "15. 217.26.24.101:23151"
-      - "16. 51.250.108.162:443"
-      - "17. 51.250.102.69:443"
-      - "18. 51.250.24.222:443"
-      - "19. 194.93.0.180:47200"
-      - "20. 51.250.104.246:443"
-      - "21. 217.26.24.101:23151"
-      - "22. 217.26.24.101:23151"
-      - "23. 193.168.46.180:443"
-      - "24. 193.168.46.180:443"
-      - "25. 193.168.46.180:443"
-      - "26. 193.168.46.180:443"
-      - "27. 51.250.103.104:443"
-      - "28. 193.168.46.180:443"
-      - "29. 193.168.46.180:443"
-      - "30. 193.168.46.180:443"
-      - "31. 37.9.4.224:443"
-      - "32. 85.208.85.227:443"
-      - "33. 51.250.97.18:443"
-      - "34. 83.229.14.125:13569"
-      - "35. 51.250.24.232:443"
-      - "36. 83.229.14.125:13569"
-      - "37. 45.12.75.242:26424"
-      - "38. 85.208.85.227:443"
-      - "39. 51.250.43.93:443"
-      - "40. 83.229.14.125:13569"
-      - "41. 45.12.75.242:26424"
-      - "42. 51.250.43.93:443"
-      - "43. 81.200.151.140:443"
-      - "44. 51.250.43.93:443"
-      - "45. 51.250.43.93:443"
-      - "46. 82.202.157.207:443"
+      - "🇷🇺 1. 5.42.126.157:443"
+      - "🇷🇺 2. 5.183.253.171:443"
+      - "🇷🇺 3. 5.183.253.171:443"
+      - "🇷🇺 4. 5.183.253.171:443"
+      - "🇷🇺 5. 5.183.253.171:443"
+      - "🇷🇺 6. 5.183.253.171:443"
+      - "🇷🇺 7. 5.183.253.171:443"
+      - "🇷🇺 8. 217.26.24.101:23151"
+      - "🇷🇺 9. 193.168.46.180:443"
+      - "🇷🇺 10. 217.26.24.101:23151"
+      - "🇷🇺 11. 217.26.24.101:23151"
+      - "🇷🇺 12. 217.26.24.101:23151"
+      - "🇷🇺 13. 193.168.46.180:443"
+      - "🇷🇺 14. 51.250.97.18:443"
+      - "🇷🇺 15. 217.26.24.101:23151"
+      - "🇷🇺 16. 51.250.24.222:443"
+      - "🇷🇺 17. 217.26.24.101:23151"
+      - "🇷🇺 18. 217.26.24.101:23151"
+      - "🇷🇺 19. 193.168.46.180:443"
+      - "🇷🇺 20. 217.26.24.101:23151"
+      - "🇷🇺 21. 193.168.46.180:443"
+      - "🇷🇺 22. 193.168.46.180:443"
+      - "🇷🇺 23. 217.26.24.101:23151"
+      - "🇷🇺 24. 85.208.85.227:443"
+      - "🇷🇺 25. 51.250.108.162:443"
+      - "🇷🇺 26. 82.202.157.207:443"
+      - "🇷🇺 27. 85.208.85.227:443"
+      - "🇷🇺 28. 89.208.208.92:9443"
+      - "🇷🇺 29. 51.250.104.246:443"
+      - "🇷🇺 30. 5.42.126.157:443"
+      - "🇷🇺 31. 89.169.39.55:443"
+      - "🇷🇺 32. 5.42.126.157:443"
+      - "🇷🇺 33. 89.208.208.92:9443"
+      - "🇷🇺 34. 92.53.104.60:443"
+      - "🇷🇺 35. 89.208.208.92:7443"
+      - "🇷🇺 36. 217.149.25.106:443"
+      - "🇷🇺 37. 89.208.208.92:9443"
 rules:
   - "GEOIP,RU,DIRECT"
   - "GEOIP,CN,DIRECT"
-  - "MATCH,🚀 Выбор"
+  - "MATCH,🚀 Выбор (RU Only)"
