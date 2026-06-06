@@ -109,8 +109,6 @@ if sys.platform == "win32":
     XRAY_BIN = Path(r"C:\xray\xray.exe")
     HY2_BIN  = Path(r"C:\hysteria\hysteria.exe")
 else:
-    # Сначала ищем в PATH (/usr/local/bin — установлено workflow),
-    # fallback — скачиваем сами в /tmp
     import shutil as _shutil
     XRAY_BIN = Path(_shutil.which("xray") or "/tmp/xray-bin/xray")
     HY2_BIN  = Path(_shutil.which("hysteria2") or "/tmp/hysteria-bin/hysteria")
@@ -121,24 +119,19 @@ else:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
-    """Читает sources.txt — одна строка = один URL, строки с # игнорируются."""
     if not SOURCES_FILE.exists():
         print(f"  ❌ Файл {SOURCES_FILE} не найден.")
         print(f"     Создай его и добавь URL источников (по одному на строку).")
         sys.exit(1)
-
     urls = []
     with open(SOURCES_FILE, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith("#"):
                 urls.append(line)
-
     if not urls:
         print(f"  ❌ {SOURCES_FILE} не содержит ни одного URL.")
-        print(f"     Добавь ссылки на источники (строки с # — комментарии, игнорируются).")
         sys.exit(1)
-
     print(f"  📄 Загружено {len(urls)} источников из {SOURCES_FILE.name}")
     return urls
 
@@ -166,7 +159,6 @@ def extract_configs(text: str) -> list:
     for line in text.splitlines():
         line = line.strip()
         if line.startswith(("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://")):
-            # нормализуем hy2:// → hysteria2://
             if line.startswith("hy2://"):
                 line = "hysteria2://" + line[6:]
             configs.append(line)
@@ -201,6 +193,180 @@ def parse_host_port(uri: str):
     except Exception:
         pass
     return None
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Clash YAML builder
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _clash_proxy_from_uri(name: str, uri: str) -> dict | None:
+    try:
+        scheme = uri.split("://")[0].lower()
+        p = urllib.parse.urlparse(uri)
+        params = dict(urllib.parse.parse_qsl(p.query))
+
+        if scheme == "vless":
+            host = p.hostname or ""
+            port = p.port or 443
+            net  = params.get("type", "tcp")
+            sec  = params.get("security", "none")
+            sni  = params.get("sni", params.get("peer", host))
+            fp   = params.get("fp", "chrome")
+            proxy: dict = {
+                "name": name, "type": "vless",
+                "server": host, "port": port,
+                "uuid": p.username or "", "udp": True,
+            }
+            if params.get("flow"):
+                proxy["flow"] = params["flow"]
+            if net not in ("tcp", "raw", "xhttp"):
+                proxy["network"] = net
+            if sec == "reality":
+                proxy["tls"] = True
+                proxy["servername"] = sni
+                proxy["client-fingerprint"] = fp
+                proxy["reality-opts"] = {
+                    "public-key": params.get("pbk", ""),
+                    "short-id":   params.get("sid", ""),
+                }
+            elif sec == "tls":
+                proxy["tls"] = True
+                proxy["servername"] = sni
+                proxy["client-fingerprint"] = fp
+                proxy["skip-cert-verify"] = True
+            if net == "ws":
+                proxy["ws-opts"] = {"path": params.get("path", "/"),
+                                    "headers": {"Host": params.get("host", host)}}
+            elif net == "grpc":
+                proxy["grpc-opts"] = {"grpc-service-name": params.get("serviceName", "")}
+            return proxy
+
+        elif scheme == "trojan":
+            host = p.hostname or ""
+            port = p.port or 443
+            net  = params.get("type", "tcp")
+            proxy = {
+                "name": name, "type": "trojan",
+                "server": host, "port": port,
+                "password": p.username or "",
+                "sni": params.get("sni", host),
+                "skip-cert-verify": True, "udp": True,
+            }
+            if net == "ws":
+                proxy["network"] = "ws"
+                proxy["ws-opts"] = {"path": params.get("path", "/"),
+                                    "headers": {"Host": params.get("host", host)}}
+            elif net == "grpc":
+                proxy["network"] = "grpc"
+                proxy["grpc-opts"] = {"grpc-service-name": params.get("serviceName", "")}
+            return proxy
+
+        elif scheme == "hysteria2":
+            host = p.hostname or ""
+            port = p.port or 443
+            proxy = {
+                "name": name, "type": "hysteria2",
+                "server": host, "port": port,
+                "password": p.username or p.password or "",
+                "sni": params.get("sni", host),
+                "skip-cert-verify": params.get("insecure", "0") == "1",
+                "udp": True,
+            }
+            if params.get("obfs") == "salamander":
+                proxy["obfs"] = "salamander"
+                proxy["obfs-password"] = params.get("obfs-password", "")
+            return proxy
+
+    except Exception:
+        return None
+    return None
+
+
+def _yaml_val(v) -> str:
+    if isinstance(v, bool):  return "true" if v else "false"
+    if isinstance(v, int):   return str(v)
+    if isinstance(v, dict):  return "{" + ", ".join(f"{k}: {_yaml_val(vv)}" for k, vv in v.items()) + "}"
+    if isinstance(v, list):  return "[" + ", ".join(_yaml_val(i) for i in v) + "]"
+    if isinstance(v, str):
+        need = (not v
+                or any(c in v for c in (': ', '# ', '{', '}', '[', ']', ',', '&',
+                                        '*', '?', '|', '<', '>', '=', '!', '%',
+                                        '@', '`', '\n', '\r'))
+                or v[0] in (' ', "'", '"', '-')
+                or v in ("true", "false", "yes", "no", "null", "~"))
+        return ('"' + v.replace('\\', '\\\\').replace('"', '\\"') + '"') if need else v
+    return str(v)
+
+
+def _proxy_block(proxy: dict) -> str:
+    lines = ["  - name: " + _yaml_val(proxy["name"])]
+    for k, v in proxy.items():
+        if k == "name":
+            continue
+        if isinstance(v, dict):
+            lines.append(f"    {k}:")
+            for dk, dv in v.items():
+                lines.append(f"      {dk}: {_yaml_val(dv)}")
+        else:
+            lines.append(f"    {k}: {_yaml_val(v)}")
+    return "\n".join(lines)
+
+
+def build_clash_yaml(items: list, updated: str, label: str) -> str:
+    proxies, names = [], []
+    for i, item in enumerate(items):
+        uri   = item["uri"]
+        proto = item.get("proto", uri.split("://")[0].lower())
+        host  = item.get("host", "")
+        ms    = item.get("http_ms", "")
+        ms_s  = (str(ms) + "ms-") if ms else ""
+        name  = (proto.upper() + "-" + str(i + 1).zfill(3) + "-" + ms_s + host)[:60]
+        cp = _clash_proxy_from_uri(name, uri)
+        if cp:
+            proxies.append(cp)
+            names.append(name)
+    if not proxies:
+        return "# No valid proxies\n"
+    blocks    = "\n".join(_proxy_block(p) for p in proxies)
+    names_yml = "\n".join("    - " + _yaml_val(n) for n in names)
+    return (
+        "# Clash Meta / Mihomo / FClash\n"
+        "# " + label + " | " + updated + " | " + str(len(proxies)) + " proxies\n"
+        "\n"
+        "mixed-port: 7890\n"
+        "allow-lan: false\n"
+        "mode: rule\n"
+        "log-level: warning\n"
+        "ipv6: false\n"
+        "\n"
+        "dns:\n"
+        "  enable: true\n"
+        "  ipv6: false\n"
+        "  nameserver: [8.8.8.8, 1.1.1.1]\n"
+        "  fallback: [tls://8.8.4.4:853, tls://1.0.0.1:853]\n"
+        "\n"
+        "proxies:\n"
+        + blocks + "\n"
+        "\n"
+        "proxy-groups:\n"
+        "  - name: \"\U0001f680 Auto\"\n"
+        "    type: url-test\n"
+        "    proxies:\n"
+        + names_yml + "\n"
+        "    url: \"https://cp.cloudflare.com/\"\n"
+        "    interval: 300\n"
+        "    tolerance: 50\n"
+        "    lazy: true\n"
+        "\n"
+        "  - name: \"\U0001f310 Select\"\n"
+        "    type: select\n"
+        "    proxies:\n"
+        + names_yml + "\n"
+        "\n"
+        "rules:\n"
+        "  - GEOIP,RU,DIRECT\n"
+        "  - MATCH,\U0001f680 Auto\n"
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -319,7 +485,6 @@ async def _curl_through_socks(socks_port: int) -> tuple[float, str] | None:
             code = int(stdout.decode().strip() or "0")
             if code in ok_codes:
                 lat = round((time.monotonic() - t0) * 1000, 1)
-                # Получаем реальный выходной IP через прокси
                 exit_ip = ""
                 try:
                     proc2 = await asyncio.create_subprocess_exec(
@@ -332,7 +497,6 @@ async def _curl_through_socks(socks_port: int) -> tuple[float, str] | None:
                     )
                     out2, _ = await asyncio.wait_for(proc2.communicate(), timeout=8)
                     exit_ip = out2.decode().strip()
-                    # валидируем что это IP
                     import ipaddress as _ipa
                     _ipa.IPv4Address(exit_ip)
                 except Exception:
@@ -634,8 +798,6 @@ async def main():
             tcp_alive.append(r)
         if done % 300 == 0:
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
-    # hysteria2 (tcp_ms=0) идут последними в stage2 — у них нет TCP
-    # vless/trojan сортируем по латентности, но vless приоритетнее trojan
     _proto_priority = {"vless": 0, "trojan": 1, "hysteria2": 2}
     tcp_alive.sort(key=lambda x: (
         _proto_priority.get(x.get("proto", ""), 9),
@@ -668,7 +830,7 @@ async def main():
             if done2 % 50 == 0 or done2 == len(candidates):
                 print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} working")
         http_alive.sort(key=lambda x: x["http_ms"])
-        top = http_alive[:TOP_N * 4]  # берём с запасом для геофильтра
+        top = http_alive[:TOP_N * 4]
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
 
         working_protos: dict[str, int] = {}
@@ -695,19 +857,14 @@ async def main():
     host_to_cc: dict[str, str] = {}
     top_hosts = list({r["host"] for r in top})
 
-    # ── Определяем страну по реальному выходному IP из Stage 2 ─────────────
-    # exit_ip получен через curl прямо через прокси — это абсолютно точно.
-    # Никаких API, никаких DNS, никаких фрагментов — только реальный трафик.
-
     exit_ip_by_host: dict[str, str] = {}
     for r in top:
         ei = r.get("exit_ip", "")
         if ei:
             exit_ip_by_host[r["host"]] = ei
 
-    # Для хостов у которых exit_ip есть — определяем страну через ipinfo
-    hosts_with_ip   = [h for h in top_hosts if exit_ip_by_host.get(h)]
-    hosts_no_ip     = [h for h in top_hosts if not exit_ip_by_host.get(h)]
+    hosts_with_ip = [h for h in top_hosts if exit_ip_by_host.get(h)]
+    hosts_no_ip   = [h for h in top_hosts if not exit_ip_by_host.get(h)]
 
     print(f"  🌐 Определяем страну для {len(hosts_with_ip)} хостов по exit_ip...")
 
@@ -752,20 +909,16 @@ async def main():
     for host, cc in geo_results:
         host_to_cc[host] = cc
 
-    # Хосты без exit_ip — помечаем как неизвестные (не кладём в ru.txt)
     for host in hosts_no_ip:
         host_to_cc[host] = ""
 
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
     print(f"  ✅ Итого: RU={ru_count}/{len(top_hosts)}")
 
-
-
     ru_count = sum(1 for v in host_to_cc.values() if v == "RU")
     print(f"  ✅ Geo: определено {sum(1 for v in host_to_cc.values() if v)}/{len(top_hosts)} хостов, RU={ru_count}")
 
     def _dedup(items):
-        """Дедупликация по хосту — лучший результат на сервер (уже отсортировано)."""
         seen: set[str] = set()
         result = []
         for r in items:
@@ -794,10 +947,19 @@ async def main():
     (OUTPUT_DIR / "ru.txt").write_text(
         "\n".join(r["uri"] for r in ru_items) + "\n", encoding="utf-8"
     )
+    (OUTPUT_DIR / "proxies.yaml").write_text(
+        build_clash_yaml(other_items, ts, "All working proxies"), encoding="utf-8"
+    )
+    (OUTPUT_DIR / "ru.yaml").write_text(
+        build_clash_yaml(ru_items, ts, "Russia (RU) only"), encoding="utf-8"
+    )
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
-    print(f"   proxies.txt — {len(other_items)} уникальных URI (не-RU)")
-    print(f"   ru.txt      — {len(ru_items)} уникальных URI (RU)\n")
+    print(f"   proxies.txt  — {len(other_items)} уникальных URI (не-RU)")
+    print(f"   ru.txt       — {len(ru_items)} уникальных URI (RU)")
+    print(f"   proxies.yaml — {len(other_items)} прокси Clash Meta (не-RU)")
+    print(f"   ru.yaml      — {len(ru_items)} прокси Clash Meta (RU)\n")
+
     all_top = sorted(ru_items + other_items, key=lambda x: x.get("http_ms") or 9999)
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(all_top[:5]):
@@ -810,3 +972,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
