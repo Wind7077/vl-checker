@@ -186,8 +186,14 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "udp": True,
             }
             if sec == "reality":
-                proxy["reality-opts"] = {"public-key": pbk, "short-id": sid}
-                proxy["client-fingerprint"] = fp
+                reality_opts = {}
+                if pbk:
+                    reality_opts["public-key"] = pbk
+                if sid:
+                    reality_opts["short-id"] = sid
+                if reality_opts:
+                    proxy["reality-opts"] = reality_opts
+                proxy["client-fingerprint"] = fp or "chrome"
             if sec == "tls":
                 proxy["servername"] = sni
                 proxy["skip-cert-verify"] = True
@@ -235,38 +241,38 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
     for p in proxies:
         lines.append(f"  - name: \"{p['name']}\"")
         lines.append(f"    type: {p['type']}")
-        lines.append(f"    server: {p['server']}")
+        lines.append(f"    server: \"{p['server']}\"")
         lines.append(f"    port: {p['port']}")
         if 'uuid' in p:
-            lines.append(f"    uuid: {p['uuid']}")
+            lines.append(f"    uuid: \"{p['uuid']}\"")
         if 'password' in p:
-            lines.append(f"    password: {p['password']}")
+            lines.append(f"    password: \"{p['password']}\"")
         for key in ['network', 'flow', 'servername', 'sni', 'client-fingerprint', 'obfs', 'obfs-password']:
             if key in p:
                 val = p[key]
                 if isinstance(val, bool):
                     lines.append(f"    {key}: {'true' if val else 'false'}")
                 else:
-                    lines.append(f"    {key}: {val}")
+                    lines.append(f"    {key}: \"{val}\"")
         if 'skip-cert-verify' in p:
             lines.append(f"    skip-cert-verify: {'true' if p['skip-cert-verify'] else 'false'}")
-        if 'reality-opts' in p:
+        if 'reality-opts' in p and p['reality-opts']:
             lines.append("    reality-opts:")
             for k, v in p['reality-opts'].items():
-                lines.append(f"      {k}: {v}")
+                lines.append(f"      {k}: \"{v}\"")
         if 'ws-opts' in p:
             lines.append("    ws-opts:")
             for k, v in p['ws-opts'].items():
                 if isinstance(v, dict):
                     lines.append(f"      {k}:")
                     for kk, vv in v.items():
-                        lines.append(f"        {kk}: {vv}")
+                        lines.append(f"        {kk}: \"{vv}\"")
                 else:
-                    lines.append(f"      {k}: {v}")
+                    lines.append(f"      {k}: \"{v}\"")
         if 'grpc-opts' in p:
             lines.append("    grpc-opts:")
             for k, v in p['grpc-opts'].items():
-                lines.append(f"      {k}: {v}")
+                lines.append(f"      {k}: \"{v}\"")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
