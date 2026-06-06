@@ -184,12 +184,17 @@ def get_flag(country_code: str) -> str:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Clash YAML Export (с безопасным экранированием строк)
+# Clash YAML Export (Безопасное экранирование UTF-8 без \uXXXX суррогатов)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
-    if val is None: return '""'
-    return json.dumps(str(val))
+    """Безопасно оборачивает строки в одинарные кавычки для YAML, сохраняя эмодзи."""
+    if val is None:
+        return "''"
+    s = str(val)
+    # Экранируем одинарные кавычки удвоением (стандарт YAML)
+    s = s.replace("'", "''")
+    return f"'{s}'"
 
 def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict | None:
     try:
@@ -223,13 +228,13 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                 "port": port,
                 "uuid": uid,
                 "network": net,
-                "tls": sec in ("tls", "reality"),
                 "udp": True,
                 "country": country,
-                "servername": sni, # КРИТИЧНО: Clash требует servername для Reality и TLS
+                "servername": sni, 
             }
             
             if sec == "reality":
+                proxy["tls"] = True
                 reality_opts = {}
                 if pbk: reality_opts["public-key"] = pbk
                 if sid: reality_opts["short-id"] = sid
@@ -237,7 +242,10 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                     proxy["reality-opts"] = reality_opts
                 proxy["client-fingerprint"] = fp or "chrome"
             elif sec == "tls":
+                proxy["tls"] = True
                 proxy["skip-cert-verify"] = True
+            else:
+                proxy["tls"] = False
                 
             if net == "ws":
                 proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
@@ -392,7 +400,7 @@ def write_ru_clash_config(proxies: list[dict], path: Path):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# GeoIP Check (Строгая проверка с фильтрацией облаков)
+# GeoIP Check (Максимально строгий фильтр для ru.yaml)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def resolve_host_to_ip(host: str) -> str | None:
@@ -434,29 +442,35 @@ def determine_final_country(info: dict) -> str:
     
     all_isp_text = f"{info.get('isp', '')} {info.get('org', '')} {info.get('as', '')} {info.get('who_isp', '')} {info.get('who_org', '')} {info.get('who_as', '')}".lower()
     
-    # 1. Жесткая фильтрация иностранных облаков (Hetzner, OVH, AWS и т.д.)
-    for kw in FOREIGN_CLOUD_KEYWORDS:
-        if kw in all_isp_text:
-            if api_c == "RU" or who_c == "RU":
-                # GeoIP ошибся, это иностранное облако
-                return who_c if who_c != "RU" and who_c != "UNKNOWN" else api_c if api_c != "RU" else "UNKNOWN"
-                
-    # 2. Проверка на известные российские ISP
-    for kw in RU_ISP_KEYWORDS:
-        if kw in all_isp_text:
-            return "RU"
-            
-    # 3. Если оба API согласны, что это RU
+    is_foreign_cloud = any(kw in all_isp_text for kw in FOREIGN_CLOUD_KEYWORDS)
+    
+    # 1. Жесткий фильтр: если это иностранное облако, оно НЕ российское
+    if is_foreign_cloud:
+        if api_c != "RU" and api_c != "UNKNOWN": return api_c
+        if who_c != "RU" and who_c != "UNKNOWN": return who_c
+        return "UNKNOWN"
+        
+    # 2. Строгое совпадение: оба GeoIP говорят RU
     if api_c == "RU" and who_c == "RU":
         return "RU"
         
-    # 4. Если есть разногласия, предпочитаем НЕ RU (чтобы избежать мусора в ru.yaml)
-    if api_c != "RU" and api_c != "UNKNOWN":
+    # 3. Один говорит RU, другой не смог определить (UNKNOWN)
+    if (api_c == "RU" and who_c == "UNKNOWN") or (who_c == "RU" and api_c == "UNKNOWN"):
+        return "RU"
+        
+    # 4. Если есть противоречие (например, RU и US) или ни один не сказал RU — это НЕ RU.
+    # Возвращаем приоритетный не-RU код, чтобы прокси попал в общий список, но НЕ в ru.yaml.
+    if api_c != "UNKNOWN" and api_c != "RU":
         return api_c
-    if who_c != "RU" and who_c != "UNKNOWN":
+    if who_c != "UNKNOWN" and who_c != "RU":
         return who_c
         
-    return api_c if api_c != "UNKNOWN" else who_c
+    # 5. Если дошли сюда, значит один сказал RU, а второй тоже RU или UNKNOWN (уже обработано), 
+    # либо оба UNKNOWN.
+    if api_c == "RU" or who_c == "RU":
+        return "RU"
+        
+    return "UNKNOWN"
 
 async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
     host_to_ip = {}
