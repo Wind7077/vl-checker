@@ -1,5 +1,5 @@
 # Clash Meta / Mihomo / FClash
-# Russia (RU) only | 2026-06-06 11:05 UTC | 5 proxies
+# Russia (RU) only | 2026-06-06 13:11 UTC | 6 proxies
 
 mixed-port: 7890
 allow-lan: false
@@ -14,49 +14,52 @@ dns:
   fallback: [tls://8.8.4.4:853, tls://1.0.0.1:853]
 
 proxies:
-  - name: VLESS-001-353.9ms-176.122.27.225
+  - name: VLESS-001-577.4ms-87.239.108.241
     type: vless
-    server: 176.122.27.225
-    port: 446
-    uuid: 2c919d37-8ca4-4ec9-9013-818d153668db
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: mMaSUsOC5i3ErLDcaWW9UOOjG0fcKPCwVjzGS1wXQx8
-      short-id: 0512567389abcdef
-    grpc-opts:
-      grpc-service-name: ads.x5.ru
-  - name: VLESS-002-361.0ms-176.122.27.222
-    type: vless
-    server: 176.122.27.222
-    port: 446
-    uuid: 2c919d37-8ca4-4ec9-9013-818d153668db
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: mMaSUsOC5i3ErLDcaWW9UOOjG0fcKPCwVjzGS1wXQx8
-      short-id: 0512567389abcdef
-    grpc-opts:
-      grpc-service-name: ads.x5.ru
-  - name: VLESS-003-912.2ms-85.193.87.63
-    type: vless
-    server: 85.193.87.63
-    port: 2040
-    uuid: 17451fec-af94-4715-8c2f-7f6839130d0a
+    server: 87.239.108.241
+    port: 443
+    uuid: 6c6bb37a-3315-45bc-88d6-0fbba043c07f
     udp: true
     tls: true
-    servername: tradingview.com
+    servername: api.cockroachservice.ru
+    client-fingerprint: random
+    reality-opts:
+      public-key: EZ9ZUwrabGCJfowEvD4fI0ANMsxYh7hchEAbsnOTl0s
+      short-id: 803367e3aceaa5e1
+  - name: HYSTERIA2-002-695.4ms-193.53.126.108
+    type: hysteria2
+    server: 193.53.126.108
+    port: 443
+    password: 10550754-cf62-3d3b-ba6a-50be27a275d7
+    sni: s463.okgfwbackxyz.xyz
+    skip-cert-verify: true
+    udp: true
+  - name: VLESS-003-1310.0ms-193.233.216.70
+    type: vless
+    server: 193.233.216.70
+    port: 443
+    uuid: cc13e71e-aaf0-47c7-b565-391856749987
+    udp: true
+    flow: xtls-rprx-vision
+    tls: true
+    servername: metrika.yandex.ru
+    client-fingerprint: random
+    reality-opts:
+      public-key: wDW0XXr39U-W7fPtsy_qcR39hjIGVNUVFTCVURNdbwM
+      short-id: d8f3a9c2
+  - name: VLESS-004-1429.5ms-ru02.goodmaximum.com
+    type: vless
+    server: ru02.goodmaximum.com
+    port: 443
+    uuid: 588ebd11-eca7-001f-b629-5bdae3bf7ad8
+    udp: true
+    tls: true
+    servername: ru-cloud.221131513.xyz
     client-fingerprint: chrome
     reality-opts:
-      public-key: LidllyozUeeSbuzJ0ZfieGoy8YjVzqXX9H2m9whPaG0
-      short-id: 53197c66aef53c44
-  - name: VLESS-004-1304.1ms-45.12.75.242
+      public-key: fPSR5GZpxhOV6Rh7VzMtS4AeRN7ipyNX4waG9JzJzxQ
+      short-id: 77778028b56c8704
+  - name: VLESS-005-1515.3ms-45.12.75.242
     type: vless
     server: 45.12.75.242
     port: 26424
@@ -68,7 +71,7 @@ proxies:
     reality-opts:
       public-key: l8AubqcxQO-HRFJy4pZL1vbLOo-eXit69s-XulSELE0
       short-id: 23103e1e
-  - name: VLESS-005-1722.4ms-193.168.46.180
+  - name: VLESS-006-1598.6ms-193.168.46.180
     type: vless
     server: 193.168.46.180
     port: 443
@@ -86,11 +89,12 @@ proxy-groups:
   - name: "🚀 Auto"
     type: url-test
     proxies:
-    - VLESS-001-353.9ms-176.122.27.225
-    - VLESS-002-361.0ms-176.122.27.222
-    - VLESS-003-912.2ms-85.193.87.63
-    - VLESS-004-1304.1ms-45.12.75.242
-    - VLESS-005-1722.4ms-193.168.46.180
+    - VLESS-001-577.4ms-87.239.108.241
+    - HYSTERIA2-002-695.4ms-193.53.126.108
+    - VLESS-003-1310.0ms-193.233.216.70
+    - VLESS-004-1429.5ms-ru02.goodmaximum.com
+    - VLESS-005-1515.3ms-45.12.75.242
+    - VLESS-006-1598.6ms-193.168.46.180
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
@@ -99,11 +103,12 @@ proxy-groups:
   - name: "🌐 Select"
     type: select
     proxies:
-    - VLESS-001-353.9ms-176.122.27.225
-    - VLESS-002-361.0ms-176.122.27.222
-    - VLESS-003-912.2ms-85.193.87.63
-    - VLESS-004-1304.1ms-45.12.75.242
-    - VLESS-005-1722.4ms-193.168.46.180
+    - VLESS-001-577.4ms-87.239.108.241
+    - HYSTERIA2-002-695.4ms-193.53.126.108
+    - VLESS-003-1310.0ms-193.233.216.70
+    - VLESS-004-1429.5ms-ru02.goodmaximum.com
+    - VLESS-005-1515.3ms-45.12.75.242
+    - VLESS-006-1598.6ms-193.168.46.180
 
 rules:
   - GEOIP,RU,DIRECT
