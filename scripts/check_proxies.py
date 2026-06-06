@@ -2,7 +2,7 @@
 """
 Proxy Checker — оптимизирован для России (RU edition)
 Поддерживаемые протоколы: vless, hysteria2
-Генерирует: proxies.txt, proxies_b64.txt, proxies.yaml, ru.yaml для FClash
+Генерирует: proxies.txt, ru.txt, proxies_b64.txt, proxies.yaml, ru.yaml для FClash
 """
 
 import asyncio
@@ -19,7 +19,7 @@ import time
 import urllib.parse
 import zipfile
 import urllib.request
-import yaml  # pip install pyyaml
+import yaml
 
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,7 +30,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR = REPO_ROOT / "output"
 
-# ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
+# ── Настройки ─────────────────────────────────────────────────────────────────
 PROBE_URLS = [
     ("https://api.telegram.org/", [200, 404]),
     ("https://telegram.org/", [200, 301, 302]),
@@ -38,10 +38,8 @@ PROBE_URLS = [
     ("https://www.google.com/generate_204", [200, 204]),
 ]
 
-# ── Настройки ─────────────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS = ["vless", "hysteria2"]
 REQUIRE_REALITY = True
-ALLOWED_COUNTRIES = set()
 TOP_N = 250
 TIMEOUT_TCP = 1
 TIMEOUT_CURL = 10
@@ -60,8 +58,6 @@ else:
     HY2_BIN = Path("/tmp/hysteria-bin/hysteria")
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Загрузка источников
-# ═══════════════════════════════════════════════════════════════════════════════
 def load_sources() -> list[str]:
     if not SOURCES_FILE.exists():
         print(f" ❌ Файл {SOURCES_FILE} не найден.")
@@ -79,9 +75,6 @@ def load_sources() -> list[str]:
     print(f" 📄 Загружено {len(urls)} источников")
     return urls
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Helpers
-# ═══════════════════════════════════════════════════════════════════════════════
 def decode_b64(data: str) -> str:
     data = data.strip()
     padded = data + "=" * (-len(data) % 4)
@@ -94,13 +87,12 @@ def extract_configs(text: str) -> list:
     stripped = text.strip()
     if re.match(r'^[A-Za-z0-9+/\n\r=]{60,}$', stripped):
         decoded = decode_b64(stripped)
-        if any(p in decoded for p in ("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://")):
+        if any(p in decoded for p in ("vless://", "hysteria2://", "hy2://")):
             text = decoded
-
     configs = []
     for line in text.splitlines():
         line = line.strip()
-        if line.startswith(("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://")):
+        if line.startswith(("vless://", "hysteria2://", "hy2://")):
             if line.startswith("hy2://"):
                 line = "hysteria2://" + line[6:]
             configs.append(line)
@@ -119,8 +111,7 @@ def filter_configs(configs: list) -> list:
     return result
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Конвертация в формат FClash
-# ═══════════════════════════════════════════════════════════════════════════════
+# Конвертация в Clash
 def uri_to_clash_proxy(uri: str, index: int) -> dict | None:
     try:
         scheme = uri.split("://")[0].lower()
@@ -143,7 +134,6 @@ def uri_to_clash_proxy(uri: str, index: int) -> dict | None:
                 "servername": params.get("sni") or params.get("peer") or p.hostname,
                 "client-fingerprint": params.get("fp", "chrome"),
             }
-
             if security == "reality":
                 proxy["reality-opts"] = {
                     "public-key": params.get("pbk", ""),
@@ -151,10 +141,11 @@ def uri_to_clash_proxy(uri: str, index: int) -> dict | None:
                 }
             if params.get("flow"):
                 proxy["flow"] = params.get("flow")
-
             return proxy
 
-        elif scheme == "hysteria2":
+        elif scheme in ("hysteria2", "hy2"):
+            if scheme == "hy2":
+                uri = "hysteria2://" + uri[6:]
             p = urllib.parse.urlparse(uri)
             params = dict(urllib.parse.parse_qsl(p.query))
             return {
@@ -162,17 +153,15 @@ def uri_to_clash_proxy(uri: str, index: int) -> dict | None:
                 "type": "hysteria2",
                 "server": p.hostname,
                 "port": int(p.port or 443),
-                "password": p.username or p.password or "",
+                "password": p.username or "",
                 "sni": params.get("sni", p.hostname),
                 "skip-cert-verify": params.get("insecure") == "1",
                 "obfs": params.get("obfs"),
                 "obfs-password": params.get("obfs-password", "")
             }
-
         return None
     except Exception:
         return None
-
 
 def generate_proxies_yaml(proxies_list: list) -> dict:
     clash_proxies = []
@@ -182,7 +171,6 @@ def generate_proxies_yaml(proxies_list: list) -> dict:
             proxy = {k: v for k, v in proxy.items() if v is not None and v != ""}
             clash_proxies.append(proxy)
     return {"proxies": clash_proxies}
-
 
 def generate_ru_yaml(proxies_list: list) -> dict:
     clash_proxies = []
@@ -229,10 +217,8 @@ def generate_ru_yaml(proxies_list: list) -> dict:
         ]
     }
 
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # Hysteria2
-# ═══════════════════════════════════════════════════════════════════════════════
 def parse_hysteria2(uri: str) -> dict | None:
     try:
         p = urllib.parse.urlparse(uri)
@@ -248,7 +234,6 @@ def parse_hysteria2(uri: str) -> dict | None:
         }
     except Exception:
         return None
-
 
 def install_hysteria2() -> bool:
     if HY2_BIN.exists():
@@ -269,7 +254,6 @@ def install_hysteria2() -> bool:
     except Exception as e:
         print(f" ✗ hysteria2 install failed: {e}")
         return False
-
 
 async def hy2_probe(item: dict) -> dict | None:
     uri = item["uri"]
@@ -317,9 +301,6 @@ async def hy2_probe(item: dict) -> dict | None:
         except Exception:
             pass
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Curl через SOCKS5
 # ═══════════════════════════════════════════════════════════════════════════════
 async def _curl_through_socks(socks_port: int) -> float | None:
     for url, ok_codes in PROBE_URLS:
@@ -332,7 +313,7 @@ async def _curl_through_socks(socks_port: int) -> float | None:
                 "--connect-timeout", "5",
                 "-w", "%{http_code}",
                 "--insecure", "-L",
-                "-A", "Mozilla/5.0 (Windows NT 10.0; Win64; Win64) AppleWebKit/537.36",
+                "-A", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 url,
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
             )
@@ -344,9 +325,6 @@ async def _curl_through_socks(socks_port: int) -> float | None:
             pass
     return None
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Stage 1 – TCP ping
 # ═══════════════════════════════════════════════════════════════════════════════
 async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
     t0 = time.monotonic()
@@ -364,13 +342,12 @@ async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
     except Exception:
         return None
 
-
 async def stage1_test(sem, uri):
     try:
-        scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
         host = p.hostname
-        port = p.port or (443 if scheme != "hysteria2" else 443)
+        port = p.port or 443
+        scheme = uri.split("://")[0].lower()
 
         async with sem:
             if scheme == "hysteria2":
@@ -378,14 +355,10 @@ async def stage1_test(sem, uri):
             lat = await tcp_ping(host, port)
             if lat is None:
                 return None
-            return {"uri": uri, "host": host, "port": port, "tcp_ms": round(lat, 1),
-                    "proto": scheme}
+            return {"uri": uri, "host": host, "port": port, "tcp_ms": round(lat, 1), "proto": scheme}
     except Exception:
         return None
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Xray
 # ═══════════════════════════════════════════════════════════════════════════════
 def install_xray() -> bool:
     if XRAY_BIN.exists():
@@ -410,9 +383,7 @@ def install_xray() -> bool:
         print(f" ✗ xray install failed: {e}")
         return False
 
-
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
-    # (Оставлена оригинальная реализация — работает)
     scheme = uri.split("://")[0].lower()
     try:
         if scheme == "vless":
@@ -437,18 +408,15 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             elif security == "tls":
                 ss["security"] = "tls"
                 ss["tlsSettings"] = {"serverName": params.get("sni") or p.hostname, "allowInsecure": True}
-            # ... (можно расширить при необходимости)
-        else:
-            return None
+            return {
+                "log": {"loglevel": "none"},
+                "inbounds": [{"listen": "127.0.0.1", "port": socks_port, "protocol": "socks",
+                              "settings": {"auth": "noauth"}}],
+                "outbounds": [outbound, {"protocol": "freedom", "tag": "direct"}],
+            }
     except Exception:
-        return None
-
-    return {
-        "log": {"loglevel": "none"},
-        "inbounds": [{"listen": "127.0.0.1", "port": socks_port, "protocol": "socks", "settings": {"auth": "noauth"}}],
-        "outbounds": [outbound, {"protocol": "freedom", "tag": "direct"}],
-    }
-
+        pass
+    return None
 
 async def stage2_test(sem, idx: int, item: dict) -> dict | None:
     uri = item["uri"]
@@ -494,9 +462,6 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
             except Exception:
                 pass
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Fetch sources
 # ═══════════════════════════════════════════════════════════════════════════════
 async def fetch_source(session, url: str) -> list:
     url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
@@ -513,9 +478,6 @@ async def fetch_source(session, url: str) -> list:
         print(f" ✗ {url[:70]} → {e}")
     return []
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Main
 # ═══════════════════════════════════════════════════════════════════════════════
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -551,7 +513,7 @@ async def main():
         if done % 300 == 0:
             print(f" … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
 
-    tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x["tcp_ms"]))
+    tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x.get("tcp_ms", 9999)))
     print(f" ✅ TCP-alive: {len(tcp_alive)}\n")
 
     if not tcp_alive:
@@ -587,14 +549,14 @@ async def main():
         print("⚠️ Не найдено рабочих прокси.")
         return
 
-    # === Сохранение результатов ===
+    # === Сохранение всех файлов ===
     uri_lines = [r["uri"] for r in top]
 
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
+    (OUTPUT_DIR / "ru.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")   # ru.txt
     b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
-    # YAML для FClash
     with open(OUTPUT_DIR / "proxies.yaml", "w", encoding="utf-8") as f:
         yaml.dump(generate_proxies_yaml(top), f, allow_unicode=True, sort_keys=False)
 
@@ -603,17 +565,17 @@ async def main():
 
     print(f"\n✅ Успешно сохранено в {OUTPUT_DIR}/")
     print(f"   • proxies.txt")
+    print(f"   • ru.txt")
     print(f"   • proxies_b64.txt")
     print(f"   • proxies.yaml")
-    print(f"   • ru.yaml          ← готовая конфигурация для FClash")
+    print(f"   • ru.yaml")
     print(f"   Всего: {len(top)} рабочих прокси\n")
 
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         proto = r.get("proto", r["uri"].split("://")[0])
-        ms = f"{r.get('http_ms')} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
+        ms = f"{r.get('http_ms')} ms" if r.get("http_ms") else f"TCP {r.get('tcp_ms')} ms"
         print(f" {i+1:2d}. [{proto}] {r['host']}:{r['port']} → {ms}")
-
 
 if __name__ == "__main__":
     asyncio.run(main())
