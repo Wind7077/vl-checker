@@ -1,5 +1,5 @@
 # Clash Meta / Mihomo / FClash
-# Russia (RU) only | 2026-06-06 10:31 UTC | 6 proxies
+# Russia (RU) only | 2026-06-06 10:52 UTC | 5 proxies
 
 mixed-port: 7890
 allow-lan: false
@@ -14,22 +14,7 @@ dns:
   fallback: [tls://8.8.4.4:853, tls://1.0.0.1:853]
 
 proxies:
-  - name: VLESS-001-327.9ms-176.122.27.225
-    type: vless
-    server: 176.122.27.225
-    port: 446
-    uuid: 2c919d37-8ca4-4ec9-9013-818d153668db
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: mMaSUsOC5i3ErLDcaWW9UOOjG0fcKPCwVjzGS1wXQx8
-      short-id: 0512567389abcdef
-    grpc-opts:
-      grpc-service-name: ads.x5.ru
-  - name: VLESS-002-338.7ms-176.122.27.222
+  - name: VLESS-001-323.5ms-176.122.27.222
     type: vless
     server: 176.122.27.222
     port: 446
@@ -44,20 +29,22 @@ proxies:
       short-id: 0512567389abcdef
     grpc-opts:
       grpc-service-name: ads.x5.ru
-  - name: VLESS-003-667.0ms-193.233.216.70
+  - name: VLESS-002-336.0ms-176.122.27.225
     type: vless
-    server: 193.233.216.70
-    port: 443
-    uuid: cc13e71e-aaf0-47c7-b565-391856749987
+    server: 176.122.27.225
+    port: 446
+    uuid: 2c919d37-8ca4-4ec9-9013-818d153668db
     udp: true
-    flow: xtls-rprx-vision
+    network: grpc
     tls: true
-    servername: metrika.yandex.ru
-    client-fingerprint: random
+    servername: ads.x5.ru
+    client-fingerprint: chrome
     reality-opts:
-      public-key: wDW0XXr39U-W7fPtsy_qcR39hjIGVNUVFTCVURNdbwM
-      short-id: d8f3a9c2
-  - name: VLESS-004-813.2ms-85.193.87.63
+      public-key: mMaSUsOC5i3ErLDcaWW9UOOjG0fcKPCwVjzGS1wXQx8
+      short-id: 0512567389abcdef
+    grpc-opts:
+      grpc-service-name: ads.x5.ru
+  - name: VLESS-003-1301.1ms-85.193.87.63
     type: vless
     server: 85.193.87.63
     port: 2040
@@ -69,7 +56,7 @@ proxies:
     reality-opts:
       public-key: LidllyozUeeSbuzJ0ZfieGoy8YjVzqXX9H2m9whPaG0
       short-id: 53197c66aef53c44
-  - name: VLESS-005-1652.7ms-193.168.46.180
+  - name: VLESS-004-1643.4ms-193.168.46.180
     type: vless
     server: 193.168.46.180
     port: 443
@@ -82,7 +69,7 @@ proxies:
     reality-opts:
       public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
       short-id: c1a7e9b4711d5f60
-  - name: VLESS-006-1869.9ms-45.12.75.242
+  - name: VLESS-005-2246.8ms-45.12.75.242
     type: vless
     server: 45.12.75.242
     port: 26424
@@ -99,12 +86,11 @@ proxy-groups:
   - name: "🚀 Auto"
     type: url-test
     proxies:
-    - VLESS-001-327.9ms-176.122.27.225
-    - VLESS-002-338.7ms-176.122.27.222
-    - VLESS-003-667.0ms-193.233.216.70
-    - VLESS-004-813.2ms-85.193.87.63
-    - VLESS-005-1652.7ms-193.168.46.180
-    - VLESS-006-1869.9ms-45.12.75.242
+    - VLESS-001-323.5ms-176.122.27.222
+    - VLESS-002-336.0ms-176.122.27.225
+    - VLESS-003-1301.1ms-85.193.87.63
+    - VLESS-004-1643.4ms-193.168.46.180
+    - VLESS-005-2246.8ms-45.12.75.242
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
@@ -113,12 +99,11 @@ proxy-groups:
   - name: "🌐 Select"
     type: select
     proxies:
-    - VLESS-001-327.9ms-176.122.27.225
-    - VLESS-002-338.7ms-176.122.27.222
-    - VLESS-003-667.0ms-193.233.216.70
-    - VLESS-004-813.2ms-85.193.87.63
-    - VLESS-005-1652.7ms-193.168.46.180
-    - VLESS-006-1869.9ms-45.12.75.242
+    - VLESS-001-323.5ms-176.122.27.222
+    - VLESS-002-336.0ms-176.122.27.225
+    - VLESS-003-1301.1ms-85.193.87.63
+    - VLESS-004-1643.4ms-193.168.46.180
+    - VLESS-005-2246.8ms-45.12.75.242
 
 rules:
   - GEOIP,RU,DIRECT
