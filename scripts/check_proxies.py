@@ -184,17 +184,17 @@ def get_flag(country_code: str) -> str:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Clash YAML Export (Безопасное экранирование UTF-8 без \uXXXX суррогатов)
+# Clash YAML Export (Исправлено для FClash / Mihomo)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
-    """Безопасно оборачивает строки в одинарные кавычки для YAML, сохраняя эмодзи."""
+    """
+    Использует json.dumps для идеального экранирования строк в YAML.
+    ensure_ascii=False сохраняет эмодзи как raw UTF-8 (без суррогатных пар \uXXXX).
+    """
     if val is None:
-        return "''"
-    s = str(val)
-    # Экранируем одинарные кавычки удвоением (стандарт YAML)
-    s = s.replace("'", "''")
-    return f"'{s}'"
+        return '""'
+    return json.dumps(str(val), ensure_ascii=False)
 
 def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict | None:
     try:
@@ -229,7 +229,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                 "uuid": uid,
                 "network": net,
                 "udp": True,
-                "country": country,
                 "servername": sni, 
             }
             
@@ -276,7 +275,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                 "port": port,
                 "password": auth,
                 "udp": True,
-                "country": country,
                 "sni": sni,
             }
             if insecure:
@@ -298,17 +296,20 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         lines.append(f"    type: {p['type']}")
         lines.append(f"    server: {yaml_str(p['server'])}")
         lines.append(f"    port: {p['port']}")
-        if 'uuid' in p:
+        
+        # Обязательные и опциональные поля (строгая проверка на пустоту, чтобы Clash не отбросил прокси)
+        if 'uuid' in p and p['uuid']:
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
-        if 'password' in p:
+        if 'password' in p and p['password']:
             lines.append(f"    password: {yaml_str(p['password'])}")
-        if 'servername' in p:
+            
+        if 'servername' in p and p['servername']:
             lines.append(f"    servername: {yaml_str(p['servername'])}")
-        if 'sni' in p:
+        if 'sni' in p and p['sni']:
             lines.append(f"    sni: {yaml_str(p['sni'])}")
             
         for key in ['network', 'flow', 'client-fingerprint', 'obfs', 'obfs-password']:
-            if key in p:
+            if key in p and p[key]:
                 lines.append(f"    {key}: {yaml_str(p[key])}")
                 
         if 'skip-cert-verify' in p:
@@ -321,20 +322,25 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         if 'reality-opts' in p and p['reality-opts']:
             lines.append("    reality-opts:")
             for k, v in p['reality-opts'].items():
-                lines.append(f"      {k}: {yaml_str(v)}")
+                if v: # Исключаем пустые short-id и public-key
+                    lines.append(f"      {k}: {yaml_str(v)}")
         if 'ws-opts' in p:
             lines.append("    ws-opts:")
             for k, v in p['ws-opts'].items():
                 if isinstance(v, dict):
                     lines.append(f"      {k}:")
                     for kk, vv in v.items():
-                        lines.append(f"        {kk}: {yaml_str(vv)}")
+                        if vv:
+                            lines.append(f"        {kk}: {yaml_str(vv)}")
                 else:
-                    lines.append(f"      {k}: {yaml_str(v)}")
+                    if v:
+                        lines.append(f"      {k}: {yaml_str(v)}")
         if 'grpc-opts' in p:
             lines.append("    grpc-opts:")
             for k, v in p['grpc-opts'].items():
-                lines.append(f"      {k}: {yaml_str(v)}")
+                if v:
+                    lines.append(f"      {k}: {yaml_str(v)}")
+                    
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -351,7 +357,7 @@ external-controller: '127.0.0.1:9090'
 
 proxies:
 """
-    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml') as tmp:
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml', encoding='utf-8') as tmp:
         write_clash_proxies_yaml(proxies, Path(tmp.name))
         proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
         config += proxy_block
@@ -444,29 +450,22 @@ def determine_final_country(info: dict) -> str:
     
     is_foreign_cloud = any(kw in all_isp_text for kw in FOREIGN_CLOUD_KEYWORDS)
     
-    # 1. Жесткий фильтр: если это иностранное облако, оно НЕ российское
     if is_foreign_cloud:
         if api_c != "RU" and api_c != "UNKNOWN": return api_c
         if who_c != "RU" and who_c != "UNKNOWN": return who_c
         return "UNKNOWN"
         
-    # 2. Строгое совпадение: оба GeoIP говорят RU
     if api_c == "RU" and who_c == "RU":
         return "RU"
         
-    # 3. Один говорит RU, другой не смог определить (UNKNOWN)
     if (api_c == "RU" and who_c == "UNKNOWN") or (who_c == "RU" and api_c == "UNKNOWN"):
         return "RU"
         
-    # 4. Если есть противоречие (например, RU и US) или ни один не сказал RU — это НЕ RU.
-    # Возвращаем приоритетный не-RU код, чтобы прокси попал в общий список, но НЕ в ru.yaml.
     if api_c != "UNKNOWN" and api_c != "RU":
         return api_c
     if who_c != "UNKNOWN" and who_c != "RU":
         return who_c
         
-    # 5. Если дошли сюда, значит один сказал RU, а второй тоже RU или UNKNOWN (уже обработано), 
-    # либо оба UNKNOWN.
     if api_c == "RU" or who_c == "RU":
         return "RU"
         
@@ -1038,7 +1037,7 @@ async def main():
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     
-    # Сохранение proxies.yaml (ПОЛНЫЙ конфиг Clash)
+    # Сохранение proxies.yaml (ПОЛНЫЙ конфиг Clash для FClash)
     clash_proxies = []
     for i, r in enumerate(top):
         cp = uri_to_clash_proxy(r["uri"], i, r.get("country", "UNKNOWN"))
