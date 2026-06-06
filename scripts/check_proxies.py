@@ -606,19 +606,19 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             ss = outbound["streamSettings"]
             
             if sec == "reality":
-    if not pbk:
-        return None
+                if not pbk:
+                  return None
 
-    if not sid:
-        return None
+                if not sid:
+                  return None
 
-    ss["security"] = "reality"
-    ss["realitySettings"] = {
-        "serverName": sni,
-        "fingerprint": fp if fp else "chrome",
-        "publicKey": pbk,
-        "shortId": sid,
-    }
+                ss["security"] = "reality"
+                ss["realitySettings"] = {
+                  "serverName": sni,
+                  "fingerprint": fp if fp else "chrome",
+                  "publicKey": pbk,
+                  "shortId": sid,
+                }
             elif sec == "tls":
                 ss["security"] = "tls"
                 ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp, "allowInsecure": True}
@@ -981,4 +981,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
