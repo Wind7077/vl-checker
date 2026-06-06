@@ -12,6 +12,7 @@ import json
 import os
 import platform
 import re
+import socket
 import subprocess
 import sys
 import tempfile
@@ -272,8 +273,6 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
 def write_ru_clash_config(proxies: list[dict], path: Path):
     """Записывает полный конфиг Clash с правилами для РФ."""
     proxy_names = [f"\"{p['name']}\"" for p in proxies]
-    top20 = proxy_names[:20]
-    top50 = proxy_names[:50]
     
     config = f"""mixed-port: 7890
 allow-lan: false
@@ -283,14 +282,13 @@ external-controller: '127.0.0.1:9090'
 
 proxies:
 """
-    # Вставляем те же прокси, что и в proxies.yaml
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml') as tmp:
         write_clash_proxies_yaml(proxies, Path(tmp.name))
         proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
         config += proxy_block
         os.unlink(tmp.name)
     
-    config += f"""
+    config += """
 proxy-groups:
   - name: "🚀 Выбор"
     type: select
@@ -298,7 +296,7 @@ proxy-groups:
       - "🔯 Fallback"
       - "🎯 Auto"
 """
-    for name in top20:
+    for name in proxy_names[:20]:
         config += f"      - {name}\n"
     
     config += """  - name: "🔯 Fallback"
@@ -307,7 +305,7 @@ proxy-groups:
     interval: 300
     proxies:
 """
-    for name in top50:
+    for name in proxy_names[:50]:
         config += f"      - {name}\n"
     
     config += """  - name: "🎯 Auto"
@@ -317,7 +315,7 @@ proxy-groups:
     tolerance: 50
     proxies:
 """
-    for name in top50:
+    for name in proxy_names[:50]:
         config += f"      - {name}\n"
     
     config += """rules:
@@ -326,6 +324,86 @@ proxy-groups:
   - "MATCH,🚀 Выбор"
 """
     path.write_text(config, encoding="utf-8")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GeoIP Check
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def resolve_host_to_ip(host: str) -> str | None:
+    try:
+        if re.match(r"^\d{1,3}(\.\d{1,3}){3}$", host):
+            return host
+        if ":" in host and not host.startswith("["):
+            return host
+        infos = await asyncio.getaddrinfo(host, None, family=socket.AF_UNSPEC, type=socket.SOCK_STREAM)
+        if infos:
+            for info in infos:
+                if info[0] == socket.AF_INET:
+                    return info[4][0]
+            return infos[0][4][0]
+    except Exception:
+        pass
+    return None
+
+async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
+    host_to_ip = {}
+    unique_hosts = list(set(hosts))
+    
+    sem = asyncio.Semaphore(100)
+    async def resolve(h):
+        async with sem:
+            ip = await resolve_host_to_ip(h)
+            return h, ip
+            
+    results = await asyncio.gather(*[resolve(h) for h in unique_hosts])
+    for h, ip in results:
+        if ip:
+            host_to_ip[h] = ip
+            
+    ip_to_host = {}
+    for h, ip in host_to_ip.items():
+        if ip not in ip_to_host:
+            ip_to_host[ip] = h
+            
+    unique_ips = list(ip_to_host.keys())
+    ip_to_country = {}
+    
+    url = "http://ip-api.com/batch"
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
+        for i in range(0, len(unique_ips), 100):
+            batch_ips = unique_ips[i:i+100]
+            payload = [{"query": ip, "fields": "query,countryCode,status"} for ip in batch_ips]
+            try:
+                async with session.post(url, json=payload, timeout=15) as resp:
+                    if resp.status == 429:
+                        print("  ⚠️ GeoIP rate limit, waiting 60s...")
+                        await asyncio.sleep(60)
+                        async with session.post(url, json=payload, timeout=15) as resp2:
+                            data = await resp2.json()
+                    else:
+                        data = await resp.json()
+                        
+                    for item in data:
+                        if item.get("status") == "success":
+                            ip = item["query"]
+                            ip_to_country[ip] = item.get("countryCode", "")
+            except Exception as e:
+                print(f"  ✗ GeoIP batch error: {e}")
+            await asyncio.sleep(4)
+            
+    host_to_country = {}
+    for h, ip in host_to_ip.items():
+        if ip in ip_to_country:
+            host_to_country[h] = ip_to_country[ip]
+            
+    countries = {}
+    for c in host_to_country.values():
+        countries[c] = countries.get(c, 0) + 1
+    if countries:
+        print("  🌎 Страны: " + ", ".join(f"{k}={v}" for k, v in sorted(countries.items(), key=lambda x: -x[1])))
+        
+    return host_to_country
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -744,6 +822,22 @@ async def main():
         print("⚠️  No TCP-alive proxies.")
         return
 
+    # ── GeoIP Check ───────────────────────────────────────────────────────
+    print("🌍 Checking GeoIP...")
+    hosts = [item["host"] for item in tcp_alive]
+    host_countries = await get_countries_for_hosts(hosts)
+    for item in tcp_alive:
+        item["country"] = host_countries.get(item["host"], "UNKNOWN")
+        
+    if ALLOWED_COUNTRIES:
+        before = len(tcp_alive)
+        tcp_alive = [item for item in tcp_alive if item.get("country") in ALLOWED_COUNTRIES]
+        print(f"  🗺️  GeoIP filter ({ALLOWED_COUNTRIES}): {before} → {len(tcp_alive)}")
+        
+    if not tcp_alive:
+        print("⚠️  No proxies left after GeoIP filter.")
+        return
+
     print("🛠  Preparing binaries…")
     xray_ok = install_xray()
     hy2_needed = any(i["uri"].startswith(("hysteria2://", "hy2://")) for i in tcp_alive[:STAGE2_CANDIDATES])
@@ -766,7 +860,12 @@ async def main():
                 print(f"  … {done2}/{len(candidates)} tested, {len(http_alive)} working")
         http_alive.sort(key=lambda x: x["http_ms"])
         top = http_alive[:TOP_N]
+        
+        # Отбираем ТОЛЬКО российские прокси для ru.txt и ru.yaml
+        ru_top = [item for item in http_alive if item.get("country") == "RU"][:TOP_N]
+        
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
+        print(f"  🇷🇺 Из них российских (RU): {len([i for i in http_alive if i.get('country') == 'RU'])}")
 
         working_protos: dict[str, int] = {}
         for r in http_alive:
@@ -777,6 +876,7 @@ async def main():
     else:
         print("  ⚠️  Нет доступных бинарников — сохраняем TCP-alive")
         top = candidates[:TOP_N]
+        ru_top = [item for item in candidates if item.get("country") == "RU"][:TOP_N]
         for r in top:
             r["http_ms"] = None
 
@@ -784,10 +884,11 @@ async def main():
         print("⚠️  No working proxies found.")
         return
 
+    # Сохранение proxies.txt
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     
-    # Генерация Clash конфигов
+    # Сохранение proxies.yaml
     clash_proxies = []
     for i, r in enumerate(top):
         cp = uri_to_clash_proxy(r["uri"], i)
@@ -796,12 +897,26 @@ async def main():
     
     if clash_proxies:
         write_clash_proxies_yaml(clash_proxies, OUTPUT_DIR / "proxies.yaml")
-        write_ru_clash_config(clash_proxies, OUTPUT_DIR / "ru.yaml")
+
+    # Сохранение ru.txt
+    ru_lines = [r["uri"] for r in ru_top]
+    (OUTPUT_DIR / "ru.txt").write_text("\n".join(ru_lines) + "\n", encoding="utf-8")
+    
+    # Сохранение ru.yaml
+    ru_clash_proxies = []
+    for i, r in enumerate(ru_top):
+        cp = uri_to_clash_proxy(r["uri"], i)
+        if cp:
+            ru_clash_proxies.append(cp)
+            
+    if ru_clash_proxies:
+        write_ru_clash_config(ru_clash_proxies, OUTPUT_DIR / "ru.yaml")
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
-    print(f"   proxies.txt      — {len(top)} URI")
+    print(f"   proxies.txt      — {len(top)} URI (все рабочие)")
     print(f"   proxies.yaml     — Clash proxies list")
-    print(f"   ru.yaml          — Full Clash config with RU rules\n")
+    print(f"   ru.txt           — {len(ru_top)} URI (только RU)")
+    print(f"   ru.yaml          — Full Clash config (только RU)\n")
     
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
