@@ -604,20 +604,20 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                 "streamSettings": {"network": net},
             }
             ss = outbound["streamSettings"]
-            
             if sec == "reality":
                 if not pbk:
-                  return None
-
-                if not sid:
-                  return None
-
+                    return None
+                # sid: пустая строка валидна; непустая должна быть hex чётной длины ≤16 символов
+                if sid and (len(sid) % 2 != 0
+                            or not re.match(r'^[0-9a-fA-F]+$', sid)
+                            or len(sid) > 16):
+                    return None
                 ss["security"] = "reality"
                 ss["realitySettings"] = {
-                  "serverName": sni,
-                  "fingerprint": fp if fp else "chrome",
-                  "publicKey": pbk,
-                  "shortId": sid,
+                    "serverName": sni,
+                    "fingerprint": fp if fp else "chrome",
+                    "publicKey": pbk,
+                    "shortId": sid,
                 }
             elif sec == "tls":
                 ss["security"] = "tls"
