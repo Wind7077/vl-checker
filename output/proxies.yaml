@@ -1,2367 +1,1769 @@
-# Clash Meta / Mihomo / FClash
-# All working proxies | 2026-06-06 16:02 UTC | 168 proxies
-
-mixed-port: 7890
-allow-lan: false
-mode: rule
-log-level: warning
-ipv6: false
-
-dns:
-  enable: true
-  ipv6: false
-  nameserver: [8.8.8.8, 1.1.1.1]
-  fallback: [tls://8.8.4.4:853, tls://1.0.0.1:853]
-
 proxies:
-  - name: VLESS-001-233.1ms-151.115.164.129
-    type: vless
-    server: 151.115.164.129
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-002-251.8ms-151.115.164.37
-    type: vless
-    server: 151.115.164.37
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-003-264.7ms-151.115.164.36
-    type: vless
-    server: 151.115.164.36
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-004-282.8ms-45.158.127.5
-    type: vless
-    server: 45.158.127.5
-    port: 443
-    uuid: 301d514e-4aa0-47b0-ba44-a0cb891cd52f
-    udp: true
-    tls: true
-    servername: www.samsung.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: OZVjfQBboTDTBw0baMFqzVPsVUI4FNQmspTEb0b0zW4
-      short-id: a1b2c3d4
-  - name: VLESS-005-362.9ms-151.115.164.117
-    type: vless
-    server: 151.115.164.117
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-006-364.4ms-151.115.164.120
-    type: vless
-    server: 151.115.164.120
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-007-376.3ms-151.115.167.1
-    type: vless
-    server: 151.115.167.1
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-008-383.7ms-51.158.206.34
-    type: vless
-    server: 51.158.206.34
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-009-392.8ms-151.115.166.68
-    type: vless
-    server: 151.115.166.68
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-010-411.4ms-151.115.166.233
-    type: vless
-    server: 151.115.166.233
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-011-413.0ms-51.158.206.93
-    type: vless
-    server: 51.158.206.93
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-012-414.2ms-151.115.164.43
-    type: vless
-    server: 151.115.164.43
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-013-421.8ms-194.59.183.234
-    type: vless
-    server: 194.59.183.234
-    port: 666
-    uuid: 56aaf8cd-d2fb-5211-bc9b-c242ee37d429
-    udp: true
-  - name: VLESS-014-434.8ms-52.14.47.44
-    type: vless
-    server: 52.14.47.44
-    port: 443
-    uuid: 0c61d46d-4c4d-421b-b0fb-d211415da368
-    udp: true
-  - name: VLESS-015-487.6ms-5.183.253.171
-    type: vless
-    server: 5.183.253.171
-    port: 443
-    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: eh.vk.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
-      short-id: 8248954896
-  - name: VLESS-016-560.8ms-31.129.42.131
-    type: vless
-    server: 31.129.42.131
-    port: 443
-    uuid: 855175af-864c-4146-a6ed-0bd05c93d125
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ
-      short-id: c31f9a0e7d4b52
-  - name: VLESS-017-565.9ms-144.31.237.74
+  - name: "1. 144.31.237.74:603"
     type: vless
     server: 144.31.237.74
     port: 603
     uuid: 8ed27b15-30a6-42a2-af38-e4dc675ee17e
-    udp: true
     network: grpc
-    tls: true
-    servername: www.amd.com
-    client-fingerprint: edge
-    reality-opts:
-      public-key: lWJaKBaMPs0NYHGCbfsrmn64R4juEQEvfmHNnL741Ek
-      short-id: ""
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-018-602.1ms-white77.alexanderoff.ru
-    type: vless
-    server: white77.alexanderoff.ru
-    port: 1240
-    uuid: d2ce0b49-2b2c-46f6-9b43-4829d0075654
-    udp: true
-  - name: VLESS-019-608.2ms-206.189.20.90
-    type: vless
-    server: 206.189.20.90
-    port: 27774
-    uuid: c83014e0-ad3e-4ebd-9e8f-8f7a1f6088d6
-    udp: true
-  - name: VLESS-020-635.0ms-sca16.myfymain.com
-    type: vless
-    server: sca16.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-021-654.2ms-151.241.228.254
-    type: vless
-    server: 151.241.228.254
-    port: 34754
-    uuid: 35762c02-ff2b-4526-b41b-e96e5d99528b
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yahoo.com
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: eMijZKuJlNEciXbhyzdbewk-ot_JLMZVaA42bxKFcBM
-      short-id: c9eb0359fac0c345
-  - name: VLESS-022-701.2ms-194.150.220.93
-    type: vless
-    server: 194.150.220.93
-    port: 443
-    uuid: fa3666a2-aa05-440b-82be-f394f5bf385e
-    udp: true
-    tls: true
-    servername: m.twitch.tv
     client-fingerprint: chrome
     reality-opts:
-      public-key: GORiNrCU-4X_zF4JWYY4f9Fkq6UqAlRgouj_d2ecako
-      short-id: ff53f754b209fff9
-  - name: VLESS-023-709.2ms-147.182.212.232
+      public-key: lWJaKBaMPs0NYHGCbfsrmn64R4juEQEvfmHNnL741Ek
+      short-id: 
+    grpc-opts:
+      grpc-service-name: 
+  - name: "2. 85.208.139.98:8444"
+    type: vless
+    server: 85.208.139.98
+    port: 8444
+    uuid: c931f737-cafe-4e4f-998a-a65517941256
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: Hp6K5hsiPY4_zATgAtef9YTxNGpSkhAHTTo9MUO7fik
+      short-id: 77e934f68f02ab4c
+  - name: "3. 87.239.108.241:443"
+    type: vless
+    server: 87.239.108.241
+    port: 443
+    uuid: 6c6bb37a-3315-45bc-88d6-0fbba043c07f
+    network: tcp
+    client-fingerprint: random
+    reality-opts:
+      public-key: EZ9ZUwrabGCJfowEvD4fI0ANMsxYh7hchEAbsnOTl0s
+      short-id: 803367e3aceaa5e1
+  - name: "4. 103.119.18.32:8443"
+    type: vless
+    server: 103.119.18.32
+    port: 8443
+    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
+    network: tcp
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 4sm4mUC0igscX3gHfsxD2b0F6bimVQf_M6w2ZvV7QW8
+      short-id: 39f0
+  - name: "5. 87.239.108.241:443"
+    type: vless
+    server: 87.239.108.241
+    port: 443
+    uuid: 6c6bb37a-3315-45bc-88d6-0fbba043c07f
+    network: tcp
+    client-fingerprint: random
+    reality-opts:
+      public-key: EZ9ZUwrabGCJfowEvD4fI0ANMsxYh7hchEAbsnOTl0s
+      short-id: 803367e3aceaa5e1
+  - name: "6. 87.239.108.241:443"
+    type: vless
+    server: 87.239.108.241
+    port: 443
+    uuid: 6c6bb37a-3315-45bc-88d6-0fbba043c07f
+    network: tcp
+    client-fingerprint: random
+    reality-opts:
+      public-key: EZ9ZUwrabGCJfowEvD4fI0ANMsxYh7hchEAbsnOTl0s
+      short-id: 803367e3aceaa5e1
+  - name: "7. 87.239.108.241:443"
+    type: vless
+    server: 87.239.108.241
+    port: 443
+    uuid: 6c6bb37a-3315-45bc-88d6-0fbba043c07f
+    network: tcp
+    client-fingerprint: random
+    reality-opts:
+      public-key: EZ9ZUwrabGCJfowEvD4fI0ANMsxYh7hchEAbsnOTl0s
+      short-id: 803367e3aceaa5e1
+  - name: "8. 103.119.18.32:8443"
+    type: vless
+    server: 103.119.18.32
+    port: 8443
+    uuid: a2415a12-3f92-4636-9823-9828d3ceb818
+    network: tcp
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 4sm4mUC0igscX3gHfsxD2b0F6bimVQf_M6w2ZvV7QW8
+      short-id: 39f0
+  - name: "9. 5.188.114.240:443"
+    type: vless
+    server: 5.188.114.240
+    port: 443
+    uuid: c2d6f3ff-36be-4883-8350-4f1ef9c78df5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ
+      short-id: c31f9a0e7d4b52
+  - name: "10. 62.192.174.111:443"
+    type: vless
+    server: 62.192.174.111
+    port: 443
+    uuid: 301d514e-4aa0-47b0-ba44-a0cb891cd52f
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: OZVjfQBboTDTBw0baMFqzVPsVUI4FNQmspTEb0b0zW4
+      short-id: a1b2c3d4
+  - name: "11. 147.182.212.232:56565"
     type: vless
     server: 147.182.212.232
     port: 56565
     uuid: 7b188eea-b08f-42c2-bac7-d3b0e74218b8
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: www.paypal.com
     client-fingerprint: chrome
     reality-opts:
       public-key: Td03Ae-cuYLq4xg7MSps58c_yRUcbbwtZLXm0ywabjY
-      short-id: ""
-  - name: VLESS-024-709.9ms-81.163.23.125
-    type: vless
-    server: 81.163.23.125
-    port: 443
-    uuid: 855175af-864c-4146-a6ed-0bd05c93d125
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ
-      short-id: 5d8e1a9c4f72b3
-  - name: VLESS-025-719.2ms-151.115.164.134
-    type: vless
-    server: 151.115.164.134
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-026-737.3ms-5.178.85.202
-    type: vless
-    server: 5.178.85.202
-    port: 443
-    uuid: 855175af-864c-4146-a6ed-0bd05c93d125
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ
-      short-id: 7e2a9d4c5f18b0
-  - name: VLESS-027-759.8ms-91.107.191.12
-    type: vless
-    server: 91.107.191.12
-    port: 29376
-    uuid: 03bc875d-0d8e-49b6-9094-89a8159e65ee
-    udp: true
-  - name: VLESS-028-763.3ms-91.107.244.55
-    type: vless
-    server: 91.107.244.55
-    port: 8080
-    uuid: 92929b0d-a473-4ea2-bba5-f651ea263872
-    udp: true
-  - name: VLESS-029-779.0ms-51.158.206.26
-    type: vless
-    server: 51.158.206.26
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-030-780.3ms-51.158.206.98
-    type: vless
-    server: 51.158.206.98
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-031-786.7ms-51.250.47.193
-    type: vless
-    server: 51.250.47.193
-    port: 443
-    uuid: 637b892a-5445-4e96-9910-b2e121660883
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: api-maps.yandex.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: xwusQ4IEWdYyuPLCc4LOA89P6HyQDNT7xo_75v2YW2I
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-032-810.4ms-151.115.165.172
-    type: vless
-    server: 151.115.165.172
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-033-820.9ms-151.115.166.249
-    type: vless
-    server: 151.115.166.249
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-034-843.7ms-77.110.115.192
-    type: vless
-    server: 77.110.115.192
-    port: 443
-    uuid: 5d8fcd24-9634-4dd7-845c-3dc2d6291942
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0
-      short-id: 86b80f1e713a33ad
-  - name: VLESS-035-847.9ms-sca24.myfymain.com
-    type: vless
-    server: sca24.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-036-849.4ms-67.102.180.16
-    type: vless
-    server: 67.102.180.16
-    port: 443
-    uuid: b831381d-6324-4d53-ad4f-8cda48b30811
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.microsoft.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 3j9h81MFAlsEOQ4K1ey1XD0tz1aEVNaMGMoMjQwif1w
-      short-id: 16
-  - name: VLESS-037-849.8ms-sca29.myfymain.com
-    type: vless
-    server: sca29.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-038-854.8ms-151.115.164.131
-    type: vless
-    server: 151.115.164.131
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-039-861.6ms-151.115.164.126
-    type: vless
-    server: 151.115.164.126
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-040-865.2ms-94.183.219.239
-    type: vless
-    server: 94.183.219.239
-    port: 443
-    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
-    udp: true
-    network: grpc
-    tls: true
-    servername: google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: uemqA7VkHB7Xw_gc88AfbBijEJgiWaVdCiIyMae8CSI
-      short-id: ""
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-041-865.7ms-sca31.myfymain.com
-    type: vless
-    server: sca31.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-042-869.0ms-151.115.166.43
-    type: vless
-    server: 151.115.166.43
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-043-878.6ms-151.115.164.132
-    type: vless
-    server: 151.115.164.132
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-044-884.2ms-151.115.167.190
-    type: vless
-    server: 151.115.167.190
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-045-893.7ms-sca17.myfymain.com
-    type: vless
-    server: sca17.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-046-910.9ms-nid.pink-perfect.ru
-    type: vless
-    server: nid.pink-perfect.ru
-    port: 443
-    uuid: 5d8fcd24-9634-4dd7-845c-3dc2d6291942
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0
-      short-id: 86b80f1e713a33ad
-  - name: VLESS-047-916.4ms-31.59.36.107
-    type: vless
-    server: 31.59.36.107
-    port: 443
-    uuid: 4f51ca84-43ea-4087-b8a2-938e0ccbe27a
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4
-      short-id: ""
-  - name: VLESS-048-938.5ms-sca28.myfymain.com
-    type: vless
-    server: sca28.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-049-948.7ms-8.208.22.155
-    type: vless
-    server: 8.208.22.155
-    port: 10034
-    uuid: e4e7866d-920b-4a53-a8e2-6ae9b2a42fc2
-    udp: true
-  - name: VLESS-050-957.6ms-152.114.193.11
-    type: vless
-    server: 152.114.193.11
-    port: 47200
-    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: stats.vk-portal.net
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
-      short-id: b2a9bd658fc81dc6
-  - name: VLESS-051-960.4ms-185.229.9.32
-    type: vless
-    server: 185.229.9.32
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: r6LKP3g2W5ruKICTDfH8rwM1PbMjdcgHU7cG6jppxTs
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-052-972.7ms-62.141.42.201
-    type: vless
-    server: 62.141.42.201
-    port: 443
-    uuid: cc976b15-418b-4f0b-89ce-cd685ffbaf20
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: odbiaA-5s0mkehtfrf2SBcrKAMDP1sFjxKHJYdDCKgc
-      short-id: 81
-  - name: VLESS-053-973.6ms-31.59.36.108
-    type: vless
-    server: 31.59.36.108
-    port: 443
-    uuid: 4f51ca84-43ea-4087-b8a2-938e0ccbe27a
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4
-      short-id: ""
-  - name: VLESS-054-989.5ms-95.85.233.234
-    type: vless
-    server: 95.85.233.234
-    port: 8443
-    uuid: c5765da4-772f-4ff7-b96c-551ca7185529
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fastsync.xyz
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: eHgRhHYifD2njbtjzgMsNPGnvbpAK8SSXC5-wFuQnQ4
-      short-id: 65b5280b52e0532c
-  - name: VLESS-055-1002.9ms-84.201.168.201
-    type: vless
-    server: 84.201.168.201
-    port: 443
-    uuid: 637b892a-5445-4e96-9910-b2e121660883
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: Ec54Eop0jZft7rcJsPN4RHc4xG9smXhtenM52pJFUQI
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-056-1006.2ms-158.160.32.64
-    type: vless
-    server: 158.160.32.64
-    port: 443
-    uuid: 1e5b05cc-040a-4f72-9b63-d09400a38b07
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: m.vk.com
-    client-fingerprint: qq
-    reality-opts:
-      public-key: oqRus6Z_Q1jqJaTEPu7ENbRL0-XKOw54K0jwCCGLtEk
-      short-id: a9c4f17e3b62d8
-  - name: VLESS-057-1015.1ms-5.42.126.157
-    type: vless
-    server: 5.42.126.157
-    port: 443
-    uuid: 029a4bc6-4557-4b6b-a5fc-6232e943e43b
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fi.sellflow.org
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
-      short-id: ""
-  - name: VLESS-058-1023.8ms-51.89.229.134
-    type: vless
-    server: 51.89.229.134
-    port: 443
-    uuid: 53821f3c-5b03-456a-89f3-f8379f130752
-    udp: true
-    tls: true
-    servername: www.samsung.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 4e4FI0siWxFtLCRCVDQurn1wLTuvKWhRY0zj1SaUcyw
-      short-id: a13a7cc5
-  - name: VLESS-059-1024.6ms-79.141.171.133
-    type: vless
-    server: 79.141.171.133
-    port: 443
-    uuid: 4c3fe585-ac09-41df-b284-888818888188
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: apple.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 0rtpNciTfV9TsoEc7Y8lS5LzBUzLppMnRY8bQC_bH3M
-      short-id: aabbccdd
-  - name: VLESS-060-1029.2ms-151.115.167.188
-    type: vless
-    server: 151.115.167.188
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-061-1031.4ms-89.125.19.237
-    type: vless
-    server: 89.125.19.237
-    port: 47200
-    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: stats.vk-portal.net
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
-      short-id: b2a9bd658fc81dc6
-  - name: VLESS-062-1043.7ms-77.239.114.176
-    type: vless
-    server: 77.239.114.176
-    port: 19105
-    uuid: fb9e4c3a-936f-44c7-ac89-d5d422690fcf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.microsoft.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: IS6TNMONlIVvcUBvo2RXQvx2Jopcv4wzPyZhxPhWqT8
-      short-id: e6
-  - name: VLESS-063-1049.7ms-23.26.37.120
-    type: vless
-    server: 23.26.37.120
-    port: 8443
-    uuid: dcba77d7-bb59-4802-b32c-37fd7011fca4
-    udp: true
-    tls: true
-    servername: google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo
-      short-id: 3ca620a7ed5f3196
-  - name: VLESS-064-1053.3ms-89.208.210.51
-    type: vless
-    server: 89.208.210.51
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: max.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: BjG7XoEMR2uxHbBk_rtkR7P_S_luG2VcvQlvZ4YHzH8
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-065-1053.7ms-78.17.147.65
-    type: vless
-    server: 78.17.147.65
-    port: 443
-    uuid: b67ed271-5a34-4d07-9970-f8ba27ca2c8a
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.microsoft.com
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE
-      short-id: fcd9787f
-  - name: VLESS-066-1072.8ms-23.26.37.119
-    type: vless
-    server: 23.26.37.119
-    port: 8443
-    uuid: dcba77d7-bb59-4802-b32c-37fd7011fca4
-    udp: true
-    tls: true
-    servername: google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo
-      short-id: 3ca620a7ed5f3196
-  - name: VLESS-067-1090.1ms-144.31.157.56
-    type: vless
-    server: 144.31.157.56
-    port: 443
-    uuid: 3e0c34a4-1c38-4d93-88c6-5155e81f8b52
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: snapp.ir
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: D-7qX4fqUFKDS2dQWFgGT4fXJnABnpM6IkU8SDHLMC0
-      short-id: 6ba85179e30d4fc2
-  - name: VLESS-068-1094.3ms-109.120.132.142
-    type: vless
-    server: 109.120.132.142
-    port: 40617
-    uuid: d8d05386-e381-40a4-bb63-715c208b3ed3
-    udp: true
-  - name: VLESS-069-1120.1ms-158.160.146.238
-    type: vless
-    server: 158.160.146.238
-    port: 443
-    uuid: f598364f-51af-4f7d-9f2b-df1c707a2643
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: CF49-iS9dsHBwvqYFoDs_T3Me8TT0FpNW2kibGBkVXY
-      short-id: ""
-  - name: VLESS-070-1120.5ms-128.204.223.94
-    type: vless
-    server: 128.204.223.94
-    port: 9815
-    uuid: 37a0bd7c-8b9f-4693-8916-bd1e2da0a817
-    udp: true
-    network: ws
-    ws-opts:
-      path: /
-      headers: {Host: 128.204.223.94}
-  - name: VLESS-071-1132.3ms-194.238.57.104
+      short-id: 
+  - name: "12. 194.238.57.104:443"
     type: vless
     server: 194.238.57.104
     port: 443
     uuid: 8046e3a1-83a7-4155-86e4-374153fe66f3
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: www.icloud.com
     client-fingerprint: chrome
     reality-opts:
       public-key: 56RJlIcxwncUs5m9QSfd3waHxm6vJFBKso5IkMSsyCA
       short-id: 5d
-  - name: VLESS-072-1191.9ms-31.207.5.43
+  - name: "13. 194.93.0.180:47200"
     type: vless
-    server: 31.207.5.43
+    server: 194.93.0.180
     port: 47200
     uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: stats.vk-portal.net
     client-fingerprint: firefox
     reality-opts:
       public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
       short-id: b2a9bd658fc81dc6
-  - name: VLESS-073-1212.1ms-78.17.134.254
+  - name: "14. 51.158.206.26:23576"
     type: vless
-    server: 78.17.134.254
-    port: 47200
-    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: stats.vk-portal.net
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
-      short-id: b2a9bd658fc81dc6
-  - name: VLESS-074-1234.6ms-89.187.191.231
-    type: vless
-    server: 89.187.191.231
-    port: 8443
-    uuid: 1014818b-5c5c-46b1-98fe-eaf8d5eba642
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: m.vk.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 23cb4W9THzBKsrECsLh-A_FcKZfkAtUONoDze8-GnQE
-      short-id: e90360ec7cc61b20
-  - name: VLESS-075-1241.8ms-89.167.25.28
-    type: vless
-    server: 89.167.25.28
-    port: 11005
-    uuid: e4e7866d-920b-4a53-a8e2-6ae9b2a42fc2
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.cloudflare.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: tPxRwVtrFklP9kJ8kWgHIcR-XSBBkZiYbwGCAaBrtgE
-      short-id: f98c
-  - name: VLESS-076-1265.6ms-195.96.132.125
-    type: vless
-    server: 195.96.132.125
-    port: 443
-    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.vk.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: WM-LMz6slGkGPD3zEM8Ntat27n6p6EfbxRsjYmTykV4
-      short-id: 8237eb
-  - name: VLESS-077-1277.0ms-103.119.19.201
-    type: vless
-    server: 103.119.19.201
-    port: 2087
-    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: api-maps.yandex.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
-      short-id: 493c3d4e37c23c28
-  - name: VLESS-078-1278.4ms-122.8.44.3
-    type: vless
-    server: 122.8.44.3
-    port: 993
-    uuid: 2703cda8-5cf4-019d-c4bd-6cf0c2261946
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: dl.google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: UvQ2HZFkQXrBiaprbcmks-aFo1dvnfPlHXcUKcl-i04
-      short-id: ""
-  - name: VLESS-079-1281.8ms-62.238.32.25
-    type: vless
-    server: 62.238.32.25
-    port: 443
-    uuid: 1b9e301d-cecd-4eb1-8b36-eef811c2696d
-    udp: true
-    tls: true
-    servername: yastatic.net
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 3LUIM_6cYceTgNt6LWnR8YSVrenpLsh-FIGDrmfjjwc
-      short-id: 5e841fab
-  - name: VLESS-080-1289.6ms-213.226.112.208
-    type: vless
-    server: 213.226.112.208
-    port: 443
-    uuid: e5f9bafb-fb9c-4a6e-8227-0086a76b7116
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: wl-7-3.nodes.ac
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: OflUQ0RuzdBHAtITxja0ZPDKgxKLBS9Rh49OIdS-FDA
-      short-id: 5f8ee4861a68966f
-  - name: VLESS-081-1299.0ms-144.31.230.72
-    type: vless
-    server: 144.31.230.72
-    port: 47200
-    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: stats.vk-portal.net
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
-      short-id: b2a9bd658fc81dc6
-  - name: VLESS-082-1306.7ms-me.colorbox.space
-    type: vless
-    server: me.colorbox.space
-    port: 80
-    uuid: putin-zelencky-93
-    udp: true
-    network: ws
-    ws-opts:
-      path: /
-      headers: {Host: me.colorbox.space}
-  - name: VLESS-083-1314.4ms-148.253.211.47
-    type: vless
-    server: 148.253.211.47
-    port: 443
-    uuid: 980231fb-4372-5c81-b696-20aa34d33af0
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.microsoft.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 978-Yxgtd3AWTVfiXEQqCstdwrT1qgsgleGPIRGQDl8
-      short-id: bdac121c7debdaba
-  - name: VLESS-084-1329.8ms-38.107.233.130
-    type: vless
-    server: 38.107.233.130
-    port: 443
-    uuid: 5d8fcd24-9634-4dd7-845c-3dc2d6291942
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.google.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0
-      short-id: 86b80f1e713a33ad
-  - name: VLESS-085-1344.0ms-84.201.129.65
-    type: vless
-    server: 84.201.129.65
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: I_mMGeQ8r529dq2LjFUzv0nb74zuux2zGWT2RfKuE14
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-086-1351.7ms-93.115.25.153
-    type: vless
-    server: 93.115.25.153
-    port: 443
-    uuid: 31969cf4-c1bb-4a3e-b42b-574dfb271c73
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: googdas.scroogethebest.com
-    client-fingerprint: qq
-    reality-opts:
-      public-key: xwUK0ffpbKZ5_o_vXhZ8ErRDqvw2iVnRVSlZ-Vonkxo
-      short-id: 132c271e21324e36
-  - name: VLESS-087-1366.5ms-sca14.myfymain.com
-    type: vless
-    server: sca14.myfymain.com
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-088-1424.0ms-51.250.7.246
-    type: vless
-    server: 51.250.7.246
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: AvSwsAIp3t2sTvNDZwTPkbcanvu9wtvLyZ6FCzIM-Rk
-      short-id: 7ada97abaa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-089-1427.5ms-144.31.30.69
-    type: vless
-    server: 144.31.30.69
-    port: 443
-    uuid: f90cc83a-97ce-446d-8f80-30d3eef3351c
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: eh.vk.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
-      short-id: 6ba85179e30d4fc2
-  - name: VLESS-090-1430.8ms-5.35.85.51
-    type: vless
-    server: 5.35.85.51
-    port: 8443
-    uuid: 888403d1-621b-481a-b5dc-7aca518a787b
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.kinopoisk.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: BrGL0gTKK_Ir2VwJOa91Vd8870DswnOXhA6-F92RBGI
-      short-id: a987b6bd1781daa3
-  - name: VLESS-091-1434.3ms-151.115.166.221
-    type: vless
-    server: 151.115.166.221
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-092-1462.5ms-84.252.134.76
-    type: vless
-    server: 84.252.134.76
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: AvSwsAIp3t2sTvNDZwTPkbcanvu9wtvLyZ6FCzIM-Rk
-      short-id: 7ada97abaa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-093-1489.8ms-193.232.178.78
-    type: vless
-    server: 193.232.178.78
-    port: 8443
-    uuid: Telegram-modvpn7
-    udp: true
-    network: ws
-    ws-opts:
-      path: /
-      headers: {Host: 193.232.178.78}
-  - name: VLESS-094-1513.7ms-38.55.146.153
-    type: vless
-    server: 38.55.146.153
-    port: 13000
-    uuid: b852270a-1283-4ea8-8a2f-5bae8e644a3e
-    udp: true
-  - name: VLESS-095-1519.7ms-45.152.67.34
-    type: vless
-    server: 45.152.67.34
-    port: 47488
-    uuid: 2c36bf33-1ec0-45e8-84af-84eeccd56ca5
-    udp: true
-  - name: VLESS-096-1526.7ms-84.201.159.233
-    type: vless
-    server: 84.201.159.233
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: DpJfEeCD3JpT18qNZQbNzi-tye_6ibubpKNIf6lonB8
-      short-id: bd3cda1117aa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-097-1532.1ms-89.208.210.165
-    type: vless
-    server: 89.208.210.165
-    port: 443
-    uuid: f598364f-51af-4f7d-9f2b-df1c707a2643
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: WrPShaEtQUXeKeyWDuELzBsd_ygDsU-k2bL1Avi13xI
-      short-id: ""
-  - name: VLESS-098-1532.9ms-poland.milas.click
-    type: vless
-    server: poland.milas.click
-    port: 443
-    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
-    udp: true
-    network: grpc
-    tls: true
-    servername: poland.milas.click
-    client-fingerprint: random
-    reality-opts:
-      public-key: DoZSKLwNQjogQMlE7oEEuB8TqpNa-umXzG-2Q6dTTEY
-      short-id: 4fa44664f6a566d3
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-099-1543.0ms-51.250.47.219
-    type: vless
-    server: 51.250.47.219
-    port: 443
-    uuid: f598364f-51af-4f7d-9f2b-df1c707a2643
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: WrPShaEtQUXeKeyWDuELzBsd_ygDsU-k2bL1Avi13xI
-      short-id: ""
-  - name: VLESS-100-1544.0ms-158.160.109.80
-    type: vless
-    server: 158.160.109.80
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: AvSwsAIp3t2sTvNDZwTPkbcanvu9wtvLyZ6FCzIM-Rk
-      short-id: 7ada97abaa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-101-1553.7ms-158.160.203.114
-    type: vless
-    server: 158.160.203.114
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: f-17uzLO2JMOHio-REUufeFLm035YH_Ex_1ZXmVSmhw
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-102-1560.0ms-158.160.17.171
-    type: vless
-    server: 158.160.17.171
-    port: 443
-    uuid: c09f7141-3edc-4beb-88d2-a0ff5ef49639
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: api-maps.yandex.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: xwusQ4IEWdYyuPLCc4LOA89P6HyQDNT7xo_75v2YW2I
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-103-1562.1ms-51.250.102.69
-    type: vless
-    server: 51.250.102.69
-    port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-104-1562.8ms-46.254.17.72
-    type: vless
-    server: 46.254.17.72
-    port: 443
-    uuid: e5f9bafb-fb9c-4a6e-8227-0086a76b7116
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: wl-1-1.legendary.ac
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: Ce2abow3fU3pN2_mlX3uJW93sBMgTI9qNo5q7_EgFTA
-      short-id: c4a70eddb745b1ea
-  - name: VLESS-105-1568.4ms-47.253.226.114
-    type: vless
-    server: 47.253.226.114
-    port: 443
-    uuid: 055a1ce8-2a16-4a0d-a2c2-22826c9b2413
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.cloudflare.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: Svl81isn16RPAFnjtmYw7A6TPnsEPLHuYYaJht65Rzc
-      short-id: ""
-  - name: VLESS-106-1577.4ms-51.250.70.186
-    type: vless
-    server: 51.250.70.186
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.vk.com
-    client-fingerprint: random
-    reality-opts:
-      public-key: bwuT_tpimT_uUeWpSn-HbRztfol4o4uCcUHcdvkeFx0
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-107-1578.3ms-51.250.106.87
-    type: vless
-    server: 51.250.106.87
-    port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-108-1582.0ms-178.154.233.157
-    type: vless
-    server: 178.154.233.157
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: api-maps.yandex.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: iCcg60DfXrWy3R5wOAbIhNZNnBqwgsCq9ZLUYh7lsB8
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-109-1584.0ms-51.250.103.104
-    type: vless
-    server: 51.250.103.104
-    port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-110-1587.2ms-51.250.26.148
-    type: vless
-    server: 51.250.26.148
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: DpJfEeCD3JpT18qNZQbNzi-tye_6ibubpKNIf6lonB8
-      short-id: bd3cda1117aa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-111-1593.1ms-51.250.104.246
-    type: vless
-    server: 51.250.104.246
-    port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-112-1593.5ms-146.185.209.234
-    type: vless
-    server: 146.185.209.234
-    port: 443
-    uuid: 50b95deb-6394-46c5-b88a-583e5b3ca7ee
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4
-      short-id: f69d7af2d5fc5e0c
-  - name: VLESS-113-1593.7ms-89.208.210.216
-    type: vless
-    server: 89.208.210.216
-    port: 443
-    uuid: f598364f-51af-4f7d-9f2b-df1c707a2643
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: WrPShaEtQUXeKeyWDuELzBsd_ygDsU-k2bL1Avi13xI
-      short-id: ""
-  - name: VLESS-114-1602.0ms-51.158.206.25
-    type: vless
-    server: 51.158.206.25
+    server: 51.158.206.26
     port: 23576
     uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
     client-fingerprint: chrome
     reality-opts:
       public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
       short-id: 01
-  - name: VLESS-115-1605.3ms-64.49.46.225
+  - name: "15. 51.158.206.34:23576"
     type: vless
-    server: 64.49.46.225
-    port: 57502
-    uuid: a4caef32-090f-4f17-b7fa-2808f205620d
-    udp: true
+    server: 51.158.206.34
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: www.tesla.com
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "16. 77.110.115.192:443"
+    type: vless
+    server: 77.110.115.192
+    port: 443
+    uuid: 5d8fcd24-9634-4dd7-845c-3dc2d6291942
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0
+      short-id: 86b80f1e713a33ad
+  - name: "17. 157.22.241.175:7443"
+    type: vless
+    server: 157.22.241.175
+    port: 7443
+    uuid: f1a44ae4-20f9-4dd7-b60e-b4f2acecfdb4
+    network: grpc
     client-fingerprint: firefox
     reality-opts:
-      public-key: IOAu39FSiRk_VX4sfzCVZorWhUY0ikftPdHqcmNoY1c
-      short-id: ebfeeffb94d5bd5d
-  - name: VLESS-116-1609.6ms-84.201.165.188
+      public-key: F2MKDw5CCtP1oXIej2EgNxB01k3eyNu7tKCFfucgnRA
+      short-id: 
+    grpc-opts:
+      grpc-service-name: xyz
+  - name: "18. 94.183.219.239:443"
     type: vless
-    server: 84.201.165.188
+    server: 94.183.219.239
     port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
     network: grpc
-    tls: true
-    servername: ads.x5.ru
     client-fingerprint: chrome
     reality-opts:
-      public-key: DpJfEeCD3JpT18qNZQbNzi-tye_6ibubpKNIf6lonB8
-      short-id: bd3cda1117aa
+      public-key: uemqA7VkHB7Xw_gc88AfbBijEJgiWaVdCiIyMae8CSI
+      short-id: 
     grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-117-1613.9ms-51.250.4.238
+      grpc-service-name: 
+  - name: "19. 72.56.18.179:443"
     type: vless
-    server: 51.250.4.238
+    server: 72.56.18.179
     port: 443
-    uuid: 637b892a-5445-4e96-9910-b2e121660883
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: random
+    uuid: a2415a12-3f92-4636-9823-9828d3ceb818
+    network: tcp
+    client-fingerprint: firefox
     reality-opts:
-      public-key: Ec54Eop0jZft7rcJsPN4RHc4xG9smXhtenM52pJFUQI
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-118-1621.8ms-81.163.23.159
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "20. 94.183.219.239:443"
     type: vless
-    server: 81.163.23.159
+    server: 94.183.219.239
     port: 443
-    uuid: 1e5b05cc-040a-4f72-9b63-d09400a38b07
-    udp: true
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
+    network: grpc
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: uemqA7VkHB7Xw_gc88AfbBijEJgiWaVdCiIyMae8CSI
+      short-id: 
+    grpc-opts:
+      grpc-service-name: 
+  - name: "21. 51.158.206.98:23576"
+    type: vless
+    server: 51.158.206.98
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: api-maps.yandex.ru
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "22. 94.183.219.239:443"
+    type: vless
+    server: 94.183.219.239
+    port: 443
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
+    network: grpc
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: uemqA7VkHB7Xw_gc88AfbBijEJgiWaVdCiIyMae8CSI
+      short-id: 
+    grpc-opts:
+      grpc-service-name: 
+  - name: "23. 51.158.206.93:23576"
+    type: vless
+    server: 51.158.206.93
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "24. 62.141.42.201:443"
+    type: vless
+    server: 62.141.42.201
+    port: 443
+    uuid: cc976b15-418b-4f0b-89ce-cd685ffbaf20
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: odbiaA-5s0mkehtfrf2SBcrKAMDP1sFjxKHJYdDCKgc
+      short-id: 81
+  - name: "25. 94.183.219.239:443"
+    type: vless
+    server: 94.183.219.239
+    port: 443
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
+    network: grpc
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: uemqA7VkHB7Xw_gc88AfbBijEJgiWaVdCiIyMae8CSI
+      short-id: 
+    grpc-opts:
+      grpc-service-name: 
+  - name: "26. 51.158.206.98:23576"
+    type: vless
+    server: 51.158.206.98
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "27. 95.85.233.234:8443"
+    type: vless
+    server: 95.85.233.234
+    port: 8443
+    uuid: c5765da4-772f-4ff7-b96c-551ca7185529
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eHgRhHYifD2njbtjzgMsNPGnvbpAK8SSXC5-wFuQnQ4
+      short-id: 65b5280b52e0532c
+  - name: "28. 78.17.147.65:443"
+    type: vless
+    server: 78.17.147.65
+    port: 443
+    uuid: b67ed271-5a34-4d07-9970-f8ba27ca2c8a
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE
+      short-id: fcd9787f
+  - name: "29. 144.31.157.56:443"
+    type: vless
+    server: 144.31.157.56
+    port: 443
+    uuid: 3e0c34a4-1c38-4d93-88c6-5155e81f8b52
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: D-7qX4fqUFKDS2dQWFgGT4fXJnABnpM6IkU8SDHLMC0
+      short-id: 6ba85179e30d4fc2
+  - name: "30. 152.114.193.11:47200"
+    type: vless
+    server: 152.114.193.11
+    port: 47200
+    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
+      short-id: b2a9bd658fc81dc6
+  - name: "31. 77.239.114.176:19105"
+    type: vless
+    server: 77.239.114.176
+    port: 19105
+    uuid: fb9e4c3a-936f-44c7-ac89-d5d422690fcf
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: IS6TNMONlIVvcUBvo2RXQvx2Jopcv4wzPyZhxPhWqT8
+      short-id: e6
+  - name: "32. 88.218.120.60:8443"
+    type: vless
+    server: 88.218.120.60
+    port: 8443
+    uuid: 9c63bf8b-1c25-4b7e-9393-71aa99cad29d
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1A4AgKQiz38mT1r1H0su7aAXBB7KnKOFzsQ3AdACVDs
+      short-id: 612d8fa72c
+  - name: "33. 138.124.52.85:443"
+    type: vless
+    server: 138.124.52.85
+    port: 443
+    uuid: 09a4bf7f-f997-4174-8bef-9fab75aa186e
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: K7v4Rsxa-9lBsD_IQrzXREfIME_bFmwELHQAE3Yp1ng
+      short-id: b9988c11
+  - name: "34. 89.125.19.237:47200"
+    type: vless
+    server: 89.125.19.237
+    port: 47200
+    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
+      short-id: b2a9bd658fc81dc6
+  - name: "35. 78.17.134.254:47200"
+    type: vless
+    server: 78.17.134.254
+    port: 47200
+    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
+      short-id: b2a9bd658fc81dc6
+  - name: "36. 5.183.253.171:443"
+    type: vless
+    server: 5.183.253.171
+    port: 443
+    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
+      short-id: 8248954896
+  - name: "37. 38.107.233.130:443"
+    type: vless
+    server: 38.107.233.130
+    port: 443
+    uuid: 5d8fcd24-9634-4dd7-845c-3dc2d6291942
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0
+      short-id: 86b80f1e713a33ad
+  - name: "38. 94.183.219.239:443"
+    type: vless
+    server: 94.183.219.239
+    port: 443
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
+    network: grpc
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: uemqA7VkHB7Xw_gc88AfbBijEJgiWaVdCiIyMae8CSI
+      short-id: 
+    grpc-opts:
+      grpc-service-name: 
+  - name: "39. 45.158.127.5:443"
+    type: vless
+    server: 45.158.127.5
+    port: 443
+    uuid: 301d514e-4aa0-47b0-ba44-a0cb891cd52f
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: OZVjfQBboTDTBw0baMFqzVPsVUI4FNQmspTEb0b0zW4
+      short-id: a1b2c3d4
+  - name: "40. 103.119.19.201:2087"
+    type: vless
+    server: 103.119.19.201
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
     client-fingerprint: qq
     reality-opts:
-      public-key: oqRus6Z_Q1jqJaTEPu7ENbRL0-XKOw54K0jwCCGLtEk
-      short-id: a9c4f17e3b62d8
-  - name: VLESS-119-1631.7ms-185.130.115.132
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "41. 103.119.19.201:2087"
     type: vless
-    server: 185.130.115.132
-    port: 443
-    uuid: f598364f-51af-4f7d-9f2b-df1c707a2643
-    udp: true
+    server: 103.119.19.201
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
+    client-fingerprint: qq
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "42. 89.167.25.28:11005"
+    type: vless
+    server: 89.167.25.28
+    port: 11005
+    uuid: e4e7866d-920b-4a53-a8e2-6ae9b2a42fc2
+    network: tcp
+    flow: xtls-rprx-vision
     client-fingerprint: chrome
     reality-opts:
-      public-key: CF49-iS9dsHBwvqYFoDs_T3Me8TT0FpNW2kibGBkVXY
-      short-id: ""
-  - name: VLESS-120-1640.8ms-51.250.24.222
+      public-key: tPxRwVtrFklP9kJ8kWgHIcR-XSBBkZiYbwGCAaBrtgE
+      short-id: f98c
+  - name: "43. 72.56.18.179:443"
     type: vless
-    server: 51.250.24.222
+    server: 72.56.18.179
     port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
+    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
+    network: tcp
+    client-fingerprint: chrome
     reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-121-1648.0ms-38.207.190.137
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "44. 38.207.190.137:50513"
     type: vless
     server: 38.207.190.137
     port: 50513
     uuid: 6245c3d6-348f-44a4-f18b-9d13168a3425
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: ts3.tc.mm.bing.net
     client-fingerprint: firefox
     reality-opts:
       public-key: BL4bEP5My8N4j8hOkg-lI-JVrFou4eC7nSzD6Gk19DU
       short-id: 79394c306dd3
-  - name: VLESS-122-1663.7ms-51.250.108.162
+  - name: "45. 89.187.191.231:8443"
+    type: vless
+    server: 89.187.191.231
+    port: 8443
+    uuid: 1014818b-5c5c-46b1-98fe-eaf8d5eba642
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 23cb4W9THzBKsrECsLh-A_FcKZfkAtUONoDze8-GnQE
+      short-id: e90360ec7cc61b20
+  - name: "46. 144.31.30.69:443"
+    type: vless
+    server: 144.31.30.69
+    port: 443
+    uuid: f90cc83a-97ce-446d-8f80-30d3eef3351c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
+      short-id: 6ba85179e30d4fc2
+  - name: "47. 103.119.19.201:2087"
+    type: vless
+    server: 103.119.19.201
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "48. 151.241.228.254:34754"
+    type: vless
+    server: 151.241.228.254
+    port: 34754
+    uuid: 35762c02-ff2b-4526-b41b-e96e5d99528b
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: eMijZKuJlNEciXbhyzdbewk-ot_JLMZVaA42bxKFcBM
+      short-id: c9eb0359fac0c345
+  - name: "49. 62.238.32.25:443"
+    type: vless
+    server: 62.238.32.25
+    port: 443
+    uuid: 1b9e301d-cecd-4eb1-8b36-eef811c2696d
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 3LUIM_6cYceTgNt6LWnR8YSVrenpLsh-FIGDrmfjjwc
+      short-id: 5e841fab
+  - name: "50. 5.183.253.171:443"
+    type: vless
+    server: 5.183.253.171
+    port: 443
+    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
+      short-id: 8248954896
+  - name: "51. 38.107.233.130:443"
+    type: vless
+    server: 38.107.233.130
+    port: 443
+    uuid: 5d8fcd24-9634-4dd7-845c-3dc2d6291942
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0
+      short-id: 86b80f1e713a33ad
+  - name: "52. 5.183.253.171:443"
+    type: vless
+    server: 5.183.253.171
+    port: 443
+    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
+      short-id: 8248954896
+  - name: "53. 217.149.25.106:443"
+    type: vless
+    server: 217.149.25.106
+    port: 443
+    uuid: 029a4bc6-4557-4b6b-a5fc-6232e943e43b
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
+      short-id: 
+  - name: "54. 93.115.25.153:443"
+    type: vless
+    server: 93.115.25.153
+    port: 443
+    uuid: 31969cf4-c1bb-4a3e-b42b-574dfb271c73
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: xwUK0ffpbKZ5_o_vXhZ8ErRDqvw2iVnRVSlZ-Vonkxo
+      short-id: 132c271e21324e36
+  - name: "55. 15.204.97.195:23576"
+    type: vless
+    server: 15.204.97.195
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "56. 148.253.211.47:443"
+    type: vless
+    server: 148.253.211.47
+    port: 443
+    uuid: 980231fb-4372-5c81-b696-20aa34d33af0
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 978-Yxgtd3AWTVfiXEQqCstdwrT1qgsgleGPIRGQDl8
+      short-id: bdac121c7debdaba
+  - name: "57. 15.204.97.197:23576"
+    type: vless
+    server: 15.204.97.197
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "58. 15.204.97.195:23576"
+    type: vless
+    server: 15.204.97.195
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "59. 15.204.97.206:23576"
+    type: vless
+    server: 15.204.97.206
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "60. 103.119.19.201:2087"
+    type: vless
+    server: 103.119.19.201
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "61. 15.204.97.214:23576"
+    type: vless
+    server: 15.204.97.214
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "62. 15.204.97.216:23576"
+    type: vless
+    server: 15.204.97.216
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "63. 15.204.97.198:23576"
+    type: vless
+    server: 15.204.97.198
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "64. 15.204.97.219:23576"
+    type: vless
+    server: 15.204.97.219
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "65. 103.119.19.201:2087"
+    type: vless
+    server: 103.119.19.201
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "66. 144.31.30.69:443"
+    type: vless
+    server: 144.31.30.69
+    port: 443
+    uuid: f90cc83a-97ce-446d-8f80-30d3eef3351c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
+      short-id: 6ba85179e30d4fc2
+  - name: "67. 15.204.97.219:23576"
+    type: vless
+    server: 15.204.97.219
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "68. 15.204.97.206:23576"
+    type: vless
+    server: 15.204.97.206
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "69. 44.242.50.106:36895"
+    type: vless
+    server: 44.242.50.106
+    port: 36895
+    uuid: 5c875449-ae7d-46f8-b919-5a29f271dfce
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: SKJQzoN8Lh8kqrDEyKzevbHHmfRhKe8XmzBxPYXF2A4
+      short-id: 5a585c3e894bf074
+  - name: "70. 195.96.132.125:443"
+    type: vless
+    server: 195.96.132.125
+    port: 443
+    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: WM-LMz6slGkGPD3zEM8Ntat27n6p6EfbxRsjYmTykV4
+      short-id: 8237eb
+  - name: "71. 15.204.97.197:23576"
+    type: vless
+    server: 15.204.97.197
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "72. 5.183.253.171:443"
+    type: vless
+    server: 5.183.253.171
+    port: 443
+    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
+      short-id: 8248954896
+  - name: "73. 15.204.97.214:23576"
+    type: vless
+    server: 15.204.97.214
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "74. 92.53.104.60:443"
+    type: vless
+    server: 92.53.104.60
+    port: 443
+    uuid: 5481bfe3-bf42-425c-b561-cb9d64bff7ff
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: k9LT9ptqXEI8Jnyc6-uUXVXht_6DGIPSyUnyQ_wzYSs
+      short-id: faab089683c474b7
+  - name: "75. 122.8.44.3:993"
+    type: vless
+    server: 122.8.44.3
+    port: 993
+    uuid: 2703cda8-5cf4-019d-c4bd-6cf0c2261946
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: UvQ2HZFkQXrBiaprbcmks-aFo1dvnfPlHXcUKcl-i04
+      short-id: 
+  - name: "76. 5.178.85.202:443"
+    type: vless
+    server: 5.178.85.202
+    port: 443
+    uuid: c2d6f3ff-36be-4883-8350-4f1ef9c78df5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ
+      short-id: a9c4f17e3b62d8
+  - name: "77. 217.26.24.101:23151"
+    type: vless
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "78. 81.163.23.125:443"
+    type: vless
+    server: 81.163.23.125
+    port: 443
+    uuid: c2d6f3ff-36be-4883-8350-4f1ef9c78df5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ
+      short-id: 7e2a9d4c5f18b0
+  - name: "79. 137.175.93.121:19352"
+    type: vless
+    server: 137.175.93.121
+    port: 19352
+    uuid: 07050e47-3484-4062-bd62-845968e062ad
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: UtL7E0Gmxj3X5JdcPAutpTRKo7K2hugkR0vwk2XroUM
+      short-id: 
+  - name: "80. 144.31.230.72:47200"
+    type: vless
+    server: 144.31.230.72
+    port: 47200
+    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
+      short-id: b2a9bd658fc81dc6
+  - name: "81. 85.208.85.227:8443"
+    type: vless
+    server: 85.208.85.227
+    port: 8443
+    uuid: f4e98990-648f-448a-9264-64040b413811
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eOSTlPCwxYoFWH74DVgLUX_dJb9wmHL33MMU5lxMwCE
+      short-id: d20b72a7
+  - name: "82. 51.89.229.134:443"
+    type: vless
+    server: 51.89.229.134
+    port: 443
+    uuid: 53821f3c-5b03-456a-89f3-f8379f130752
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 4e4FI0siWxFtLCRCVDQurn1wLTuvKWhRY0zj1SaUcyw
+      short-id: a13a7cc5
+  - name: "83. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: b89b33e8-a82a-4ac0-9dfc-4937102b0b7f
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "84. 103.119.19.201:2087"
+    type: vless
+    server: 103.119.19.201
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "85. 51.250.108.162:443"
     type: vless
     server: 51.250.108.162
     port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
+    uuid: 834b7652-d85d-4bb9-bd3d-7f6d92fc50d0
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
     client-fingerprint: safari
     reality-opts:
       public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
       short-id: 8ec792bfd725be8a
-  - name: VLESS-123-1670.9ms-158.160.142.40
+  - name: "86. 158.160.142.40:443"
     type: vless
     server: 158.160.142.40
     port: 443
-    uuid: 6fb69b67-abe3-4f5b-a823-25aa20cf9779
-    udp: true
+    uuid: 60fc7023-8cea-4966-912c-637634d19899
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: 5post-gate.x5.ru
     client-fingerprint: qq
     reality-opts:
       public-key: XguLRlc-hWqFhf8-KTxtCE434F6e4Hiqoc5cTBpLxnE
       short-id: 111111
-  - name: VLESS-124-1688.2ms-51.250.9.161
+  - name: "87. 146.185.209.234:443"
     type: vless
-    server: 51.250.9.161
+    server: 146.185.209.234
     port: 443
-    uuid: 21fa1a6c-eaba-47ef-8f39-a94ec99e956f
-    udp: true
+    uuid: 50b95deb-6394-46c5-b88a-583e5b3ca7ee
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: 5post-gate.x5.ru
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4
+      short-id: f69d7af2d5fc5e0c
+  - name: "88. 51.250.102.69:443"
+    type: vless
+    server: 51.250.102.69
+    port: 443
+    uuid: 834b7652-d85d-4bb9-bd3d-7f6d92fc50d0
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: safari
+    reality-opts:
+      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
+      short-id: 8ec792bfd725be8a
+  - name: "89. 158.160.245.33:443"
+    type: vless
+    server: 158.160.245.33
+    port: 443
+    uuid: 60fc7023-8cea-4966-912c-637634d19899
+    network: tcp
+    flow: xtls-rprx-vision
     client-fingerprint: qq
     reality-opts:
-      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
-      short-id: ""
-  - name: VLESS-125-1688.4ms-2.26.116.183
+      public-key: OCRYYq4e92sQ-wWFRX6WX9pdvuFBWOqybLhpSiv3nFA
+      short-id: 111111
+  - name: "90. 217.26.24.101:23151"
     type: vless
-    server: 2.26.116.183
-    port: 47200
-    uuid: ffaa8e95-74e2-4ef4-8974-69dd3651b6f9
-    udp: true
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: stats.vk-portal.net
     client-fingerprint: chrome
     reality-opts:
-      public-key: aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE
-      short-id: b2a9bd658fc81dc6
-  - name: VLESS-126-1689.1ms-158.160.53.173
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "91. 217.26.24.101:23151"
     type: vless
-    server: 158.160.53.173
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
     client-fingerprint: chrome
     reality-opts:
-      public-key: DpJfEeCD3JpT18qNZQbNzi-tye_6ibubpKNIf6lonB8
-      short-id: bd3cda1117aa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-127-1691.4ms-158.160.231.81
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "92. 158.160.198.96:443"
     type: vless
-    server: 158.160.231.81
+    server: 158.160.198.96
     port: 443
-    uuid: 6fb69b67-abe3-4f5b-a823-25aa20cf9779
-    udp: true
+    uuid: 60fc7023-8cea-4966-912c-637634d19899
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: 5post-gate.x5.ru
     client-fingerprint: qq
     reality-opts:
       public-key: XguLRlc-hWqFhf8-KTxtCE434F6e4Hiqoc5cTBpLxnE
       short-id: 111111
-  - name: VLESS-128-1701.4ms-84.201.150.127
+  - name: "93. 217.26.24.101:23151"
+    type: vless
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "94. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: 8d960f2a-c5ac-4533-bcef-2e9a8e934b47
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "95. 51.250.47.193:443"
+    type: vless
+    server: 51.250.47.193
+    port: 443
+    uuid: 663024de-9acd-42ef-a6df-edbef9bb70ae
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: random
+    reality-opts:
+      public-key: v6rib0-2FxBd1MnBxdylbIRIhvXywSj56QEtCkaEuBo
+      short-id: 27e53bbcab7593d7
+  - name: "96. 15.204.97.216:23576"
+    type: vless
+    server: 15.204.97.216
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "97. 51.250.24.222:443"
+    type: vless
+    server: 51.250.24.222
+    port: 443
+    uuid: 834b7652-d85d-4bb9-bd3d-7f6d92fc50d0
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: safari
+    reality-opts:
+      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
+      short-id: 8ec792bfd725be8a
+  - name: "98. 15.204.97.198:23576"
+    type: vless
+    server: 15.204.97.198
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "99. 217.26.24.101:23151"
+    type: vless
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "100. 217.26.24.101:23151"
+    type: vless
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "101. 84.201.150.127:443"
     type: vless
     server: 84.201.150.127
     port: 443
-    uuid: 6fb69b67-abe3-4f5b-a823-25aa20cf9779
-    udp: true
+    uuid: 60fc7023-8cea-4966-912c-637634d19899
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: 5post-gate.x5.ru
     client-fingerprint: qq
     reality-opts:
       public-key: XguLRlc-hWqFhf8-KTxtCE434F6e4Hiqoc5cTBpLxnE
       short-id: 111111
-  - name: VLESS-129-1713.2ms-158.160.197.131
+  - name: "102. 51.250.103.104:443"
+    type: vless
+    server: 51.250.103.104
+    port: 443
+    uuid: 834b7652-d85d-4bb9-bd3d-7f6d92fc50d0
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: safari
+    reality-opts:
+      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
+      short-id: 8ec792bfd725be8a
+  - name: "103. 217.26.24.101:23151"
+    type: vless
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "104. 45.83.182.102:2087"
+    type: vless
+    server: 45.83.182.102
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "105. 217.26.24.101:23151"
+    type: vless
+    server: 217.26.24.101
+    port: 23151
+    uuid: 9287f532-4150-48ff-a755-64b21e30e9c3
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
+      short-id: 
+  - name: "106. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: d417d638-de4c-4ccd-8489-abf67d6ccb06
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "107. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: 8d960f2a-c5ac-4533-bcef-2e9a8e934b47
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "108. 51.250.104.246:443"
+    type: vless
+    server: 51.250.104.246
+    port: 443
+    uuid: 834b7652-d85d-4bb9-bd3d-7f6d92fc50d0
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: safari
+    reality-opts:
+      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
+      short-id: 8ec792bfd725be8a
+  - name: "109. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: 8d960f2a-c5ac-4533-bcef-2e9a8e934b47
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "110. 51.250.4.238:443"
+    type: vless
+    server: 51.250.4.238
+    port: 443
+    uuid: 663024de-9acd-42ef-a6df-edbef9bb70ae
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: random
+    reality-opts:
+      public-key: bwuT_tpimT_uUeWpSn-HbRztfol4o4uCcUHcdvkeFx0
+      short-id: 27e53bbcab7593d7
+  - name: "111. 23.26.37.120:8443"
+    type: vless
+    server: 23.26.37.120
+    port: 8443
+    uuid: dcba77d7-bb59-4802-b32c-37fd7011fca4
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo
+      short-id: 3ca620a7ed5f3196
+  - name: "112. 37.9.4.224:443"
+    type: vless
+    server: 37.9.4.224
+    port: 443
+    uuid: 73369fb8-172e-49dd-adcc-27ed61c195ef
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: uL4x8EbCl080G43kFlv8nbpEyseWi1Dc_bl8F7lWtm8
+      short-id: aa03ec59c9695e91
+  - name: "113. 72.56.18.179:443"
+    type: vless
+    server: 72.56.18.179
+    port: 443
+    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
+    network: tcp
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "114. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: eedc0267-8cb8-41a3-ae14-4860d51d4032
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "115. 51.250.4.238:443"
+    type: vless
+    server: 51.250.4.238
+    port: 443
+    uuid: 663024de-9acd-42ef-a6df-edbef9bb70ae
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: random
+    reality-opts:
+      public-key: BjG7XoEMR2uxHbBk_rtkR7P_S_luG2VcvQlvZ4YHzH8
+      short-id: 27e53bbcab7593d7
+  - name: "116. 51.250.18.25:443"
+    type: vless
+    server: 51.250.18.25
+    port: 443
+    uuid: c2d6f3ff-36be-4883-8350-4f1ef9c78df5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: oqRus6Z_Q1jqJaTEPu7ENbRL0-XKOw54K0jwCCGLtEk
+      short-id: 7e2a9d4c5f18b0
+  - name: "117. 158.160.197.131:443"
     type: vless
     server: 158.160.197.131
     port: 443
-    uuid: 6fb69b67-abe3-4f5b-a823-25aa20cf9779
-    udp: true
+    uuid: 60fc7023-8cea-4966-912c-637634d19899
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: 5post-gate.x5.ru
     client-fingerprint: qq
     reality-opts:
       public-key: XguLRlc-hWqFhf8-KTxtCE434F6e4Hiqoc5cTBpLxnE
       short-id: 111111
-  - name: VLESS-130-1718.1ms-47.251.25.74
+  - name: "118. 51.250.18.25:443"
     type: vless
-    server: 47.251.25.74
+    server: 51.250.18.25
     port: 443
-    uuid: 18805ff3-b420-45de-af18-93be14024ae8
-    udp: true
+    uuid: c2d6f3ff-36be-4883-8350-4f1ef9c78df5
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: www.amazon.com
+    client-fingerprint: qq
+    reality-opts:
+      public-key: oqRus6Z_Q1jqJaTEPu7ENbRL0-XKOw54K0jwCCGLtEk
+      short-id: 5d8e1a9c4f72b3
+  - name: "119. 146.185.209.234:443"
+    type: vless
+    server: 146.185.209.234
+    port: 443
+    uuid: 50b95deb-6394-46c5-b88a-583e5b3ca7ee
+    network: tcp
+    flow: xtls-rprx-vision
     client-fingerprint: chrome
     reality-opts:
-      public-key: H56cOJhw0xw76lDEpt7IuJJmVGemK6_CK34KtHwDMX8
-      short-id: ""
-  - name: VLESS-131-1727.4ms-2.26.88.118
+      public-key: PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4
+      short-id: f69d7af2d5fc5e0c
+  - name: "120. 5.42.126.157:443"
+    type: vless
+    server: 5.42.126.157
+    port: 443
+    uuid: 029a4bc6-4557-4b6b-a5fc-6232e943e43b
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
+      short-id: 
+  - name: "121. 83.229.14.125:13569"
+    type: vless
+    server: 83.229.14.125
+    port: 13569
+    uuid: 7283d2d5-7b14-431b-9d1f-96f2dac4a97b
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: Xl6notHrxamdPvx0cZGGPRQOT-PR1rkjryRazI9i1VI
+      short-id: 
+  - name: "122. 144.31.30.69:443"
+    type: vless
+    server: 144.31.30.69
+    port: 443
+    uuid: f90cc83a-97ce-446d-8f80-30d3eef3351c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
+      short-id: 6ba85179e30d4fc2
+  - name: "123. 31.59.36.107:443"
+    type: vless
+    server: 31.59.36.107
+    port: 443
+    uuid: 4f51ca84-43ea-4087-b8a2-938e0ccbe27a
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4
+      short-id: 
+  - name: "124. 45.83.182.102:2087"
+    type: vless
+    server: 45.83.182.102
+    port: 2087
+    uuid: 347a56c2-a453-4b32-86cd-7522943df88c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
+      short-id: 493c3d4e37c23c28
+  - name: "125. 46.8.209.104:443"
+    type: vless
+    server: 46.8.209.104
+    port: 443
+    uuid: c2d6f3ff-36be-4883-8350-4f1ef9c78df5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: z67jBKrK0gsKfg-sz_8_CFMtKq9fAtWJPEJpHvo-OFU
+      short-id: 5d8e1a9c4f72b3
+  - name: "126. 72.56.18.179:443"
+    type: vless
+    server: 72.56.18.179
+    port: 443
+    uuid: a2415a12-3f92-4636-9823-9828d3ceb818
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "127. 158.160.17.171:443"
+    type: vless
+    server: 158.160.17.171
+    port: 443
+    uuid: 663024de-9acd-42ef-a6df-edbef9bb70ae
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: random
+    reality-opts:
+      public-key: xwusQ4IEWdYyuPLCc4LOA89P6HyQDNT7xo_75v2YW2I
+      short-id: 27e53bbcab7593d7
+  - name: "128. 72.56.18.179:443"
+    type: vless
+    server: 72.56.18.179
+    port: 443
+    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
+    network: tcp
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "129. 51.250.43.93:443"
+    type: vless
+    server: 51.250.43.93
+    port: 443
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs
+      short-id: 
+  - name: "130. 193.168.46.180:443"
+    type: vless
+    server: 193.168.46.180
+    port: 443
+    uuid: aef1a22d-78eb-4dec-96d6-2f6c0b42de89
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY
+      short-id: c1a7e9b4711d5f60
+  - name: "131. 47.253.226.114:443"
+    type: vless
+    server: 47.253.226.114
+    port: 443
+    uuid: 055a1ce8-2a16-4a0d-a2c2-22826c9b2413
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: Svl81isn16RPAFnjtmYw7A6TPnsEPLHuYYaJht65Rzc
+      short-id: 
+  - name: "132. 82.202.157.207:443"
+    type: vless
+    server: 82.202.157.207
+    port: 443
+    uuid: f4e98990-648f-448a-9264-64040b413811
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: pSM8cZd3BzdI5gp0UJaufCEFUjamTpYtHcbFudbk11s
+      short-id: b224c00dc01d6c96
+  - name: "133. 81.200.151.140:443"
+    type: vless
+    server: 81.200.151.140
+    port: 443
+    uuid: 444b1cdd-78aa-45e6-b78e-3f49832919f4
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: ZEPy7eQb_Ti0_fv1rYkz2TelU3Yz88vAQXExRr0KiR8
+      short-id: e49e86ac956f5de9
+  - name: "134. 72.56.18.179:443"
+    type: vless
+    server: 72.56.18.179
+    port: 443
+    uuid: 69a2af58-d74a-44ca-864a-e09b493f4274
+    network: tcp
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "135. 148.253.213.81:443"
+    type: vless
+    server: 148.253.213.81
+    port: 443
+    uuid: d8ad7276-7ac8-4eb2-9429-0fdb9bb45d12
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: iC8Bb2OV8PgEI0_4RPZecUE3vm6vsLnZ42zvbPeVIgw
+      short-id: cb4d31a32bc04d7e
+  - name: "136. 31.59.36.108:443"
+    type: vless
+    server: 31.59.36.108
+    port: 443
+    uuid: 4f51ca84-43ea-4087-b8a2-938e0ccbe27a
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4
+      short-id: 
+  - name: "137. 47.79.149.248:38388"
+    type: vless
+    server: 47.79.149.248
+    port: 38388
+    uuid: 45c8d20e-0222-4b16-8d21-37318456b980
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: xHaPe5SLprSSqGccSor5d3tCRuwyowBwFeYrVXoSz3w
+      short-id: 6ba85179e30d4fc2
+  - name: "138. 144.31.30.69:443"
+    type: vless
+    server: 144.31.30.69
+    port: 443
+    uuid: f90cc83a-97ce-446d-8f80-30d3eef3351c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc
+      short-id: 6ba85179e30d4fc2
+  - name: "139. 95.183.11.123:443"
+    type: vless
+    server: 95.183.11.123
+    port: 443
+    uuid: 73369fb8-172e-49dd-adcc-27ed61c195ef
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: edge
+    reality-opts:
+      public-key: knrqm393ghxJNYj-4qu2BYpwpG5_zOG5h5-H7yyyR38
+      short-id: 0be28edc1b0278d6
+  - name: "140. 72.56.18.179:443"
+    type: vless
+    server: 72.56.18.179
+    port: 443
+    uuid: a2415a12-3f92-4636-9823-9828d3ceb818
+    network: tcp
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
+      short-id: 2af15d98
+  - name: "141. 47.253.226.114:443"
+    type: vless
+    server: 47.253.226.114
+    port: 443
+    uuid: 055a1ce8-2a16-4a0d-a2c2-22826c9b2413
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: Svl81isn16RPAFnjtmYw7A6TPnsEPLHuYYaJht65Rzc
+      short-id: 
+  - name: "142. 85.208.85.227:443"
+    type: vless
+    server: 85.208.85.227
+    port: 443
+    uuid: f4e98990-648f-448a-9264-64040b413811
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: firefox
+    reality-opts:
+      public-key: FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI
+      short-id: 1f7b8197dcce92
+  - name: "143. 2.26.88.118:8443"
     type: vless
     server: 2.26.88.118
     port: 8443
     uuid: 785c7771-8d7f-48ca-bbc2-1a22e360d4d0
-    udp: true
     network: grpc
-    tls: true
-    servername: 2.26.88.118
     client-fingerprint: chrome
     reality-opts:
       public-key: TdT90qbeyM7WO0QCztOhKDGKOi2qaFFif0hO0cfK1E4
       short-id: ea1058117be12087
     grpc-opts:
       grpc-service-name: max.ru
-  - name: VLESS-132-1730.0ms-51.250.18.25
+  - name: "144. 89.208.208.92:9443"
     type: vless
-    server: 51.250.18.25
-    port: 443
-    uuid: 855175af-864c-4146-a6ed-0bd05c93d125
-    udp: true
+    server: 89.208.208.92
+    port: 9443
+    uuid: cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: oqRus6Z_Q1jqJaTEPu7ENbRL0-XKOw54K0jwCCGLtEk
-      short-id: a9c4f17e3b62d8
-  - name: VLESS-133-1731.3ms-15.204.97.197
-    type: vless
-    server: 15.204.97.197
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
     client-fingerprint: chrome
     reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-134-1733.7ms-79.174.90.31
+      public-key: aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q
+      short-id: 689def22fcb54e86
+  - name: "145. 23.26.37.119:8443"
     type: vless
-    server: 79.174.90.31
-    port: 443
-    uuid: 6dc6eb4e-3db2-41f9-bf8b-39bb1ba6bea1
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: 1vSZjvhZO01oAEH3b7eebR1qF5dLU1Dq2E7xu8pwGSs
-      short-id: 428ef87fd47a3a32
-  - name: VLESS-135-1742.8ms-158.160.191.222
-    type: vless
-    server: 158.160.191.222
-    port: 443
-    uuid: 6fb69b67-abe3-4f5b-a823-25aa20cf9779
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: 5post-gate.x5.ru
-    client-fingerprint: qq
-    reality-opts:
-      public-key: XguLRlc-hWqFhf8-KTxtCE434F6e4Hiqoc5cTBpLxnE
-      short-id: 111111
-  - name: VLESS-136-1746.9ms-137.175.93.121
-    type: vless
-    server: 137.175.93.121
-    port: 19352
-    uuid: 07050e47-3484-4062-bd62-845968e062ad
-    udp: true
-    tls: true
-    servername: www.icloud.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: UtL7E0Gmxj3X5JdcPAutpTRKo7K2hugkR0vwk2XroUM
-      short-id: ""
-  - name: VLESS-137-1763.5ms-15.204.97.195
-    type: vless
-    server: 15.204.97.195
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-138-1764.6ms-103.119.19.179
-    type: vless
-    server: 103.119.19.179
+    server: 23.26.37.119
     port: 8443
-    uuid: a2415a12-3f92-4636-9823-9828d3ceb818
-    udp: true
-    tls: true
-    servername: www.google.com
+    uuid: dcba77d7-bb59-4802-b32c-37fd7011fca4
+    network: tcp
     client-fingerprint: chrome
     reality-opts:
-      public-key: vo6Xrwkla8OBS5O6lEinNvHXxW8DxCmb8HGHD86VzkU
-      short-id: 0e
-  - name: VLESS-139-1765.9ms-51.250.43.93
+      public-key: upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo
+      short-id: 3ca620a7ed5f3196
+  - name: "146. 84.201.170.9:443"
+    type: vless
+    server: 84.201.170.9
+    port: 443
+    uuid: 60fc7023-8cea-4966-912c-637634d19899
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: OCRYYq4e92sQ-wWFRX6WX9pdvuFBWOqybLhpSiv3nFA
+      short-id: 111111
+  - name: "147. 23.26.37.119:8443"
+    type: vless
+    server: 23.26.37.119
+    port: 8443
+    uuid: dcba77d7-bb59-4802-b32c-37fd7011fca4
+    network: tcp
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo
+      short-id: 3ca620a7ed5f3196
+  - name: "148. 51.158.206.25:23576"
+    type: vless
+    server: 51.158.206.25
+    port: 23576
+    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+      short-id: 01
+  - name: "149. 2.26.88.118:8443"
+    type: vless
+    server: 2.26.88.118
+    port: 8443
+    uuid: 785c7771-8d7f-48ca-bbc2-1a22e360d4d0
+    network: grpc
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: TdT90qbeyM7WO0QCztOhKDGKOi2qaFFif0hO0cfK1E4
+      short-id: ea1058117be12087
+    grpc-opts:
+      grpc-service-name: max.ru
+  - name: "150. 89.208.208.92:9443"
+    type: vless
+    server: 89.208.208.92
+    port: 9443
+    uuid: cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q
+      short-id: 689def22fcb54e86
+  - name: "151. 5.183.253.171:443"
+    type: vless
+    server: 5.183.253.171
+    port: 443
+    uuid: 31fb98b7-e7a1-4b56-8c6a-3f060f06393c
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28
+      short-id: 8248954896
+  - name: "152. 79.141.171.133:443"
+    type: vless
+    server: 79.141.171.133
+    port: 443
+    uuid: 4c3fe585-ac09-41df-b284-888818888188
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 0rtpNciTfV9TsoEc7Y8lS5LzBUzLppMnRY8bQC_bH3M
+      short-id: aabbccdd
+  - name: "153. 51.250.43.93:443"
     type: vless
     server: 51.250.43.93
     port: 443
     uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
     client-fingerprint: chrome
     reality-opts:
       public-key: MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs
-      short-id: ""
-  - name: VLESS-140-1773.1ms-15.204.97.206
+      short-id: 
+  - name: "154. 144.31.237.74:603"
     type: vless
-    server: 15.204.97.206
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
+    server: 144.31.237.74
+    port: 603
+    uuid: 8ed27b15-30a6-42a2-af38-e4dc675ee17e
+    network: grpc
+    client-fingerprint: edge
     reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-141-1773.5ms-15.204.97.198
+      public-key: lWJaKBaMPs0NYHGCbfsrmn64R4juEQEvfmHNnL741Ek
+      short-id: 
+    grpc-opts:
+      grpc-service-name: 
+  - name: "155. 89.208.208.92:9443"
     type: vless
-    server: 15.204.97.198
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
+    server: 89.208.208.92
+    port: 9443
+    uuid: cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-142-1782.3ms-15.204.97.214
-    type: vless
-    server: 15.204.97.214
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-143-1796.2ms-15.204.97.219
-    type: vless
-    server: 15.204.97.219
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-144-1799.3ms-185.229.9.8
-    type: vless
-    server: 185.229.9.8
-    port: 443
-    uuid: c12619fc-ef77-4764-bc9f-5541268094cf
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: random
-    reality-opts:
-      public-key: r6LKP3g2W5ruKICTDfH8rwM1PbMjdcgHU7cG6jppxTs
-      short-id: 27e53bbcab7593d7
-  - name: VLESS-145-1805.3ms-15.204.97.216
-    type: vless
-    server: 15.204.97.216
-    port: 23576
-    uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: fuck.rkn
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-      short-id: 01
-  - name: VLESS-146-1815.7ms-37.9.4.224
-    type: vless
-    server: 37.9.4.224
-    port: 443
-    uuid: e5f9bafb-fb9c-4a6e-8227-0086a76b7116
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: wl-2-1.legendary.ac
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: uL4x8EbCl080G43kFlv8nbpEyseWi1Dc_bl8F7lWtm8
-      short-id: aa03ec59c9695e91
-  - name: VLESS-147-1842.3ms-143.198.223.118
-    type: vless
-    server: 143.198.223.118
-    port: 53327
-    uuid: acf3950e-c867-4f30-b4bf-0efcb5195af0
-    udp: true
-    network: ws
-    ws-opts:
-      path: /FREE by Tharuwa (0767597317)
-      headers: {Host: m.zoom.us}
-  - name: VLESS-148-1869.7ms-51.250.18.219
-    type: vless
-    server: 51.250.18.219
-    port: 443
-    uuid: 855175af-864c-4146-a6ed-0bd05c93d125
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
     client-fingerprint: qq
     reality-opts:
-      public-key: oqRus6Z_Q1jqJaTEPu7ENbRL0-XKOw54K0jwCCGLtEk
-      short-id: c31f9a0e7d4b52
-  - name: VLESS-149-1878.8ms-3.106.214.88
+      public-key: aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q
+      short-id: 689def22fcb54e86
+  - name: "156. 213.226.112.208:443"
     type: vless
-    server: 3.106.214.88
-    port: 31318
-    uuid: 3c7961e6-6ce7-4e55-8b8a-01a5d663efd4
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.tesla.com
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: uAhNpK_fDxgKKNtYtUs2uB79V28pjFv1-Mh7D4PTaW8
-      short-id: 1b665f78655294
-  - name: VLESS-150-1893.7ms-204.216.216.23
-    type: vless
-    server: 204.216.216.23
-    port: 10086
-    uuid: 9f0285ee-20ca-4953-bcdb-86a920652923
-    udp: true
-  - name: VLESS-151-1910.2ms-finporkzov.com
-    type: vless
-    server: finporkzov.com
+    server: 213.226.112.208
     port: 443
-    uuid: 8361e3fc-479d-466f-9583-4971c2cf2d03
-    udp: true
+    uuid: 73369fb8-172e-49dd-adcc-27ed61c195ef
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: finporkzov.com
     client-fingerprint: chrome
     reality-opts:
-      public-key: _0N3gACBkKvGKTh0q5-dmt-XqSHB3xfEHSANRXu-U0I
-      short-id: f00f58383241c807
-  - name: VLESS-152-1918.6ms-51.250.24.232
-    type: vless
-    server: 51.250.24.232
-    port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-153-1932.5ms-46.254.16.247
-    type: vless
-    server: 46.254.16.247
-    port: 443
-    uuid: 20380e59-6475-486e-993d-0ac5817c5a4a
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: K42aHYxM9Lt1Tl4vF-OniHV5pNju-wnB_opA-hVihgs
-      short-id: 1000
-  - name: VLESS-154-1941.1ms-44.242.50.106
-    type: vless
-    server: 44.242.50.106
-    port: 36895
-    uuid: 5c875449-ae7d-46f8-b919-5a29f271dfce
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.icloud.com
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: SKJQzoN8Lh8kqrDEyKzevbHHmfRhKe8XmzBxPYXF2A4
-      short-id: 5a585c3e894bf074
-  - name: VLESS-155-1944.1ms-85.208.139.98
-    type: vless
-    server: 85.208.139.98
-    port: 8444
-    uuid: c931f737-cafe-4e4f-998a-a65517941256
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdnjs.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: Hp6K5hsiPY4_zATgAtef9YTxNGpSkhAHTTo9MUO7fik
-      short-id: 77e934f68f02ab4c
-  - name: VLESS-156-1948.6ms-51.250.97.18
-    type: vless
-    server: 51.250.97.18
-    port: 443
-    uuid: 9d6779a3-97c5-43e8-b5bf-ee36ab0cf788
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: cdp.x5.ru
-    client-fingerprint: safari
-    reality-opts:
-      public-key: wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI
-      short-id: 8ec792bfd725be8a
-  - name: VLESS-157-1957.9ms-185.130.114.211
-    type: vless
-    server: 185.130.114.211
-    port: 443
-    uuid: f598364f-51af-4f7d-9f2b-df1c707a2643
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: yandex.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: CF49-iS9dsHBwvqYFoDs_T3Me8TT0FpNW2kibGBkVXY
-      short-id: ""
-  - name: VLESS-158-1983.9ms-45.83.182.102
+      public-key: OflUQ0RuzdBHAtITxja0ZPDKgxKLBS9Rh49OIdS-FDA
+      short-id: 5f8ee4861a68966f
+  - name: "157. 45.83.182.102:2087"
     type: vless
     server: 45.83.182.102
     port: 2087
     uuid: 347a56c2-a453-4b32-86cd-7522943df88c
-    udp: true
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: api-maps.yandex.ru
     client-fingerprint: chrome
     reality-opts:
       public-key: vZuBWF0YzlKI0fJWxU6hmOLHHQ5Qb1kf35HbZDcFCH4
       short-id: 493c3d4e37c23c28
-  - name: VLESS-159-1996.5ms-158.160.206.199
+  - name: "158. 85.208.85.227:443"
     type: vless
-    server: 158.160.206.199
+    server: 85.208.85.227
     port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: AvSwsAIp3t2sTvNDZwTPkbcanvu9wtvLyZ6FCzIM-Rk
-      short-id: 7ada97abaa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-160-1998.1ms-103.112.70.124
-    type: vless
-    server: 103.112.70.124
-    port: 443
-    uuid: a2415a12-3f92-4636-9823-9828d3ceb818
-    udp: true
-    tls: true
-    servername: www.google.com
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: zPnElIyOaaW7M9L5Ba7kWJEadJZmeMwbj1m_NnaTtgQ
-      short-id: fa7369
-  - name: VLESS-161-2038.9ms-54.253.37.164
-    type: vless
-    server: 54.253.37.164
-    port: 23951
-    uuid: 3e62a6f1-f8cb-40eb-9c33-fc4ed39a080e
-    udp: true
+    uuid: f4e98990-648f-448a-9264-64040b413811
+    network: tcp
     flow: xtls-rprx-vision
-    tls: true
-    servername: www.tesla.com
     client-fingerprint: chrome
     reality-opts:
-      public-key: FGnWfD70nPQhiMZUQETB_mKaR-J_2DonpOpy9eqQ_F0
-      short-id: 8c4907b7884b31
-  - name: VLESS-162-2060.3ms-185.91.53.55
+      public-key: FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI
+      short-id: 1f7b8197dcce92
+  - name: "159. 103.119.19.179:8443"
     type: vless
-    server: 185.91.53.55
-    port: 443
-    uuid: b88b0501-6c4a-4a61-ad58-200f725681cb
-    udp: true
-    network: grpc
-    tls: true
-    servername: ads.x5.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: ObBnqYiOaiWqvELvFMZRiWrHYZ5wsyq0WWSwhBteYQw
-      short-id: 7a1197aa
-    grpc-opts:
-      grpc-service-name: ""
-  - name: VLESS-163-2297.1ms-88.218.120.60
-    type: vless
-    server: 88.218.120.60
+    server: 103.119.19.179
     port: 8443
-    uuid: 9c63bf8b-1c25-4b7e-9393-71aa99cad29d
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: un6-21.userapi.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 1A4AgKQiz38mT1r1H0su7aAXBB7KnKOFzsQ3AdACVDs
-      short-id: 612d8fa72c
-  - name: HYSTERIA2-164-2419.5ms-103.88.241.133
-    type: hysteria2
-    server: 103.88.241.133
-    port: 8443
-    password: 05d79f12-6a07-47ce-a566-5d5f571b8c59
-    sni: slopllex.app
-    skip-cert-verify: false
-    udp: true
-  - name: VLESS-165-2448.7ms-83.229.14.125
-    type: vless
-    server: 83.229.14.125
-    port: 13569
-    uuid: 7283d2d5-7b14-431b-9d1f-96f2dac4a97b
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: business.vk.ru
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: Xl6notHrxamdPvx0cZGGPRQOT-PR1rkjryRazI9i1VI
-      short-id: ""
-  - name: VLESS-166-2589.4ms-72.56.18.179
-    type: vless
-    server: 72.56.18.179
-    port: 443
     uuid: a2415a12-3f92-4636-9823-9828d3ceb818
-    udp: true
-    tls: true
-    servername: www.ya.ru
-    client-fingerprint: firefox
-    reality-opts:
-      public-key: 8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ
-      short-id: 2af15d98
-  - name: VLESS-167-2790.1ms-155.254.102.74
-    type: vless
-    server: 155.254.102.74
-    port: 443
-    uuid: e6dbaf95-1c9e-48c5-a0b4-0bd18aecc221
-    udp: true
-    flow: xtls-rprx-vision
-    tls: true
-    servername: www.microsoft.com
+    network: tcp
     client-fingerprint: chrome
     reality-opts:
-      public-key: Vc8ycAgKqfRvtXjvGP0ry_U91o5wgrQlqOhHq72HYRs
-      short-id: 1bc2c1ef1c
-  - name: VLESS-168-2822.3ms-151.115.164.110
+      public-key: vo6Xrwkla8OBS5O6lEinNvHXxW8DxCmb8HGHD86VzkU
+      short-id: 0e
+  - name: "160. 89.208.208.92:9443"
     type: vless
-    server: 151.115.164.110
-    port: 8880
-    uuid: 8dc7722c-2767-4eea-a28b-2f8daacc07e3
-    udp: true
-    network: grpc
-    grpc-opts:
-      grpc-service-name: ""
-
-proxy-groups:
-  - name: "🚀 Auto"
-    type: url-test
-    proxies:
-    - VLESS-001-233.1ms-151.115.164.129
-    - VLESS-002-251.8ms-151.115.164.37
-    - VLESS-003-264.7ms-151.115.164.36
-    - VLESS-004-282.8ms-45.158.127.5
-    - VLESS-005-362.9ms-151.115.164.117
-    - VLESS-006-364.4ms-151.115.164.120
-    - VLESS-007-376.3ms-151.115.167.1
-    - VLESS-008-383.7ms-51.158.206.34
-    - VLESS-009-392.8ms-151.115.166.68
-    - VLESS-010-411.4ms-151.115.166.233
-    - VLESS-011-413.0ms-51.158.206.93
-    - VLESS-012-414.2ms-151.115.164.43
-    - VLESS-013-421.8ms-194.59.183.234
-    - VLESS-014-434.8ms-52.14.47.44
-    - VLESS-015-487.6ms-5.183.253.171
-    - VLESS-016-560.8ms-31.129.42.131
-    - VLESS-017-565.9ms-144.31.237.74
-    - VLESS-018-602.1ms-white77.alexanderoff.ru
-    - VLESS-019-608.2ms-206.189.20.90
-    - VLESS-020-635.0ms-sca16.myfymain.com
-    - VLESS-021-654.2ms-151.241.228.254
-    - VLESS-022-701.2ms-194.150.220.93
-    - VLESS-023-709.2ms-147.182.212.232
-    - VLESS-024-709.9ms-81.163.23.125
-    - VLESS-025-719.2ms-151.115.164.134
-    - VLESS-026-737.3ms-5.178.85.202
-    - VLESS-027-759.8ms-91.107.191.12
-    - VLESS-028-763.3ms-91.107.244.55
-    - VLESS-029-779.0ms-51.158.206.26
-    - VLESS-030-780.3ms-51.158.206.98
-    - VLESS-031-786.7ms-51.250.47.193
-    - VLESS-032-810.4ms-151.115.165.172
-    - VLESS-033-820.9ms-151.115.166.249
-    - VLESS-034-843.7ms-77.110.115.192
-    - VLESS-035-847.9ms-sca24.myfymain.com
-    - VLESS-036-849.4ms-67.102.180.16
-    - VLESS-037-849.8ms-sca29.myfymain.com
-    - VLESS-038-854.8ms-151.115.164.131
-    - VLESS-039-861.6ms-151.115.164.126
-    - VLESS-040-865.2ms-94.183.219.239
-    - VLESS-041-865.7ms-sca31.myfymain.com
-    - VLESS-042-869.0ms-151.115.166.43
-    - VLESS-043-878.6ms-151.115.164.132
-    - VLESS-044-884.2ms-151.115.167.190
-    - VLESS-045-893.7ms-sca17.myfymain.com
-    - VLESS-046-910.9ms-nid.pink-perfect.ru
-    - VLESS-047-916.4ms-31.59.36.107
-    - VLESS-048-938.5ms-sca28.myfymain.com
-    - VLESS-049-948.7ms-8.208.22.155
-    - VLESS-050-957.6ms-152.114.193.11
-    - VLESS-051-960.4ms-185.229.9.32
-    - VLESS-052-972.7ms-62.141.42.201
-    - VLESS-053-973.6ms-31.59.36.108
-    - VLESS-054-989.5ms-95.85.233.234
-    - VLESS-055-1002.9ms-84.201.168.201
-    - VLESS-056-1006.2ms-158.160.32.64
-    - VLESS-057-1015.1ms-5.42.126.157
-    - VLESS-058-1023.8ms-51.89.229.134
-    - VLESS-059-1024.6ms-79.141.171.133
-    - VLESS-060-1029.2ms-151.115.167.188
-    - VLESS-061-1031.4ms-89.125.19.237
-    - VLESS-062-1043.7ms-77.239.114.176
-    - VLESS-063-1049.7ms-23.26.37.120
-    - VLESS-064-1053.3ms-89.208.210.51
-    - VLESS-065-1053.7ms-78.17.147.65
-    - VLESS-066-1072.8ms-23.26.37.119
-    - VLESS-067-1090.1ms-144.31.157.56
-    - VLESS-068-1094.3ms-109.120.132.142
-    - VLESS-069-1120.1ms-158.160.146.238
-    - VLESS-070-1120.5ms-128.204.223.94
-    - VLESS-071-1132.3ms-194.238.57.104
-    - VLESS-072-1191.9ms-31.207.5.43
-    - VLESS-073-1212.1ms-78.17.134.254
-    - VLESS-074-1234.6ms-89.187.191.231
-    - VLESS-075-1241.8ms-89.167.25.28
-    - VLESS-076-1265.6ms-195.96.132.125
-    - VLESS-077-1277.0ms-103.119.19.201
-    - VLESS-078-1278.4ms-122.8.44.3
-    - VLESS-079-1281.8ms-62.238.32.25
-    - VLESS-080-1289.6ms-213.226.112.208
-    - VLESS-081-1299.0ms-144.31.230.72
-    - VLESS-082-1306.7ms-me.colorbox.space
-    - VLESS-083-1314.4ms-148.253.211.47
-    - VLESS-084-1329.8ms-38.107.233.130
-    - VLESS-085-1344.0ms-84.201.129.65
-    - VLESS-086-1351.7ms-93.115.25.153
-    - VLESS-087-1366.5ms-sca14.myfymain.com
-    - VLESS-088-1424.0ms-51.250.7.246
-    - VLESS-089-1427.5ms-144.31.30.69
-    - VLESS-090-1430.8ms-5.35.85.51
-    - VLESS-091-1434.3ms-151.115.166.221
-    - VLESS-092-1462.5ms-84.252.134.76
-    - VLESS-093-1489.8ms-193.232.178.78
-    - VLESS-094-1513.7ms-38.55.146.153
-    - VLESS-095-1519.7ms-45.152.67.34
-    - VLESS-096-1526.7ms-84.201.159.233
-    - VLESS-097-1532.1ms-89.208.210.165
-    - VLESS-098-1532.9ms-poland.milas.click
-    - VLESS-099-1543.0ms-51.250.47.219
-    - VLESS-100-1544.0ms-158.160.109.80
-    - VLESS-101-1553.7ms-158.160.203.114
-    - VLESS-102-1560.0ms-158.160.17.171
-    - VLESS-103-1562.1ms-51.250.102.69
-    - VLESS-104-1562.8ms-46.254.17.72
-    - VLESS-105-1568.4ms-47.253.226.114
-    - VLESS-106-1577.4ms-51.250.70.186
-    - VLESS-107-1578.3ms-51.250.106.87
-    - VLESS-108-1582.0ms-178.154.233.157
-    - VLESS-109-1584.0ms-51.250.103.104
-    - VLESS-110-1587.2ms-51.250.26.148
-    - VLESS-111-1593.1ms-51.250.104.246
-    - VLESS-112-1593.5ms-146.185.209.234
-    - VLESS-113-1593.7ms-89.208.210.216
-    - VLESS-114-1602.0ms-51.158.206.25
-    - VLESS-115-1605.3ms-64.49.46.225
-    - VLESS-116-1609.6ms-84.201.165.188
-    - VLESS-117-1613.9ms-51.250.4.238
-    - VLESS-118-1621.8ms-81.163.23.159
-    - VLESS-119-1631.7ms-185.130.115.132
-    - VLESS-120-1640.8ms-51.250.24.222
-    - VLESS-121-1648.0ms-38.207.190.137
-    - VLESS-122-1663.7ms-51.250.108.162
-    - VLESS-123-1670.9ms-158.160.142.40
-    - VLESS-124-1688.2ms-51.250.9.161
-    - VLESS-125-1688.4ms-2.26.116.183
-    - VLESS-126-1689.1ms-158.160.53.173
-    - VLESS-127-1691.4ms-158.160.231.81
-    - VLESS-128-1701.4ms-84.201.150.127
-    - VLESS-129-1713.2ms-158.160.197.131
-    - VLESS-130-1718.1ms-47.251.25.74
-    - VLESS-131-1727.4ms-2.26.88.118
-    - VLESS-132-1730.0ms-51.250.18.25
-    - VLESS-133-1731.3ms-15.204.97.197
-    - VLESS-134-1733.7ms-79.174.90.31
-    - VLESS-135-1742.8ms-158.160.191.222
-    - VLESS-136-1746.9ms-137.175.93.121
-    - VLESS-137-1763.5ms-15.204.97.195
-    - VLESS-138-1764.6ms-103.119.19.179
-    - VLESS-139-1765.9ms-51.250.43.93
-    - VLESS-140-1773.1ms-15.204.97.206
-    - VLESS-141-1773.5ms-15.204.97.198
-    - VLESS-142-1782.3ms-15.204.97.214
-    - VLESS-143-1796.2ms-15.204.97.219
-    - VLESS-144-1799.3ms-185.229.9.8
-    - VLESS-145-1805.3ms-15.204.97.216
-    - VLESS-146-1815.7ms-37.9.4.224
-    - VLESS-147-1842.3ms-143.198.223.118
-    - VLESS-148-1869.7ms-51.250.18.219
-    - VLESS-149-1878.8ms-3.106.214.88
-    - VLESS-150-1893.7ms-204.216.216.23
-    - VLESS-151-1910.2ms-finporkzov.com
-    - VLESS-152-1918.6ms-51.250.24.232
-    - VLESS-153-1932.5ms-46.254.16.247
-    - VLESS-154-1941.1ms-44.242.50.106
-    - VLESS-155-1944.1ms-85.208.139.98
-    - VLESS-156-1948.6ms-51.250.97.18
-    - VLESS-157-1957.9ms-185.130.114.211
-    - VLESS-158-1983.9ms-45.83.182.102
-    - VLESS-159-1996.5ms-158.160.206.199
-    - VLESS-160-1998.1ms-103.112.70.124
-    - VLESS-161-2038.9ms-54.253.37.164
-    - VLESS-162-2060.3ms-185.91.53.55
-    - VLESS-163-2297.1ms-88.218.120.60
-    - HYSTERIA2-164-2419.5ms-103.88.241.133
-    - VLESS-165-2448.7ms-83.229.14.125
-    - VLESS-166-2589.4ms-72.56.18.179
-    - VLESS-167-2790.1ms-155.254.102.74
-    - VLESS-168-2822.3ms-151.115.164.110
-    url: "https://cp.cloudflare.com/"
-    interval: 300
-    tolerance: 50
-    lazy: true
-
-  - name: "🌐 Select"
-    type: select
-    proxies:
-    - VLESS-001-233.1ms-151.115.164.129
-    - VLESS-002-251.8ms-151.115.164.37
-    - VLESS-003-264.7ms-151.115.164.36
-    - VLESS-004-282.8ms-45.158.127.5
-    - VLESS-005-362.9ms-151.115.164.117
-    - VLESS-006-364.4ms-151.115.164.120
-    - VLESS-007-376.3ms-151.115.167.1
-    - VLESS-008-383.7ms-51.158.206.34
-    - VLESS-009-392.8ms-151.115.166.68
-    - VLESS-010-411.4ms-151.115.166.233
-    - VLESS-011-413.0ms-51.158.206.93
-    - VLESS-012-414.2ms-151.115.164.43
-    - VLESS-013-421.8ms-194.59.183.234
-    - VLESS-014-434.8ms-52.14.47.44
-    - VLESS-015-487.6ms-5.183.253.171
-    - VLESS-016-560.8ms-31.129.42.131
-    - VLESS-017-565.9ms-144.31.237.74
-    - VLESS-018-602.1ms-white77.alexanderoff.ru
-    - VLESS-019-608.2ms-206.189.20.90
-    - VLESS-020-635.0ms-sca16.myfymain.com
-    - VLESS-021-654.2ms-151.241.228.254
-    - VLESS-022-701.2ms-194.150.220.93
-    - VLESS-023-709.2ms-147.182.212.232
-    - VLESS-024-709.9ms-81.163.23.125
-    - VLESS-025-719.2ms-151.115.164.134
-    - VLESS-026-737.3ms-5.178.85.202
-    - VLESS-027-759.8ms-91.107.191.12
-    - VLESS-028-763.3ms-91.107.244.55
-    - VLESS-029-779.0ms-51.158.206.26
-    - VLESS-030-780.3ms-51.158.206.98
-    - VLESS-031-786.7ms-51.250.47.193
-    - VLESS-032-810.4ms-151.115.165.172
-    - VLESS-033-820.9ms-151.115.166.249
-    - VLESS-034-843.7ms-77.110.115.192
-    - VLESS-035-847.9ms-sca24.myfymain.com
-    - VLESS-036-849.4ms-67.102.180.16
-    - VLESS-037-849.8ms-sca29.myfymain.com
-    - VLESS-038-854.8ms-151.115.164.131
-    - VLESS-039-861.6ms-151.115.164.126
-    - VLESS-040-865.2ms-94.183.219.239
-    - VLESS-041-865.7ms-sca31.myfymain.com
-    - VLESS-042-869.0ms-151.115.166.43
-    - VLESS-043-878.6ms-151.115.164.132
-    - VLESS-044-884.2ms-151.115.167.190
-    - VLESS-045-893.7ms-sca17.myfymain.com
-    - VLESS-046-910.9ms-nid.pink-perfect.ru
-    - VLESS-047-916.4ms-31.59.36.107
-    - VLESS-048-938.5ms-sca28.myfymain.com
-    - VLESS-049-948.7ms-8.208.22.155
-    - VLESS-050-957.6ms-152.114.193.11
-    - VLESS-051-960.4ms-185.229.9.32
-    - VLESS-052-972.7ms-62.141.42.201
-    - VLESS-053-973.6ms-31.59.36.108
-    - VLESS-054-989.5ms-95.85.233.234
-    - VLESS-055-1002.9ms-84.201.168.201
-    - VLESS-056-1006.2ms-158.160.32.64
-    - VLESS-057-1015.1ms-5.42.126.157
-    - VLESS-058-1023.8ms-51.89.229.134
-    - VLESS-059-1024.6ms-79.141.171.133
-    - VLESS-060-1029.2ms-151.115.167.188
-    - VLESS-061-1031.4ms-89.125.19.237
-    - VLESS-062-1043.7ms-77.239.114.176
-    - VLESS-063-1049.7ms-23.26.37.120
-    - VLESS-064-1053.3ms-89.208.210.51
-    - VLESS-065-1053.7ms-78.17.147.65
-    - VLESS-066-1072.8ms-23.26.37.119
-    - VLESS-067-1090.1ms-144.31.157.56
-    - VLESS-068-1094.3ms-109.120.132.142
-    - VLESS-069-1120.1ms-158.160.146.238
-    - VLESS-070-1120.5ms-128.204.223.94
-    - VLESS-071-1132.3ms-194.238.57.104
-    - VLESS-072-1191.9ms-31.207.5.43
-    - VLESS-073-1212.1ms-78.17.134.254
-    - VLESS-074-1234.6ms-89.187.191.231
-    - VLESS-075-1241.8ms-89.167.25.28
-    - VLESS-076-1265.6ms-195.96.132.125
-    - VLESS-077-1277.0ms-103.119.19.201
-    - VLESS-078-1278.4ms-122.8.44.3
-    - VLESS-079-1281.8ms-62.238.32.25
-    - VLESS-080-1289.6ms-213.226.112.208
-    - VLESS-081-1299.0ms-144.31.230.72
-    - VLESS-082-1306.7ms-me.colorbox.space
-    - VLESS-083-1314.4ms-148.253.211.47
-    - VLESS-084-1329.8ms-38.107.233.130
-    - VLESS-085-1344.0ms-84.201.129.65
-    - VLESS-086-1351.7ms-93.115.25.153
-    - VLESS-087-1366.5ms-sca14.myfymain.com
-    - VLESS-088-1424.0ms-51.250.7.246
-    - VLESS-089-1427.5ms-144.31.30.69
-    - VLESS-090-1430.8ms-5.35.85.51
-    - VLESS-091-1434.3ms-151.115.166.221
-    - VLESS-092-1462.5ms-84.252.134.76
-    - VLESS-093-1489.8ms-193.232.178.78
-    - VLESS-094-1513.7ms-38.55.146.153
-    - VLESS-095-1519.7ms-45.152.67.34
-    - VLESS-096-1526.7ms-84.201.159.233
-    - VLESS-097-1532.1ms-89.208.210.165
-    - VLESS-098-1532.9ms-poland.milas.click
-    - VLESS-099-1543.0ms-51.250.47.219
-    - VLESS-100-1544.0ms-158.160.109.80
-    - VLESS-101-1553.7ms-158.160.203.114
-    - VLESS-102-1560.0ms-158.160.17.171
-    - VLESS-103-1562.1ms-51.250.102.69
-    - VLESS-104-1562.8ms-46.254.17.72
-    - VLESS-105-1568.4ms-47.253.226.114
-    - VLESS-106-1577.4ms-51.250.70.186
-    - VLESS-107-1578.3ms-51.250.106.87
-    - VLESS-108-1582.0ms-178.154.233.157
-    - VLESS-109-1584.0ms-51.250.103.104
-    - VLESS-110-1587.2ms-51.250.26.148
-    - VLESS-111-1593.1ms-51.250.104.246
-    - VLESS-112-1593.5ms-146.185.209.234
-    - VLESS-113-1593.7ms-89.208.210.216
-    - VLESS-114-1602.0ms-51.158.206.25
-    - VLESS-115-1605.3ms-64.49.46.225
-    - VLESS-116-1609.6ms-84.201.165.188
-    - VLESS-117-1613.9ms-51.250.4.238
-    - VLESS-118-1621.8ms-81.163.23.159
-    - VLESS-119-1631.7ms-185.130.115.132
-    - VLESS-120-1640.8ms-51.250.24.222
-    - VLESS-121-1648.0ms-38.207.190.137
-    - VLESS-122-1663.7ms-51.250.108.162
-    - VLESS-123-1670.9ms-158.160.142.40
-    - VLESS-124-1688.2ms-51.250.9.161
-    - VLESS-125-1688.4ms-2.26.116.183
-    - VLESS-126-1689.1ms-158.160.53.173
-    - VLESS-127-1691.4ms-158.160.231.81
-    - VLESS-128-1701.4ms-84.201.150.127
-    - VLESS-129-1713.2ms-158.160.197.131
-    - VLESS-130-1718.1ms-47.251.25.74
-    - VLESS-131-1727.4ms-2.26.88.118
-    - VLESS-132-1730.0ms-51.250.18.25
-    - VLESS-133-1731.3ms-15.204.97.197
-    - VLESS-134-1733.7ms-79.174.90.31
-    - VLESS-135-1742.8ms-158.160.191.222
-    - VLESS-136-1746.9ms-137.175.93.121
-    - VLESS-137-1763.5ms-15.204.97.195
-    - VLESS-138-1764.6ms-103.119.19.179
-    - VLESS-139-1765.9ms-51.250.43.93
-    - VLESS-140-1773.1ms-15.204.97.206
-    - VLESS-141-1773.5ms-15.204.97.198
-    - VLESS-142-1782.3ms-15.204.97.214
-    - VLESS-143-1796.2ms-15.204.97.219
-    - VLESS-144-1799.3ms-185.229.9.8
-    - VLESS-145-1805.3ms-15.204.97.216
-    - VLESS-146-1815.7ms-37.9.4.224
-    - VLESS-147-1842.3ms-143.198.223.118
-    - VLESS-148-1869.7ms-51.250.18.219
-    - VLESS-149-1878.8ms-3.106.214.88
-    - VLESS-150-1893.7ms-204.216.216.23
-    - VLESS-151-1910.2ms-finporkzov.com
-    - VLESS-152-1918.6ms-51.250.24.232
-    - VLESS-153-1932.5ms-46.254.16.247
-    - VLESS-154-1941.1ms-44.242.50.106
-    - VLESS-155-1944.1ms-85.208.139.98
-    - VLESS-156-1948.6ms-51.250.97.18
-    - VLESS-157-1957.9ms-185.130.114.211
-    - VLESS-158-1983.9ms-45.83.182.102
-    - VLESS-159-1996.5ms-158.160.206.199
-    - VLESS-160-1998.1ms-103.112.70.124
-    - VLESS-161-2038.9ms-54.253.37.164
-    - VLESS-162-2060.3ms-185.91.53.55
-    - VLESS-163-2297.1ms-88.218.120.60
-    - HYSTERIA2-164-2419.5ms-103.88.241.133
-    - VLESS-165-2448.7ms-83.229.14.125
-    - VLESS-166-2589.4ms-72.56.18.179
-    - VLESS-167-2790.1ms-155.254.102.74
-    - VLESS-168-2822.3ms-151.115.164.110
-
-rules:
-  - GEOIP,RU,DIRECT
-  - MATCH,🚀 Auto
+    server: 89.208.208.92
+    port: 9443
+    uuid: cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: qq
+    reality-opts:
+      public-key: aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q
+      short-id: 689def22fcb54e86
+  - name: "161. 38.14.232.201:53501"
+    type: vless
+    server: 38.14.232.201
+    port: 53501
+    uuid: 98aa28b3-78ac-4c54-bf6e-0e7d0e65259b
+    network: raw
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: tbgvM-W4DB5oZ-BvaLPC_TUPzdWPDOYp9Zm3sKaCH04
+      short-id: 8a190670
+  - name: "162. 51.250.43.93:443"
+    type: vless
+    server: 51.250.43.93
+    port: 443
+    uuid: 91427003-38cb-473e-95f2-a4b500c91f7b
+    network: tcp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs
+      short-id: 
