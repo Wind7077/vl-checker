@@ -61,13 +61,14 @@ else:
     XRAY_BIN = Path("/tmp/xray-bin/xray")
     HY2_BIN  = Path("/tmp/hysteria-bin/hysteria")
 
-# ── Ключевые слова для строгой проверки GeoIP ─────────────────────────────────
+# ── Ключевые слова для проверки GeoIP ─────────────────────────────────────────
 RU_ISP_KEYWORDS = [
     'rostelecom', 'mts', 'megafon', 'beeline', 'vimpelcom', 'ttk', 'ertelecom', 
     'dom.ru', 'yandex', 'vk', 'mail.ru', 'selectel', 'timeweb', 'reg.ru', 
     'firstvds', 'ihor', 'ddos-guard', 'stormwall', 'radiant', 'msk-ix',
     'spb', 'moscow', 'russian', 'russia', 'sber', 'rostech', 'miranda',
-    'transtelecom', 'svyaz', 'tele2', 'motiv', 'yota'
+    'transtelecom', 'svyaz', 'tele2', 'motiv', 'yota', 'promsvyaz',
+    'netbynet', 'akado', 'mosnet', 'mgn', 'ural', 'sib', 'kzn', 'nsk'
 ]
 
 FOREIGN_CLOUD_KEYWORDS = [
@@ -191,7 +192,7 @@ def get_flag(country_code: str) -> str:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Clash YAML Export (Исправлено для FClash / Mihomo)
+# Clash YAML Export
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
@@ -225,13 +226,11 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             sni = params.get("sni", params.get("peer", host))
             if not sni: sni = host
             
-            # Нормализация fp (Clash Meta поддерживает только этот список)
             fp = params.get("fp", "chrome")
             valid_fps = ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"]
             if fp not in valid_fps:
                 fp = "chrome"
                 
-            # Нормализация network
             net = params.get("type", "tcp")
             valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic"]
             if net not in valid_nets:
@@ -244,7 +243,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             host_header = params.get("host", host)
             serviceName = params.get("serviceName", "")
             
-            # Нормализация flow
             flow = params.get("flow", "")
             valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443", "xtls-rprx-origin", "xtls-rprx-origin-udp443", "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
             if flow and flow not in valid_flows:
@@ -293,7 +291,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             insecure = params.get("insecure", "0") == "1"
             obfs = params.get("obfs", "")
             if obfs and obfs != "salamander":
-                obfs = "" # Clash поддерживает только salamander
+                obfs = ""
             obfs_password = params.get("obfs-password", "")
             
             proxy = {
@@ -325,7 +323,6 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         lines.append(f"    server: {yaml_str(p['server'])}")
         lines.append(f"    port: {p['port']}")
         
-        # Всегда пишем uuid и password, даже если пустые (чтобы Clash не выкидывал из-за отсутствия ключа)
         if 'uuid' in p:
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
         if 'password' in p:
@@ -430,7 +427,7 @@ def write_ru_clash_config(proxies: list[dict], path: Path):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# GeoIP Check (Максимально строгий фильтр для ru.yaml)
+# GeoIP Check (с проверкой по ISP/провайдеру)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def resolve_host_to_ip(host: str) -> str | None:
@@ -472,27 +469,35 @@ def determine_final_country(info: dict) -> str:
     
     all_isp_text = f"{info.get('isp', '')} {info.get('org', '')} {info.get('as', '')} {info.get('who_isp', '')} {info.get('who_org', '')} {info.get('who_as', '')}".lower()
     
+    # 1. Жесткая фильтрация иностранных облаков
     is_foreign_cloud = any(kw in all_isp_text for kw in FOREIGN_CLOUD_KEYWORDS)
-    
     if is_foreign_cloud:
         if api_c != "RU" and api_c != "UNKNOWN": return api_c
         if who_c != "RU" and who_c != "UNKNOWN": return who_c
         return "UNKNOWN"
-        
+    
+    # 2. Проверка по ключевым словам российских провайдеров
+    is_ru_isp = any(kw in all_isp_text for kw in RU_ISP_KEYWORDS)
+    if is_ru_isp:
+        return "RU"
+    
+    # 3. Если оба API говорят RU
     if api_c == "RU" and who_c == "RU":
         return "RU"
-        
+    
+    # 4. Если один говорит RU, другой UNKNOWN
     if (api_c == "RU" and who_c == "UNKNOWN") or (who_c == "RU" and api_c == "UNKNOWN"):
         return "RU"
-        
+    
+    # 5. Если есть противоречие или ни один не сказал RU
     if api_c != "UNKNOWN" and api_c != "RU":
         return api_c
     if who_c != "UNKNOWN" and who_c != "RU":
         return who_c
-        
+    
     if api_c == "RU" or who_c == "RU":
         return "RU"
-        
+    
     return "UNKNOWN"
 
 async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
@@ -562,11 +567,28 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
                     "isp": "", "org": "", "as": "",
                     "who_isp": who_info["isp"], "who_org": who_info["org"], "who_as": who_info["as"]
                 }
-                
+    
+    # Считаем статистику определения
+    ru_by_isp = 0
+    ru_by_geo = 0
+    
     host_to_country = {}
     for h, ip in host_to_ip.items():
         if ip in ip_to_info:
-            host_to_country[h] = determine_final_country(ip_to_info[ip])
+            info = ip_to_info[ip]
+            country = determine_final_country(info)
+            host_to_country[h] = country
+            
+            # Считаем для статистики
+            all_isp_text = f"{info.get('isp', '')} {info.get('org', '')} {info.get('as', '')} {info.get('who_isp', '')} {info.get('who_org', '')} {info.get('who_as', '')}".lower()
+            is_foreign_cloud = any(kw in all_isp_text for kw in FOREIGN_CLOUD_KEYWORDS)
+            is_ru_isp = any(kw in all_isp_text for kw in RU_ISP_KEYWORDS)
+            
+            if country == "RU":
+                if is_ru_isp and not is_foreign_cloud:
+                    ru_by_isp += 1
+                else:
+                    ru_by_geo += 1
         else:
             host_to_country[h] = "UNKNOWN"
             
@@ -575,6 +597,8 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
         countries[c] = countries.get(c, 0) + 1
     if countries:
         print("  🌎 Страны: " + ", ".join(f"{k}={v}" for k, v in sorted(countries.items(), key=lambda x: -x[1])))
+        if "RU" in countries:
+            print(f"     └─ Из них по ISP: {ru_by_isp}, по GeoIP: {ru_by_geo}")
         
     return host_to_country
 
@@ -1038,7 +1062,7 @@ async def main():
         ru_top = [item for item in http_alive if item.get("country") == "RU"][:TOP_N]
         
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
-        print(f"  🇷🇺 Из них строго российских (RU): {len(ru_top)}")
+        print(f"  🇷🇺 Из них российских (RU): {len(ru_top)}")
 
         working_protos: dict[str, int] = {}
         for r in http_alive:
@@ -1061,7 +1085,7 @@ async def main():
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     
-    # Сохранение proxies.yaml (ПОЛНЫЙ конфиг Clash для FClash)
+    # Сохранение proxies.yaml
     clash_proxies = []
     for i, r in enumerate(top):
         cp = uri_to_clash_proxy(r["uri"], i, r.get("country", "UNKNOWN"))
@@ -1075,7 +1099,7 @@ async def main():
     ru_lines = [r["uri"] for r in ru_top]
     (OUTPUT_DIR / "ru.txt").write_text("\n".join(ru_lines) + "\n", encoding="utf-8")
     
-    # Сохранение ru.yaml (ПОЛНЫЙ конфиг Clash, только RU)
+    # Сохранение ru.yaml
     ru_clash_proxies = []
     for i, r in enumerate(ru_top):
         cp = uri_to_clash_proxy(r["uri"], i, "RU")
