@@ -5,7 +5,593 @@ log-level: info
 external-controller: '127.0.0.1:9090'
 
 proxies:
-  - name: "🇷🇺 1. 89.208.208.92:7443"
+  - name: "🇷🇺 1. 157.22.241.175:7443"
+    type: vless
+    server: "157.22.241.175"
+    port: 7443
+    uuid: "f1a44ae4-20f9-4dd7-b60e-b4f2acecfdb4"
+    servername: "colorlib.com"
+    network: "grpc"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "F2MKDw5CCtP1oXIej2EgNxB01k3eyNu7tKCFfucgnRA"
+    grpc-opts:
+      grpc-service-name: "xyz"
+  - name: "🇷🇺 2. 185.147.27.150:58888"
+    type: vless
+    server: "185.147.27.150"
+    port: 58888
+    uuid: "7283d2d5-7b14-431b-9d1f-96f2dac4a97b"
+    servername: "max.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "oPb9QJL_Mys7JtX3P3O8Jygw511Z-M1Z3CL33nBL7wk"
+      short-id: "6ba85179e30d4fc2"
+  - name: "🇷🇺 3. 146.185.209.234:443"
+    type: vless
+    server: "146.185.209.234"
+    port: 443
+    uuid: "50b95deb-6394-46c5-b88a-583e5b3ca7ee"
+    servername: "ads.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4"
+      short-id: "f69d7af2d5fc5e0c"
+  - name: "🇷🇺 4. 146.185.209.234:443"
+    type: vless
+    server: "146.185.209.234"
+    port: 443
+    uuid: "50b95deb-6394-46c5-b88a-583e5b3ca7ee"
+    servername: "ads.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4"
+      short-id: "f69d7af2d5fc5e0c"
+  - name: "🇷🇺 5. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    servername: "cms-res-web.online.sberbank.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 6. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    servername: "cms-res-web.online.sberbank.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 7. 51.250.104.246:443"
+    type: vless
+    server: "51.250.104.246"
+    port: 443
+    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 8. 194.93.0.180:47200"
+    type: vless
+    server: "194.93.0.180"
+    port: 47200
+    uuid: "ffaa8e95-74e2-4ef4-8974-69dd3651b6f9"
+    servername: "stats.vk-portal.net"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE"
+      short-id: "b2a9bd658fc81dc6"
+  - name: "🇷🇺 9. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    servername: "cms-res-web.online.sberbank.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 10. 5.42.126.157:443"
+    type: vless
+    server: "5.42.126.157"
+    port: 443
+    uuid: "029a4bc6-4557-4b6b-a5fc-6232e943e43b"
+    servername: "fi.sellflow.org"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 11. 51.250.97.18:443"
+    type: vless
+    server: "51.250.97.18"
+    port: 443
+    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 12. 193.168.46.180:443"
+    type: vless
+    server: "193.168.46.180"
+    port: 443
+    uuid: "eedc0267-8cb8-41a3-ae14-4860d51d4032"
+    servername: "rruu.persik.host"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
+      short-id: "c1a7e9b4711d5f60"
+  - name: "🇷🇺 13. 51.250.24.232:443"
+    type: vless
+    server: "51.250.24.232"
+    port: 443
+    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 14. 217.26.24.101:23151"
+    type: vless
+    server: "217.26.24.101"
+    port: 23151
+    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
+    servername: "cms-res-web.online.sberbank.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
+  - name: "🇷🇺 15. 193.168.46.180:443"
+    type: vless
+    server: "193.168.46.180"
+    port: 443
+    uuid: "b89b33e8-a82a-4ac0-9dfc-4937102b0b7f"
+    servername: "rruu.persik.host"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
+      short-id: "c1a7e9b4711d5f60"
+  - name: "🇷🇺 16. 51.250.24.232:443"
+    type: vless
+    server: "51.250.24.232"
+    port: 443
+    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 17. 51.250.106.87:443"
+    type: vless
+    server: "51.250.106.87"
+    port: 443
+    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 18. 193.168.46.180:443"
+    type: vless
+    server: "193.168.46.180"
+    port: 443
+    uuid: "b89b33e8-a82a-4ac0-9dfc-4937102b0b7f"
+    servername: "rruu.persik.host"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
+      short-id: "c1a7e9b4711d5f60"
+  - name: "🇷🇺 19. 51.250.97.18:443"
+    type: vless
+    server: "51.250.97.18"
+    port: 443
+    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 20. 82.202.157.207:443"
+    type: vless
+    server: "82.202.157.207"
+    port: 443
+    uuid: "f4e98990-648f-448a-9264-64040b413811"
+    servername: "rbc.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "pSM8cZd3BzdI5gp0UJaufCEFUjamTpYtHcbFudbk11s"
+      short-id: "b224c00dc01d6c96"
+  - name: "🇷🇺 21. 37.9.4.224:443"
+    type: vless
+    server: "37.9.4.224"
+    port: 443
+    uuid: "dedb32d2-4447-4cac-86ab-a5ce740252f1"
+    servername: "wl-2-1.legendary.ac"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "uL4x8EbCl080G43kFlv8nbpEyseWi1Dc_bl8F7lWtm8"
+      short-id: "aa03ec59c9695e91"
+  - name: "🇷🇺 22. 51.250.103.104:443"
+    type: vless
+    server: "51.250.103.104"
+    port: 443
+    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 23. 51.250.104.246:443"
+    type: vless
+    server: "51.250.104.246"
+    port: 443
+    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 24. 46.254.17.72:443"
+    type: vless
+    server: "46.254.17.72"
+    port: 443
+    uuid: "dedb32d2-4447-4cac-86ab-a5ce740252f1"
+    servername: "wl-1-1.legendary.ac"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "Ce2abow3fU3pN2_mlX3uJW93sBMgTI9qNo5q7_EgFTA"
+      short-id: "c4a70eddb745b1ea"
+  - name: "🇷🇺 25. 72.56.18.179:443"
+    type: vless
+    server: "72.56.18.179"
+    port: 443
+    uuid: "a2415a12-3f92-4636-9823-9828d3ceb818"
+    servername: "www.ya.ru"
+    network: "tcp"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ"
+      short-id: "2af15d98"
+  - name: "🇷🇺 26. 51.250.102.69:443"
+    type: vless
+    server: "51.250.102.69"
+    port: 443
+    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 27. 72.56.18.179:443"
+    type: vless
+    server: "72.56.18.179"
+    port: 443
+    uuid: "a2415a12-3f92-4636-9823-9828d3ceb818"
+    servername: "www.ya.ru"
+    network: "tcp"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ"
+      short-id: "2af15d98"
+  - name: "🇷🇺 28. 92.53.104.60:443"
+    type: vless
+    server: "92.53.104.60"
+    port: 443
+    uuid: "5481bfe3-bf42-425c-b561-cb9d64bff7ff"
+    servername: "sfera.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "k9LT9ptqXEI8Jnyc6-uUXVXht_6DGIPSyUnyQ_wzYSs"
+      short-id: "faab089683c474b7"
+  - name: "🇷🇺 29. 51.250.108.162:443"
+    type: vless
+    server: "51.250.108.162"
+    port: 443
+    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
+    servername: "cdp.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "safari"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
+      short-id: "8ec792bfd725be8a"
+  - name: "🇷🇺 30. 72.56.18.179:443"
+    type: vless
+    server: "72.56.18.179"
+    port: 443
+    uuid: "69a2af58-d74a-44ca-864a-e09b493f4274"
+    servername: "www.ya.ru"
+    network: "tcp"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ"
+      short-id: "2af15d98"
+  - name: "🇷🇺 31. 51.250.43.93:443"
+    type: vless
+    server: "51.250.43.93"
+    port: 443
+    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
+    servername: "ads.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
+  - name: "🇷🇺 32. 89.208.208.92:9443"
+    type: vless
+    server: "89.208.208.92"
+    port: 9443
+    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
+    servername: "loadtest.dev.urent.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
+      short-id: "689def22fcb54e86"
+  - name: "🇷🇺 33. 72.56.39.45:443"
+    type: vless
+    server: "72.56.39.45"
+    port: 443
+    uuid: "9f8cfde4-c98c-431e-bbb5-f337a4316a5a"
+    servername: "abuse.sellflow.org"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 34. 72.56.18.179:443"
+    type: vless
+    server: "72.56.18.179"
+    port: 443
+    uuid: "69a2af58-d74a-44ca-864a-e09b493f4274"
+    servername: "www.ya.ru"
+    network: "tcp"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ"
+      short-id: "2af15d98"
+  - name: "🇷🇺 35. 89.208.208.92:9443"
+    type: vless
+    server: "89.208.208.92"
+    port: 9443
+    uuid: "cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4"
+    servername: "loadtest.dev.urent.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "qq"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
+      short-id: "689def22fcb54e86"
+  - name: "🇷🇺 36. 72.56.18.179:443"
+    type: vless
+    server: "72.56.18.179"
+    port: 443
+    uuid: "a2415a12-3f92-4636-9823-9828d3ceb818"
+    servername: "www.ya.ru"
+    network: "tcp"
+    client-fingerprint: "firefox"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ"
+      short-id: "2af15d98"
+  - name: "🇷🇺 37. 51.250.43.93:443"
+    type: vless
+    server: "51.250.43.93"
+    port: 443
+    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
+    servername: "ads.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
+  - name: "🇷🇺 38. 72.56.18.179:443"
+    type: vless
+    server: "72.56.18.179"
+    port: 443
+    uuid: "a2415a12-3f92-4636-9823-9828d3ceb818"
+    servername: "www.ya.ru"
+    network: "tcp"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "8xufuXmVTmxmM9SKIN1P6x3CFstZdl1mfSxr_LfOkDQ"
+      short-id: "2af15d98"
+  - name: "🇷🇺 39. 213.226.112.199:443"
+    type: vless
+    server: "213.226.112.199"
+    port: 443
+    uuid: "dedb32d2-4447-4cac-86ab-a5ce740252f1"
+    servername: "wl-7-1.nodes.ac"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "edge"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "YuzT0sT_KDCQ6vvJDJAzBLXq3zi-1uAAzrAeB9q0xlU"
+      short-id: "9de49921459cc008"
+  - name: "🇷🇺 40. 85.208.85.227:8443"
+    type: vless
+    server: "85.208.85.227"
+    port: 8443
+    uuid: "f4e98990-648f-448a-9264-64040b413811"
+    servername: "rbc.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "eOSTlPCwxYoFWH74DVgLUX_dJb9wmHL33MMU5lxMwCE"
+      short-id: "d20b72a7"
+  - name: "🇷🇺 41. 51.250.43.93:443"
+    type: vless
+    server: "51.250.43.93"
+    port: 443
+    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
+    servername: "ads.x5.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
+  - name: "🇷🇺 42. 5.42.126.157:443"
+    type: vless
+    server: "5.42.126.157"
+    port: 443
+    uuid: "029a4bc6-4557-4b6b-a5fc-6232e943e43b"
+    servername: "fi.sellflow.org"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+  - name: "🇷🇺 43. 146.185.211.107:8444"
+    type: vless
+    server: "146.185.211.107"
+    port: 8444
+    uuid: "63a16ebb-8687-42ac-972a-5914cafad1d5"
+    servername: "yandex.ru"
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    client-fingerprint: "chrome"
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: "hL6rNCNtquIMhYV8V3WOrowSgIwko61yQIX2o1w6_lY"
+      short-id: "0d62c138f2bf1ba8"
+  - name: "🇷🇺 44. 89.208.208.92:7443"
     type: vless
     server: "89.208.208.92"
     port: 7443
@@ -20,395 +606,7 @@ proxies:
       short-id: "3210e0eee6605048"
     grpc-opts:
       grpc-service-name: "grpc"
-  - name: "🇷🇺 2. 82.202.157.207:443"
-    type: vless
-    server: "82.202.157.207"
-    port: 443
-    uuid: "f4e98990-648f-448a-9264-64040b413811"
-    servername: "rbc.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "pSM8cZd3BzdI5gp0UJaufCEFUjamTpYtHcbFudbk11s"
-      short-id: "b224c00dc01d6c96"
-  - name: "🇷🇺 3. 185.229.9.131:443"
-    type: vless
-    server: "185.229.9.131"
-    port: 443
-    uuid: "76be5df0-235b-4e10-8262-2a2c45ecd937"
-    servername: "ads.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "jH_LLqDnSPNz8SU_PC30VKKVKxQGU3QkbAr33bb9RGo"
-      short-id: "27e53bbcab7593d7"
-  - name: "🇷🇺 4. 5.183.253.171:443"
-    type: vless
-    server: "5.183.253.171"
-    port: 443
-    uuid: "31fb98b7-e7a1-4b56-8c6a-3f060f06393c"
-    servername: "eh.vk.com"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
-      short-id: "8248954896"
-  - name: "🇷🇺 5. 81.163.23.125:443"
-    type: vless
-    server: "81.163.23.125"
-    port: 443
-    uuid: "117fcddf-4134-4fc9-911f-779fea940d6e"
-    servername: "ads.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "c8fQY4Ywo9NPZS0CuujyztRI-8z0D7fREoz8laMDVkQ"
-      short-id: "a9c4f17e3b62d8"
-  - name: "🇷🇺 6. 5.183.253.171:443"
-    type: vless
-    server: "5.183.253.171"
-    port: 443
-    uuid: "31fb98b7-e7a1-4b56-8c6a-3f060f06393c"
-    servername: "eh.vk.com"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
-      short-id: "8248954896"
-  - name: "🇷🇺 7. 37.9.4.224:443"
-    type: vless
-    server: "37.9.4.224"
-    port: 443
-    uuid: "dedb32d2-4447-4cac-86ab-a5ce740252f1"
-    servername: "wl-2-1.legendary.ac"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "uL4x8EbCl080G43kFlv8nbpEyseWi1Dc_bl8F7lWtm8"
-      short-id: "aa03ec59c9695e91"
-  - name: "🇷🇺 8. 51.250.24.222:443"
-    type: vless
-    server: "51.250.24.222"
-    port: 443
-    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 9. 51.250.24.232:443"
-    type: vless
-    server: "51.250.24.232"
-    port: 443
-    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 10. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    servername: "cms-res-web.online.sberbank.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "🇷🇺 11. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    servername: "cms-res-web.online.sberbank.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "🇷🇺 12. 51.250.102.69:443"
-    type: vless
-    server: "51.250.102.69"
-    port: 443
-    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 13. 51.250.103.104:443"
-    type: vless
-    server: "51.250.103.104"
-    port: 443
-    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 14. 51.250.47.193:443"
-    type: vless
-    server: "51.250.47.193"
-    port: 443
-    uuid: "76be5df0-235b-4e10-8262-2a2c45ecd937"
-    servername: "ads.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "random"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "v6rib0-2FxBd1MnBxdylbIRIhvXywSj56QEtCkaEuBo"
-      short-id: "27e53bbcab7593d7"
-  - name: "🇷🇺 15. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    servername: "cms-res-web.online.sberbank.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "🇷🇺 16. 158.160.17.171:443"
-    type: vless
-    server: "158.160.17.171"
-    port: 443
-    uuid: "76be5df0-235b-4e10-8262-2a2c45ecd937"
-    servername: "ads.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "random"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "v6rib0-2FxBd1MnBxdylbIRIhvXywSj56QEtCkaEuBo"
-      short-id: "27e53bbcab7593d7"
-  - name: "🇷🇺 17. 217.26.24.101:23151"
-    type: vless
-    server: "217.26.24.101"
-    port: 23151
-    uuid: "9287f532-4150-48ff-a755-64b21e30e9c3"
-    servername: "cms-res-web.online.sberbank.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI"
-  - name: "🇷🇺 18. 51.250.47.193:443"
-    type: vless
-    server: "51.250.47.193"
-    port: 443
-    uuid: "76be5df0-235b-4e10-8262-2a2c45ecd937"
-    servername: "smartcaptcha.yandexcloud.net"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "random"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "iRbc5G3wZbluYutzDvrJlc356yJsEnhV1T4tvE-tCnM"
-      short-id: "27e53bbcab7593d7"
-  - name: "🇷🇺 19. 51.250.24.222:443"
-    type: vless
-    server: "51.250.24.222"
-    port: 443
-    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 20. 85.208.85.227:443"
-    type: vless
-    server: "85.208.85.227"
-    port: 443
-    uuid: "f4e98990-648f-448a-9264-64040b413811"
-    servername: "rbc.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "firefox"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI"
-      short-id: "1f7b8197dcce92"
-  - name: "🇷🇺 21. 51.250.108.162:443"
-    type: vless
-    server: "51.250.108.162"
-    port: 443
-    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 22. 51.250.104.246:443"
-    type: vless
-    server: "51.250.104.246"
-    port: 443
-    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 23. 51.250.97.18:443"
-    type: vless
-    server: "51.250.97.18"
-    port: 443
-    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 24. 185.147.27.150:58888"
-    type: vless
-    server: "185.147.27.150"
-    port: 58888
-    uuid: "7283d2d5-7b14-431b-9d1f-96f2dac4a97b"
-    servername: "max.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "oPb9QJL_Mys7JtX3P3O8Jygw511Z-M1Z3CL33nBL7wk"
-      short-id: "6ba85179e30d4fc2"
-  - name: "🇷🇺 25. 51.250.102.69:443"
-    type: vless
-    server: "51.250.102.69"
-    port: 443
-    uuid: "09c4d736-036b-47c8-81e2-ecfa72f1418d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 26. 51.250.47.193:443"
-    type: vless
-    server: "51.250.47.193"
-    port: 443
-    uuid: "76be5df0-235b-4e10-8262-2a2c45ecd937"
-    servername: "api-maps.yandex.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "random"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "xwusQ4IEWdYyuPLCc4LOA89P6HyQDNT7xo_75v2YW2I"
-      short-id: "27e53bbcab7593d7"
-  - name: "🇷🇺 27. 193.168.46.180:443"
-    type: vless
-    server: "193.168.46.180"
-    port: 443
-    uuid: "d417d638-de4c-4ccd-8489-abf67d6ccb06"
-    servername: "rruu.persik.host"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "D0FqzTuVSzCF8IcFo64SFIpMsaGV47LW3el2GCCVoFY"
-      short-id: "c1a7e9b4711d5f60"
-  - name: "🇷🇺 28. 51.250.103.104:443"
-    type: vless
-    server: "51.250.103.104"
-    port: 443
-    uuid: "bf322338-1be8-49af-a9a2-5869812a3f8d"
-    servername: "cdp.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "safari"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI"
-      short-id: "8ec792bfd725be8a"
-  - name: "🇷🇺 29. 85.208.85.227:8443"
-    type: vless
-    server: "85.208.85.227"
-    port: 8443
-    uuid: "f4e98990-648f-448a-9264-64040b413811"
-    servername: "rbc.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "eOSTlPCwxYoFWH74DVgLUX_dJb9wmHL33MMU5lxMwCE"
-      short-id: "d20b72a7"
-  - name: "🇷🇺 30. 89.208.208.92:9443"
+  - name: "🇷🇺 45. 89.208.208.92:9443"
     type: vless
     server: "89.208.208.92"
     port: 9443
@@ -416,80 +614,12 @@ proxies:
     servername: "loadtest.dev.urent.ru"
     network: "tcp"
     flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
+    client-fingerprint: "chrome"
     udp: true
     tls: true
     reality-opts:
       public-key: "aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q"
       short-id: "689def22fcb54e86"
-  - name: "🇷🇺 31. 51.250.43.93:443"
-    type: vless
-    server: "51.250.43.93"
-    port: 443
-    uuid: "91427003-38cb-473e-95f2-a4b500c91f7b"
-    servername: "ads.x5.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "MXpxhnU1ctGMXbGGjIrtDfjRX-BbbpsjnS4-SUv3OFs"
-  - name: "🇷🇺 32. 89.169.39.55:443"
-    type: vless
-    server: "89.169.39.55"
-    port: 443
-    uuid: "c61ec320-29f1-4e00-9272-8b676e6957b4"
-    servername: "max.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "qq"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "Lbug_wz0y9xgKeDK44D9kuUap0fXzNKyv_nMJxnZRzU"
-      short-id: "08000000"
-  - name: "🇷🇺 33. 83.229.14.125:13569"
-    type: vless
-    server: "83.229.14.125"
-    port: 13569
-    uuid: "7283d2d5-7b14-431b-9d1f-96f2dac4a97b"
-    servername: "business.vk.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "Xl6notHrxamdPvx0cZGGPRQOT-PR1rkjryRazI9i1VI"
-  - name: "🇷🇺 34. 5.183.253.171:443"
-    type: vless
-    server: "5.183.253.171"
-    port: 443
-    uuid: "31fb98b7-e7a1-4b56-8c6a-3f060f06393c"
-    servername: "eh.vk.com"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28"
-      short-id: "8248954896"
-  - name: "🇷🇺 35. 85.208.85.227:443"
-    type: vless
-    server: "85.208.85.227"
-    port: 443
-    uuid: "f4e98990-648f-448a-9264-64040b413811"
-    servername: "rbc.ru"
-    network: "tcp"
-    flow: "xtls-rprx-vision"
-    client-fingerprint: "chrome"
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: "FmCNU-XuNo9Z5RUPzjr9raJtDLdl2rTOJa2AoQgBulI"
-      short-id: "1f7b8197dcce92"
 
 proxy-groups:
   - name: "🚀 Выбор (RU Only)"
@@ -497,107 +627,127 @@ proxy-groups:
     proxies:
       - "🔯 Fallback"
       - "🎯 Auto"
-      - "🇷🇺 1. 89.208.208.92:7443"
-      - "🇷🇺 2. 82.202.157.207:443"
-      - "🇷🇺 3. 185.229.9.131:443"
-      - "🇷🇺 4. 5.183.253.171:443"
-      - "🇷🇺 5. 81.163.23.125:443"
-      - "🇷🇺 6. 5.183.253.171:443"
-      - "🇷🇺 7. 37.9.4.224:443"
-      - "🇷🇺 8. 51.250.24.222:443"
-      - "🇷🇺 9. 51.250.24.232:443"
-      - "🇷🇺 10. 217.26.24.101:23151"
-      - "🇷🇺 11. 217.26.24.101:23151"
-      - "🇷🇺 12. 51.250.102.69:443"
-      - "🇷🇺 13. 51.250.103.104:443"
-      - "🇷🇺 14. 51.250.47.193:443"
-      - "🇷🇺 15. 217.26.24.101:23151"
-      - "🇷🇺 16. 158.160.17.171:443"
-      - "🇷🇺 17. 217.26.24.101:23151"
-      - "🇷🇺 18. 51.250.47.193:443"
-      - "🇷🇺 19. 51.250.24.222:443"
-      - "🇷🇺 20. 85.208.85.227:443"
+      - "🇷🇺 1. 157.22.241.175:7443"
+      - "🇷🇺 2. 185.147.27.150:58888"
+      - "🇷🇺 3. 146.185.209.234:443"
+      - "🇷🇺 4. 146.185.209.234:443"
+      - "🇷🇺 5. 217.26.24.101:23151"
+      - "🇷🇺 6. 217.26.24.101:23151"
+      - "🇷🇺 7. 51.250.104.246:443"
+      - "🇷🇺 8. 194.93.0.180:47200"
+      - "🇷🇺 9. 217.26.24.101:23151"
+      - "🇷🇺 10. 5.42.126.157:443"
+      - "🇷🇺 11. 51.250.97.18:443"
+      - "🇷🇺 12. 193.168.46.180:443"
+      - "🇷🇺 13. 51.250.24.232:443"
+      - "🇷🇺 14. 217.26.24.101:23151"
+      - "🇷🇺 15. 193.168.46.180:443"
+      - "🇷🇺 16. 51.250.24.232:443"
+      - "🇷🇺 17. 51.250.106.87:443"
+      - "🇷🇺 18. 193.168.46.180:443"
+      - "🇷🇺 19. 51.250.97.18:443"
+      - "🇷🇺 20. 82.202.157.207:443"
   - name: "🔯 Fallback"
     type: fallback
     url: "https://cp.cloudflare.com/"
     interval: 300
     proxies:
-      - "🇷🇺 1. 89.208.208.92:7443"
-      - "🇷🇺 2. 82.202.157.207:443"
-      - "🇷🇺 3. 185.229.9.131:443"
-      - "🇷🇺 4. 5.183.253.171:443"
-      - "🇷🇺 5. 81.163.23.125:443"
-      - "🇷🇺 6. 5.183.253.171:443"
-      - "🇷🇺 7. 37.9.4.224:443"
-      - "🇷🇺 8. 51.250.24.222:443"
-      - "🇷🇺 9. 51.250.24.232:443"
-      - "🇷🇺 10. 217.26.24.101:23151"
-      - "🇷🇺 11. 217.26.24.101:23151"
-      - "🇷🇺 12. 51.250.102.69:443"
-      - "🇷🇺 13. 51.250.103.104:443"
-      - "🇷🇺 14. 51.250.47.193:443"
-      - "🇷🇺 15. 217.26.24.101:23151"
-      - "🇷🇺 16. 158.160.17.171:443"
-      - "🇷🇺 17. 217.26.24.101:23151"
-      - "🇷🇺 18. 51.250.47.193:443"
-      - "🇷🇺 19. 51.250.24.222:443"
-      - "🇷🇺 20. 85.208.85.227:443"
-      - "🇷🇺 21. 51.250.108.162:443"
-      - "🇷🇺 22. 51.250.104.246:443"
-      - "🇷🇺 23. 51.250.97.18:443"
-      - "🇷🇺 24. 185.147.27.150:58888"
-      - "🇷🇺 25. 51.250.102.69:443"
-      - "🇷🇺 26. 51.250.47.193:443"
-      - "🇷🇺 27. 193.168.46.180:443"
-      - "🇷🇺 28. 51.250.103.104:443"
-      - "🇷🇺 29. 85.208.85.227:8443"
-      - "🇷🇺 30. 89.208.208.92:9443"
+      - "🇷🇺 1. 157.22.241.175:7443"
+      - "🇷🇺 2. 185.147.27.150:58888"
+      - "🇷🇺 3. 146.185.209.234:443"
+      - "🇷🇺 4. 146.185.209.234:443"
+      - "🇷🇺 5. 217.26.24.101:23151"
+      - "🇷🇺 6. 217.26.24.101:23151"
+      - "🇷🇺 7. 51.250.104.246:443"
+      - "🇷🇺 8. 194.93.0.180:47200"
+      - "🇷🇺 9. 217.26.24.101:23151"
+      - "🇷🇺 10. 5.42.126.157:443"
+      - "🇷🇺 11. 51.250.97.18:443"
+      - "🇷🇺 12. 193.168.46.180:443"
+      - "🇷🇺 13. 51.250.24.232:443"
+      - "🇷🇺 14. 217.26.24.101:23151"
+      - "🇷🇺 15. 193.168.46.180:443"
+      - "🇷🇺 16. 51.250.24.232:443"
+      - "🇷🇺 17. 51.250.106.87:443"
+      - "🇷🇺 18. 193.168.46.180:443"
+      - "🇷🇺 19. 51.250.97.18:443"
+      - "🇷🇺 20. 82.202.157.207:443"
+      - "🇷🇺 21. 37.9.4.224:443"
+      - "🇷🇺 22. 51.250.103.104:443"
+      - "🇷🇺 23. 51.250.104.246:443"
+      - "🇷🇺 24. 46.254.17.72:443"
+      - "🇷🇺 25. 72.56.18.179:443"
+      - "🇷🇺 26. 51.250.102.69:443"
+      - "🇷🇺 27. 72.56.18.179:443"
+      - "🇷🇺 28. 92.53.104.60:443"
+      - "🇷🇺 29. 51.250.108.162:443"
+      - "🇷🇺 30. 72.56.18.179:443"
       - "🇷🇺 31. 51.250.43.93:443"
-      - "🇷🇺 32. 89.169.39.55:443"
-      - "🇷🇺 33. 83.229.14.125:13569"
-      - "🇷🇺 34. 5.183.253.171:443"
-      - "🇷🇺 35. 85.208.85.227:443"
+      - "🇷🇺 32. 89.208.208.92:9443"
+      - "🇷🇺 33. 72.56.39.45:443"
+      - "🇷🇺 34. 72.56.18.179:443"
+      - "🇷🇺 35. 89.208.208.92:9443"
+      - "🇷🇺 36. 72.56.18.179:443"
+      - "🇷🇺 37. 51.250.43.93:443"
+      - "🇷🇺 38. 72.56.18.179:443"
+      - "🇷🇺 39. 213.226.112.199:443"
+      - "🇷🇺 40. 85.208.85.227:8443"
+      - "🇷🇺 41. 51.250.43.93:443"
+      - "🇷🇺 42. 5.42.126.157:443"
+      - "🇷🇺 43. 146.185.211.107:8444"
+      - "🇷🇺 44. 89.208.208.92:7443"
+      - "🇷🇺 45. 89.208.208.92:9443"
   - name: "🎯 Auto"
     type: url-test
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
     proxies:
-      - "🇷🇺 1. 89.208.208.92:7443"
-      - "🇷🇺 2. 82.202.157.207:443"
-      - "🇷🇺 3. 185.229.9.131:443"
-      - "🇷🇺 4. 5.183.253.171:443"
-      - "🇷🇺 5. 81.163.23.125:443"
-      - "🇷🇺 6. 5.183.253.171:443"
-      - "🇷🇺 7. 37.9.4.224:443"
-      - "🇷🇺 8. 51.250.24.222:443"
-      - "🇷🇺 9. 51.250.24.232:443"
-      - "🇷🇺 10. 217.26.24.101:23151"
-      - "🇷🇺 11. 217.26.24.101:23151"
-      - "🇷🇺 12. 51.250.102.69:443"
-      - "🇷🇺 13. 51.250.103.104:443"
-      - "🇷🇺 14. 51.250.47.193:443"
-      - "🇷🇺 15. 217.26.24.101:23151"
-      - "🇷🇺 16. 158.160.17.171:443"
-      - "🇷🇺 17. 217.26.24.101:23151"
-      - "🇷🇺 18. 51.250.47.193:443"
-      - "🇷🇺 19. 51.250.24.222:443"
-      - "🇷🇺 20. 85.208.85.227:443"
-      - "🇷🇺 21. 51.250.108.162:443"
-      - "🇷🇺 22. 51.250.104.246:443"
-      - "🇷🇺 23. 51.250.97.18:443"
-      - "🇷🇺 24. 185.147.27.150:58888"
-      - "🇷🇺 25. 51.250.102.69:443"
-      - "🇷🇺 26. 51.250.47.193:443"
-      - "🇷🇺 27. 193.168.46.180:443"
-      - "🇷🇺 28. 51.250.103.104:443"
-      - "🇷🇺 29. 85.208.85.227:8443"
-      - "🇷🇺 30. 89.208.208.92:9443"
+      - "🇷🇺 1. 157.22.241.175:7443"
+      - "🇷🇺 2. 185.147.27.150:58888"
+      - "🇷🇺 3. 146.185.209.234:443"
+      - "🇷🇺 4. 146.185.209.234:443"
+      - "🇷🇺 5. 217.26.24.101:23151"
+      - "🇷🇺 6. 217.26.24.101:23151"
+      - "🇷🇺 7. 51.250.104.246:443"
+      - "🇷🇺 8. 194.93.0.180:47200"
+      - "🇷🇺 9. 217.26.24.101:23151"
+      - "🇷🇺 10. 5.42.126.157:443"
+      - "🇷🇺 11. 51.250.97.18:443"
+      - "🇷🇺 12. 193.168.46.180:443"
+      - "🇷🇺 13. 51.250.24.232:443"
+      - "🇷🇺 14. 217.26.24.101:23151"
+      - "🇷🇺 15. 193.168.46.180:443"
+      - "🇷🇺 16. 51.250.24.232:443"
+      - "🇷🇺 17. 51.250.106.87:443"
+      - "🇷🇺 18. 193.168.46.180:443"
+      - "🇷🇺 19. 51.250.97.18:443"
+      - "🇷🇺 20. 82.202.157.207:443"
+      - "🇷🇺 21. 37.9.4.224:443"
+      - "🇷🇺 22. 51.250.103.104:443"
+      - "🇷🇺 23. 51.250.104.246:443"
+      - "🇷🇺 24. 46.254.17.72:443"
+      - "🇷🇺 25. 72.56.18.179:443"
+      - "🇷🇺 26. 51.250.102.69:443"
+      - "🇷🇺 27. 72.56.18.179:443"
+      - "🇷🇺 28. 92.53.104.60:443"
+      - "🇷🇺 29. 51.250.108.162:443"
+      - "🇷🇺 30. 72.56.18.179:443"
       - "🇷🇺 31. 51.250.43.93:443"
-      - "🇷🇺 32. 89.169.39.55:443"
-      - "🇷🇺 33. 83.229.14.125:13569"
-      - "🇷🇺 34. 5.183.253.171:443"
-      - "🇷🇺 35. 85.208.85.227:443"
+      - "🇷🇺 32. 89.208.208.92:9443"
+      - "🇷🇺 33. 72.56.39.45:443"
+      - "🇷🇺 34. 72.56.18.179:443"
+      - "🇷🇺 35. 89.208.208.92:9443"
+      - "🇷🇺 36. 72.56.18.179:443"
+      - "🇷🇺 37. 51.250.43.93:443"
+      - "🇷🇺 38. 72.56.18.179:443"
+      - "🇷🇺 39. 213.226.112.199:443"
+      - "🇷🇺 40. 85.208.85.227:8443"
+      - "🇷🇺 41. 51.250.43.93:443"
+      - "🇷🇺 42. 5.42.126.157:443"
+      - "🇷🇺 43. 146.185.211.107:8444"
+      - "🇷🇺 44. 89.208.208.92:7443"
+      - "🇷🇺 45. 89.208.208.92:9443"
 rules:
   - "GEOIP,RU,DIRECT"
   - "GEOIP,CN,DIRECT"
