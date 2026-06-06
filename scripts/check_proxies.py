@@ -151,12 +151,19 @@ def parse_host_port(uri: str):
         p = urllib.parse.urlparse(uri)
         if scheme == "hysteria2":
             host = p.hostname
-            port = p.port or 443
+            try:
+                port = p.port or 443
+            except ValueError:
+                port = 443
             if host and port:
                 return host, port, "udp"
         else:
-            if p.hostname and p.port:
-                return p.hostname, p.port, "tcp"
+            if p.hostname:
+                try:
+                    port = p.port or 443
+                except ValueError:
+                    port = 443
+                return p.hostname, port, "tcp"
     except Exception:
         pass
     return None
@@ -188,10 +195,6 @@ def get_flag(country_code: str) -> str:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
-    """
-    Использует json.dumps для идеального экранирования строк в YAML.
-    ensure_ascii=False сохраняет эмодзи как raw UTF-8.
-    """
     if val is None:
         return '""'
     return json.dumps(str(val), ensure_ascii=False)
@@ -200,26 +203,52 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
-        params = dict(urllib.parse.parse_qsl(p.query))
+        
+        try:
+            params = dict(urllib.parse.parse_qsl(p.query))
+        except Exception:
+            params = {}
+            
         flag = get_flag(country)
         
-        if scheme == "vless":
-            uid = p.username or ""
-            host = p.hostname or ""
+        try:
             port = p.port or 443
+        except ValueError:
+            port = 443
             
+        host = p.hostname or ""
+        if not host:
+            return None 
+            
+        if scheme == "vless":
+            uid = p.username or params.get("uuid", "")
             sni = params.get("sni", params.get("peer", host))
             if not sni: sni = host
             
+            # Нормализация fp (Clash Meta поддерживает только этот список)
             fp = params.get("fp", "chrome")
+            valid_fps = ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"]
+            if fp not in valid_fps:
+                fp = "chrome"
+                
+            # Нормализация network
             net = params.get("type", "tcp")
+            valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic"]
+            if net not in valid_nets:
+                net = "tcp"
+                
             sec = params.get("security", "none")
             pbk = params.get("pbk", "")
             sid = params.get("sid", "")
             path = params.get("path", "/")
             host_header = params.get("host", host)
             serviceName = params.get("serviceName", "")
+            
+            # Нормализация flow
             flow = params.get("flow", "")
+            valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443", "xtls-rprx-origin", "xtls-rprx-origin-udp443", "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
+            if flow and flow not in valid_flows:
+                flow = ""
             
             proxy = {
                 "name": f"{flag} {idx+1}. {host}:{port}",
@@ -239,7 +268,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                 if sid: reality_opts["short-id"] = sid
                 if reality_opts:
                     proxy["reality-opts"] = reality_opts
-                proxy["client-fingerprint"] = fp or "chrome"
+                proxy["client-fingerprint"] = fp
             elif sec == "tls":
                 proxy["tls"] = True
                 proxy["skip-cert-verify"] = True
@@ -257,15 +286,14 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             return proxy
             
         elif scheme in ("hysteria2", "hy2"):
-            host = p.hostname or ""
-            port = p.port or 443
-            auth = p.username or p.password or params.get("password", "")
-            
+            auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             sni = params.get("sni", host)
             if not sni: sni = host
             
             insecure = params.get("insecure", "0") == "1"
             obfs = params.get("obfs", "")
+            if obfs and obfs != "salamander":
+                obfs = "" # Clash поддерживает только salamander
             obfs_password = params.get("obfs-password", "")
             
             proxy = {
@@ -297,19 +325,19 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         lines.append(f"    server: {yaml_str(p['server'])}")
         lines.append(f"    port: {p['port']}")
         
-        # Обязательные и опциональные поля (строгая проверка на пустоту, чтобы Clash не отбросил прокси)
-        if 'uuid' in p and p['uuid']:
+        # Всегда пишем uuid и password, даже если пустые (чтобы Clash не выкидывал из-за отсутствия ключа)
+        if 'uuid' in p:
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
-        if 'password' in p and p['password']:
+        if 'password' in p:
             lines.append(f"    password: {yaml_str(p['password'])}")
             
-        if 'servername' in p and p['servername']:
+        if 'servername' in p:
             lines.append(f"    servername: {yaml_str(p['servername'])}")
-        if 'sni' in p and p['sni']:
+        if 'sni' in p:
             lines.append(f"    sni: {yaml_str(p['sni'])}")
             
         for key in ['network', 'flow', 'client-fingerprint', 'obfs', 'obfs-password']:
-            if key in p and p[key]:
+            if key in p:
                 lines.append(f"    {key}: {yaml_str(p[key])}")
                 
         if 'skip-cert-verify' in p:
@@ -322,24 +350,20 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         if 'reality-opts' in p and p['reality-opts']:
             lines.append("    reality-opts:")
             for k, v in p['reality-opts'].items():
-                if v: # Исключаем пустые short-id и public-key
-                    lines.append(f"      {k}: {yaml_str(v)}")
+                lines.append(f"      {k}: {yaml_str(v)}")
         if 'ws-opts' in p:
             lines.append("    ws-opts:")
             for k, v in p['ws-opts'].items():
                 if isinstance(v, dict):
                     lines.append(f"      {k}:")
                     for kk, vv in v.items():
-                        if vv:
-                            lines.append(f"        {kk}: {yaml_str(vv)}")
+                        lines.append(f"        {kk}: {yaml_str(vv)}")
                 else:
-                    if v:
-                        lines.append(f"      {k}: {yaml_str(v)}")
+                    lines.append(f"      {k}: {yaml_str(v)}")
         if 'grpc-opts' in p:
             lines.append("    grpc-opts:")
             for k, v in p['grpc-opts'].items():
-                if v:
-                    lines.append(f"      {k}: {yaml_str(v)}")
+                lines.append(f"      {k}: {yaml_str(v)}")
                     
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
