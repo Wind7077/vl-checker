@@ -603,7 +603,8 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                     "users": [{"id": uid, "encryption": "none", "flow": flow}]}]},
                 "streamSettings": {"network": net},
             }
-            ss = outbound["streamSettings"].  
+            ss = outbound["streamSettings"]
+            
             if sec == "reality":
                 if not pbk:
                     return None  # без publicKey reality не работает
