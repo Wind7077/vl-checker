@@ -190,7 +190,7 @@ def get_flag(country_code: str) -> str:
 def yaml_str(val):
     """
     Использует json.dumps для идеального экранирования строк в YAML.
-    ensure_ascii=False сохраняет эмодзи как raw UTF-8 (без суррогатных пар \uXXXX).
+    ensure_ascii=False сохраняет эмодзи как raw UTF-8.
     """
     if val is None:
         return '""'
