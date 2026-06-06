@@ -607,9 +607,10 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             if sec == "reality":
                 if not pbk:
                     return None
-                # sid: пустая строка валидна; непустая должна быть hex чётной длины ≤16 символов
+                # sid: пустая строка валидна; непустая — hex чётной длины ≤16 символов
+                sid = sid.strip().lower()  # xray требует строчный hex
                 if sid and (len(sid) % 2 != 0
-                            or not re.match(r'^[0-9a-fA-F]+$', sid)
+                            or not re.match(r'^[0-9a-f]+$', sid)
                             or len(sid) > 16):
                     return None
                 ss["security"] = "reality"
