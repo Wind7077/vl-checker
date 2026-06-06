@@ -1,5 +1,5 @@
 # Clash Meta / Mihomo / FClash
-# Russia (RU) only | 2026-06-06 13:54 UTC | 5 proxies
+# Russia (RU) only | 2026-06-06 14:04 UTC | 5 proxies
 
 mixed-port: 7890
 allow-lan: false
@@ -14,7 +14,7 @@ dns:
   fallback: [tls://8.8.4.4:853, tls://1.0.0.1:853]
 
 proxies:
-  - name: VLESS-001-569.4ms-87.239.108.241
+  - name: VLESS-001-807.1ms-87.239.108.241
     type: vless
     server: 87.239.108.241
     port: 443
@@ -26,15 +26,19 @@ proxies:
     reality-opts:
       public-key: EZ9ZUwrabGCJfowEvD4fI0ANMsxYh7hchEAbsnOTl0s
       short-id: 803367e3aceaa5e1
-  - name: HYSTERIA2-002-798.5ms-193.53.126.108
-    type: hysteria2
-    server: 193.53.126.108
-    port: 443
-    password: 10550754-cf62-3d3b-ba6a-50be27a275d7
-    sni: s463.okgfwbackxyz.xyz
-    skip-cert-verify: true
+  - name: VLESS-002-1589.0ms-45.12.75.242
+    type: vless
+    server: 45.12.75.242
+    port: 26424
+    uuid: 633f424e-2b11-48da-a6b3-a849dd71456f
     udp: true
-  - name: VLESS-003-1506.3ms-92.53.107.221
+    tls: true
+    servername: ya.ru
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: l8AubqcxQO-HRFJy4pZL1vbLOo-eXit69s-XulSELE0
+      short-id: 23103e1e
+  - name: VLESS-003-2009.7ms-92.53.107.221
     type: vless
     server: 92.53.107.221
     port: 443
@@ -47,7 +51,7 @@ proxies:
     reality-opts:
       public-key: GuwO2OkaDi9Xp9O7cvrJRchUy-p2l3q82ejYxHj1QwA
       short-id: ""
-  - name: VLESS-004-1607.4ms-217.26.24.101
+  - name: VLESS-004-2015.0ms-217.26.24.101
     type: vless
     server: 217.26.24.101
     port: 23151
@@ -60,11 +64,11 @@ proxies:
     reality-opts:
       public-key: eP0MKUFOcNVSVFbHT8GgBLP4LIHZFq8JuVGlCAlH1HI
       short-id: ""
-  - name: VLESS-005-1666.4ms-193.168.46.180
+  - name: VLESS-005-2126.2ms-193.168.46.180
     type: vless
     server: 193.168.46.180
     port: 443
-    uuid: 9eaf4a9c-cdc2-40b7-bc6e-0ddaaedfec2a
+    uuid: 8d960f2a-c5ac-4533-bcef-2e9a8e934b47
     udp: true
     flow: xtls-rprx-vision
     tls: true
@@ -78,11 +82,11 @@ proxy-groups:
   - name: "🚀 Auto"
     type: url-test
     proxies:
-    - VLESS-001-569.4ms-87.239.108.241
-    - HYSTERIA2-002-798.5ms-193.53.126.108
-    - VLESS-003-1506.3ms-92.53.107.221
-    - VLESS-004-1607.4ms-217.26.24.101
-    - VLESS-005-1666.4ms-193.168.46.180
+    - VLESS-001-807.1ms-87.239.108.241
+    - VLESS-002-1589.0ms-45.12.75.242
+    - VLESS-003-2009.7ms-92.53.107.221
+    - VLESS-004-2015.0ms-217.26.24.101
+    - VLESS-005-2126.2ms-193.168.46.180
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
@@ -91,11 +95,11 @@ proxy-groups:
   - name: "🌐 Select"
     type: select
     proxies:
-    - VLESS-001-569.4ms-87.239.108.241
-    - HYSTERIA2-002-798.5ms-193.53.126.108
-    - VLESS-003-1506.3ms-92.53.107.221
-    - VLESS-004-1607.4ms-217.26.24.101
-    - VLESS-005-1666.4ms-193.168.46.180
+    - VLESS-001-807.1ms-87.239.108.241
+    - VLESS-002-1589.0ms-45.12.75.242
+    - VLESS-003-2009.7ms-92.53.107.221
+    - VLESS-004-2015.0ms-217.26.24.101
+    - VLESS-005-2126.2ms-193.168.46.180
 
 rules:
   - GEOIP,RU,DIRECT
