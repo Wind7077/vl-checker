@@ -604,11 +604,15 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                 "streamSettings": {"network": net},
             }
             ss = outbound["streamSettings"]
-            if sec == "reality":
+if sec == "reality":
+                if not pbk:
+                    return None  # без publicKey reality не работает
                 ss["security"] = "reality"
                 ss["realitySettings"] = {
-                    "serverName": sni, "fingerprint": fp,
-                    "publicKey": pbk, "shortId": sid,
+                    "serverName": sni,
+                    "fingerprint": fp if fp else "chrome",
+                    "publicKey": pbk,
+                    "shortId": sid if sid else "0",
                 }
             elif sec == "tls":
                 ss["security"] = "tls"
