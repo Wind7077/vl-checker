@@ -23,7 +23,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── Пути ──────────────────────────────────────────────────────────────
+# ── Пути ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
@@ -37,19 +37,19 @@ PROBE_URLS = [
     ("https://www.google.com/generate_204", [200, 204]),
 ]
 
-# ── Настройки ─────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "vmess","trojan","ss"]   # добавь "vmess","trojan","ss" при необходимости
-REQUIRE_REALITY     = True                     # False — брать любой vless
-ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
+# ── Настройки ─────────────────────────────────────────────────────────────────
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
+REQUIRE_REALITY     = True
+ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 300
+TOP_N               = 250
 TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 1200
+STAGE2_CANDIDATES   = 1000
 SOCKS_BASE_PORT     = 20000
 
 HYSTERIA2_PROBE_TIMEOUT = 12
@@ -61,7 +61,6 @@ else:
     XRAY_BIN = Path("/tmp/xray-bin/xray")
     HY2_BIN  = Path("/tmp/hysteria-bin/hysteria")
 
-# ── Ключевые слова для проверки GeoIP ─────────────────────────────────────────
 RU_ISP_KEYWORDS = [
     'rostelecom', 'mts', 'megafon', 'beeline', 'vimpelcom', 'ttk', 'ertelecom', 
     'dom.ru', 'yandex', 'vk', 'mail.ru', 'selectel', 'timeweb', 'reg.ru', 
@@ -79,43 +78,31 @@ FOREIGN_CLOUD_KEYWORDS = [
     'm247', 'zayo', 'gtt', 'pwn', 'path', 'equinix', 'cybera'
 ]
 
-# ── Глобальный счетчик ошибок конвертации ─────────────────────────────────────
-CONVERSION_FAILURES = {
-    "no_hostname": 0,
-    "invalid_port": 0,
-    "no_uuid_vless": 0,
-    "json_error": 0,
-    "parse_error": 0,
-    "unknown": 0,
-}
 
-# ══════════════════════════════════════════════════════════════════
-# Загрузка источников из sources.txt
-# ══════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
+# Загрузка источников
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
     if not SOURCES_FILE.exists():
         print(f"  ❌ Файл {SOURCES_FILE} не найден.")
         sys.exit(1)
-
     urls = []
     with open(SOURCES_FILE, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith("#"):
                 urls.append(line)
-
     if not urls:
         print(f"  ❌ {SOURCES_FILE} не содержит ни одного URL.")
         sys.exit(1)
-
     print(f"  📄 Загружено {len(urls)} источников из {SOURCES_FILE.name}")
     return urls
 
 
-# ══════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Helpers
-# ══════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def decode_b64(data: str) -> str:
     data = data.strip()
@@ -179,9 +166,9 @@ def parse_host_port(uri: str):
     return None
 
 
-# ═════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Country Flags
-# ═════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 FLAG_MAP = {
     "RU": "🇷🇺", "US": "🇺🇸", "DE": "🇩🇪", "NL": "🇳🇱", "FR": "🇫🇷", "GB": "🇬🇧", "IT": "🇮🇹", "ES": "🇪🇸",
@@ -200,240 +187,194 @@ def get_flag(country_code: str) -> str:
     return FLAG_MAP.get(country_code, "🏴")
 
 
-# ════════════════════════════════════════════════════════════════
-# Clash YAML Export
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
+# Clash YAML Export (Улучшенный — максимальный охват)
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
+    """Безопасный YAML-форматировщик строк. Экранирует одинарные кавычки удвоением."""
     if val is None:
-        return '""'
-    return json.dumps(str(val), ensure_ascii=False)
+        return "''"
+    s = str(val)
+    s = s.replace("'", "''")
+    return f"'{s}'"
+
+
+def parse_all_params(uri: str) -> dict:
+    """Извлекает параметры и из query (?key=val), и из fragment (#key=val)."""
+    try:
+        p = urllib.parse.urlparse(uri)
+        params = dict(urllib.parse.parse_qsl(p.query))
+        if p.fragment and '=' in p.fragment:
+            frag_params = dict(urllib.parse.parse_qsl(p.fragment))
+            for k, v in frag_params.items():
+                if k not in params:
+                    params[k] = v
+        return params
+    except Exception:
+        return {}
+
 
 def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict | None:
+    """
+    Агрессивная конвертация URI в Clash-формат.
+    Возвращает словарь даже при битых параметрах — используются дефолтные значения.
+    """
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
-        
-        try:
-            params = dict(urllib.parse.parse_qsl(p.query))
-        except Exception:
-            params = {}
-            
+        params = parse_all_params(uri)
         flag = get_flag(country)
         
         try:
             port = p.port or 443
-        except ValueError:
-            CONVERSION_FAILURES["invalid_port"] += 1
-            return None
+        except (ValueError, TypeError):
+            port = 443
             
         host = p.hostname or ""
         if not host:
-            CONVERSION_FAILURES["no_hostname"] += 1
-            return None 
-            
+            return None
+        
+        proxy_name = f"{flag} {idx+1}. {host}:{port}"
+        
+        # ════════════════════════════════════════════════════════════════
+        # VLESS (с поддержкой Reality, TLS, и всех транспортных протоколов)
+        # ════════════════════════════════════════════════════════════════
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
-                CONVERSION_FAILURES["no_uuid_vless"] += 1
-                return None
-                
-            sni = params.get("sni", params.get("peer", host))
-            if not sni: sni = host
+                # Попробуем извлечь UUID из пути (vless://UUID@host:port)
+                try:
+                    uid = uri.split("://")[1].split("@")[0]
+                except Exception:
+                    uid = ""
+            
+            if not uid:
+                return None  # Без UUID прокси работать не будет
+            
+            sni = params.get("sni") or params.get("peer") or params.get("servername") or host
+            sec = params.get("security", "tls").lower()
+            if sec not in ("tls", "reality", "none"):
+                sec = "tls"
             
             fp = params.get("fp", "chrome")
             valid_fps = ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"]
             if fp not in valid_fps:
                 fp = "chrome"
-                
-            net = params.get("type", "tcp")
-            valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic"]
+            
+            net = params.get("type", "tcp").lower()
+            valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic", "httpupgrade", "splithttp"]
             if net not in valid_nets:
                 net = "tcp"
-                
-            sec = params.get("security", "none")
+            
+            # Приводим h2/httpupgrade/splithttp к tcp для совместимости с Clash Meta
+            clash_net = net
+            if net in ("h2", "httpupgrade", "splithttp"):
+                clash_net = "tcp"
+            
             pbk = params.get("pbk", "")
             sid = params.get("sid", "")
-            path = params.get("path", "/")
-            host_header = params.get("host", host)
+            path = params.get("path", "/") or "/"
+            host_header = params.get("host", "") or host
             serviceName = params.get("serviceName", "")
             
+            # Нормализация flow
             flow = params.get("flow", "")
-            valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443", "xtls-rprx-origin", "xtls-rprx-origin-udp443", "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
-            if flow and flow not in valid_flows:
+            valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443", 
+                          "xtls-rprx-origin", "xtls-rprx-origin-udp443",
+                          "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
+            
+            # Для Reality по умолчанию используем vision, если flow не указан
+            if sec == "reality" and (not flow or flow not in valid_flows):
+                flow = "xtls-rprx-vision"
+            elif flow and flow not in valid_flows:
                 flow = ""
             
             proxy = {
-                "name": f"{flag} {idx+1}. {host}:{port}",
+                "name": proxy_name,
                 "type": "vless",
                 "server": host,
                 "port": port,
                 "uuid": uid,
-                "network": net,
+                "network": clash_net,
                 "udp": True,
-                "servername": sni, 
+                "servername": sni,
+                "skip-cert-verify": True,
             }
             
+            # Reality настройки (обязательны для Clash Meta)
             if sec == "reality":
                 proxy["tls"] = True
+                proxy["client-fingerprint"] = fp
                 reality_opts = {}
-                if pbk: reality_opts["public-key"] = pbk
-                if sid: reality_opts["short-id"] = sid
+                if pbk:
+                    reality_opts["public-key"] = pbk
+                if sid:
+                    reality_opts["short-id"] = sid
                 if reality_opts:
                     proxy["reality-opts"] = reality_opts
-                proxy["client-fingerprint"] = fp
+                if flow:
+                    proxy["flow"] = flow
             elif sec == "tls":
                 proxy["tls"] = True
                 proxy["skip-cert-verify"] = True
+                if flow and flow in valid_flows:
+                    proxy["flow"] = flow
             else:
                 proxy["tls"] = False
-                
+            
+            # Транспортные опции
             if net == "ws":
                 proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
             elif net == "grpc":
-                proxy["grpc-opts"] = {"grpc-service-name": serviceName}
-                
-            if flow:
-                proxy["flow"] = flow
-                
-            return proxy
+                proxy["grpc-opts"] = {"grpc-service-name": serviceName or ""}
             
+            return proxy
+        
+        # ════════════════════════════════════════════════════════════════
+        # HYSTERIA2
+        # ════════════════════════════════════════════════════════════════
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
-            sni = params.get("sni", host)
-            if not sni: sni = host
+            if not auth:
+                # Попробуем извлечь пароль из пути
+                try:
+                    path_part = uri.split("://")[1].split("@")[0]
+                    if path_part:
+                        auth = path_part
+                except Exception:
+                    auth = ""
             
-            insecure = params.get("insecure", "0") == "1"
+            sni = params.get("sni") or params.get("peer") or host
+            insecure = params.get("insecure", "0") == "1" or params.get("insecure") == "1"
             obfs = params.get("obfs", "")
-            if obfs and obfs != "salamander":
-                obfs = ""
-            obfs_password = params.get("obfs-password", "")
+            obfs_password = params.get("obfs-password", "") or params.get("obfs_password", "")
             
             proxy = {
-                "name": f"{flag} {idx+1}. {host}:{port}",
+                "name": proxy_name,
                 "type": "hysteria2",
                 "server": host,
                 "port": port,
                 "password": auth,
                 "udp": True,
                 "sni": sni,
+                "skip-cert-verify": insecure or True,
             }
-            if insecure:
-                proxy["skip-cert-verify"] = True
-            if obfs == "salamander":
+            if obfs == "salamander" and obfs_password:
                 proxy["obfs"] = "salamander"
                 proxy["obfs-password"] = obfs_password
-                
+            
             return proxy
-
-        elif scheme == "vmess":
-            try:
-                raw = decode_b64(uri[len("vmess://"):])
-                cfg = json.loads(raw)
-            except json.JSONDecodeError:
-                CONVERSION_FAILURES["json_error"] += 1
-                return None
-            except Exception:
-                CONVERSION_FAILURES["parse_error"] += 1
-                return None
-                
-            vmess_id = cfg.get("id", "")
-            vmess_host = cfg.get("add", "")
-            vmess_port = int(cfg.get("port", 443))
-            vmess_net = cfg.get("net", "tcp")
-            vmess_tls = cfg.get("tls", "")
-            vmess_sni = cfg.get("sni", cfg.get("host", vmess_host))
-            
-            if not vmess_host:
-                CONVERSION_FAILURES["no_hostname"] += 1
-                return None
-                
-            proxy = {
-                "name": f"{flag} {idx+1}. {vmess_host}:{vmess_port}",
-                "type": "vmess",
-                "server": vmess_host,
-                "port": vmess_port,
-                "uuid": vmess_id,
-                "alterId": int(cfg.get("aid", 0)),
-                "cipher": "auto",
-                "network": vmess_net,
-                "udp": True,
-            }
-            if vmess_tls:
-                proxy["tls"] = True
-                proxy["servername"] = vmess_sni
-                proxy["skip-cert-verify"] = True
-            if vmess_net == "ws":
-                proxy["ws-opts"] = {
-                    "path": cfg.get("path", "/"),
-                    "headers": {"Host": cfg.get("host", vmess_host)}
-                }
-            return proxy
-
-        elif scheme == "trojan":
-            trojan_host = p.hostname or ""
-            trojan_port = p.port or 443
-            trojan_password = p.username or p.password or ""
-            trojan_sni = params.get("sni", trojan_host)
-            
-            if not trojan_host:
-                CONVERSION_FAILURES["no_hostname"] += 1
-                return None
-                
-            proxy = {
-                "name": f"{flag} {idx+1}. {trojan_host}:{trojan_port}",
-                "type": "trojan",
-                "server": trojan_host,
-                "port": trojan_port,
-                "password": trojan_password,
-                "sni": trojan_sni,
-                "skip-cert-verify": True,
-                "udp": True,
-            }
-            return proxy
-
-        elif scheme == "ss":
-            ss_host = p.hostname or ""
-            ss_port = p.port or 443
-            ss_userinfo = p.username or p.password or ""
-            
-            if not ss_host or not ss_userinfo:
-                CONVERSION_FAILURES["no_hostname"] += 1
-                return None
-            
-            if ":" in ss_userinfo:
-                ss_method, ss_password = ss_userinfo.split(":", 1)
-            else:
-                try:
-                    decoded = decode_b64(ss_userinfo)
-                    if ":" in decoded:
-                        ss_method, ss_password = decoded.split(":", 1)
-                    else:
-                        CONVERSION_FAILURES["parse_error"] += 1
-                        return None
-                except Exception:
-                    CONVERSION_FAILURES["parse_error"] += 1
-                    return None
-            
-            proxy = {
-                "name": f"{flag} {idx+1}. {ss_host}:{ss_port}",
-                "type": "ss",
-                "server": ss_host,
-                "port": ss_port,
-                "cipher": ss_method,
-                "password": ss_password,
-                "udp": True,
-            }
-            return proxy
-
+        
         return None
     except Exception:
-        CONVERSION_FAILURES["unknown"] += 1
         return None
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
+    """Записывает proxies.yaml вручную для идеальной совместимости с Mihomo."""
     lines = ["proxies:"]
+    
     for p in proxies:
         lines.append(f"  - name: {yaml_str(p['name'])}")
         lines.append(f"    type: {p['type']}")
@@ -444,52 +385,53 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
         if 'password' in p:
             lines.append(f"    password: {yaml_str(p['password'])}")
-        if 'cipher' in p:
-            lines.append(f"    cipher: {yaml_str(p['cipher'])}")
-        if 'alterId' in p:
-            lines.append(f"    alterId: {p['alterId']}")
-            
+        
         if 'servername' in p:
             lines.append(f"    servername: {yaml_str(p['servername'])}")
         if 'sni' in p:
             lines.append(f"    sni: {yaml_str(p['sni'])}")
-            
+        
         for key in ['network', 'flow', 'client-fingerprint', 'obfs', 'obfs-password']:
-            if key in p:
+            if key in p and p[key]:
                 lines.append(f"    {key}: {yaml_str(p[key])}")
-                
+        
         if 'skip-cert-verify' in p:
             lines.append(f"    skip-cert-verify: {'true' if p['skip-cert-verify'] else 'false'}")
         if 'udp' in p:
             lines.append(f"    udp: {'true' if p['udp'] else 'false'}")
         if 'tls' in p:
             lines.append(f"    tls: {'true' if p['tls'] else 'false'}")
-            
+        
         if 'reality-opts' in p and p['reality-opts']:
             lines.append("    reality-opts:")
             for k, v in p['reality-opts'].items():
-                lines.append(f"      {k}: {yaml_str(v)}")
+                if v:
+                    lines.append(f"      {k}: {yaml_str(v)}")
+        
         if 'ws-opts' in p:
             lines.append("    ws-opts:")
             for k, v in p['ws-opts'].items():
                 if isinstance(v, dict):
                     lines.append(f"      {k}:")
                     for kk, vv in v.items():
-                        lines.append(f"        {kk}: {yaml_str(vv)}")
+                        if vv:
+                            lines.append(f"        {kk}: {yaml_str(vv)}")
                 else:
-                    lines.append(f"      {k}: {yaml_str(v)}")
+                    if v:
+                        lines.append(f"      {k}: {yaml_str(v)}")
+        
         if 'grpc-opts' in p:
             lines.append("    grpc-opts:")
             for k, v in p['grpc-opts'].items():
                 lines.append(f"      {k}: {yaml_str(v)}")
-                    
+    
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
     proxy_names = [yaml_str(p['name']) for p in proxies]
     top20 = proxy_names[:20]
-    top50 = proxy_names[:50]
+    top50 = proxy_names[:50] if len(proxy_names) >= 50 else proxy_names
     
     config = f"""mixed-port: 7890
 allow-lan: false
@@ -543,9 +485,9 @@ proxy-groups:
     path.write_text(config, encoding="utf-8")
 
 
-# ════════════════════════════════════════════════════════════════
-# GeoIP Check (с проверкой по ISP/провайдеру)
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
+# GeoIP Check
+# ═══════════════════════════════════════════════════════════════════════════════
 
 async def resolve_host_to_ip(host: str) -> str | None:
     try:
@@ -562,6 +504,7 @@ async def resolve_host_to_ip(host: str) -> str | None:
     except Exception:
         pass
     return None
+
 
 async def check_ipwho_ip_full(session: aiohttp.ClientSession, ip: str) -> dict:
     try:
@@ -580,62 +523,54 @@ async def check_ipwho_ip_full(session: aiohttp.ClientSession, ip: str) -> dict:
         pass
     return {"country": "UNKNOWN", "isp": "", "org": "", "as": ""}
 
+
 def determine_final_country(info: dict) -> str:
     api_c = info.get("api_country", "UNKNOWN")
     who_c = info.get("who_country", "UNKNOWN")
-    
     all_isp_text = f"{info.get('isp', '')} {info.get('org', '')} {info.get('as', '')} {info.get('who_isp', '')} {info.get('who_org', '')} {info.get('who_as', '')}".lower()
     
-    # 1. Жесткая фильтрация иностранных облаков
     is_foreign_cloud = any(kw in all_isp_text for kw in FOREIGN_CLOUD_KEYWORDS)
     if is_foreign_cloud:
         if api_c != "RU" and api_c != "UNKNOWN": return api_c
         if who_c != "RU" and who_c != "UNKNOWN": return who_c
         return "UNKNOWN"
     
-    # 2. Проверка по ключевым словам российских провайдеров
     is_ru_isp = any(kw in all_isp_text for kw in RU_ISP_KEYWORDS)
     if is_ru_isp:
         return "RU"
     
-    # 3. Если оба API говорят RU
     if api_c == "RU" and who_c == "RU":
         return "RU"
-    
-    # 4. Если один говорит RU, другой UNKNOWN
     if (api_c == "RU" and who_c == "UNKNOWN") or (who_c == "RU" and api_c == "UNKNOWN"):
         return "RU"
-    
-    # 5. Если есть противоречие или ни один не сказал RU
     if api_c != "UNKNOWN" and api_c != "RU":
         return api_c
     if who_c != "UNKNOWN" and who_c != "RU":
         return who_c
-    
     if api_c == "RU" or who_c == "RU":
         return "RU"
-    
     return "UNKNOWN"
+
 
 async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
     host_to_ip = {}
     unique_hosts = list(set(hosts))
-    
     sem = asyncio.Semaphore(100)
+    
     async def resolve(h):
         async with sem:
             ip = await resolve_host_to_ip(h)
             return h, ip
-            
+    
     results = await asyncio.gather(*[resolve(h) for h in unique_hosts])
     for h, ip in results:
         if ip:
             host_to_ip[h] = ip
-            
+    
     unique_ips = list(set(host_to_ip.values()))
     ip_to_info = {}
-    
     url = "http://ip-api.com/batch"
+    
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
         for i in range(0, len(unique_ips), 100):
             batch_ips = unique_ips[i:i+100]
@@ -649,7 +584,6 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
                             data = await resp2.json()
                     else:
                         data = await resp.json()
-                        
                     for item in data:
                         if item.get("status") == "success":
                             ip = item["query"]
@@ -662,14 +596,15 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
             except Exception as e:
                 print(f"  ✗ GeoIP batch error: {e}")
             await asyncio.sleep(4)
-            
+        
         print(f"  🔄 Дополнительная проверка {len(unique_ips)} IP через ipwho.is...")
         fallback_sem = asyncio.Semaphore(50)
+        
         async def check_fallback(ip):
             async with fallback_sem:
                 info = await check_ipwho_ip_full(session, ip)
                 return ip, info
-                
+        
         fallback_results = await asyncio.gather(*[check_fallback(ip) for ip in unique_ips])
         for ip, who_info in fallback_results:
             if ip in ip_to_info:
@@ -685,18 +620,16 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
                     "who_isp": who_info["isp"], "who_org": who_info["org"], "who_as": who_info["as"]
                 }
     
-    # Считаем статистику определения
     ru_by_isp = 0
     ru_by_geo = 0
-    
     host_to_country = {}
+    
     for h, ip in host_to_ip.items():
         if ip in ip_to_info:
             info = ip_to_info[ip]
             country = determine_final_country(info)
             host_to_country[h] = country
             
-            # Считаем для статистики
             all_isp_text = f"{info.get('isp', '')} {info.get('org', '')} {info.get('as', '')} {info.get('who_isp', '')} {info.get('who_org', '')} {info.get('who_as', '')}".lower()
             is_foreign_cloud = any(kw in all_isp_text for kw in FOREIGN_CLOUD_KEYWORDS)
             is_ru_isp = any(kw in all_isp_text for kw in RU_ISP_KEYWORDS)
@@ -708,7 +641,7 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
                     ru_by_geo += 1
         else:
             host_to_country[h] = "UNKNOWN"
-            
+    
     countries = {}
     for c in host_to_country.values():
         countries[c] = countries.get(c, 0) + 1
@@ -716,25 +649,25 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
         print("  🌎 Страны: " + ", ".join(f"{k}={v}" for k, v in sorted(countries.items(), key=lambda x: -x[1])))
         if "RU" in countries:
             print(f"     └─ Из них по ISP: {ru_by_isp}, по GeoIP: {ru_by_geo}")
-        
+    
     return host_to_country
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Hysteria2
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def parse_hysteria2(uri: str) -> dict | None:
     try:
         p = urllib.parse.urlparse(uri)
-        params = dict(urllib.parse.parse_qsl(p.query))
+        params = parse_all_params(uri)
         return {
-            "host":          p.hostname or "",
-            "port":          p.port or 443,
-            "auth":          p.username or p.password or params.get("password", ""),
-            "sni":           params.get("sni", p.hostname or ""),
-            "insecure":      params.get("insecure", "0") == "1",
-            "obfs":          params.get("obfs", ""),
+            "host": p.hostname or "",
+            "port": p.port or 443,
+            "auth": p.username or p.password or params.get("password", ""),
+            "sni": params.get("sni", p.hostname or ""),
+            "insecure": params.get("insecure", "0") == "1",
+            "obfs": params.get("obfs", ""),
             "obfs_password": params.get("obfs-password", ""),
         }
     except Exception:
@@ -767,22 +700,20 @@ async def hy2_probe(item: dict) -> dict | None:
     cfg = parse_hysteria2(uri)
     if not cfg:
         return None
-
     socks_port = item.get("_socks_port", 20100 + hash(uri) % 10000)
-
     hy2_config = {
         "server": f"{cfg['host']}:{cfg['port']}",
-        "auth":   cfg["auth"],
-        "tls":    {"sni": cfg["sni"], "insecure": cfg["insecure"]},
+        "auth": cfg["auth"],
+        "tls": {"sni": cfg["sni"], "insecure": cfg["insecure"]},
         "socks5": {"listen": f"127.0.0.1:{socks_port}"},
     }
     if cfg["obfs"] == "salamander":
         hy2_config["obfs"] = {"type": "salamander", "salamander": {"password": cfg["obfs_password"]}}
-
+    
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(hy2_config, f)
         cfg_path = f.name
-
+    
     proc = None
     try:
         proc = await asyncio.create_subprocess_exec(
@@ -811,9 +742,9 @@ async def hy2_probe(item: dict) -> dict | None:
             pass
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Curl через SOCKS5
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 async def _curl_through_socks(socks_port: int) -> float | None:
     for url, ok_codes in PROBE_URLS:
@@ -839,9 +770,9 @@ async def _curl_through_socks(socks_port: int) -> float | None:
     return None
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Stage 1 – TCP ping
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
     t0 = time.monotonic()
@@ -881,9 +812,9 @@ async def stage1_test(sem, uri):
                     "proto": uri.split("://")[0].lower()}
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Xray install
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def install_xray() -> bool:
     if XRAY_BIN.exists():
@@ -909,26 +840,26 @@ def install_xray() -> bool:
         return False
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Stage 2 – xray config builders
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
     scheme = uri.split("://")[0].lower()
+    params = parse_all_params(uri)
     try:
         if scheme == "vless":
-            p      = urllib.parse.urlparse(uri)
-            uid    = p.username or ""
-            host   = p.hostname or ""
-            port   = p.port or 443
-            params = dict(urllib.parse.parse_qsl(p.query))
-            flow   = params.get("flow", "")
-            sni    = params.get("sni", params.get("peer", host))
-            fp     = params.get("fp", "chrome")
-            net    = params.get("type", "tcp")
-            sec    = params.get("security", "none")
-            pbk    = params.get("pbk", "")
-            sid    = params.get("sid", "")
+            p = urllib.parse.urlparse(uri)
+            uid = p.username or params.get("uuid", "")
+            host = p.hostname or ""
+            port = p.port or 443
+            flow = params.get("flow", "")
+            sni = params.get("sni", params.get("peer", host))
+            fp = params.get("fp", "chrome")
+            net = params.get("type", "tcp")
+            sec = params.get("security", "none")
+            pbk = params.get("pbk", "")
+            sid = params.get("sid", "")
             outbound = {
                 "protocol": "vless",
                 "settings": {"vnext": [{"address": host, "port": port,
@@ -952,10 +883,9 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                 ss["grpcSettings"] = {"serviceName": params.get("serviceName", "")}
 
         elif scheme == "trojan":
-            p      = urllib.parse.urlparse(uri)
-            host   = p.hostname or ""
-            port   = p.port or 443
-            params = dict(urllib.parse.parse_qsl(p.query))
+            p = urllib.parse.urlparse(uri)
+            host = p.hostname or ""
+            port = p.port or 443
             outbound = {
                 "protocol": "trojan",
                 "settings": {"servers": [{"address": host, "port": port,
@@ -966,13 +896,13 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             }
 
         elif scheme == "vmess":
-            raw  = decode_b64(uri[len("vmess://"):])
-            cfg  = json.loads(raw)
+            raw = decode_b64(uri[len("vmess://"):])
+            cfg = json.loads(raw)
             host = cfg.get("add", "")
             port = int(cfg.get("port", 443))
-            net  = cfg.get("net", "tcp")
-            tls  = cfg.get("tls", "")
-            sni  = cfg.get("sni", cfg.get("host", host))
+            net = cfg.get("net", "tcp")
+            tls = cfg.get("tls", "")
+            sni = cfg.get("sni", cfg.get("host", host))
             outbound = {
                 "protocol": "vmess",
                 "settings": {"vnext": [{"address": host, "port": port,
@@ -989,7 +919,7 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                                      "headers": {"Host": cfg.get("host", host)}}
 
         elif scheme == "ss":
-            p        = urllib.parse.urlparse(uri)
+            p = urllib.parse.urlparse(uri)
             userinfo = p.username or ""
             if ":" not in userinfo:
                 userinfo = decode_b64(userinfo)
@@ -1015,7 +945,7 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
 
 
 async def stage2_test(sem, idx: int, item: dict) -> dict | None:
-    uri    = item["uri"]
+    uri = item["uri"]
     scheme = uri.split("://")[0].lower()
 
     if scheme == "hysteria2":
@@ -1063,9 +993,9 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
                 pass
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Fetch sources
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 async def fetch_source(session, url: str) -> list:
     url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
@@ -1083,9 +1013,9 @@ async def fetch_source(session, url: str) -> list:
     return []
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # Main
-# ════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -1107,7 +1037,7 @@ async def main():
     all_configs = list(dict.fromkeys(c for b in batches for c in b))
     print(f"\n📋 Unique configs: {len(all_configs)}")
 
-    proto_counts: dict[str, int] = {}
+    proto_counts = {}
     for c in all_configs:
         proto = c.split("://")[0].lower()
         proto_counts[proto] = proto_counts.get(proto, 0) + 1
@@ -1136,18 +1066,17 @@ async def main():
         print("⚠️  No TCP-alive proxies.")
         return
 
-    # ── GeoIP Check ───────────────────────────────────────────────────────
     print("🌍 Checking GeoIP...")
     hosts = [item["host"] for item in tcp_alive]
     host_countries = await get_countries_for_hosts(hosts)
     for item in tcp_alive:
         item["country"] = host_countries.get(item["host"], "UNKNOWN")
-        
+    
     if ALLOWED_COUNTRIES:
         before = len(tcp_alive)
         tcp_alive = [item for item in tcp_alive if item.get("country") in ALLOWED_COUNTRIES]
         print(f"  🗺️  GeoIP filter ({ALLOWED_COUNTRIES}): {before} → {len(tcp_alive)}")
-        
+    
     if not tcp_alive:
         print("⚠️  No proxies left after GeoIP filter.")
         return
@@ -1175,13 +1104,12 @@ async def main():
         http_alive.sort(key=lambda x: x["http_ms"])
         top = http_alive[:TOP_N]
         
-        # Отбираем ТОЛЬКО проверенные российские прокси для ru.txt
         ru_top = [item for item in http_alive if item.get("country") == "RU"][:TOP_N]
         
         print(f"\n  ✅ HTTP-working: {len(http_alive)}")
         print(f"  🇷🇺 Из них российских (RU): {len(ru_top)}")
 
-        working_protos: dict[str, int] = {}
+        working_protos = {}
         for r in http_alive:
             p = r.get("proto", r["uri"].split("://")[0].lower())
             working_protos[p] = working_protos.get(p, 0) + 1
@@ -1202,27 +1130,29 @@ async def main():
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     
-    # Сохранение proxies.yaml (все рабочие прокси)
+    # ═══════════════════════════════════════════════════════════════════
+    # Конвертация ВСЕХ прокси в Clash YAML (максимальный охват)
+    # ═══════════════════════════════════════════════════════════════════
+    print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
     clash_proxies = []
+    failed_count = 0
+    
     for i, r in enumerate(top):
         cp = uri_to_clash_proxy(r["uri"], i, r.get("country", "UNKNOWN"))
         if cp:
             clash_proxies.append(cp)
+        else:
+            failed_count += 1
+            print(f"  ⚠️  Не удалось конвертировать: {r['uri'][:80]}...")
+    
+    success_rate = (len(clash_proxies) / len(top) * 100) if top else 0
+    print(f"  ✅ Сконвертировано: {len(clash_proxies)}/{len(top)} ({success_rate:.1f}%)")
+    if failed_count > 0:
+        print(f"  ❌ Отброшено: {failed_count}")
     
     if clash_proxies:
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
-        
-        # Статистика преобразования в YAML
-        failed = len(top) - len(clash_proxies)
-        print(f"\n  📊 Статистика преобразования в YAML:")
-        print(f"     Всего URI: {len(top)}")
-        print(f"     Преобразовано: {len(clash_proxies)}")
-        print(f"     Ошибок конвер��ации: {failed}")
-        if failed > 0 and any(CONVERSION_FAILURES.values()):
-            print(f"     Причины отказа:")
-            for reason, count in sorted(CONVERSION_FAILURES.items(), key=lambda x: -x[1]):
-                if count > 0:
-                    print(f"       • {reason}: {count}")
+        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси)")
 
     # Сохранение ru.txt
     ru_lines = [r["uri"] for r in ru_top]
@@ -1230,13 +1160,13 @@ async def main():
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI (все рабочие)")
-    print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} с флагами)")
+    print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)")
     print(f"   ru.txt           — {len(ru_top)} URI (строго RU)\n")
     
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         proto = r.get("proto", r["uri"].split("://")[0].lower())
-        http  = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
+        http = f"{r['http_ms']} ms" if r.get("http_ms") else f"TCP {r['tcp_ms']} ms"
         flag = get_flag(r.get("country", "UNKNOWN"))
         print(f"   {i+1}. {flag} [{proto}] {r['host']}:{r['port']}  →  {http}")
     print()
