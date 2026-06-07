@@ -23,7 +23,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── Пути ──────────────────────────────────────────────────────────────────────
+# ── Пути ──────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
@@ -37,7 +37,7 @@ PROBE_URLS = [
     ("https://www.google.com/generate_204", [200, 204]),
 ]
 
-# ── Настройки ─────────────────────────────────────────────────────────────────
+# ── Настройки ─────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]   # добавь "vmess","trojan","ss" при необходимости
 REQUIRE_REALITY     = True                     # False — брать любой vless
 ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
@@ -80,9 +80,9 @@ FOREIGN_CLOUD_KEYWORDS = [
 ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Загрузка источников из sources.txt
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
     if not SOURCES_FILE.exists():
@@ -104,9 +104,9 @@ def load_sources() -> list[str]:
     return urls
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════���═══════════════════════════════════════════════════════════════════════
 # Helpers
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 def decode_b64(data: str) -> str:
     data = data.strip()
@@ -170,16 +170,16 @@ def parse_host_port(uri: str):
     return None
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════��════════════════════════
 # Country Flags
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 FLAG_MAP = {
     "RU": "🇷🇺", "US": "🇺🇸", "DE": "🇩🇪", "NL": "🇳🇱", "FR": "🇫🇷", "GB": "🇬🇧", "IT": "🇮🇹", "ES": "🇪🇸",
     "CA": "🇨🇦", "AU": "🇦🇺", "JP": "🇯🇵", "KR": "🇰🇷", "CN": "🇨🇳", "IN": "🇮🇳", "BR": "🇧🇷", "MX": "🇲🇽",
     "UA": "🇺🇦", "PL": "🇵🇱", "SE": "🇸🇪", "NO": "🇳🇴", "FI": "🇫🇮", "DK": "🇩🇰", "CH": "🇨🇭", "AT": "🇦🇹",
     "BE": "🇧🇪", "PT": "🇵🇹", "GR": "🇬🇷", "TR": "🇹🇷", "IL": "🇮🇱", "AE": "🇦🇪", "SG": "🇸🇬", "HK": "🇭🇰",
-    "TW": "🇹🇼", "TH": "🇹🇭", "VN": "🇻🇳", "MY": "🇲🇾", "ID": "🇮🇩", "PH": "🇵🇭", "PK": "🇵🇰", "BD": "🇧🇩",
+    "TW": "🇹���", "TH": "🇹🇭", "VN": "🇻🇳", "MY": "🇲🇾", "ID": "🇮🇩", "PH": "🇵🇭", "PK": "🇵🇰", "BD": "🇧🇩",
     "EG": "🇪🇬", "ZA": "🇿🇦", "NG": "🇳🇬", "KE": "🇰🇪", "AR": "🇦🇷", "CL": "🇨🇱", "PE": "🇵🇪", "CO": "🇨🇴",
     "IS": "🇮🇸", "IE": "🇮🇪", "LU": "🇱🇺", "BG": "🇧🇬", "RO": "🇷🇴", "HU": "🇭🇺", "CZ": "🇨🇿", "SK": "🇸🇰",
     "LT": "🇱🇹", "LV": "🇱🇻", "EE": "🇪🇪", "BY": "🇧🇾", "KZ": "🇰🇿", "UZ": "🇺🇿", "GE": "🇬🇪", "AM": "🇦🇲",
@@ -191,9 +191,9 @@ def get_flag(country_code: str) -> str:
     return FLAG_MAP.get(country_code, "🏴")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ════��═════════════════════════════════════════════════════════════════════════
 # Clash YAML Export
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
     if val is None:
@@ -310,6 +310,97 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                 proxy["obfs-password"] = obfs_password
                 
             return proxy
+
+        elif scheme == "vmess":
+            try:
+                raw = decode_b64(uri[len("vmess://"):])
+                cfg = json.loads(raw)
+                vmess_id = cfg.get("id", "")
+                vmess_host = cfg.get("add", "")
+                vmess_port = int(cfg.get("port", 443))
+                vmess_net = cfg.get("net", "tcp")
+                vmess_tls = cfg.get("tls", "")
+                vmess_sni = cfg.get("sni", cfg.get("host", vmess_host))
+                
+                if not vmess_host:
+                    return None
+                    
+                proxy = {
+                    "name": f"{flag} {idx+1}. {vmess_host}:{vmess_port}",
+                    "type": "vmess",
+                    "server": vmess_host,
+                    "port": vmess_port,
+                    "uuid": vmess_id,
+                    "alterId": int(cfg.get("aid", 0)),
+                    "cipher": "auto",
+                    "network": vmess_net,
+                    "udp": True,
+                }
+                if vmess_tls:
+                    proxy["tls"] = True
+                    proxy["servername"] = vmess_sni
+                    proxy["skip-cert-verify"] = True
+                if vmess_net == "ws":
+                    proxy["ws-opts"] = {
+                        "path": cfg.get("path", "/"),
+                        "headers": {"Host": cfg.get("host", vmess_host)}
+                    }
+                return proxy
+            except Exception:
+                return None
+
+        elif scheme == "trojan":
+            trojan_host = p.hostname or ""
+            trojan_port = p.port or 443
+            trojan_password = p.username or p.password or ""
+            trojan_sni = params.get("sni", trojan_host)
+            
+            if not trojan_host:
+                return None
+                
+            proxy = {
+                "name": f"{flag} {idx+1}. {trojan_host}:{trojan_port}",
+                "type": "trojan",
+                "server": trojan_host,
+                "port": trojan_port,
+                "password": trojan_password,
+                "sni": trojan_sni,
+                "skip-cert-verify": True,
+                "udp": True,
+            }
+            return proxy
+
+        elif scheme == "ss":
+            ss_host = p.hostname or ""
+            ss_port = p.port or 443
+            ss_userinfo = p.username or p.password or ""
+            
+            if not ss_host or not ss_userinfo:
+                return None
+            
+            if ":" in ss_userinfo:
+                ss_method, ss_password = ss_userinfo.split(":", 1)
+            else:
+                try:
+                    decoded = decode_b64(ss_userinfo)
+                    if ":" in decoded:
+                        ss_method, ss_password = decoded.split(":", 1)
+                    else:
+                        return None
+                except Exception:
+                    return None
+            
+            proxy = {
+                "name": f"{flag} {idx+1}. {ss_host}:{ss_port}",
+                "type": "ss",
+                "server": ss_host,
+                "port": ss_port,
+                "cipher": ss_method,
+                "password": ss_password,
+                "udp": True,
+            }
+            return proxy
+
         return None
     except Exception:
         return None
@@ -327,6 +418,10 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
         if 'password' in p:
             lines.append(f"    password: {yaml_str(p['password'])}")
+        if 'cipher' in p:
+            lines.append(f"    cipher: {yaml_str(p['cipher'])}")
+        if 'alterId' in p:
+            lines.append(f"    alterId: {p['alterId']}")
             
         if 'servername' in p:
             lines.append(f"    servername: {yaml_str(p['servername'])}")
@@ -422,9 +517,9 @@ proxy-groups:
     path.write_text(config, encoding="utf-8")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # GeoIP Check (с проверкой по ISP/провайдеру)
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 async def resolve_host_to_ip(host: str) -> str | None:
     try:
@@ -599,9 +694,9 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
     return host_to_country
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Hysteria2
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 def parse_hysteria2(uri: str) -> dict | None:
     try:
@@ -690,9 +785,9 @@ async def hy2_probe(item: dict) -> dict | None:
             pass
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Curl через SOCKS5
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 async def _curl_through_socks(socks_port: int) -> float | None:
     for url, ok_codes in PROBE_URLS:
@@ -718,9 +813,9 @@ async def _curl_through_socks(socks_port: int) -> float | None:
     return None
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Stage 1 – TCP ping
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
     t0 = time.monotonic()
@@ -760,9 +855,9 @@ async def stage1_test(sem, uri):
                     "proto": uri.split("://")[0].lower()}
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Xray install
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 def install_xray() -> bool:
     if XRAY_BIN.exists():
@@ -788,9 +883,9 @@ def install_xray() -> bool:
         return False
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Stage 2 – xray config builders
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
     scheme = uri.split("://")[0].lower()
@@ -942,9 +1037,9 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
                 pass
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Fetch sources
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 async def fetch_source(session, url: str) -> list:
     url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
@@ -962,9 +1057,9 @@ async def fetch_source(session, url: str) -> list:
     return []
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 # Main
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
 
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -1090,6 +1185,7 @@ async def main():
     
     if clash_proxies:
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
+        print(f"  ⚠️  Преобразовано для YAML: {len(clash_proxies)} из {len(top)} прокси")
 
     # Сохранение ru.txt
     ru_lines = [r["uri"] for r in ru_top]
@@ -1097,7 +1193,7 @@ async def main():
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI (все рабочие)")
-    print(f"   proxies.yaml     — Full Clash config (все рабочие с флагами)")
+    print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} с флагами)")
     print(f"   ru.txt           — {len(ru_top)} URI (строго RU)\n")
     
     print("🏆 Топ 5 самых быстрых:")
