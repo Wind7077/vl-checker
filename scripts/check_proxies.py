@@ -39,7 +39,7 @@ PROBE_URLS = [
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
-REQUIRE_REALITY     = True
+REQUIRE_REALITY     = False
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
