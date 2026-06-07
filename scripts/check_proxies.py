@@ -79,10 +79,19 @@ FOREIGN_CLOUD_KEYWORDS = [
     'm247', 'zayo', 'gtt', 'pwn', 'path', 'equinix', 'cybera'
 ]
 
+# ── Глобальный счетчик ошибок конвертации ─────────────────────────────────────
+CONVERSION_FAILURES = {
+    "no_hostname": 0,
+    "invalid_port": 0,
+    "no_uuid_vless": 0,
+    "json_error": 0,
+    "parse_error": 0,
+    "unknown": 0,
+}
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════
 # Загрузка источников из sources.txt
-# ══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
     if not SOURCES_FILE.exists():
@@ -104,9 +113,9 @@ def load_sources() -> list[str]:
     return urls
 
 
-# ══════���═══════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════
 # Helpers
-# ══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════
 
 def decode_b64(data: str) -> str:
     data = data.strip()
@@ -170,16 +179,16 @@ def parse_host_port(uri: str):
     return None
 
 
-# ═════════════════════════════════════════════════════��════════════════════════
+# ═════════════════════════════════════════════════════════════════
 # Country Flags
-# ══════════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════
 
 FLAG_MAP = {
     "RU": "🇷🇺", "US": "🇺🇸", "DE": "🇩🇪", "NL": "🇳🇱", "FR": "🇫🇷", "GB": "🇬🇧", "IT": "🇮🇹", "ES": "🇪🇸",
     "CA": "🇨🇦", "AU": "🇦🇺", "JP": "🇯🇵", "KR": "🇰🇷", "CN": "🇨🇳", "IN": "🇮🇳", "BR": "🇧🇷", "MX": "🇲🇽",
     "UA": "🇺🇦", "PL": "🇵🇱", "SE": "🇸🇪", "NO": "🇳🇴", "FI": "🇫🇮", "DK": "🇩🇰", "CH": "🇨🇭", "AT": "🇦🇹",
     "BE": "🇧🇪", "PT": "🇵🇹", "GR": "🇬🇷", "TR": "🇹🇷", "IL": "🇮🇱", "AE": "🇦🇪", "SG": "🇸🇬", "HK": "🇭🇰",
-    "TW": "🇹���", "TH": "🇹🇭", "VN": "🇻🇳", "MY": "🇲🇾", "ID": "🇮🇩", "PH": "🇵🇭", "PK": "🇵🇰", "BD": "🇧🇩",
+    "TW": "🇹🇼", "TH": "🇹🇭", "VN": "🇻🇳", "MY": "🇲🇾", "ID": "🇮🇩", "PH": "🇵🇭", "PK": "🇵🇰", "BD": "🇧🇩",
     "EG": "🇪🇬", "ZA": "🇿🇦", "NG": "🇳🇬", "KE": "🇰🇪", "AR": "🇦🇷", "CL": "🇨🇱", "PE": "🇵🇪", "CO": "🇨🇴",
     "IS": "🇮🇸", "IE": "🇮🇪", "LU": "🇱🇺", "BG": "🇧🇬", "RO": "🇷🇴", "HU": "🇭🇺", "CZ": "🇨🇿", "SK": "🇸🇰",
     "LT": "🇱🇹", "LV": "🇱🇻", "EE": "🇪🇪", "BY": "🇧🇾", "KZ": "🇰🇿", "UZ": "🇺🇿", "GE": "🇬🇪", "AM": "🇦🇲",
@@ -191,9 +200,9 @@ def get_flag(country_code: str) -> str:
     return FLAG_MAP.get(country_code, "🏴")
 
 
-# ════��═════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Clash YAML Export
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
     if val is None:
@@ -215,14 +224,20 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
         try:
             port = p.port or 443
         except ValueError:
-            port = 443
+            CONVERSION_FAILURES["invalid_port"] += 1
+            return None
             
         host = p.hostname or ""
         if not host:
+            CONVERSION_FAILURES["no_hostname"] += 1
             return None 
             
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
+            if not uid:
+                CONVERSION_FAILURES["no_uuid_vless"] += 1
+                return None
+                
             sni = params.get("sni", params.get("peer", host))
             if not sni: sni = host
             
@@ -315,39 +330,45 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             try:
                 raw = decode_b64(uri[len("vmess://"):])
                 cfg = json.loads(raw)
-                vmess_id = cfg.get("id", "")
-                vmess_host = cfg.get("add", "")
-                vmess_port = int(cfg.get("port", 443))
-                vmess_net = cfg.get("net", "tcp")
-                vmess_tls = cfg.get("tls", "")
-                vmess_sni = cfg.get("sni", cfg.get("host", vmess_host))
-                
-                if not vmess_host:
-                    return None
-                    
-                proxy = {
-                    "name": f"{flag} {idx+1}. {vmess_host}:{vmess_port}",
-                    "type": "vmess",
-                    "server": vmess_host,
-                    "port": vmess_port,
-                    "uuid": vmess_id,
-                    "alterId": int(cfg.get("aid", 0)),
-                    "cipher": "auto",
-                    "network": vmess_net,
-                    "udp": True,
-                }
-                if vmess_tls:
-                    proxy["tls"] = True
-                    proxy["servername"] = vmess_sni
-                    proxy["skip-cert-verify"] = True
-                if vmess_net == "ws":
-                    proxy["ws-opts"] = {
-                        "path": cfg.get("path", "/"),
-                        "headers": {"Host": cfg.get("host", vmess_host)}
-                    }
-                return proxy
-            except Exception:
+            except json.JSONDecodeError:
+                CONVERSION_FAILURES["json_error"] += 1
                 return None
+            except Exception:
+                CONVERSION_FAILURES["parse_error"] += 1
+                return None
+                
+            vmess_id = cfg.get("id", "")
+            vmess_host = cfg.get("add", "")
+            vmess_port = int(cfg.get("port", 443))
+            vmess_net = cfg.get("net", "tcp")
+            vmess_tls = cfg.get("tls", "")
+            vmess_sni = cfg.get("sni", cfg.get("host", vmess_host))
+            
+            if not vmess_host:
+                CONVERSION_FAILURES["no_hostname"] += 1
+                return None
+                
+            proxy = {
+                "name": f"{flag} {idx+1}. {vmess_host}:{vmess_port}",
+                "type": "vmess",
+                "server": vmess_host,
+                "port": vmess_port,
+                "uuid": vmess_id,
+                "alterId": int(cfg.get("aid", 0)),
+                "cipher": "auto",
+                "network": vmess_net,
+                "udp": True,
+            }
+            if vmess_tls:
+                proxy["tls"] = True
+                proxy["servername"] = vmess_sni
+                proxy["skip-cert-verify"] = True
+            if vmess_net == "ws":
+                proxy["ws-opts"] = {
+                    "path": cfg.get("path", "/"),
+                    "headers": {"Host": cfg.get("host", vmess_host)}
+                }
+            return proxy
 
         elif scheme == "trojan":
             trojan_host = p.hostname or ""
@@ -356,6 +377,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             trojan_sni = params.get("sni", trojan_host)
             
             if not trojan_host:
+                CONVERSION_FAILURES["no_hostname"] += 1
                 return None
                 
             proxy = {
@@ -376,6 +398,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             ss_userinfo = p.username or p.password or ""
             
             if not ss_host or not ss_userinfo:
+                CONVERSION_FAILURES["no_hostname"] += 1
                 return None
             
             if ":" in ss_userinfo:
@@ -386,8 +409,10 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                     if ":" in decoded:
                         ss_method, ss_password = decoded.split(":", 1)
                     else:
+                        CONVERSION_FAILURES["parse_error"] += 1
                         return None
                 except Exception:
+                    CONVERSION_FAILURES["parse_error"] += 1
                     return None
             
             proxy = {
@@ -403,6 +428,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
 
         return None
     except Exception:
+        CONVERSION_FAILURES["unknown"] += 1
         return None
 
 
@@ -517,9 +543,9 @@ proxy-groups:
     path.write_text(config, encoding="utf-8")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # GeoIP Check (с проверкой по ISP/провайдеру)
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 async def resolve_host_to_ip(host: str) -> str | None:
     try:
@@ -694,9 +720,9 @@ async def get_countries_for_hosts(hosts: list[str]) -> dict[str, str]:
     return host_to_country
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Hysteria2
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 def parse_hysteria2(uri: str) -> dict | None:
     try:
@@ -785,9 +811,9 @@ async def hy2_probe(item: dict) -> dict | None:
             pass
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Curl через SOCKS5
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 async def _curl_through_socks(socks_port: int) -> float | None:
     for url, ok_codes in PROBE_URLS:
@@ -813,9 +839,9 @@ async def _curl_through_socks(socks_port: int) -> float | None:
     return None
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Stage 1 – TCP ping
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
     t0 = time.monotonic()
@@ -855,9 +881,9 @@ async def stage1_test(sem, uri):
                     "proto": uri.split("://")[0].lower()}
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Xray install
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 def install_xray() -> bool:
     if XRAY_BIN.exists():
@@ -883,9 +909,9 @@ def install_xray() -> bool:
         return False
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Stage 2 – xray config builders
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
     scheme = uri.split("://")[0].lower()
@@ -1037,9 +1063,9 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
                 pass
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Fetch sources
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 async def fetch_source(session, url: str) -> list:
     url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
@@ -1057,9 +1083,9 @@ async def fetch_source(session, url: str) -> list:
     return []
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # Main
-# ══════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -1185,7 +1211,18 @@ async def main():
     
     if clash_proxies:
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
-        print(f"  ⚠️  Преобразовано для YAML: {len(clash_proxies)} из {len(top)} прокси")
+        
+        # Статистика преобразования в YAML
+        failed = len(top) - len(clash_proxies)
+        print(f"\n  📊 Статистика преобразования в YAML:")
+        print(f"     Всего URI: {len(top)}")
+        print(f"     Преобразовано: {len(clash_proxies)}")
+        print(f"     Ошибок конвер��ации: {failed}")
+        if failed > 0 and any(CONVERSION_FAILURES.values()):
+            print(f"     Причины отказа:")
+            for reason, count in sorted(CONVERSION_FAILURES.items(), key=lambda x: -x[1]):
+                if count > 0:
+                    print(f"       • {reason}: {count}")
 
     # Сохранение ru.txt
     ru_lines = [r["uri"] for r in ru_top]
