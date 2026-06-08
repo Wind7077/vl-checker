@@ -149,6 +149,299 @@ def parse_host_port(uri: str):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Clash YAML Export (FClash / Mihomo совместимо)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def yaml_str(val):
+    """
+    Безопасное экранирование строк для YAML.
+    Использует одинарные кавычки с удвоением — работает с эмодзи и спецсимволами.
+    """
+    if val is None:
+        return "''"
+    s = str(val)
+    s = s.replace("'", "''")
+    return f"'{s}'"
+
+
+def parse_all_params(uri: str) -> dict:
+    """Извлекает параметры и из query (?key=val), и из fragment (#key=val)."""
+    try:
+        p = urllib.parse.urlparse(uri)
+        params = dict(urllib.parse.parse_qsl(p.query))
+        if p.fragment and '=' in p.fragment:
+            frag_params = dict(urllib.parse.parse_qsl(p.fragment))
+            for k, v in frag_params.items():
+                if k not in params:
+                    params[k] = v
+        return params
+    except Exception:
+        return {}
+
+
+def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
+    """
+    Конвертирует URI в формат Clash/Mihomo.
+    Агрессивная конвертация — использует дефолты вместо возврата None.
+    """
+    try:
+        scheme = uri.split("://")[0].lower()
+        p = urllib.parse.urlparse(uri)
+        params = parse_all_params(uri)
+        
+        try:
+            port = p.port or 443
+        except (ValueError, TypeError):
+            port = 443
+            
+        host = p.hostname or ""
+        if not host:
+            return None
+        
+        proxy_name = f"{idx+1}. {host}:{port}"
+        
+        # ─── VLESS ────────────────────────────────────────────────────────
+        if scheme == "vless":
+            uid = p.username or params.get("uuid", "")
+            if not uid:
+                try:
+                    uid = uri.split("://")[1].split("@")[0]
+                except Exception:
+                    uid = ""
+            if not uid:
+                return None
+            
+            sni = params.get("sni") or params.get("peer") or params.get("servername") or host
+            sec = params.get("security", "tls").lower()
+            if sec not in ("tls", "reality", "none"):
+                sec = "tls"
+            
+            # Валидные fingerprints для Clash Meta
+            fp = params.get("fp", "chrome")
+            valid_fps = ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"]
+            if fp not in valid_fps:
+                fp = "chrome"
+            
+            # Валидные network типы
+            net = params.get("type", "tcp").lower()
+            valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic", "httpupgrade", "splithttp"]
+            if net not in valid_nets:
+                net = "tcp"
+            
+            # Для Clash h2/httpupgrade/splithttp приводим к tcp
+            clash_net = net
+            if net in ("h2", "httpupgrade", "splithttp"):
+                clash_net = "tcp"
+            
+            pbk = params.get("pbk", "")
+            sid = params.get("sid", "")
+            path = params.get("path", "/") or "/"
+            host_header = params.get("host", "") or host
+            serviceName = params.get("serviceName", "")
+            
+            # Валидные flow
+            flow = params.get("flow", "")
+            valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443",
+                          "xtls-rprx-origin", "xtls-rprx-origin-udp443",
+                          "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
+            
+            # Для Reality обязательно нужен flow, дефолт = xtls-rprx-vision
+            if sec == "reality" and (not flow or flow not in valid_flows):
+                flow = "xtls-rprx-vision"
+            elif flow and flow not in valid_flows:
+                flow = ""
+            
+            proxy = {
+                "name": proxy_name,
+                "type": "vless",
+                "server": host,
+                "port": port,
+                "uuid": uid,
+                "network": clash_net,
+                "udp": True,
+                "servername": sni,
+            }
+            
+            if sec == "reality":
+                proxy["tls"] = True
+                proxy["client-fingerprint"] = fp
+                reality_opts = {}
+                if pbk:
+                    reality_opts["public-key"] = pbk
+                if sid:
+                    reality_opts["short-id"] = sid
+                if reality_opts:
+                    proxy["reality-opts"] = reality_opts
+                if flow:
+                    proxy["flow"] = flow
+            elif sec == "tls":
+                proxy["tls"] = True
+                proxy["skip-cert-verify"] = True
+                if flow and flow in valid_flows:
+                    proxy["flow"] = flow
+            else:
+                proxy["tls"] = False
+            
+            if net == "ws":
+                proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
+            elif net == "grpc":
+                proxy["grpc-opts"] = {"grpc-service-name": serviceName or ""}
+            
+            return proxy
+        
+        # ─── HYSTERIA2 ────────────────────────────────────────────────────
+        elif scheme in ("hysteria2", "hy2"):
+            auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
+            if not auth:
+                try:
+                    path_part = uri.split("://")[1].split("@")[0]
+                    if path_part:
+                        auth = path_part
+                except Exception:
+                    auth = ""
+            
+            sni = params.get("sni") or params.get("peer") or host
+            insecure = params.get("insecure", "0") == "1" or params.get("insecure") == "1"
+            obfs = params.get("obfs", "")
+            obfs_password = params.get("obfs-password", "") or params.get("obfs_password", "")
+            
+            proxy = {
+                "name": proxy_name,
+                "type": "hysteria2",
+                "server": host,
+                "port": port,
+                "password": auth,
+                "udp": True,
+                "sni": sni,
+                "skip-cert-verify": insecure or True,
+            }
+            if obfs == "salamander" and obfs_password:
+                proxy["obfs"] = "salamander"
+                proxy["obfs-password"] = obfs_password
+            
+            return proxy
+        
+        return None
+    except Exception:
+        return None
+
+
+def write_clash_proxies_yaml(proxies: list[dict], path: Path):
+    """Записывает блок proxies: в YAML."""
+    lines = ["proxies:"]
+    
+    for p in proxies:
+        lines.append(f"  - name: {yaml_str(p['name'])}")
+        lines.append(f"    type: {p['type']}")
+        lines.append(f"    server: {yaml_str(p['server'])}")
+        lines.append(f"    port: {p['port']}")
+        
+        if 'uuid' in p:
+            lines.append(f"    uuid: {yaml_str(p['uuid'])}")
+        if 'password' in p:
+            lines.append(f"    password: {yaml_str(p['password'])}")
+        
+        if 'servername' in p:
+            lines.append(f"    servername: {yaml_str(p['servername'])}")
+        if 'sni' in p:
+            lines.append(f"    sni: {yaml_str(p['sni'])}")
+        
+        for key in ['network', 'flow', 'client-fingerprint', 'obfs', 'obfs-password']:
+            if key in p and p[key]:
+                lines.append(f"    {key}: {yaml_str(p[key])}")
+        
+        if 'skip-cert-verify' in p:
+            lines.append(f"    skip-cert-verify: {'true' if p['skip-cert-verify'] else 'false'}")
+        if 'udp' in p:
+            lines.append(f"    udp: {'true' if p['udp'] else 'false'}")
+        if 'tls' in p:
+            lines.append(f"    tls: {'true' if p['tls'] else 'false'}")
+        
+        if 'reality-opts' in p and p['reality-opts']:
+            lines.append("    reality-opts:")
+            for k, v in p['reality-opts'].items():
+                if v:
+                    lines.append(f"      {k}: {yaml_str(v)}")
+        
+        if 'ws-opts' in p:
+            lines.append("    ws-opts:")
+            for k, v in p['ws-opts'].items():
+                if isinstance(v, dict):
+                    lines.append(f"      {k}:")
+                    for kk, vv in v.items():
+                        if vv:
+                            lines.append(f"        {kk}: {yaml_str(vv)}")
+                else:
+                    if v:
+                        lines.append(f"      {k}: {yaml_str(v)}")
+        
+        if 'grpc-opts' in p:
+            lines.append("    grpc-opts:")
+            for k, v in p['grpc-opts'].items():
+                lines.append(f"      {k}: {yaml_str(v)}")
+    
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
+    """Записывает полный рабочий конфиг Clash с группами и правилами."""
+    proxy_names = [yaml_str(p['name']) for p in proxies]
+    top20 = proxy_names[:20]
+    top50 = proxy_names[:50] if len(proxy_names) >= 50 else proxy_names
+    
+    config = f"""mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: '127.0.0.1:9090'
+
+proxies:
+"""
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml', encoding='utf-8') as tmp:
+        write_clash_proxies_yaml(proxies, Path(tmp.name))
+        proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
+        config += proxy_block
+        os.unlink(tmp.name)
+    
+    config += f"""
+proxy-groups:
+  - name: "🚀 Выбор ({title})"
+    type: select
+    proxies:
+      - "🔯 Fallback"
+      - "🎯 Auto"
+"""
+    for name in top20:
+        config += f"      - {name}\n"
+    
+    config += """  - name: "🔯 Fallback"
+    type: fallback
+    url: "https://cp.cloudflare.com/"
+    interval: 300
+    proxies:
+"""
+    for name in top50:
+        config += f"      - {name}\n"
+    
+    config += """  - name: "🎯 Auto"
+    type: url-test
+    url: "https://cp.cloudflare.com/"
+    interval: 300
+    tolerance: 50
+    proxies:
+"""
+    for name in top50:
+        config += f"      - {name}\n"
+    
+    config += f"""rules:
+  - "GEOIP,RU,DIRECT"
+  - "GEOIP,CN,DIRECT"
+  - "MATCH,🚀 Выбор ({title})"
+"""
+    path.write_text(config, encoding="utf-8")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # Hysteria2
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -609,9 +902,34 @@ async def main():
     b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
+    # ═══════════════════════════════════════════════════════════════════
+    # Генерация proxies.yaml (полный конфиг Clash)
+    # ═══════════════════════════════════════════════════════════════════
+    print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
+    clash_proxies = []
+    failed_count = 0
+    
+    for i, r in enumerate(top):
+        cp = uri_to_clash_proxy(r["uri"], i)
+        if cp:
+            clash_proxies.append(cp)
+        else:
+            failed_count += 1
+            print(f"  ⚠️  Не удалось конвертировать: {r['uri'][:80]}...")
+    
+    success_rate = (len(clash_proxies) / len(top) * 100) if top else 0
+    print(f"  ✅ Сконвертировано: {len(clash_proxies)}/{len(top)} ({success_rate:.1f}%)")
+    if failed_count > 0:
+        print(f"  ❌ Отброшено: {failed_count}")
+    
+    if clash_proxies:
+        write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
+        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси)")
+
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
-    print(f"   proxies_b64.txt  — base64 подписка\n")
+    print(f"   proxies_b64.txt  — base64 подписка")
+    print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)\n")
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         proto = r.get("proto", r["uri"].split("://")[0].lower())
