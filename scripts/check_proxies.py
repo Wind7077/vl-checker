@@ -38,7 +38,7 @@ PROBE_URLS = [
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "ss"]
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
@@ -51,6 +51,9 @@ MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 1000
 SOCKS_BASE_PORT     = 20000
+
+# Сколько прокси оставлять для каждого уникального host:port после Stage 1
+MAX_PER_ENDPOINT    = 2
 
 HYSTERIA2_PROBE_TIMEOUT = 12
 
@@ -166,6 +169,32 @@ def parse_host_port(uri: str):
     return None
 
 
+def deduplicate_by_endpoint(items: list[dict], max_per_endpoint: int = MAX_PER_ENDPOINT) -> list[dict]:
+    """
+    Для каждого уникального host:port оставляет только N самых быстрых прокси.
+    Это устраняет засорение списка дубликатами одного и того же сервера.
+    """
+    from collections import defaultdict
+    groups = defaultdict(list)
+    
+    for item in items:
+        key = f"{item['host']}:{item['port']}"
+        groups[key].append(item)
+    
+    result = []
+    dropped = 0
+    for key, group in groups.items():
+        # Сортируем по ping — самые быстрые в начале
+        group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
+        result.extend(group[:max_per_endpoint])
+        dropped += max(0, len(group) - max_per_endpoint)
+    
+    # Финальная сортировка
+    result.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
+    
+    return result, dropped
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # Country Flags
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -188,11 +217,10 @@ def get_flag(country_code: str) -> str:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Clash YAML Export (Улучшенный — максимальный охват)
+# Clash YAML Export
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
-    """Безопасный YAML-форматировщик строк. Экранирует одинарные кавычки удвоением."""
     if val is None:
         return "''"
     s = str(val)
@@ -201,7 +229,6 @@ def yaml_str(val):
 
 
 def parse_all_params(uri: str) -> dict:
-    """Извлекает параметры и из query (?key=val), и из fragment (#key=val)."""
     try:
         p = urllib.parse.urlparse(uri)
         params = dict(urllib.parse.parse_qsl(p.query))
@@ -216,10 +243,6 @@ def parse_all_params(uri: str) -> dict:
 
 
 def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict | None:
-    """
-    Агрессивная конвертация URI в Clash-формат.
-    Возвращает словарь даже при битых параметрах — используются дефолтные значения.
-    """
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -237,20 +260,16 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
         
         proxy_name = f"{flag} {idx+1}. {host}:{port}"
         
-        # ════════════════════════════════════════════════════════════════
-        # VLESS (с поддержкой Reality, TLS, и всех транспортных протоколов)
-        # ════════════════════════════════════════════════════════════════
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
-                # Попробуем извлечь UUID из пути (vless://UUID@host:port)
                 try:
                     uid = uri.split("://")[1].split("@")[0]
                 except Exception:
                     uid = ""
             
             if not uid:
-                return None  # Без UUID прокси работать не будет
+                return None
             
             sni = params.get("sni") or params.get("peer") or params.get("servername") or host
             sec = params.get("security", "tls").lower()
@@ -267,7 +286,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             if net not in valid_nets:
                 net = "tcp"
             
-            # Приводим h2/httpupgrade/splithttp к tcp для совместимости с Clash Meta
             clash_net = net
             if net in ("h2", "httpupgrade", "splithttp"):
                 clash_net = "tcp"
@@ -278,13 +296,11 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             host_header = params.get("host", "") or host
             serviceName = params.get("serviceName", "")
             
-            # Нормализация flow
             flow = params.get("flow", "")
             valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443", 
                           "xtls-rprx-origin", "xtls-rprx-origin-udp443",
                           "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
             
-            # Для Reality по умолчанию используем vision, если flow не указан
             if sec == "reality" and (not flow or flow not in valid_flows):
                 flow = "xtls-rprx-vision"
             elif flow and flow not in valid_flows:
@@ -302,7 +318,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
                 "skip-cert-verify": True,
             }
             
-            # Reality настройки (обязательны для Clash Meta)
             if sec == "reality":
                 proxy["tls"] = True
                 proxy["client-fingerprint"] = fp
@@ -323,7 +338,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             else:
                 proxy["tls"] = False
             
-            # Транспортные опции
             if net == "ws":
                 proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
             elif net == "grpc":
@@ -331,13 +345,9 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
             
             return proxy
         
-        # ════════════════════════════════════════════════════════════════
-        # HYSTERIA2
-        # ════════════════════════════════════════════════════════════════
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             if not auth:
-                # Попробуем извлечь пароль из пути
                 try:
                     path_part = uri.split("://")[1].split("@")[0]
                     if path_part:
@@ -372,7 +382,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0, country: str = "UNKNOWN") -> dict
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
-    """Записывает proxies.yaml вручную для идеальной совместимости с Mihomo."""
     lines = ["proxies:"]
     
     for p in proxies:
@@ -1049,6 +1058,12 @@ async def main():
         print("⚠️  No configs after filtering.")
         return
 
+    # ═══ Дедупликация #1: убираем точные дубликаты URI ═══
+    before_dedup = len(filtered)
+    filtered = list(dict.fromkeys(filtered))
+    if len(filtered) < before_dedup:
+        print(f"  🧹 Удалено точных дубликатов URI: {before_dedup - len(filtered)}")
+
     print(f"🔌 Stage 1 – TCP ping  (concurrency={MAX_CONCURRENT_TCP})…")
     sem1 = asyncio.Semaphore(MAX_CONCURRENT_TCP)
     tcp_alive, done = [], 0
@@ -1060,11 +1075,20 @@ async def main():
         if done % 300 == 0:
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
     tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x["tcp_ms"]))
-    print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
+    print(f"  ✅ TCP-alive: {len(tcp_alive)}")
 
     if not tcp_alive:
         print("⚠️  No TCP-alive proxies.")
         return
+
+    # ═══ Дедупликация #2: для каждого host:port оставляем только N лучших ═══
+    before_endpoint_dedup = len(tcp_alive)
+    tcp_alive, dropped = deduplicate_by_endpoint(tcp_alive, MAX_PER_ENDPOINT)
+    unique_endpoints = len(tcp_alive)
+    print(f"  🧹 Дедупликация по host:port:")
+    print(f"     Было: {before_endpoint_dedup}, Стало: {unique_endpoints}")
+    print(f"     Отброшено дубликатов endpoint'ов: {dropped}")
+    print(f"     Уникальных серверов (host:port): {unique_endpoints}")
 
     print("🌍 Checking GeoIP...")
     hosts = [item["host"] for item in tcp_alive]
@@ -1115,6 +1139,10 @@ async def main():
             working_protos[p] = working_protos.get(p, 0) + 1
         if working_protos:
             print("  По протоколам: " + ", ".join(f"{k}={v}" for k, v in sorted(working_protos.items())))
+        
+        # Статистика уникальности в top
+        unique_hosts_in_top = len(set(f"{r['host']}:{r['port']}" for r in top))
+        print(f"  🎯 Уникальных серверов в top-{len(top)}: {unique_hosts_in_top}")
     else:
         print("  ⚠️  Нет доступных бинарников — сохраняем TCP-alive")
         top = candidates[:TOP_N]
@@ -1126,13 +1154,27 @@ async def main():
         print("⚠️  No working proxies found.")
         return
 
+    # ═══ Дедупликация #3: финальная проверка топ-списка на дубли URI ═══
+    seen_uris = set()
+    deduped_top = []
+    for r in top:
+        if r["uri"] not in seen_uris:
+            seen_uris.add(r["uri"])
+            deduped_top.append(r)
+    top = deduped_top
+    
+    seen_ru_uris = set()
+    deduped_ru_top = []
+    for r in ru_top:
+        if r["uri"] not in seen_ru_uris:
+            seen_ru_uris.add(r["uri"])
+            deduped_ru_top.append(r)
+    ru_top = deduped_ru_top
+
     # Сохранение proxies.txt
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     
-    # ═══════════════════════════════════════════════════════════════════
-    # Конвертация ВСЕХ прокси в Clash YAML (максимальный охват)
-    # ═══════════════════════════════════════════════════════════════════
     print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
     clash_proxies = []
     failed_count = 0
@@ -1159,7 +1201,7 @@ async def main():
     (OUTPUT_DIR / "ru.txt").write_text("\n".join(ru_lines) + "\n", encoding="utf-8")
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
-    print(f"   proxies.txt      — {len(top)} URI (все рабочие)")
+    print(f"   proxies.txt      — {len(top)} URI (все рабочие, без дублей)")
     print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)")
     print(f"   ru.txt           — {len(ru_top)} URI (строго RU)\n")
     
