@@ -5,9 +5,7 @@ Proxy Checker — оптимизирован для России (RU edition)
 Источники: sources.txt рядом со скриптом (одна строка = один URL, # = комментарий)
 Выходные файлы:
   proxies.txt   — не-RU URI
-  ru.txt        — RU URI
   proxies.yaml  — не-RU Clash Meta / FClash подписка
-  ru.yaml       — RU Clash Meta / FClash подписка
 """
 
 import asyncio
@@ -62,9 +60,9 @@ else:
     HY2_BIN  = Path(_shutil.which("hysteria2") or "/tmp/hysteria-bin/hysteria")
 
 
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Загрузка sources.txt
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 def load_sources() -> list[str]:
     if not SOURCES_FILE.exists():
@@ -81,9 +79,9 @@ def load_sources() -> list[str]:
     return urls
 
 
-# ═══════════════════════���════════════════════════════════════════════
+# ═══════════════════════───════════════════════════════════════════[...]
 # Helpers
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 def decode_b64(data: str) -> str:
     data = data.strip()
@@ -186,9 +184,9 @@ def parse_host_port(uri: str) -> tuple | None:
         return None
 
 
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Clash YAML builder
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 def _clash_proxy_from_uri(name: str, uri: str) -> dict | None:
     """Конвертирует proxy URI в Clash Meta proxy dict."""
@@ -404,9 +402,9 @@ rules:
 """
 
 
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Fetch sources  (стриминг, лимит 20MB)
-# ════════════════════════════════════════════════════════════════════
+# ════════════════���═════════════════════════════════════════════════[...]
 
 async def fetch_source(session: aiohttp.ClientSession, url: str) -> list[str]:
     url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
@@ -433,9 +431,9 @@ async def fetch_source(session: aiohttp.ClientSession, url: str) -> list[str]:
     return configs
 
 
-# ══��═════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Stage 1 — TCP-ping / DNS-resolve
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 async def tcp_ping(host: str, port: int) -> float | None:
     t0 = time.monotonic()
@@ -470,9 +468,9 @@ async def stage1_worker(sem: asyncio.Semaphore, uri: str) -> dict | None:
             return {"uri": uri, "host": host, "port": port, "tcp_ms": ms, "proto": proto}
 
 
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Установка бинарей
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 def _download(url: str, dest: Path) -> bool:
     try:
@@ -508,9 +506,9 @@ def install_hysteria2() -> bool:
     HY2_BIN.chmod(0o755); print("  ✓ hysteria2 ready"); return True
 
 
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Stage 2 — curl через SOCKS5
-# ════════════════��═══════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 async def curl_probe(socks_port: int) -> float | None:
     for url, ok_codes in PROBE_URLS:
@@ -672,9 +670,9 @@ async def stage2_worker(sem: asyncio.Semaphore, idx: int, item: dict) -> dict | 
         return {**item, "http_ms": http_ms}
 
 
-# ════════════════════════════════════════════════════════════════════
+# ═══════���══════════════════════════════════════════════════════════[...]
 # Geo lookup
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 async def get_country(session: aiohttp.ClientSession, host: str) -> str:
     for url in [f"https://ipinfo.io/{host}/country", f"https://ip2c.org/{host}"]:
@@ -693,9 +691,9 @@ async def get_country(session: aiohttp.ClientSession, host: str) -> str:
     return ""
 
 
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # Main
-# ════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -802,34 +800,26 @@ async def main():
                 result.append(r)
         return result
 
-    ru_items    = _dedup_by_host([r for r in top if host_to_cc.get(r["host"]) == "RU"])[:TOP_N]
     other_items = _dedup_by_host([r for r in top if host_to_cc.get(r["host"]) != "RU"])[:TOP_N]
-    print(f"  🇷🇺 RU: {len(ru_items)}  |  🌐 Other: {len(other_items)}")
+    print(f"  🌐 Global: {len(other_items)}")
 
     def _uris(items): return "\n".join(r["uri"] for r in items) + "\n"
 
     (OUTPUT_DIR / "proxies.txt").write_text(_uris(other_items), encoding="utf-8")
-    (OUTPUT_DIR / "ru.txt").write_text(     _uris(ru_items),    encoding="utf-8")
     (OUTPUT_DIR / "proxies_b64.txt").write_text(
         base64.b64encode("\n".join(r["uri"] for r in other_items).encode()).decode(), encoding="utf-8")
-    (OUTPUT_DIR / "ru_b64.txt").write_text(
-        base64.b64encode("\n".join(r["uri"] for r in ru_items).encode()).decode(), encoding="utf-8")
 
     (OUTPUT_DIR / "proxies.yaml").write_text(
-        build_clash_yaml(other_items, ts, "Global (non-RU)"), encoding="utf-8")
-    (OUTPUT_DIR / "ru.yaml").write_text(
-        build_clash_yaml(ru_items, ts, "Russia (RU)"), encoding="utf-8")
+        build_clash_yaml(other_items, ts, "Global proxies"), encoding="utf-8")
 
     print(f"\n{'─'*64}")
     print(f"📁 {OUTPUT_DIR}/")
-    print(f"   proxies.txt    — {len(other_items)} URI (не-RU)")
-    print(f"   ru.txt         — {len(ru_items)} URI (RU)")
-    print(f"   proxies_b64.txt / ru_b64.txt — base64")
-    print(f"   proxies.yaml   — {len(other_items)} прокси Clash Meta (не-RU)")
-    print(f"   ru.yaml        — {len(ru_items)} прокси Clash Meta (RU)")
+    print(f"   proxies.txt        — {len(other_items)} URI (Global)")
+    print(f"   proxies_b64.txt    — base64")
+    print(f"   proxies.yaml       — {len(other_items)} прокси Clash Meta (Global)")
 
     print(f"\n🏆 Топ 5:")
-    all_top = sorted(ru_items + other_items, key=lambda x: x.get("http_ms") or 9999)
+    all_top = sorted(other_items, key=lambda x: x.get("http_ms") or 9999)
     for i, r in enumerate(all_top[:5]):
         cc = host_to_cc.get(r["host"], "??")
         print(f"   {i+1}. [{r['proto']}][{cc}] {r['host']}:{r['port']}  {r.get('http_ms')}ms")
