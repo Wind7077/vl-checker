@@ -19,6 +19,7 @@ import time
 import urllib.parse
 import zipfile
 import urllib.request
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -37,9 +38,9 @@ PROBE_URLS = [
 ]
 
 # ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]   # добавь "vmess","trojan","ss" при необходимости
-REQUIRE_REALITY     = True                     # False — брать любой vless
-ALLOWED_COUNTRIES   = set()                    # пусто = без геофильтра; пример: {"NL","DE","EE","RU","FI"}
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
+REQUIRE_REALITY     = True
+ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
 TOP_N               = 250
@@ -50,6 +51,10 @@ MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 1000
 SOCKS_BASE_PORT     = 20000
+
+# ── Настройки дедупликации ────────────────────────────────────────────────────
+MAX_PER_ENDPOINT    = 2   # Макс прокси с разными UUID на одном host:port
+MAX_PER_UUID        = 2   # Макс разных IP для одного UUID (CDN/Anycast)
 
 HYSTERIA2_PROBE_TIMEOUT = 12
 
@@ -62,28 +67,22 @@ else:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Загрузка источников из sources.txt
+# Загрузка источников
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
-    """Читает sources.txt — одна строка = один URL, строки с # игнорируются."""
     if not SOURCES_FILE.exists():
         print(f"  ❌ Файл {SOURCES_FILE} не найден.")
-        print(f"     Создай его и добавь URL источников (по одному на строку).")
         sys.exit(1)
-
     urls = []
     with open(SOURCES_FILE, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith("#"):
                 urls.append(line)
-
     if not urls:
         print(f"  ❌ {SOURCES_FILE} не содержит ни одного URL.")
-        print(f"     Добавь ссылки на источники (строки с # — комментарии, игнорируются).")
         sys.exit(1)
-
     print(f"  📄 Загружено {len(urls)} источников из {SOURCES_FILE.name}")
     return urls
 
@@ -111,7 +110,6 @@ def extract_configs(text: str) -> list:
     for line in text.splitlines():
         line = line.strip()
         if line.startswith(("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://")):
-            # нормализуем hy2:// → hysteria2://
             if line.startswith("hy2://"):
                 line = "hysteria2://" + line[6:]
             configs.append(line)
@@ -148,15 +146,137 @@ def parse_host_port(uri: str):
     return None
 
 
+def get_uuid_from_uri(uri: str) -> str:
+    """Извлекает UUID (или password для hysteria2/ss) из URI."""
+    try:
+        scheme = uri.split("://")[0].lower()
+        p = urllib.parse.urlparse(uri)
+        if scheme == "vless":
+            return p.username or uri.split("://")[1].split("@")[0]
+        elif scheme in ("hysteria2", "hy2"):
+            return p.username or p.password or uri.split("://")[1].split("@")[0]
+        elif scheme == "trojan":
+            return p.username or ""
+        elif scheme == "ss":
+            userinfo = p.username or ""
+            if ":" not in userinfo:
+                userinfo = decode_b64(userinfo)
+            return userinfo
+        elif scheme == "vmess":
+            try:
+                raw = decode_b64(uri[len("vmess://"):])
+                cfg = json.loads(raw)
+                return cfg.get("id", "")
+            except Exception:
+                return ""
+    except Exception:
+        pass
+    return ""
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
-# Clash YAML Export (FClash / Mihomo совместимо)
+# Умная дедупликация
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def smart_deduplicate(items: list[dict], 
+                       max_per_endpoint: int = MAX_PER_ENDPOINT,
+                       max_per_uuid: int = MAX_PER_UUID) -> tuple[list[dict], dict]:
+    """
+    Грамотная 3-уровневая дедупликация:
+    
+    1. Убирает точные дубликаты (нормализуя параметры — порядок query, fragment)
+    2. Для одного UUID на одном IP:port — оставляет 1 лучший (один сервер = один аккаунт)
+    3. Для одного UUID на разных IP (CDN/Anycast) — оставляет max_per_uuid лучших
+    4. Для одного IP:port с разными UUID — оставляет max_per_endpoint лучших
+    
+    Возвращает (дедуплицированный список, статистику)
+    """
+    stats = {
+        "input": len(items),
+        "after_exact_dedup": 0,
+        "after_uuid_server_dedup": 0,
+        "after_uuid_cdn_dedup": 0,
+        "output": 0,
+    }
+    
+    # ─── Шаг 1: Убираем точные дубли (нормализуя URI) ─────────────────
+    def normalize_uri(uri: str) -> str:
+        try:
+            p = urllib.parse.urlparse(uri)
+            # Сортируем параметры — порядок не важен
+            params = sorted(urllib.parse.parse_qsl(p.query))
+            query_str = urllib.parse.urlencode(params)
+            # Без fragment (там только название/пинг)
+            return urllib.parse.urlunparse((
+                p.scheme, p.netloc, p.path, p.params, query_str, ''
+            ))
+        except Exception:
+            return uri
+    
+    seen_uris = set()
+    unique_items = []
+    for item in items:
+        norm = normalize_uri(item['uri'])
+        if norm not in seen_uris:
+            seen_uris.add(norm)
+            unique_items.append(item)
+    
+    stats["after_exact_dedup"] = len(unique_items)
+    
+    # ─── Шаг 2: Для каждого (UUID, host, port) оставляем 1 лучший ─────
+    # Это устраняет дубли одного аккаунта на одном сервере
+    uuid_server_groups = defaultdict(list)
+    for item in unique_items:
+        uuid = get_uuid_from_uri(item['uri'])
+        key = (uuid, item['host'], item['port'])
+        uuid_server_groups[key].append(item)
+    
+    after_uuid_server = []
+    for key, group in uuid_server_groups.items():
+        group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
+        after_uuid_server.append(group[0])  # Только самый быстрый
+    
+    stats["after_uuid_server_dedup"] = len(after_uuid_server)
+    
+    # ─── Шаг 3: Для каждого UUID на разных IP (CDN) оставляем N лучших ─
+    # Один и тот же UUID на разных IP = один сервер за CDN, достаточно 1-2
+    uuid_groups = defaultdict(list)
+    for item in after_uuid_server:
+        uuid = get_uuid_from_uri(item['uri'])
+        uuid_groups[uuid].append(item)
+    
+    after_uuid = []
+    for uuid, group in uuid_groups.items():
+        group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
+        after_uuid.extend(group[:max_per_uuid])
+    
+    stats["after_uuid_cdn_dedup"] = len(after_uuid)
+    
+    # ─── Шаг 4: Для каждого host:port оставляем N разных UUID ─────────
+    # Один сервер с разными UUID = разные аккаунты, достаточно 1-2
+    endpoint_groups = defaultdict(list)
+    for item in after_uuid:
+        key = f"{item['host']}:{item['port']}"
+        endpoint_groups[key].append(item)
+    
+    result = []
+    for key, group in endpoint_groups.items():
+        group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
+        result.extend(group[:max_per_endpoint])
+    
+    # Финальная сортировка по ping
+    result.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
+    stats["output"] = len(result)
+    
+    return result, stats
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Clash YAML Export
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
-    """
-    Безопасное экранирование строк для YAML.
-    Использует одинарные кавычки с удвоением — работает с эмодзи и спецсимволами.
-    """
+    """Безопасное экранирование строк для YAML."""
     if val is None:
         return "''"
     s = str(val)
@@ -165,13 +285,11 @@ def yaml_str(val):
 
 
 def parse_all_params(uri: str) -> dict:
-    """Извлекает параметры и из query (?key=val), и из fragment (#key=val)."""
     try:
         p = urllib.parse.urlparse(uri)
         params = dict(urllib.parse.parse_qsl(p.query))
         if p.fragment and '=' in p.fragment:
-            frag_params = dict(urllib.parse.parse_qsl(p.fragment))
-            for k, v in frag_params.items():
+            for k, v in urllib.parse.parse_qsl(p.fragment):
                 if k not in params:
                     params[k] = v
         return params
@@ -180,10 +298,7 @@ def parse_all_params(uri: str) -> dict:
 
 
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
-    """
-    Конвертирует URI в формат Clash/Mihomo.
-    Агрессивная конвертация — использует дефолты вместо возврата None.
-    """
+    """Агрессивная конвертация URI в Clash формат."""
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -200,7 +315,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
         
         proxy_name = f"{idx+1}. {host}:{port}"
         
-        # ─── VLESS ────────────────────────────────────────────────────────
+        # ─── VLESS ─────────────────────────────────────────────────────
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
@@ -216,19 +331,16 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             if sec not in ("tls", "reality", "none"):
                 sec = "tls"
             
-            # Валидные fingerprints для Clash Meta
             fp = params.get("fp", "chrome")
             valid_fps = ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"]
             if fp not in valid_fps:
                 fp = "chrome"
             
-            # Валидные network типы
             net = params.get("type", "tcp").lower()
             valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic", "httpupgrade", "splithttp"]
             if net not in valid_nets:
                 net = "tcp"
             
-            # Для Clash h2/httpupgrade/splithttp приводим к tcp
             clash_net = net
             if net in ("h2", "httpupgrade", "splithttp"):
                 clash_net = "tcp"
@@ -239,13 +351,11 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             host_header = params.get("host", "") or host
             serviceName = params.get("serviceName", "")
             
-            # Валидные flow
             flow = params.get("flow", "")
             valid_flows = ["xtls-rprx-vision", "xtls-rprx-vision-udp443",
                           "xtls-rprx-origin", "xtls-rprx-origin-udp443",
                           "xtls-rprx-direct", "xtls-rprx-direct-udp443"]
             
-            # Для Reality обязательно нужен flow, дефолт = xtls-rprx-vision
             if sec == "reality" and (not flow or flow not in valid_flows):
                 flow = "xtls-rprx-vision"
             elif flow and flow not in valid_flows:
@@ -289,19 +399,17 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
-        # ─── HYSTERIA2 ────────────────────────────────────────────────────
+        # ─── HYSTERIA2 ─────────────────────────────────────────────────
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             if not auth:
                 try:
-                    path_part = uri.split("://")[1].split("@")[0]
-                    if path_part:
-                        auth = path_part
+                    auth = uri.split("://")[1].split("@")[0]
                 except Exception:
                     auth = ""
             
             sni = params.get("sni") or params.get("peer") or host
-            insecure = params.get("insecure", "0") == "1" or params.get("insecure") == "1"
+            insecure = params.get("insecure", "0") == "1"
             obfs = params.get("obfs", "")
             obfs_password = params.get("obfs-password", "") or params.get("obfs_password", "")
             
@@ -327,9 +435,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
-    """Записывает блок proxies: в YAML."""
     lines = ["proxies:"]
-    
     for p in proxies:
         lines.append(f"  - name: {yaml_str(p['name'])}")
         lines.append(f"    type: {p['type']}")
@@ -340,7 +446,6 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
         if 'password' in p:
             lines.append(f"    password: {yaml_str(p['password'])}")
-        
         if 'servername' in p:
             lines.append(f"    servername: {yaml_str(p['servername'])}")
         if 'sni' in p:
@@ -384,7 +489,6 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
 
 
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
-    """Записывает полный рабочий конфиг Clash с группами и правилами."""
     proxy_names = [yaml_str(p['name']) for p in proxies]
     top20 = proxy_names[:20]
     top50 = proxy_names[:50] if len(proxy_names) >= 50 else proxy_names
@@ -851,11 +955,24 @@ async def main():
         if done % 300 == 0:
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
     tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x["tcp_ms"]))
-    print(f"  ✅ TCP-alive: {len(tcp_alive)}\n")
+    print(f"  ✅ TCP-alive: {len(tcp_alive)}")
 
     if not tcp_alive:
         print("⚠️  No TCP-alive proxies.")
         return
+
+    # ═══════════════════════════════════════════════════════════════════
+    # 🧹 Умная дедупликация (3 уровня)
+    # ═══════════════════════════════════════════════════════════════════
+    print(f"\n🧹 Smart Deduplication...")
+    tcp_alive, dedup_stats = smart_deduplicate(tcp_alive)
+    
+    print(f"   Было прокси:               {dedup_stats['input']}")
+    print(f"   → После точных дублей:     {dedup_stats['after_exact_dedup']} (-{dedup_stats['input'] - dedup_stats['after_exact_dedup']})")
+    print(f"   → После (UUID+host:port):  {dedup_stats['after_uuid_server_dedup']} (-{dedup_stats['after_exact_dedup'] - dedup_stats['after_uuid_server_dedup']})")
+    print(f"   → После (UUID на CDN):     {dedup_stats['after_uuid_cdn_dedup']} (-{dedup_stats['after_uuid_server_dedup'] - dedup_stats['after_uuid_cdn_dedup']})")
+    print(f"   → Финал (host:port):       {dedup_stats['output']} (-{dedup_stats['after_uuid_cdn_dedup'] - dedup_stats['output']})")
+    print(f"   Итого удалено дублей:      {dedup_stats['input'] - dedup_stats['output']} ({(dedup_stats['input'] - dedup_stats['output']) / dedup_stats['input'] * 100:.1f}%)\n")
 
     print("🛠  Preparing binaries…")
     xray_ok = install_xray()
@@ -897,8 +1014,11 @@ async def main():
         print("⚠️  No working proxies found.")
         return
 
+    # Сохранение proxies.txt
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
+    
+    # Base64 подписка
     b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
@@ -915,7 +1035,6 @@ async def main():
             clash_proxies.append(cp)
         else:
             failed_count += 1
-            print(f"  ⚠️  Не удалось конвертировать: {r['uri'][:80]}...")
     
     success_rate = (len(clash_proxies) / len(top) * 100) if top else 0
     print(f"  ✅ Сконвертировано: {len(clash_proxies)}/{len(top)} ({success_rate:.1f}%)")
@@ -929,7 +1048,9 @@ async def main():
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
     print(f"   proxies_b64.txt  — base64 подписка")
-    print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)\n")
+    if clash_proxies:
+        print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)\n")
+    
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
         proto = r.get("proto", r["uri"].split("://")[0].lower())
