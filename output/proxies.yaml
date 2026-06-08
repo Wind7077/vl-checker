@@ -5,175 +5,72 @@ log-level: info
 external-controller: '127.0.0.1:9090'
 
 proxies:
-  - name: '🇮🇹 1. 151.115.164.120:8880'
+  - name: '🇮🇹 1. 151.115.166.249:8880'
     type: vless
-    server: '151.115.164.120'
+    server: '151.115.166.249'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.120'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 2. 151.115.166.43:8880'
-    type: vless
-    server: '151.115.166.43'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.43'
+    servername: '151.115.166.249'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 3. 151.115.164.134:8880'
+  - name: '🇮🇹 2. 151.115.166.249:8880'
     type: vless
-    server: '151.115.164.134'
+    server: '151.115.166.249'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.134'
+    servername: '151.115.166.249'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 3. 151.115.166.249:8880'
+    type: vless
+    server: '151.115.166.249'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.249'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 4. 151.115.164.134:8880'
+  - name: '🇮🇹 4. 151.115.164.36:8880'
     type: vless
-    server: '151.115.164.134'
+    server: '151.115.164.36'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.134'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 5. 151.115.164.37:8880'
-    type: vless
-    server: '151.115.164.37'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.37'
+    servername: '151.115.164.36'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 6. 151.115.164.117:8880'
+  - name: '🇮🇹 5. 151.115.165.172:8880'
     type: vless
-    server: '151.115.164.117'
+    server: '151.115.165.172'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.117'
+    servername: '151.115.165.172'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 7. 151.115.167.1:8880'
+  - name: '🇵🇱 6. 89.126.229.40:443'
     type: vless
-    server: '151.115.167.1'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.167.1'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 8. 151.115.164.43:8880'
-    type: vless
-    server: '151.115.164.43'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.43'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇳🇱 9. 51.158.206.87:23576'
-    type: vless
-    server: '51.158.206.87'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇳🇱 10. 51.158.206.86:23576'
-    type: vless
-    server: '51.158.206.86'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇮🇪 11. 85.159.229.189:443'
-    type: vless
-    server: '85.159.229.189'
+    server: '89.126.229.40'
     port: 443
-    uuid: '9f9f18f8-2557-4f18-928d-e7c334a0b068'
-    servername: 'www.google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'random'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'jRh71f3CZSR8xkOMBX9wpaMe_3EYhjrxFELmls-AW0A'
-      short-id: 'e6'
-  - name: '🇩🇪 12. 91.107.191.12:29376'
-    type: vless
-    server: '91.107.191.12'
-    port: 29376
-    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
-    servername: '91.107.191.12'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇮🇹 13. 151.115.166.233:8880'
-    type: vless
-    server: '151.115.166.233'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.233'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇳🇱 14. 51.158.206.29:23576'
-    type: vless
-    server: '51.158.206.29'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
+    uuid: '301d514e-4aa0-47b0-ba44-a0cb891cd52f'
+    servername: 'www.samsung.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
@@ -181,24 +78,14 @@ proxies:
     udp: true
     tls: true
     reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇩🇪 15. 91.107.191.12:29376'
+      public-key: 'OZVjfQBboTDTBw0baMFqzVPsVUI4FNQmspTEb0b0zW4'
+      short-id: 'a1b2c3d4'
+  - name: '🇳🇱 7. 144.124.253.4:8443'
     type: vless
-    server: '91.107.191.12'
-    port: 29376
-    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
-    servername: '91.107.191.12'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 16. 82.29.128.252:443'
-    type: vless
-    server: '82.29.128.252'
-    port: 443
-    uuid: 'f90099ab-bbb9-4d68-824b-edca0ea32cf1'
-    servername: 'www.amd.com'
+    server: '144.124.253.4'
+    port: 8443
+    uuid: '1cb91b20-49cc-59ff-8393-91808a4deede'
+    servername: 'www.ozon.ru'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
@@ -206,8 +93,24 @@ proxies:
     udp: true
     tls: true
     reality-opts:
-      public-key: 'FoCmMBurpqNaVQWlRvyuS1um0ftKxXMnnKNbnHpe-G8'
-  - name: '🇺🇸 17. 82.29.128.252:443'
+      public-key: 'bVhVy1hZY_iw-sljlaeVbTBBa6SPvMm0Kg0tCC8CKHM'
+      short-id: 'ffffffffff'
+  - name: '🇺🇸 8. 31.207.5.43:47200'
+    type: vless
+    server: '31.207.5.43'
+    port: 47200
+    uuid: 'ffaa8e95-74e2-4ef4-8974-69dd3651b6f9'
+    servername: 'stats.vk-portal.net'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE'
+      short-id: 'b2a9bd658fc81dc6'
+  - name: '🇺🇸 9. 82.29.128.252:443'
     type: vless
     server: '82.29.128.252'
     port: 443
@@ -221,7 +124,41 @@ proxies:
     tls: true
     reality-opts:
       public-key: 'FoCmMBurpqNaVQWlRvyuS1um0ftKxXMnnKNbnHpe-G8'
-  - name: '🇺🇸 18. 52.14.47.44:443'
+  - name: '🇺🇸 10. 82.29.128.252:443'
+    type: vless
+    server: '82.29.128.252'
+    port: 443
+    uuid: 'f90099ab-bbb9-4d68-824b-edca0ea32cf1'
+    servername: 'www.amd.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'FoCmMBurpqNaVQWlRvyuS1um0ftKxXMnnKNbnHpe-G8'
+  - name: '🇺🇸 11. 52.14.47.44:443'
+    type: vless
+    server: '52.14.47.44'
+    port: 443
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 12. 52.14.47.44:443'
+    type: vless
+    server: '52.14.47.44'
+    port: 443
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 13. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
     port: 443
@@ -231,6 +168,60 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: false
+  - name: '🇺🇸 14. 82.29.128.252:443'
+    type: vless
+    server: '82.29.128.252'
+    port: 443
+    uuid: 'f90099ab-bbb9-4d68-824b-edca0ea32cf1'
+    servername: 'www.amd.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'edge'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'FoCmMBurpqNaVQWlRvyuS1um0ftKxXMnnKNbnHpe-G8'
+  - name: '🇺🇸 15. 52.14.47.44:443'
+    type: vless
+    server: '52.14.47.44'
+    port: 443
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 16. 52.14.47.44:443'
+    type: vless
+    server: '52.14.47.44'
+    port: 443
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇺🇸 17. 52.14.47.44:443'
+    type: vless
+    server: '52.14.47.44'
+    port: 443
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 18. 52.14.47.44:443'
+    type: vless
+    server: '52.14.47.44'
+    port: 443
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
   - name: '🇺🇸 19. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -250,7 +241,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 21. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -280,7 +271,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 24. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -290,7 +281,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
+    tls: true
   - name: '🇺🇸 25. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -300,7 +291,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 26. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -310,7 +301,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
+    tls: true
   - name: '🇺🇸 27. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -320,7 +311,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
+    tls: true
   - name: '🇺🇸 28. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -330,7 +321,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
+    tls: true
   - name: '🇺🇸 29. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -340,7 +331,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 30. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -351,20 +342,16 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 31. 82.29.128.252:443'
+  - name: '🇺🇸 31. 52.14.47.44:443'
     type: vless
-    server: '82.29.128.252'
+    server: '52.14.47.44'
     port: 443
-    uuid: 'f90099ab-bbb9-4d68-824b-edca0ea32cf1'
-    servername: 'www.amd.com'
+    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
+    servername: '52.14.47.44'
     network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'edge'
     skip-cert-verify: true
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'FoCmMBurpqNaVQWlRvyuS1um0ftKxXMnnKNbnHpe-G8'
+    tls: false
   - name: '🇺🇸 32. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -404,7 +391,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 36. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -414,7 +401,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 37. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -424,7 +411,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 38. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -434,7 +421,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 39. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -444,7 +431,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 40. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -454,7 +441,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
+    tls: false
   - name: '🇺🇸 41. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -464,7 +451,7 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
+    tls: true
   - name: '🇺🇸 42. 52.14.47.44:443'
     type: vless
     server: '52.14.47.44'
@@ -474,197 +461,220 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
-  - name: '🇺🇸 43. 52.14.47.44:443'
+    tls: true
+  - name: '🇩🇪 43. 18.192.50.101:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 44. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇺🇸 45. 52.14.47.44:443'
+  - name: '🇩🇪 44. 18.192.50.101:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 46. 52.14.47.44:443'
+  - name: '🇩🇪 45. 18.192.50.101:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 47. 52.14.47.44:443'
+  - name: '🇩🇪 46. 18.195.94.102:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.195.94.102'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 48. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 49. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 50. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 51. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 52. 52.14.47.44:443'
+  - name: '🇺🇸 47. 77.110.127.191:9443'
     type: vless
-    server: '52.14.47.44'
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'e0de62c9-f317-4275-b7e5-8da7b7fa9bc6'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇩🇪 48. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 49. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 50. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 53. 52.14.47.44:443'
+  - name: '🇩🇪 51. 18.192.50.101:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 54. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 55. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 56. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 57. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 58. 52.14.47.44:443'
+  - name: '🇩🇪 52. 18.192.50.101:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 59. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇺🇸 60. 52.14.47.44:443'
+  - name: '🇩🇪 53. 18.192.50.101:443'
     type: vless
-    server: '52.14.47.44'
+    server: '18.192.50.101'
     port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 61. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: true
+  - name: '🇩🇪 54. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇺🇸 55. 77.110.127.191:9443'
+    type: vless
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'e0de62c9-f317-4275-b7e5-8da7b7fa9bc6'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇺🇸 56. 45.61.148.125:35711'
+    type: vless
+    server: '45.61.148.125'
+    port: 35711
+    uuid: '6b225373-b4a4-4814-89d7-162afd5c9359'
+    servername: '45.61.148.125'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/'
+      headers:
+        Host: 'www.google.com'
+  - name: '🇺🇸 57. 45.90.12.239:443'
+    type: vless
+    server: '45.90.12.239'
+    port: 443
+    uuid: '360045e9-30d9-4f13-b9d6-9c57f6baab1d'
+    servername: 'apple.com'
+    network: 'grpc'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'fviTlCtkzpbYhTpHObiVtlgCaAT8LytP9eWUoa6Jfy4'
+      short-id: '66f80bb224a5065a'
+    grpc-opts:
+      grpc-service-name: 'xyz'
+  - name: '🇺🇸 58. 77.110.127.191:9443'
+    type: vless
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'eed7565e-bb44-4530-b2a7-87de33113b68'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇩🇪 59. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 60. 85.195.101.122:443'
+    type: vless
+    server: '85.195.101.122'
+    port: 443
+    uuid: 'Vitamini_Channel'
+    servername: '85.195.101.122'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇩🇪 61. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
   - name: '🇩🇪 62. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
@@ -695,79 +705,7 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇳🇱 65. 45.43.92.110:7443'
-    type: vless
-    server: '45.43.92.110'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇩🇪 66. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 67. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 68. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇳🇱 69. 146.103.109.42:2083'
-    type: vless
-    server: '146.103.109.42'
-    port: 2083
-    uuid: '93272fb7-88f9-4eb1-8a55-ded45e92e028'
-    servername: 'play.google.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'zC_gY9HcoDPFh7byZ6ZobUljUt7o6h2u0qczzvDRRSw'
-      short-id: '67121fb280'
-    grpc-opts:
-      grpc-service-name: 'play.google.com'
-  - name: '🇩🇪 70. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 71. 18.192.50.101:443'
+  - name: '🇩🇪 65. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
     port: 443
@@ -777,17 +715,7 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇩🇪 72. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 73. 77.110.127.191:9443'
+  - name: '🇺🇸 66. 77.110.127.191:9443'
     type: vless
     server: '77.110.127.191'
     port: 9443
@@ -801,17 +729,27 @@ proxies:
       path: '/pourya'
       headers:
         Host: '77.110.127.191'
-  - name: '🇩🇪 74. 85.195.101.122:443'
+  - name: '🇩🇪 67. 18.192.50.101:443'
     type: vless
-    server: '85.195.101.122'
+    server: '18.192.50.101'
     port: 443
-    uuid: 'Vitamini_Channel'
-    servername: '85.195.101.122'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇩🇪 75. 18.195.94.102:443'
+  - name: '🇩🇪 68. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇩🇪 69. 18.195.94.102:443'
     type: vless
     server: '18.195.94.102'
     port: 443
@@ -821,6 +759,70 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: false
+  - name: '🇩🇪 70. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇩🇪 71. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 72. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇩🇪 73. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 74. 77.110.127.191:9443'
+    type: vless
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'eed7565e-bb44-4530-b2a7-87de33113b68'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇩🇪 75. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
   - name: '🇩🇪 76. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
@@ -831,20 +833,16 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇺🇸 77. 77.110.127.191:9443'
+  - name: '🇩🇪 77. 18.195.94.102:443'
     type: vless
-    server: '77.110.127.191'
-    port: 9443
-    uuid: 'eed7565e-bb44-4530-b2a7-87de33113b68'
-    servername: '77.110.127.191'
-    network: 'ws'
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
-    ws-opts:
-      path: '/pourya'
-      headers:
-        Host: '77.110.127.191'
+    tls: true
   - name: '🇺🇸 78. 77.110.127.191:9443'
     type: vless
     server: '77.110.127.191'
@@ -859,17 +857,7 @@ proxies:
       path: '/pourya'
       headers:
         Host: '77.110.127.191'
-  - name: '🇩🇪 79. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 80. 18.192.50.101:443'
+  - name: '🇩🇪 79. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
     port: 443
@@ -879,7 +867,7 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 81. 38.55.146.153:13000'
+  - name: '🇺🇸 80. 38.55.146.153:13000'
     type: vless
     server: '38.55.146.153'
     port: 13000
@@ -888,27 +876,37 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
+    tls: false
+  - name: '🇩🇪 81. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
     tls: true
-  - name: '🇩🇪 82. 18.195.94.102:443'
+  - name: '🇩🇪 82. 18.192.50.101:443'
     type: vless
-    server: '18.195.94.102'
+    server: '18.192.50.101'
     port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
-  - name: '🇩🇪 83. 18.195.94.102:443'
+    tls: true
+  - name: '🇩🇪 83. 18.192.50.101:443'
     type: vless
-    server: '18.195.94.102'
+    server: '18.192.50.101'
     port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
+    tls: true
   - name: '🇩🇪 84. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
@@ -918,100 +916,18 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: true
-  - name: '🇺🇸 85. 140.235.168.3:443'
+    tls: false
+  - name: '🇩🇪 85. 18.195.94.102:443'
     type: vless
-    server: '140.235.168.3'
+    server: '18.195.94.102'
     port: 443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇺🇸 86. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇺🇸 87. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 88. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 89. 140.235.168.3:443'
-    type: vless
-    server: '140.235.168.3'
-    port: 443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇺🇸 90. 140.235.169.7:443'
-    type: vless
-    server: '140.235.169.7'
-    port: 443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-  - name: '🇩🇪 91. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 92. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 93. 18.192.50.101:443'
+  - name: '🇩🇪 86. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
     port: 443
@@ -1021,95 +937,7 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇺🇸 94. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 95. 140.235.168.3:8443'
-    type: vless
-    server: '140.235.168.3'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇩🇪 96. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 97. 140.235.169.7:8443'
-    type: vless
-    server: '140.235.169.7'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 98. 140.235.168.3:8443'
-    type: vless
-    server: '140.235.168.3'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 99. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 100. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 101. 77.110.127.191:9443'
+  - name: '🇺🇸 87. 77.110.127.191:9443'
     type: vless
     server: '77.110.127.191'
     port: 9443
@@ -1123,7 +951,59 @@ proxies:
       path: '/pourya'
       headers:
         Host: '77.110.127.191'
-  - name: '🇩🇪 102. 18.192.50.101:443'
+  - name: '🇺🇸 88. 77.110.127.191:9443'
+    type: vless
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'eed7565e-bb44-4530-b2a7-87de33113b68'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇺🇸 89. 77.110.127.191:9443'
+    type: vless
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'e0de62c9-f317-4275-b7e5-8da7b7fa9bc6'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇺🇸 90. 77.110.127.191:9443'
+    type: vless
+    server: '77.110.127.191'
+    port: 9443
+    uuid: 'e0de62c9-f317-4275-b7e5-8da7b7fa9bc6'
+    servername: '77.110.127.191'
+    network: 'ws'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    ws-opts:
+      path: '/pourya'
+      headers:
+        Host: '77.110.127.191'
+  - name: '🇺🇸 91. 38.55.146.153:13000'
+    type: vless
+    server: '38.55.146.153'
+    port: 13000
+    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
+    servername: '38.55.146.153'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 92. 18.192.50.101:443'
     type: vless
     server: '18.192.50.101'
     port: 443
@@ -1132,24 +1012,28 @@ proxies:
     network: 'tcp'
     skip-cert-verify: true
     udp: true
-    tls: false
-  - name: '🇺🇸 103. 140.235.169.7:8443'
+    tls: true
+  - name: '🇩🇪 93. 18.192.50.101:443'
     type: vless
-    server: '140.235.169.7'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇩🇪 104. 18.195.94.102:443'
+  - name: '🇩🇪 94. 18.192.50.101:443'
+    type: vless
+    server: '18.192.50.101'
+    port: 443
+    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
+    servername: '18.192.50.101'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 95. 18.195.94.102:443'
     type: vless
     server: '18.195.94.102'
     port: 443
@@ -1159,139 +1043,7 @@ proxies:
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇺🇸 105. 45.61.148.125:35711'
-    type: vless
-    server: '45.61.148.125'
-    port: 35711
-    uuid: '6b225373-b4a4-4814-89d7-162afd5c9359'
-    servername: '45.61.148.125'
-    network: 'ws'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    ws-opts:
-      path: '/'
-      headers:
-        Host: 'www.google.com'
-  - name: '🇺🇸 106. 137.184.218.169:36925'
-    type: vless
-    server: '137.184.218.169'
-    port: 36925
-    uuid: 'c9fd0fb1-8251-4106-b09a-f4b426736f67'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'lJ9INPpO4rdnm2Tek_yg0PGFyUrBB6MoKyvqt_Mfqm0'
-  - name: '🇺🇸 107. 140.235.169.7:8443'
-    type: vless
-    server: '140.235.169.7'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 108. 140.235.169.7:8443'
-    type: vless
-    server: '140.235.169.7'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇩🇪 109. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 110. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 111. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 112. 140.235.169.7:993'
-    type: vless
-    server: '140.235.169.7'
-    port: 993
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-  - name: '🇺🇸 113. 140.235.168.3:993'
-    type: vless
-    server: '140.235.168.3'
-    port: 993
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇺🇸 114. 140.235.169.7:443'
-    type: vless
-    server: '140.235.169.7'
-    port: 443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-  - name: '🇺🇸 115. 140.235.168.3:443'
+  - name: '🇺🇸 96. 140.235.168.3:443'
     type: vless
     server: '140.235.168.3'
     port: 443
@@ -1305,167 +1057,47 @@ proxies:
     tls: true
     reality-opts:
       public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇺🇸 116. 140.235.169.7:993'
+  - name: '🇩🇪 97. 91.107.191.12:29376'
     type: vless
-    server: '140.235.169.7'
-    port: 993
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
     network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
     skip-cert-verify: true
     udp: true
     tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-  - name: '🇺🇸 117. 140.235.169.7:993'
+  - name: '🇩🇪 98. 91.107.191.12:29376'
     type: vless
-    server: '140.235.169.7'
-    port: 993
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
     network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
     skip-cert-verify: true
     udp: true
     tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-  - name: '🇺🇸 118. 137.184.218.169:36925'
+  - name: '🇩🇪 99. 91.107.191.12:29376'
     type: vless
-    server: '137.184.218.169'
-    port: 36925
-    uuid: 'c9fd0fb1-8251-4106-b09a-f4b426736f67'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'lJ9INPpO4rdnm2Tek_yg0PGFyUrBB6MoKyvqt_Mfqm0'
-  - name: '🇺🇸 119. 140.235.168.3:993'
-    type: vless
-    server: '140.235.168.3'
-    port: 993
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇺🇸 120. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇩🇪 121. 18.192.50.101:443'
+  - name: '🇩🇪 100. 91.107.191.12:29376'
     type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
     network: 'tcp'
     skip-cert-verify: true
     udp: true
     tls: false
-  - name: '🇩🇪 122. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 123. 38.55.146.153:13000'
-    type: vless
-    server: '38.55.146.153'
-    port: 13000
-    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
-    servername: '38.55.146.153'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 124. 140.235.168.3:8443'
-    type: vless
-    server: '140.235.168.3'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 125. 140.235.169.7:8443'
-    type: vless
-    server: '140.235.169.7'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 126. 140.235.169.7:8443'
-    type: vless
-    server: '140.235.169.7'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 127. 140.235.168.3:8443'
-    type: vless
-    server: '140.235.168.3'
-    port: 8443
-    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
-    servername: 'speed.cloudflare.com'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-    grpc-opts:
-      grpc-service-name: 'TunService'
-  - name: '🇺🇸 128. 147.182.212.232:56565'
+  - name: '🇺🇸 101. 147.182.212.232:56565'
     type: vless
     server: '147.182.212.232'
     port: 56565
@@ -1479,48 +1111,364 @@ proxies:
     tls: true
     reality-opts:
       public-key: 'Td03Ae-cuYLq4xg7MSps58c_yRUcbbwtZLXm0ywabjY'
-  - name: '🇮🇹 129. 151.115.166.249:8880'
+  - name: '🇩🇪 102. 91.107.191.12:29376'
     type: vless
-    server: '151.115.166.249'
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇩🇪 103. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 104. 140.235.169.7:8443'
+    type: vless
+    server: '140.235.169.7'
+    port: 8443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'grpc'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+    grpc-opts:
+      grpc-service-name: 'TunService'
+  - name: '🇩🇪 105. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 106. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇺🇸 107. 147.182.212.232:56565'
+    type: vless
+    server: '147.182.212.232'
+    port: 56565
+    uuid: '7b188eea-b08f-42c2-bac7-d3b0e74218b8'
+    servername: 'www.paypal.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'Td03Ae-cuYLq4xg7MSps58c_yRUcbbwtZLXm0ywabjY'
+  - name: '🇩🇪 108. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 109. 38.55.146.153:13000'
+    type: vless
+    server: '38.55.146.153'
+    port: 13000
+    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
+    servername: '38.55.146.153'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇺🇸 110. 137.184.218.169:36925'
+    type: vless
+    server: '137.184.218.169'
+    port: 36925
+    uuid: 'c9fd0fb1-8251-4106-b09a-f4b426736f67'
+    servername: 'www.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'lJ9INPpO4rdnm2Tek_yg0PGFyUrBB6MoKyvqt_Mfqm0'
+  - name: '🇩🇪 111. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇺🇸 112. 140.235.168.3:8443'
+    type: vless
+    server: '140.235.168.3'
+    port: 8443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'grpc'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
+    grpc-opts:
+      grpc-service-name: 'TunService'
+  - name: '🇺🇸 113. 140.235.169.7:8443'
+    type: vless
+    server: '140.235.169.7'
+    port: 8443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'grpc'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+    grpc-opts:
+      grpc-service-name: 'TunService'
+  - name: '🇩🇪 114. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇩🇪 115. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 116. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 117. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 118. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 119. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇩🇪 120. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇮🇹 121. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.249'
+    servername: '151.115.164.126'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 122. 140.235.169.7:993'
+    type: vless
+    server: '140.235.169.7'
+    port: 993
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+  - name: '🇮🇹 123. 151.115.164.116:8880'
+    type: vless
+    server: '151.115.164.116'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.116'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 124. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.126'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 130. 151.115.166.233:8880'
+  - name: '🇺🇸 125. 140.235.168.3:443'
     type: vless
-    server: '151.115.166.233'
+    server: '140.235.168.3'
+    port: 443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
+  - name: '🇮🇹 126. 151.115.164.117:8880'
+    type: vless
+    server: '151.115.164.117'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.233'
+    servername: '151.115.164.117'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 127. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.126'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 131. 151.115.166.233:8880'
+  - name: '🇮🇹 128. 151.115.164.134:8880'
     type: vless
-    server: '151.115.166.233'
+    server: '151.115.164.134'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.233'
+    servername: '151.115.164.134'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 129. 140.235.168.3:993'
+    type: vless
+    server: '140.235.168.3'
+    port: 993
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
+  - name: '🇩🇪 130. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇮🇹 131. 151.115.164.131:8880'
+    type: vless
+    server: '151.115.164.131'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.131'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 132. 151.115.164.120:8880'
+  - name: '🇮🇹 132. 151.115.164.134:8880'
     type: vless
-    server: '151.115.164.120'
+    server: '151.115.164.134'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.120'
+    servername: '151.115.164.134'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
@@ -1541,7 +1489,75 @@ proxies:
     tls: true
     reality-opts:
       public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇮🇹 134. 151.115.164.134:8880'
+  - name: '🇩🇪 134. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇮🇹 135. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 136. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 137. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.126'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 138. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇩🇪 139. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇮🇹 140. 151.115.164.134:8880'
     type: vless
     server: '151.115.164.134'
     port: 8880
@@ -1553,77 +1569,31 @@ proxies:
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 135. 151.115.164.110:8880'
+  - name: '🇮🇹 141. 151.115.164.129:8880'
     type: vless
-    server: '151.115.164.110'
+    server: '151.115.164.129'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.110'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 136. 151.115.164.117:8880'
-    type: vless
-    server: '151.115.164.117'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.117'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 137. 151.115.166.249:8880'
-    type: vless
-    server: '151.115.166.249'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.249'
+    servername: '151.115.164.129'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 138. 151.115.167.188:8880'
+  - name: '🇮🇹 142. 151.115.165.172:8880'
     type: vless
-    server: '151.115.167.188'
+    server: '151.115.165.172'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.167.188'
+    servername: '151.115.165.172'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 139. 151.115.164.37:8880'
-    type: vless
-    server: '151.115.164.37'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.37'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇺🇸 140. 52.14.47.44:443'
-    type: vless
-    server: '52.14.47.44'
-    port: 443
-    uuid: '0c61d46d-4c4d-421b-b0fb-d211415da368'
-    servername: '52.14.47.44'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇮🇹 141. 151.115.164.120:8880'
+  - name: '🇮🇹 143. 151.115.164.120:8880'
     type: vless
     server: '151.115.164.120'
     port: 8880
@@ -1635,7 +1605,977 @@ proxies:
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇺🇸 142. 140.235.168.3:993'
+  - name: '🇮🇹 144. 151.115.164.43:8880'
+    type: vless
+    server: '151.115.164.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 145. 151.115.164.43:8880'
+    type: vless
+    server: '151.115.164.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 146. 151.115.164.43:8880'
+    type: vless
+    server: '151.115.164.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 147. 151.115.166.68:8880'
+    type: vless
+    server: '151.115.166.68'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.68'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 148. 151.115.166.249:8880'
+    type: vless
+    server: '151.115.166.249'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.249'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 149. 151.115.167.174:8880'
+    type: vless
+    server: '151.115.167.174'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.174'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 150. 151.115.165.172:8880'
+    type: vless
+    server: '151.115.165.172'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.165.172'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇩🇪 151. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇺🇸 152. 38.55.146.153:13000'
+    type: vless
+    server: '38.55.146.153'
+    port: 13000
+    uuid: 'b852270a-1283-4ea8-8a2f-5bae8e644a3e'
+    servername: '38.55.146.153'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇮🇹 153. 151.115.165.172:8880'
+    type: vless
+    server: '151.115.165.172'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.165.172'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 154. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.126'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 155. 140.235.168.3:443'
+    type: vless
+    server: '140.235.168.3'
+    port: 443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
+  - name: '🇩🇪 156. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+  - name: '🇮🇹 157. 151.115.164.131:8880'
+    type: vless
+    server: '151.115.164.131'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.131'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 158. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 159. 151.115.164.132:8880'
+    type: vless
+    server: '151.115.164.132'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.132'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 160. 151.115.164.134:8880'
+    type: vless
+    server: '151.115.164.134'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.134'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 161. 151.115.167.188:8880'
+    type: vless
+    server: '151.115.167.188'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.188'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 162. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 163. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 164. 151.115.167.1:8880'
+    type: vless
+    server: '151.115.167.1'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.1'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 165. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.126'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 166. 151.115.167.1:8880'
+    type: vless
+    server: '151.115.167.1'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.1'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 167. 151.115.167.188:8880'
+    type: vless
+    server: '151.115.167.188'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.188'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 168. 151.115.164.117:8880'
+    type: vless
+    server: '151.115.164.117'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.117'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 169. 151.115.167.1:8880'
+    type: vless
+    server: '151.115.167.1'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.1'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 170. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 171. 151.115.164.117:8880'
+    type: vless
+    server: '151.115.164.117'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.117'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 172. 151.115.164.117:8880'
+    type: vless
+    server: '151.115.164.117'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.117'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 173. 151.115.164.36:8880'
+    type: vless
+    server: '151.115.164.36'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.36'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 174. 151.115.164.134:8880'
+    type: vless
+    server: '151.115.164.134'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.134'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 175. 151.115.164.132:8880'
+    type: vless
+    server: '151.115.164.132'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.132'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 176. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 177. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 178. 151.115.164.134:8880'
+    type: vless
+    server: '151.115.164.134'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.134'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 179. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 180. 151.115.164.43:8880'
+    type: vless
+    server: '151.115.164.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 181. 151.115.164.117:8880'
+    type: vless
+    server: '151.115.164.117'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.117'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 182. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 183. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 184. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 185. 151.115.164.37:8880'
+    type: vless
+    server: '151.115.164.37'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.37'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 186. 140.235.168.3:8443'
+    type: vless
+    server: '140.235.168.3'
+    port: 8443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'grpc'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
+    grpc-opts:
+      grpc-service-name: 'TunService'
+  - name: '🇮🇹 187. 151.115.164.131:8880'
+    type: vless
+    server: '151.115.164.131'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.131'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 188. 151.115.166.233:8880'
+    type: vless
+    server: '151.115.166.233'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.233'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 189. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 190. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 191. 151.115.167.188:8880'
+    type: vless
+    server: '151.115.167.188'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.188'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 192. 151.115.164.134:8880'
+    type: vless
+    server: '151.115.164.134'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.134'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 193. 151.115.167.188:8880'
+    type: vless
+    server: '151.115.167.188'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.188'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 194. 151.115.167.188:8880'
+    type: vless
+    server: '151.115.167.188'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.188'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 195. 151.115.164.120:8880'
+    type: vless
+    server: '151.115.164.120'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.120'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 196. 151.115.164.126:8880'
+    type: vless
+    server: '151.115.164.126'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.126'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 197. 151.115.167.174:8880'
+    type: vless
+    server: '151.115.167.174'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.174'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 198. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 199. 151.115.166.221:8880'
+    type: vless
+    server: '151.115.166.221'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.221'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 200. 151.115.166.68:8880'
+    type: vless
+    server: '151.115.166.68'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.68'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 201. 151.115.164.131:8880'
+    type: vless
+    server: '151.115.164.131'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.131'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 202. 151.115.164.131:8880'
+    type: vless
+    server: '151.115.164.131'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.131'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 203. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 204. 151.115.164.43:8880'
+    type: vless
+    server: '151.115.164.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 205. 151.115.167.1:8880'
+    type: vless
+    server: '151.115.167.1'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.1'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 206. 151.115.164.117:8880'
+    type: vless
+    server: '151.115.164.117'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.117'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 207. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 208. 151.115.164.129:8880'
+    type: vless
+    server: '151.115.164.129'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.129'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 209. 151.115.166.221:8880'
+    type: vless
+    server: '151.115.166.221'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.221'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 210. 140.235.169.7:8443'
+    type: vless
+    server: '140.235.169.7'
+    port: 8443
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
+    network: 'grpc'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+    grpc-opts:
+      grpc-service-name: 'TunService'
+  - name: '🇮🇹 211. 151.115.167.190:8880'
+    type: vless
+    server: '151.115.167.190'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.190'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 212. 151.115.164.37:8880'
+    type: vless
+    server: '151.115.164.37'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.37'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 213. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 214. 151.115.167.174:8880'
+    type: vless
+    server: '151.115.167.174'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.174'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇩🇪 215. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇮🇹 216. 151.115.166.221:8880'
+    type: vless
+    server: '151.115.166.221'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.221'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇩🇪 217. 91.107.191.12:29376'
+    type: vless
+    server: '91.107.191.12'
+    port: 29376
+    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
+    servername: '91.107.191.12'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇮🇹 218. 151.115.166.43:8880'
+    type: vless
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 219. 151.115.165.172:8880'
+    type: vless
+    server: '151.115.165.172'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.165.172'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 220. 151.115.164.129:8880'
+    type: vless
+    server: '151.115.164.129'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.129'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 221. 151.115.164.129:8880'
+    type: vless
+    server: '151.115.164.129'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.129'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 222. 151.115.166.68:8880'
+    type: vless
+    server: '151.115.166.68'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.68'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 223. 151.115.164.116:8880'
+    type: vless
+    server: '151.115.164.116'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.116'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇩🇪 224. 18.195.94.102:443'
+    type: vless
+    server: '18.195.94.102'
+    port: 443
+    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
+    servername: '18.195.94.102'
+    network: 'tcp'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+  - name: '🇺🇸 225. 140.235.168.3:993'
     type: vless
     server: '140.235.168.3'
     port: 993
@@ -1649,48 +2589,12 @@ proxies:
     tls: true
     reality-opts:
       public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
-  - name: '🇮🇹 143. 151.115.164.117:8880'
+  - name: '🇺🇸 226. 140.235.168.3:993'
     type: vless
-    server: '151.115.164.117'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.117'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 144. 151.115.167.188:8880'
-    type: vless
-    server: '151.115.167.188'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.167.188'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 145. 151.115.166.43:8880'
-    type: vless
-    server: '151.115.166.43'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.43'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇺🇸 146. 34.213.172.16:22189'
-    type: vless
-    server: '34.213.172.16'
-    port: 22189
-    uuid: '4889ee33-74e5-4819-86d8-b2a1a5bc8f46'
-    servername: 'www.tesla.com'
+    server: '140.235.168.3'
+    port: 993
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'firefox'
@@ -1698,198 +2602,13 @@ proxies:
     udp: true
     tls: true
     reality-opts:
-      public-key: '5tUZskKOCKpjz3j7hmuYaQHNfE1QRtZI9P62qvSs1GY'
-      short-id: '47b6d14ff477fe59'
-  - name: '🇭🇰 147. 47.86.55.200:19321'
+      public-key: 'oE7ZEghzkaOUiw1q3PqBtpllP1NlPHLY8ydJRuICtko'
+  - name: '🇺🇸 227. 140.235.169.7:443'
     type: vless
-    server: '47.86.55.200'
-    port: 19321
-    uuid: '394086c4-d8a4-4298-9b62-f70fa711082d'
-    servername: '47.86.55.200'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 148. 38.14.232.201:53501'
-    type: vless
-    server: '38.14.232.201'
-    port: 53501
-    uuid: '98aa28b3-78ac-4c54-bf6e-0e7d0e65259b'
-    servername: 'apple.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'tbgvM-W4DB5oZ-BvaLPC_TUPzdWPDOYp9Zm3sKaCH04'
-      short-id: '8a190670'
-  - name: '🇮🇹 149. 151.115.166.43:8880'
-    type: vless
-    server: '151.115.166.43'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.43'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇬🇧 150. 130.78.217.66:8443'
-    type: vless
-    server: '130.78.217.66'
-    port: 8443
-    uuid: 'bd78d4ee-c068-4125-94ba-50814578dc41'
-    servername: 'ads.x5.ru'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'sgFFdQvfeujBKh6g7N7klU_u0mKYlr800MFbko5FzUg'
-      short-id: 'e67fb918ed6b9ffb'
-    grpc-opts:
-      grpc-service-name: 'grpc-yandex'
-  - name: '🇮🇹 151. 151.115.167.188:8880'
-    type: vless
-    server: '151.115.167.188'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.167.188'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 152. 151.115.166.68:8880'
-    type: vless
-    server: '151.115.166.68'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.68'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 153. 151.115.164.36:8880'
-    type: vless
-    server: '151.115.164.36'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.36'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 154. 151.115.166.43:8880'
-    type: vless
-    server: '151.115.166.43'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.43'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 155. 151.115.164.126:8880'
-    type: vless
-    server: '151.115.164.126'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.126'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 156. 151.115.166.68:8880'
-    type: vless
-    server: '151.115.166.68'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.68'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇺🇸 157. 34.213.172.16:22189'
-    type: vless
-    server: '34.213.172.16'
-    port: 22189
-    uuid: '4889ee33-74e5-4819-86d8-b2a1a5bc8f46'
-    servername: 'www.tesla.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5tUZskKOCKpjz3j7hmuYaQHNfE1QRtZI9P62qvSs1GY'
-      short-id: '47b6d14ff477fe59'
-  - name: '🇮🇹 158. 151.115.164.129:8880'
-    type: vless
-    server: '151.115.164.129'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.129'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇬🇧 159. 130.78.217.68:8443'
-    type: vless
-    server: '130.78.217.68'
-    port: 8443
-    uuid: 'bd78d4ee-c068-4125-94ba-50814578dc41'
-    servername: 'ads.x5.ru'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'sgFFdQvfeujBKh6g7N7klU_u0mKYlr800MFbko5FzUg'
-      short-id: 'e67fb918ed6b9ffb'
-    grpc-opts:
-      grpc-service-name: 'grpc-yandex'
-  - name: '🇺🇸 160. 45.61.148.125:35711'
-    type: vless
-    server: '45.61.148.125'
-    port: 35711
-    uuid: '6b225373-b4a4-4814-89d7-162afd5c9359'
-    servername: '45.61.148.125'
-    network: 'ws'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    ws-opts:
-      path: '/'
-      headers:
-        Host: 'www.google.com'
-  - name: '🇬🇧 161. 31.76.119.158:443'
-    type: vless
-    server: '31.76.119.158'
+    server: '140.235.169.7'
     port: 443
-    uuid: '28cee14e-a124-4c9f-88e2-fcb6c1304ea3'
-    servername: 'cdn.shopify.com'
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'firefox'
@@ -1897,85 +2616,60 @@ proxies:
     udp: true
     tls: true
     reality-opts:
-      public-key: 'agZZLk3GNH8CME1dobmtO1UwIrXYL-WrEuLREy_EqnA'
-      short-id: 'aefe467c7b22f190'
-  - name: '🇬🇧 162. 130.78.217.67:8443'
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+  - name: '🇮🇹 228. 151.115.166.233:8880'
     type: vless
-    server: '130.78.217.67'
-    port: 8443
-    uuid: 'bd78d4ee-c068-4125-94ba-50814578dc41'
-    servername: 'ads.x5.ru'
+    server: '151.115.166.233'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.233'
     network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
     skip-cert-verify: true
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'sgFFdQvfeujBKh6g7N7klU_u0mKYlr800MFbko5FzUg'
-      short-id: 'e67fb918ed6b9ffb'
+    tls: false
     grpc-opts:
-      grpc-service-name: 'grpc-yandex'
-  - name: '🇬🇧 163. 217.179.220.66:8443'
+      grpc-service-name: ''
+  - name: '🇺🇸 229. 140.235.169.7:993'
     type: vless
-    server: '217.179.220.66'
-    port: 8443
-    uuid: 'bd78d4ee-c068-4125-94ba-50814578dc41'
-    servername: 'ads.x5.ru'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'sgFFdQvfeujBKh6g7N7klU_u0mKYlr800MFbko5FzUg'
-      short-id: 'e67fb918ed6b9ffb'
-    grpc-opts:
-      grpc-service-name: 'grpc-yandex'
-  - name: '🇬🇧 164. 130.78.217.70:8443'
-    type: vless
-    server: '130.78.217.70'
-    port: 8443
-    uuid: 'bd78d4ee-c068-4125-94ba-50814578dc41'
-    servername: 'ads.x5.ru'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'sgFFdQvfeujBKh6g7N7klU_u0mKYlr800MFbko5FzUg'
-      short-id: 'e67fb918ed6b9ffb'
-    grpc-opts:
-      grpc-service-name: 'grpc-yandex'
-  - name: '🇳🇱 165. 45.43.92.110:7443'
-    type: vless
-    server: '45.43.92.110'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
+    server: '140.235.169.7'
+    port: 993
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+    client-fingerprint: 'firefox'
     skip-cert-verify: true
     udp: true
     tls: true
     reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇩🇪 166. 91.107.191.12:29376'
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+  - name: '🇸🇪 230. 143.14.50.249:443'
     type: vless
-    server: '91.107.191.12'
-    port: 29376
-    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
-    servername: '91.107.191.12'
+    server: '143.14.50.249'
+    port: 443
+    uuid: 'bae2fd3a-55fb-4094-99f6-c94e25d7d15d'
+    servername: 'www.amd.com'
     network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'edge'
     skip-cert-verify: true
     udp: true
     tls: true
-  - name: '🇮🇹 167. 151.115.164.37:8880'
+    reality-opts:
+      public-key: 'MJsIaoeYt-qnokhHqSKjLQri0cddD7lKXQAGV34v3TI'
+  - name: '🇮🇹 231. 151.115.167.1:8880'
+    type: vless
+    server: '151.115.167.1'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.1'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 232. 151.115.164.37:8880'
     type: vless
     server: '151.115.164.37'
     port: 8880
@@ -1987,22 +2681,45 @@ proxies:
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇳🇱 168. 51.158.206.87:23576'
+  - name: '🇮🇹 233. 151.115.164.131:8880'
     type: vless
-    server: '51.158.206.87'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
+    server: '151.115.164.131'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.131'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 234. 151.115.165.172:8880'
+    type: vless
+    server: '151.115.165.172'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.165.172'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 235. 140.235.169.7:993'
+    type: vless
+    server: '140.235.169.7'
+    port: 993
+    uuid: '82162b75-5d5b-f8ec-896a-813170210c26'
+    servername: 'speed.cloudflare.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+    client-fingerprint: 'firefox'
     skip-cert-verify: true
     udp: true
     tls: true
     reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇮🇹 169. 151.115.164.134:8880'
+      public-key: '4e-unF1RO2v--E7-X3aqxnCSPaK9QaTfJ7LawAr2bRI'
+  - name: '🇮🇹 236. 151.115.164.134:8880'
     type: vless
     server: '151.115.164.134'
     port: 8880
@@ -2011,69 +2728,60 @@ proxies:
     network: 'grpc'
     skip-cert-verify: true
     udp: true
+    tls: true
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇺🇸 237. 137.184.218.169:36925'
+    type: vless
+    server: '137.184.218.169'
+    port: 36925
+    uuid: 'c9fd0fb1-8251-4106-b09a-f4b426736f67'
+    servername: 'www.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    skip-cert-verify: true
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'lJ9INPpO4rdnm2Tek_yg0PGFyUrBB6MoKyvqt_Mfqm0'
+  - name: '🇮🇹 238. 151.115.165.172:8880'
+    type: vless
+    server: '151.115.165.172'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.165.172'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇳🇱 170. 45.43.92.110:7443'
+  - name: '🇮🇹 239. 151.115.167.1:8880'
     type: vless
-    server: '45.43.92.110'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇮🇹 171. 151.115.164.120:8880'
-    type: vless
-    server: '151.115.164.120'
+    server: '151.115.167.1'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.120'
+    servername: '151.115.167.1'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇬🇧 172. 217.179.220.68:8443'
+  - name: '🇮🇹 240. 151.115.167.1:8880'
     type: vless
-    server: '217.179.220.68'
-    port: 8443
-    uuid: 'bd78d4ee-c068-4125-94ba-50814578dc41'
-    servername: 'ads.x5.ru'
+    server: '151.115.167.1'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.1'
     network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
     skip-cert-verify: true
     udp: true
     tls: true
-    reality-opts:
-      public-key: 'sgFFdQvfeujBKh6g7N7klU_u0mKYlr800MFbko5FzUg'
-      short-id: 'e67fb918ed6b9ffb'
     grpc-opts:
-      grpc-service-name: 'grpc-yandex'
-  - name: '🇳🇱 173. 51.158.206.97:23576'
-    type: vless
-    server: '51.158.206.97'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇮🇹 174. 151.115.167.190:8880'
+      grpc-service-name: ''
+  - name: '🇮🇹 241. 151.115.167.190:8880'
     type: vless
     server: '151.115.167.190'
     port: 8880
@@ -2085,495 +2793,43 @@ proxies:
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇺🇸 175. 34.213.172.16:22189'
+  - name: '🇮🇹 242. 151.115.164.132:8880'
     type: vless
-    server: '34.213.172.16'
-    port: 22189
-    uuid: '4889ee33-74e5-4819-86d8-b2a1a5bc8f46'
-    servername: 'www.tesla.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5tUZskKOCKpjz3j7hmuYaQHNfE1QRtZI9P62qvSs1GY'
-      short-id: '47b6d14ff477fe59'
-  - name: '🇮🇹 176. 151.115.167.174:8880'
-    type: vless
-    server: '151.115.167.174'
+    server: '151.115.164.132'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.167.174'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 177. 151.115.164.37:8880'
-    type: vless
-    server: '151.115.164.37'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.37'
+    servername: '151.115.164.132'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇺🇸 178. 34.222.27.94:42824'
+  - name: '🇮🇹 243. 151.115.164.110:8880'
     type: vless
-    server: '34.222.27.94'
-    port: 42824
-    uuid: '52a8ef22-2670-4119-8623-98c0baa7ae74'
-    servername: 'www.nvidia.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'dgRCtQunFv3gRWN29nDbzyGVzXTWuMUa0bvWZxq0B3o'
-      short-id: '66a5ca7fd2bca7da'
-  - name: '🇷🇺 179. 213.108.2.130:443'
-    type: vless
-    server: '213.108.2.130'
-    port: 443
-    uuid: '5e8ee155-0962-4307-98f2-b65f6bbbd5bb'
-    servername: 'cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'c9eCHF41FReFLIdarpg8M5edw4_E133EJBzrvYS02Ck'
-      short-id: 'cd9a5f0edff48da4'
-  - name: '🇳🇱 180. 51.158.206.20:23576'
-    type: vless
-    server: '51.158.206.20'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇳🇱 181. 51.158.206.25:23576'
-    type: vless
-    server: '51.158.206.25'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇮🇹 182. 151.115.164.43:8880'
-    type: vless
-    server: '151.115.164.43'
+    server: '151.115.164.110'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.43'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇳🇱 183. 185.117.0.232:7443'
-    type: vless
-    server: '185.117.0.232'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇮🇹 184. 151.115.164.36:8880'
-    type: vless
-    server: '151.115.164.36'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.36'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇳🇱 185. 51.158.206.96:23576'
-    type: vless
-    server: '51.158.206.96'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇳🇱 186. 51.158.206.97:23576'
-    type: vless
-    server: '51.158.206.97'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇺🇸 187. 147.182.212.232:56565'
-    type: vless
-    server: '147.182.212.232'
-    port: 56565
-    uuid: '7b188eea-b08f-42c2-bac7-d3b0e74218b8'
-    servername: 'www.paypal.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'Td03Ae-cuYLq4xg7MSps58c_yRUcbbwtZLXm0ywabjY'
-  - name: '🇳🇱 188. 89.124.82.216:443'
-    type: vless
-    server: '89.124.82.216'
-    port: 443
-    uuid: '5d8fcd24-9634-4dd7-845c-3dc2d6291942'
-    servername: 'www.google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0'
-      short-id: '86b80f1e713a33ad'
-  - name: '🇩🇪 189. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇳🇱 190. 45.43.92.110:7443'
-    type: vless
-    server: '45.43.92.110'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇩🇪 191. 83.243.86.119:10443'
-    type: vless
-    server: '83.243.86.119'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '🇺🇸 192. 104.194.148.116:23821'
-    type: vless
-    server: '104.194.148.116'
-    port: 23821
-    uuid: 'a937a82e-593a-49a3-8585-cc3422e040b3'
-    servername: '104.194.148.116'
-    network: 'ws'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    ws-opts:
-      path: '/'
-      headers:
-        Host: '104.194.148.116'
-  - name: '🇩🇪 193. 91.107.191.12:29376'
-    type: vless
-    server: '91.107.191.12'
-    port: 29376
-    uuid: '03bc875d-0d8e-49b6-9094-89a8159e65ee'
-    servername: '91.107.191.12'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇬🇧 194. 79.141.171.133:443'
-    type: vless
-    server: '79.141.171.133'
-    port: 443
-    uuid: '4c3fe585-ac09-41df-b284-888818888188'
-    servername: 'apple.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '0rtpNciTfV9TsoEc7Y8lS5LzBUzLppMnRY8bQC_bH3M'
-      short-id: 'aabbccdd'
-  - name: '🇬🇧 195. 31.76.38.85:7443'
-    type: vless
-    server: '31.76.38.85'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'stackoverflow.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'be0ce047'
-  - name: '🇬🇧 196. 31.76.38.85:7443'
-    type: vless
-    server: '31.76.38.85'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'stackoverflow.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'be0ce047'
-  - name: '🇩🇪 197. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇫🇷 198. 13.38.79.180:30981'
-    type: vless
-    server: '13.38.79.180'
-    port: 30981
-    uuid: '7c6ddba8-c08e-433c-b1ac-697378b48406'
-    servername: 'www.intel.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'uBRg0H4ZzEiyyAm1BEsZsnTlzWTm8UUaFrD9aXzUCyE'
-      short-id: 'e871f1c5cc5309'
-  - name: '🇮🇹 199. 151.115.164.43:8880'
-    type: vless
-    server: '151.115.164.43'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.43'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇬🇧 200. 31.76.38.85:7443'
-    type: vless
-    server: '31.76.38.85'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'stackoverflow.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'be0ce047'
-  - name: '🇳🇱 201. 45.43.92.110:7443'
-    type: vless
-    server: '45.43.92.110'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇳🇱 202. 51.158.206.12:23576'
-    type: vless
-    server: '51.158.206.12'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇳🇱 203. 185.117.0.232:7443'
-    type: vless
-    server: '185.117.0.232'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇩🇪 204. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇮🇹 205. 151.115.164.36:8880'
-    type: vless
-    server: '151.115.164.36'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.164.36'
+    servername: '151.115.164.110'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇺🇸 206. 104.194.148.116:23821'
+  - name: '🇮🇹 244. 151.115.166.43:8880'
     type: vless
-    server: '104.194.148.116'
-    port: 23821
-    uuid: 'a937a82e-593a-49a3-8585-cc3422e040b3'
-    servername: '104.194.148.116'
-    network: 'ws'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    ws-opts:
-      path: '/'
-      headers:
-        Host: '104.194.148.116'
-  - name: '🇳🇱 207. 51.158.206.93:23576'
-    type: vless
-    server: '51.158.206.93'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+    server: '151.115.166.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.166.43'
+    network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇩🇪 208. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇳🇱 209. 51.158.206.80:23576'
-    type: vless
-    server: '51.158.206.80'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '🇩🇪 210. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇮🇹 211. 151.115.164.134:8880'
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 245. 151.115.164.134:8880'
     type: vless
     server: '151.115.164.134'
     port: 8880
@@ -2585,7 +2841,19 @@ proxies:
     tls: false
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇮🇹 212. 151.115.164.120:8880'
+  - name: '🇮🇹 246. 151.115.167.188:8880'
+    type: vless
+    server: '151.115.167.188'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.167.188'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 247. 151.115.164.120:8880'
     type: vless
     server: '151.115.164.120'
     port: 8880
@@ -2597,507 +2865,42 @@ proxies:
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇩🇪 213. 18.192.50.101:443'
+  - name: '🇮🇹 248. 151.115.164.134:8880'
     type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇺🇸 214. 167.104.223.57:7443'
-    type: vless
-    server: '167.104.223.57'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇮🇹 215. 151.115.165.172:8880'
-    type: vless
-    server: '151.115.165.172'
+    server: '151.115.164.134'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.165.172'
-    network: 'grpc'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    grpc-opts:
-      grpc-service-name: ''
-  - name: '🇮🇹 216. 151.115.166.221:8880'
-    type: vless
-    server: '151.115.166.221'
-    port: 8880
-    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.166.221'
+    servername: '151.115.164.134'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇫🇷 217. 13.38.79.180:30981'
+  - name: '🇮🇹 249. 151.115.164.134:8880'
     type: vless
-    server: '13.38.79.180'
-    port: 30981
-    uuid: '7c6ddba8-c08e-433c-b1ac-697378b48406'
-    servername: 'www.intel.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'uBRg0H4ZzEiyyAm1BEsZsnTlzWTm8UUaFrD9aXzUCyE'
-      short-id: 'e871f1c5cc5309'
-  - name: '🇩🇪 218. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇬🇧 219. 31.76.38.85:7443'
-    type: vless
-    server: '31.76.38.85'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'stackoverflow.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'be0ce047'
-  - name: '🇮🇹 220. 151.115.165.172:8880'
-    type: vless
-    server: '151.115.165.172'
+    server: '151.115.164.134'
     port: 8880
     uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
-    servername: '151.115.165.172'
+    servername: '151.115.164.134'
+    network: 'grpc'
+    skip-cert-verify: true
+    udp: true
+    tls: false
+    grpc-opts:
+      grpc-service-name: ''
+  - name: '🇮🇹 250. 151.115.164.43:8880'
+    type: vless
+    server: '151.115.164.43'
+    port: 8880
+    uuid: '8dc7722c-2767-4eea-a28b-2f8daacc07e3'
+    servername: '151.115.164.43'
     network: 'grpc'
     skip-cert-verify: true
     udp: true
     tls: true
     grpc-opts:
       grpc-service-name: ''
-  - name: '🇩🇪 221. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 222. 83.243.86.119:10443'
-    type: vless
-    server: '83.243.86.119'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '🇩🇪 223. 83.243.86.118:10443'
-    type: vless
-    server: '83.243.86.118'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '🇺🇸 224. 167.104.223.57:7443'
-    type: vless
-    server: '167.104.223.57'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇩🇪 225. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 226. 77.110.127.191:9443'
-    type: vless
-    server: '77.110.127.191'
-    port: 9443
-    uuid: 'eed7565e-bb44-4530-b2a7-87de33113b68'
-    servername: '77.110.127.191'
-    network: 'ws'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    ws-opts:
-      path: '/pourya'
-      headers:
-        Host: '77.110.127.191'
-  - name: '🇩🇪 227. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 228. 83.243.86.117:10443'
-    type: vless
-    server: '83.243.86.117'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '🇺🇸 229. 167.104.223.57:7443'
-    type: vless
-    server: '167.104.223.57'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇳🇱 230. 130.12.242.102:7443'
-    type: vless
-    server: '130.12.242.102'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇺🇸 231. 167.104.223.58:7443'
-    type: vless
-    server: '167.104.223.58'
-    port: 7443
-    uuid: '6ca8ea5b-e47f-4c19-adee-365456e1e87c'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'be0ce047'
-  - name: '🇩🇪 232. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 233. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 234. 83.243.86.118:10443'
-    type: vless
-    server: '83.243.86.118'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '🇩🇪 235. 83.243.86.118:10443'
-    type: vless
-    server: '83.243.86.118'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '🇺🇸 236. 167.104.223.57:7443'
-    type: vless
-    server: '167.104.223.57'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇺🇸 237. 77.110.127.191:9443'
-    type: vless
-    server: '77.110.127.191'
-    port: 9443
-    uuid: 'e0de62c9-f317-4275-b7e5-8da7b7fa9bc6'
-    servername: '77.110.127.191'
-    network: 'ws'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-    ws-opts:
-      path: '/pourya'
-      headers:
-        Host: '77.110.127.191'
-  - name: '🇩🇪 238. 31.59.36.107:443'
-    type: vless
-    server: '31.59.36.107'
-    port: 443
-    uuid: '4f51ca84-43ea-4087-b8a2-938e0ccbe27a'
-    servername: 'google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4'
-  - name: '🇺🇸 239. 167.104.223.14:443'
-    type: vless
-    server: '167.104.223.14'
-    port: 443
-    uuid: 'b67ed271-5a34-4d07-9970-f8ba27ca2c8a'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE'
-      short-id: 'fcd9787f'
-  - name: '🇩🇪 240. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇺🇸 241. 167.104.223.57:7443'
-    type: vless
-    server: '167.104.223.57'
-    port: 7443
-    uuid: 'adea61c0-0bb2-4ad3-8dba-7766eebd50f8'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
-      short-id: 'd82fb387'
-  - name: '🇩🇪 242. 18.195.94.102:443'
-    type: vless
-    server: '18.195.94.102'
-    port: 443
-    uuid: '805aec0a-32db-4eaa-8b5e-10a6651471d1'
-    servername: '18.195.94.102'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-  - name: '🇩🇪 243. 31.59.36.108:443'
-    type: vless
-    server: '31.59.36.108'
-    port: 443
-    uuid: '4f51ca84-43ea-4087-b8a2-938e0ccbe27a'
-    servername: 'google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4'
-  - name: '🇳🇱 244. 157.22.181.118:443'
-    type: vless
-    server: '157.22.181.118'
-    port: 443
-    uuid: '5d8fcd24-9634-4dd7-845c-3dc2d6291942'
-    servername: 'www.google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '2fgsbEAn-ALVpjnE4ZTPrzaZY70vVplYwldCnslInE0'
-      short-id: '86b80f1e713a33ad'
-  - name: '🇩🇪 245. 62.141.42.201:443'
-    type: vless
-    server: '62.141.42.201'
-    port: 443
-    uuid: 'cc976b15-418b-4f0b-89ce-cd685ffbaf20'
-    servername: 'google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'odbiaA-5s0mkehtfrf2SBcrKAMDP1sFjxKHJYdDCKgc'
-      short-id: '81'
-  - name: '🇬🇧 246. 31.76.111.55:443'
-    type: vless
-    server: '31.76.111.55'
-    port: 443
-    uuid: '73a27a6d-a111-4576-a6b3-e8594aeac2f2'
-    servername: 'api-maps.xwhiteness.top'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'ek7vNW3A7JfrSIf5DI1amef5Zh9v-H8E7GhOXDWM6hQ'
-  - name: '🇩🇪 247. 18.192.50.101:443'
-    type: vless
-    server: '18.192.50.101'
-    port: 443
-    uuid: '3f3bb5cc-da8b-4551-8b76-ba223f1a5255'
-    servername: '18.192.50.101'
-    network: 'tcp'
-    skip-cert-verify: true
-    udp: true
-    tls: false
-  - name: '🇩🇪 248. 62.141.42.201:443'
-    type: vless
-    server: '62.141.42.201'
-    port: 443
-    uuid: 'cc976b15-418b-4f0b-89ce-cd685ffbaf20'
-    servername: 'google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'odbiaA-5s0mkehtfrf2SBcrKAMDP1sFjxKHJYdDCKgc'
-      short-id: '81'
-  - name: '🇫🇷 249. 13.38.79.180:30981'
-    type: vless
-    server: '13.38.79.180'
-    port: 30981
-    uuid: '7c6ddba8-c08e-433c-b1ac-697378b48406'
-    servername: 'www.intel.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'uBRg0H4ZzEiyyAm1BEsZsnTlzWTm8UUaFrD9aXzUCyE'
-      short-id: 'e871f1c5cc5309'
-  - name: '🇬🇧 250. 152.114.193.11:47200'
-    type: vless
-    server: '152.114.193.11'
-    port: 47200
-    uuid: 'ffaa8e95-74e2-4ef4-8974-69dd3651b6f9'
-    servername: 'stats.vk-portal.net'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    skip-cert-verify: true
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE'
-      short-id: 'b2a9bd658fc81dc6'
 
 proxy-groups:
   - name: "🚀 Выбор (All Working)"
@@ -3105,23 +2908,23 @@ proxy-groups:
     proxies:
       - "🔯 Fallback"
       - "🎯 Auto"
-      - '🇮🇹 1. 151.115.164.120:8880'
-      - '🇮🇹 2. 151.115.166.43:8880'
-      - '🇮🇹 3. 151.115.164.134:8880'
-      - '🇮🇹 4. 151.115.164.134:8880'
-      - '🇮🇹 5. 151.115.164.37:8880'
-      - '🇮🇹 6. 151.115.164.117:8880'
-      - '🇮🇹 7. 151.115.167.1:8880'
-      - '🇮🇹 8. 151.115.164.43:8880'
-      - '🇳🇱 9. 51.158.206.87:23576'
-      - '🇳🇱 10. 51.158.206.86:23576'
-      - '🇮🇪 11. 85.159.229.189:443'
-      - '🇩🇪 12. 91.107.191.12:29376'
-      - '🇮🇹 13. 151.115.166.233:8880'
-      - '🇳🇱 14. 51.158.206.29:23576'
-      - '🇩🇪 15. 91.107.191.12:29376'
-      - '🇺🇸 16. 82.29.128.252:443'
-      - '🇺🇸 17. 82.29.128.252:443'
+      - '🇮🇹 1. 151.115.166.249:8880'
+      - '🇮🇹 2. 151.115.166.249:8880'
+      - '🇮🇹 3. 151.115.166.249:8880'
+      - '🇮🇹 4. 151.115.164.36:8880'
+      - '🇮🇹 5. 151.115.165.172:8880'
+      - '🇵🇱 6. 89.126.229.40:443'
+      - '🇳🇱 7. 144.124.253.4:8443'
+      - '🇺🇸 8. 31.207.5.43:47200'
+      - '🇺🇸 9. 82.29.128.252:443'
+      - '🇺🇸 10. 82.29.128.252:443'
+      - '🇺🇸 11. 52.14.47.44:443'
+      - '🇺🇸 12. 52.14.47.44:443'
+      - '🇺🇸 13. 52.14.47.44:443'
+      - '🇺🇸 14. 82.29.128.252:443'
+      - '🇺🇸 15. 52.14.47.44:443'
+      - '🇺🇸 16. 52.14.47.44:443'
+      - '🇺🇸 17. 52.14.47.44:443'
       - '🇺🇸 18. 52.14.47.44:443'
       - '🇺🇸 19. 52.14.47.44:443'
       - '🇺🇸 20. 52.14.47.44:443'
@@ -3130,23 +2933,23 @@ proxy-groups:
     url: "https://cp.cloudflare.com/"
     interval: 300
     proxies:
-      - '🇮🇹 1. 151.115.164.120:8880'
-      - '🇮🇹 2. 151.115.166.43:8880'
-      - '🇮🇹 3. 151.115.164.134:8880'
-      - '🇮🇹 4. 151.115.164.134:8880'
-      - '🇮🇹 5. 151.115.164.37:8880'
-      - '🇮🇹 6. 151.115.164.117:8880'
-      - '🇮🇹 7. 151.115.167.1:8880'
-      - '🇮🇹 8. 151.115.164.43:8880'
-      - '🇳🇱 9. 51.158.206.87:23576'
-      - '🇳🇱 10. 51.158.206.86:23576'
-      - '🇮🇪 11. 85.159.229.189:443'
-      - '🇩🇪 12. 91.107.191.12:29376'
-      - '🇮🇹 13. 151.115.166.233:8880'
-      - '🇳🇱 14. 51.158.206.29:23576'
-      - '🇩🇪 15. 91.107.191.12:29376'
-      - '🇺🇸 16. 82.29.128.252:443'
-      - '🇺🇸 17. 82.29.128.252:443'
+      - '🇮🇹 1. 151.115.166.249:8880'
+      - '🇮🇹 2. 151.115.166.249:8880'
+      - '🇮🇹 3. 151.115.166.249:8880'
+      - '🇮🇹 4. 151.115.164.36:8880'
+      - '🇮🇹 5. 151.115.165.172:8880'
+      - '🇵🇱 6. 89.126.229.40:443'
+      - '🇳🇱 7. 144.124.253.4:8443'
+      - '🇺🇸 8. 31.207.5.43:47200'
+      - '🇺🇸 9. 82.29.128.252:443'
+      - '🇺🇸 10. 82.29.128.252:443'
+      - '🇺🇸 11. 52.14.47.44:443'
+      - '🇺🇸 12. 52.14.47.44:443'
+      - '🇺🇸 13. 52.14.47.44:443'
+      - '🇺🇸 14. 82.29.128.252:443'
+      - '🇺🇸 15. 52.14.47.44:443'
+      - '🇺🇸 16. 52.14.47.44:443'
+      - '🇺🇸 17. 52.14.47.44:443'
       - '🇺🇸 18. 52.14.47.44:443'
       - '🇺🇸 19. 52.14.47.44:443'
       - '🇺🇸 20. 52.14.47.44:443'
@@ -3160,7 +2963,7 @@ proxy-groups:
       - '🇺🇸 28. 52.14.47.44:443'
       - '🇺🇸 29. 52.14.47.44:443'
       - '🇺🇸 30. 52.14.47.44:443'
-      - '🇺🇸 31. 82.29.128.252:443'
+      - '🇺🇸 31. 52.14.47.44:443'
       - '🇺🇸 32. 52.14.47.44:443'
       - '🇺🇸 33. 52.14.47.44:443'
       - '🇺🇸 34. 52.14.47.44:443'
@@ -3172,37 +2975,37 @@ proxy-groups:
       - '🇺🇸 40. 52.14.47.44:443'
       - '🇺🇸 41. 52.14.47.44:443'
       - '🇺🇸 42. 52.14.47.44:443'
-      - '🇺🇸 43. 52.14.47.44:443'
-      - '🇺🇸 44. 52.14.47.44:443'
-      - '🇺🇸 45. 52.14.47.44:443'
-      - '🇺🇸 46. 52.14.47.44:443'
-      - '🇺🇸 47. 52.14.47.44:443'
-      - '🇺🇸 48. 52.14.47.44:443'
-      - '🇺🇸 49. 52.14.47.44:443'
-      - '🇺🇸 50. 52.14.47.44:443'
+      - '🇩🇪 43. 18.192.50.101:443'
+      - '🇩🇪 44. 18.192.50.101:443'
+      - '🇩🇪 45. 18.192.50.101:443'
+      - '🇩🇪 46. 18.195.94.102:443'
+      - '🇺🇸 47. 77.110.127.191:9443'
+      - '🇩🇪 48. 18.192.50.101:443'
+      - '🇩🇪 49. 18.195.94.102:443'
+      - '🇩🇪 50. 18.195.94.102:443'
   - name: "🎯 Auto"
     type: url-test
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
     proxies:
-      - '🇮🇹 1. 151.115.164.120:8880'
-      - '🇮🇹 2. 151.115.166.43:8880'
-      - '🇮🇹 3. 151.115.164.134:8880'
-      - '🇮🇹 4. 151.115.164.134:8880'
-      - '🇮🇹 5. 151.115.164.37:8880'
-      - '🇮🇹 6. 151.115.164.117:8880'
-      - '🇮🇹 7. 151.115.167.1:8880'
-      - '🇮🇹 8. 151.115.164.43:8880'
-      - '🇳🇱 9. 51.158.206.87:23576'
-      - '🇳🇱 10. 51.158.206.86:23576'
-      - '🇮🇪 11. 85.159.229.189:443'
-      - '🇩🇪 12. 91.107.191.12:29376'
-      - '🇮🇹 13. 151.115.166.233:8880'
-      - '🇳🇱 14. 51.158.206.29:23576'
-      - '🇩🇪 15. 91.107.191.12:29376'
-      - '🇺🇸 16. 82.29.128.252:443'
-      - '🇺🇸 17. 82.29.128.252:443'
+      - '🇮🇹 1. 151.115.166.249:8880'
+      - '🇮🇹 2. 151.115.166.249:8880'
+      - '🇮🇹 3. 151.115.166.249:8880'
+      - '🇮🇹 4. 151.115.164.36:8880'
+      - '🇮🇹 5. 151.115.165.172:8880'
+      - '🇵🇱 6. 89.126.229.40:443'
+      - '🇳🇱 7. 144.124.253.4:8443'
+      - '🇺🇸 8. 31.207.5.43:47200'
+      - '🇺🇸 9. 82.29.128.252:443'
+      - '🇺🇸 10. 82.29.128.252:443'
+      - '🇺🇸 11. 52.14.47.44:443'
+      - '🇺🇸 12. 52.14.47.44:443'
+      - '🇺🇸 13. 52.14.47.44:443'
+      - '🇺🇸 14. 82.29.128.252:443'
+      - '🇺🇸 15. 52.14.47.44:443'
+      - '🇺🇸 16. 52.14.47.44:443'
+      - '🇺🇸 17. 52.14.47.44:443'
       - '🇺🇸 18. 52.14.47.44:443'
       - '🇺🇸 19. 52.14.47.44:443'
       - '🇺🇸 20. 52.14.47.44:443'
@@ -3216,7 +3019,7 @@ proxy-groups:
       - '🇺🇸 28. 52.14.47.44:443'
       - '🇺🇸 29. 52.14.47.44:443'
       - '🇺🇸 30. 52.14.47.44:443'
-      - '🇺🇸 31. 82.29.128.252:443'
+      - '🇺🇸 31. 52.14.47.44:443'
       - '🇺🇸 32. 52.14.47.44:443'
       - '🇺🇸 33. 52.14.47.44:443'
       - '🇺🇸 34. 52.14.47.44:443'
@@ -3228,14 +3031,14 @@ proxy-groups:
       - '🇺🇸 40. 52.14.47.44:443'
       - '🇺🇸 41. 52.14.47.44:443'
       - '🇺🇸 42. 52.14.47.44:443'
-      - '🇺🇸 43. 52.14.47.44:443'
-      - '🇺🇸 44. 52.14.47.44:443'
-      - '🇺🇸 45. 52.14.47.44:443'
-      - '🇺🇸 46. 52.14.47.44:443'
-      - '🇺🇸 47. 52.14.47.44:443'
-      - '🇺🇸 48. 52.14.47.44:443'
-      - '🇺🇸 49. 52.14.47.44:443'
-      - '🇺🇸 50. 52.14.47.44:443'
+      - '🇩🇪 43. 18.192.50.101:443'
+      - '🇩🇪 44. 18.192.50.101:443'
+      - '🇩🇪 45. 18.192.50.101:443'
+      - '🇩🇪 46. 18.195.94.102:443'
+      - '🇺🇸 47. 77.110.127.191:9443'
+      - '🇩🇪 48. 18.192.50.101:443'
+      - '🇩🇪 49. 18.195.94.102:443'
+      - '🇩🇪 50. 18.195.94.102:443'
 rules:
   - "GEOIP,RU,DIRECT"
   - "GEOIP,CN,DIRECT"
