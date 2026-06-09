@@ -53,8 +53,8 @@ STAGE2_CANDIDATES   = 1200
 SOCKS_BASE_PORT     = 20000
 
 # ── Настройки дедупликации ────────────────────────────────────────────────────
-MAX_PER_ENDPOINT    = 2   # Макс прокси с разными UUID на одном host:port
-MAX_PER_UUID        = 2   # Макс разных IP для одного UUID (CDN/Anycast)
+MAX_PER_ENDPOINT    = 2
+MAX_PER_UUID        = 2
 
 HYSTERIA2_PROBE_TIMEOUT = 12
 
@@ -147,7 +147,6 @@ def parse_host_port(uri: str):
 
 
 def get_uuid_from_uri(uri: str) -> str:
-    """Извлекает UUID (или password для hysteria2/ss) из URI."""
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -181,16 +180,6 @@ def get_uuid_from_uri(uri: str) -> str:
 def smart_deduplicate(items: list[dict], 
                        max_per_endpoint: int = MAX_PER_ENDPOINT,
                        max_per_uuid: int = MAX_PER_UUID) -> tuple[list[dict], dict]:
-    """
-    Грамотная 3-уровневая дедупликация:
-    
-    1. Убирает точные дубликаты (нормализуя параметры — порядок query, fragment)
-    2. Для одного UUID на одном IP:port — оставляет 1 лучший (один сервер = один аккаунт)
-    3. Для одного UUID на разных IP (CDN/Anycast) — оставляет max_per_uuid лучших
-    4. Для одного IP:port с разными UUID — оставляет max_per_endpoint лучших
-    
-    Возвращает (дедуплицированный список, статистику)
-    """
     stats = {
         "input": len(items),
         "after_exact_dedup": 0,
@@ -199,14 +188,11 @@ def smart_deduplicate(items: list[dict],
         "output": 0,
     }
     
-    # ─── Шаг 1: Убираем точные дубли (нормализуя URI) ─────────────────
     def normalize_uri(uri: str) -> str:
         try:
             p = urllib.parse.urlparse(uri)
-            # Сортируем параметры — порядок не важен
             params = sorted(urllib.parse.parse_qsl(p.query))
             query_str = urllib.parse.urlencode(params)
-            # Без fragment (там только название/пинг)
             return urllib.parse.urlunparse((
                 p.scheme, p.netloc, p.path, p.params, query_str, ''
             ))
@@ -223,8 +209,6 @@ def smart_deduplicate(items: list[dict],
     
     stats["after_exact_dedup"] = len(unique_items)
     
-    # ─── Шаг 2: Для каждого (UUID, host, port) оставляем 1 лучший ─────
-    # Это устраняет дубли одного аккаунта на одном сервере
     uuid_server_groups = defaultdict(list)
     for item in unique_items:
         uuid = get_uuid_from_uri(item['uri'])
@@ -234,12 +218,10 @@ def smart_deduplicate(items: list[dict],
     after_uuid_server = []
     for key, group in uuid_server_groups.items():
         group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
-        after_uuid_server.append(group[0])  # Только самый быстрый
+        after_uuid_server.append(group[0])
     
     stats["after_uuid_server_dedup"] = len(after_uuid_server)
     
-    # ─── Шаг 3: Для каждого UUID на разных IP (CDN) оставляем N лучших ─
-    # Один и тот же UUID на разных IP = один сервер за CDN, достаточно 1-2
     uuid_groups = defaultdict(list)
     for item in after_uuid_server:
         uuid = get_uuid_from_uri(item['uri'])
@@ -252,8 +234,6 @@ def smart_deduplicate(items: list[dict],
     
     stats["after_uuid_cdn_dedup"] = len(after_uuid)
     
-    # ─── Шаг 4: Для каждого host:port оставляем N разных UUID ─────────
-    # Один сервер с разными UUID = разные аккаунты, достаточно 1-2
     endpoint_groups = defaultdict(list)
     for item in after_uuid:
         key = f"{item['host']}:{item['port']}"
@@ -264,7 +244,6 @@ def smart_deduplicate(items: list[dict],
         group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
         result.extend(group[:max_per_endpoint])
     
-    # Финальная сортировка по ping
     result.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
     stats["output"] = len(result)
     
@@ -276,7 +255,6 @@ def smart_deduplicate(items: list[dict],
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
-    """Безопасное экранирование строк для YAML."""
     if val is None:
         return "''"
     s = str(val)
@@ -298,7 +276,6 @@ def parse_all_params(uri: str) -> dict:
 
 
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
-    """Агрессивная конвертация URI в Clash формат."""
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -429,12 +406,41 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
+        # ─── TROJAN ────────────────────────────────────────────────────
+        elif scheme == "trojan":
+            password = p.username or ""
+            sni = params.get("sni") or params.get("peer") or host
+            net = params.get("type", "tcp").lower()
+            path = params.get("path", "/") or "/"
+            host_header = params.get("host", "") or host
+            serviceName = params.get("serviceName", "")
+            
+            proxy = {
+                "name": proxy_name,
+                "type": "trojan",
+                "server": host,
+                "port": port,
+                "password": password,
+                "network": net,
+                "udp": True,
+                "sni": sni,
+                "skip-cert-verify": True,
+            }
+            
+            if net == "ws":
+                proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
+            elif net == "grpc":
+                proxy["grpc-opts"] = {"grpc-service-name": serviceName or ""}
+            
+            return proxy
+        
         return None
     except Exception:
         return None
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
+    """Записывает только секцию proxies: (для proxy-provider)."""
     lines = ["proxies:"]
     for p in proxies:
         lines.append(f"  - name: {yaml_str(p['name'])}")
@@ -489,58 +495,211 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
 
 
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
+    """
+    Записывает ПОЛНЫЙ конфиг Clash для FClash.
+    ВСЕ прокси перечислены в proxy-groups — FClash увидит все.
+    """
     proxy_names = [yaml_str(p['name']) for p in proxies]
-    top20 = proxy_names[:20]
-    top50 = proxy_names[:50] if len(proxy_names) >= 50 else proxy_names
     
-    config = f"""mixed-port: 7890
+    # Берём топ-30 для select-группы (чтобы не раздувать меню)
+    top_select = proxy_names[:30]
+    # Все прокси для url-test и fallback (FClash сам выберет лучший)
+    all_for_test = proxy_names
+    
+    config = f"""# Proxy Checker — Full Clash Config
+# Сгенерировано автоматически, {len(proxies)} прокси
+
+mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
-external-controller: '127.0.0.1:9090'
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: strict
+global-client-fingerprint: chrome
+
+geodata-mode: true
+geodata-loader: standard
+geo-auto-update: true
+geo-auto-update-interval: 24
+
+geodata-loader: memorize
+geox-url:
+  geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
+  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb"
+  asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "dlg.io.mi.com"
 
 proxies:
 """
+    # Записываем proxies через временный файл
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml', encoding='utf-8') as tmp:
         write_clash_proxies_yaml(proxies, Path(tmp.name))
         proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
         config += proxy_block
         os.unlink(tmp.name)
     
+    # ─── Proxy Groups ─────────────────────────────────────────────────
     config += f"""
 proxy-groups:
-  - name: "🚀 Выбор ({title})"
+  - name: "🚀 Выбор"
     type: select
     proxies:
+      - "🎯 Auto (лучший)"
       - "🔯 Fallback"
-      - "🎯 Auto"
 """
-    for name in top20:
+    for name in top_select:
         config += f"      - {name}\n"
+    config += """      - DIRECT
     
-    config += """  - name: "🔯 Fallback"
-    type: fallback
-    url: "https://cp.cloudflare.com/"
-    interval: 300
-    proxies:
-"""
-    for name in top50:
-        config += f"      - {name}\n"
-    
-    config += """  - name: "🎯 Auto"
+  - name: "🎯 Auto (лучший)"
     type: url-test
     url: "https://cp.cloudflare.com/"
     interval: 300
     tolerance: 50
+    lazy: true
     proxies:
 """
-    for name in top50:
+    for name in all_for_test:
         config += f"      - {name}\n"
     
-    config += f"""rules:
-  - "GEOIP,RU,DIRECT"
-  - "GEOIP,CN,DIRECT"
-  - "MATCH,🚀 Выбор ({title})"
+    config += """
+  - name: "🔯 Fallback"
+    type: fallback
+    url: "https://cp.cloudflare.com/"
+    interval: 300
+    lazy: true
+    proxies:
+"""
+    for name in all_for_test:
+        config += f"      - {name}\n"
+    
+    config += """
+  - name: "📺 Telegram"
+    type: select
+    proxies:
+      - "🎯 Auto (лучший)"
+      - "🚀 Выбор"
+
+  - name: "🤖 AI (ChatGPT/Claude)"
+    type: select
+    proxies:
+      - "🎯 Auto (лучший)"
+      - "🚀 Выбор"
+
+  - name: "🎬 YouTube"
+    type: select
+    proxies:
+      - "🎯 Auto (лучший)"
+      - "🚀 Выбор"
+
+  - name: "🎥 Netflix"
+    type: select
+    proxies:
+      - "🎯 Auto (лучший)"
+      - "🚀 Выбор"
+
+  - name: "🍎 Apple"
+    type: select
+    proxies:
+      - DIRECT
+      - "🎯 Auto (лучший)"
+
+  - name: "🔍 Google"
+    type: select
+    proxies:
+      - "🎯 Auto (лучший)"
+      - "🚀 Выбор"
+
+  - name: "🐟 Прочие"
+    type: select
+    proxies:
+      - "🎯 Auto (лучший)"
+      - DIRECT
+      - "🚀 Выбор"
+
+rules:
+  # Российские сервисы — напрямую
+  - GEOIP,RU,DIRECT
+  - DOMAIN-SUFFIX,ru,DIRECT
+  - DOMAIN-SUFFIX,su,DIRECT
+  - DOMAIN-SUFFIX,rf,DIRECT
+  
+  # Китай — напрямую
+  - GEOIP,CN,DIRECT
+  
+  # Telegram
+  - DOMAIN-SUFFIX,telegram.org,📺 Telegram
+  - DOMAIN-SUFFIX,t.me,📺 Telegram
+  - DOMAIN-SUFFIX,telegra.ph,📺 Telegram
+  - IP-CIDR,91.108.0.0/16,📺 Telegram,no-resolve
+  - IP-CIDR,149.154.160.0/20,📺 Telegram,no-resolve
+  
+  # AI сервисы
+  - DOMAIN-SUFFIX,openai.com,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,bard.google.com,🤖 AI (ChatGPT/Claude)
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI (ChatGPT/Claude)
+  
+  # YouTube
+  - DOMAIN-SUFFIX,youtube.com,🎬 YouTube
+  - DOMAIN-SUFFIX,ytimg.com,🎬 YouTube
+  - DOMAIN-SUFFIX,googlevideo.com,🎬 YouTube
+  - DOMAIN-SUFFIX,youtu.be,🎬 YouTube
+  
+  # Netflix
+  - DOMAIN-SUFFIX,netflix.com,🎥 Netflix
+  - DOMAIN-SUFFIX,nflxvideo.net,🎥 Netflix
+  - DOMAIN-SUFFIX,nflximg.net,🎥 Netflix
+  - DOMAIN-SUFFIX,nflxso.net,🎥 Netflix
+  
+  # Google
+  - DOMAIN-SUFFIX,google.com,🔍 Google
+  - DOMAIN-SUFFIX,googleapis.com,🔍 Google
+  - DOMAIN-SUFFIX,gstatic.com,🔍 Google
+  - DOMAIN-SUFFIX,googlevideo.com,🔍 Google
+  
+  # Apple
+  - DOMAIN-SUFFIX,apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,icloud.com,🍎 Apple
+  - DOMAIN-SUFFIX,mzstatic.com,🍎 Apple
+  
+  # Заблокированные в РФ — через прокси
+  - DOMAIN-SUFFIX,instagram.com,🚀 Выбор
+  - DOMAIN-SUFFIX,facebook.com,🚀 Выбор
+  - DOMAIN-SUFFIX,fbcdn.net,🚀 Выбор
+  - DOMAIN-SUFFIX,twitter.com,🚀 Выбор
+  - DOMAIN-SUFFIX,x.com,🚀 Выбор
+  - DOMAIN-SUFFIX,twimg.com,🚀 Выбор
+  - DOMAIN-SUFFIX,linkedin.com,🚀 Выбор
+  - DOMAIN-SUFFIX,discord.com,🚀 Выбор
+  - DOMAIN-SUFFIX,discordapp.com,🚀 Выбор
+  - DOMAIN-SUFFIX,discordapp.net,🚀 Выбор
+  
+  # Прочее — через выбранный прокси
+  - MATCH,🐟 Прочие
 """
     path.write_text(config, encoding="utf-8")
 
@@ -961,9 +1120,6 @@ async def main():
         print("⚠️  No TCP-alive proxies.")
         return
 
-    # ═══════════════════════════════════════════════════════════════════
-    # 🧹 Умная дедупликация (3 уровня)
-    # ═══════════════════════════════════════════════════════════════════
     print(f"\n🧹 Smart Deduplication...")
     tcp_alive, dedup_stats = smart_deduplicate(tcp_alive)
     
@@ -1023,7 +1179,7 @@ async def main():
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
     # ═══════════════════════════════════════════════════════════════════
-    # Генерация proxies.yaml (полный конфиг Clash)
+    # Генерация proxies.yaml (ПОЛНЫЙ конфиг Clash для FClash)
     # ═══════════════════════════════════════════════════════════════════
     print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
     clash_proxies = []
@@ -1042,8 +1198,9 @@ async def main():
         print(f"  ❌ Отброшено: {failed_count}")
     
     if clash_proxies:
+        # ПОЛНЫЙ конфиг со всеми прокси во всех группах
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
-        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси)")
+        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси, full config)")
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
