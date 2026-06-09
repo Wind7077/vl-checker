@@ -274,17 +274,12 @@ def parse_all_params(uri: str) -> dict:
 
 
 def safe_sni(sni: str, host: str) -> str:
-    """Если sni — это IP-адрес, заменяем на host."""
     if not sni or is_ip_address(sni):
         return host
     return sni
 
 
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
-    """
-    Конвертирует URI в Clash формат.
-    Возвращает dict с дополнительным полем '_sni' для группировки.
-    """
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -301,7 +296,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
         
         proxy_name = f"{idx+1}. {host}:{port}"
         
-        # ─── VLESS ─────────────────────────────────────────────────────
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
@@ -358,7 +352,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "network": clash_net,
                 "udp": True,
                 "servername": sni,
-                "_sni": sni,  # ⚠️ Сохраняем SNI для группировки
             }
             
             if sec == "reality":
@@ -388,7 +381,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
-        # ─── HYSTERIA2 ─────────────────────────────────────────────────
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             if not auth:
@@ -413,7 +405,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "udp": True,
                 "sni": sni,
                 "skip-cert-verify": insecure or True,
-                "_sni": sni,  # ⚠️ Сохраняем SNI для группировки
             }
             if obfs == "salamander" and obfs_password:
                 proxy["obfs"] = "salamander"
@@ -421,7 +412,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
-        # ─── TROJAN ────────────────────────────────────────────────────
         elif scheme == "trojan":
             password = p.username or ""
             raw_sni = params.get("sni") or params.get("peer") or host
@@ -442,7 +432,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "udp": True,
                 "sni": sni,
                 "skip-cert-verify": True,
-                "_sni": sni,  # ⚠️ Сохраняем SNI для группировки
             }
             
             if net == "ws":
@@ -458,7 +447,6 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
-    """Записывает только секцию proxies: (без служебных полей _sni)."""
     lines = ["proxies:"]
     for p in proxies:
         lines.append(f"  - name: {yaml_str(p['name'])}")
@@ -515,70 +503,24 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def group_proxies_by_sni(proxies: list[dict]) -> dict[str, list[dict]]:
-    """
-    Группирует прокси по их SNI.
-    Возвращает dict: {sni: [proxy1, proxy2, ...]}
-    """
-    groups = defaultdict(list)
-    for p in proxies:
-        sni = p.get('_sni', p.get('servername', p.get('sni', 'unknown')))
-        if not sni or is_ip_address(sni):
-            sni = 'unknown'
-        groups[sni].append(p)
-    return dict(groups)
-
-
-def get_test_url_for_sni(sni: str) -> str:
-    """
-    Возвращает URL для проверки прокси с данным SNI.
-    Использует сам SNI-домен — тогда Reality-сервер примет TLS-рукопожатие.
-    """
-    if sni == 'unknown':
-        return "https://1.1.1.1/cdn-cgi/trace"
-    # Для популярных доменов используем лёгкие эндпоинты
-    if sni in ("www.google.com", "google.com"):
-        return "https://www.google.com/generate_204"
-    if sni in ("www.cloudflare.com", "cloudflare.com"):
-        return "https://www.cloudflare.com/cdn-cgi/trace"
-    if sni in ("www.microsoft.com",):
-        return "https://www.microsoft.com/"
-    # Для остальных — корневой URL домена
-    return f"https://{sni}/"
-
-
-def sanitize_group_name(sni: str) -> str:
-    """Делает из SNI безопасное имя группы."""
-    # Убираем всё кроме букв, цифр, точек и дефисов
-    safe = re.sub(r'[^a-zA-Z0-9.\-]', '', sni)
-    if not safe:
-        safe = "unknown"
-    # Ограничиваем длину
-    if len(safe) > 40:
-        safe = safe[:40]
-    return f"AUTO-{safe}"
-
-
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
     """
     Записывает ПОЛНЫЙ конфиг Clash для FClash.
     
-    КЛЮЧЕВАЯ ФИЧА: прокси группируются по SNI, и для каждой группы
-    используется свой URL проверки — тот самый домен, который указан в SNI.
-    Это позволяет FClash корректно тестировать VLESS Reality-прокси.
+    ВАЖНО: НЕ используется global-client-fingerprint!
+    Эта настройка Mihomo принудительно перезаписывает client-fingerprint 
+    каждого прокси, что ломает VLESS Reality (сервер отклоняет TLS-рукопожатие
+    с неправильным отпечатком).
+    
+    Также убраны sniffer, tcp-concurrent, find-process-mode, unified-delay —
+    они могут ломать Reality-соединения.
     """
-    # Группируем прокси по SNI
-    sni_groups = group_proxies_by_sni(proxies)
-    
-    # Сортируем группы по количеству прокси (большие группы первыми)
-    sorted_sni = sorted(sni_groups.keys(), key=lambda s: -len(sni_groups[s]))
-    
-    # Все имена прокси
-    all_proxy_names = [yaml_str(p['name']) for p in proxies]
+    proxy_names = [yaml_str(p['name']) for p in proxies]
+    top_select = proxy_names[:30]
+    all_for_test = proxy_names
     
     config = f"""# Proxy Checker — Full Clash Config
 # Сгенерировано автоматически, {len(proxies)} прокси
-# Прокси сгруппированы по SNI для корректной проверки Reality
 
 mixed-port: 7890
 allow-lan: false
@@ -601,50 +543,50 @@ profile:
 
 proxies:
 """
-    # Записываем proxies через временный файл
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml', encoding='utf-8') as tmp:
         write_clash_proxies_yaml(proxies, Path(tmp.name))
         proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
         config += proxy_block
         os.unlink(tmp.name)
     
-    # ─── Proxy Groups ─────────────────────────────────────────────────
     config += """
 proxy-groups:
   - name: "SELECT"
     type: select
     proxies:
+      - "AUTO"
+      - "FALLBACK"
 """
-    # Добавляем все SNI-группы в SELECT
-    for sni in sorted_sni:
-        group_name = sanitize_group_name(sni)
-        count = len(sni_groups[sni])
-        config += f"      - {yaml_str(group_name)}\n"
+    for name in top_select:
+        config += f"      - {name}\n"
     config += """      - DIRECT
-
-"""
     
-    # Создаём url-test группу для каждого SNI
-    for sni in sorted_sni:
-        group_name = sanitize_group_name(sni)
-        test_url = get_test_url_for_sni(sni)
-        group_proxies = sni_groups[sni]
-        
-        config += f"""  - name: {yaml_str(group_name)}
+  - name: "AUTO"
     type: url-test
-    url: {yaml_str(test_url)}
+    url: "https://1.1.1.1/cdn-cgi/trace"
     interval: 120
     tolerance: 100
     lazy: false
     expected-status: "200"
     proxies:
 """
-        for p in group_proxies:
-            config += f"      - {yaml_str(p['name'])}\n"
-        config += "\n"
+    for name in all_for_test:
+        config += f"      - {name}\n"
     
-    # ─── Rules ─────────────────────────────────────────────────
-    config += """rules:
+    config += """
+  - name: "FALLBACK"
+    type: fallback
+    url: "https://1.1.1.1/cdn-cgi/trace"
+    interval: 120
+    lazy: false
+    expected-status: "200"
+    proxies:
+"""
+    for name in all_for_test:
+        config += f"      - {name}\n"
+    
+    config += """
+rules:
   # ─── Российские сервисы — напрямую ───
   - GEOIP,RU,DIRECT
   - DOMAIN-SUFFIX,ru,DIRECT
@@ -661,23 +603,23 @@ proxy-groups:
   # ─── Китай — напрямую ───
   - GEOIP,CN,DIRECT
   
-  # ─── Telegram — через прокси (SELECT) ───
-  - DOMAIN-SUFFIX,telegram.org,SELECT
-  - DOMAIN-SUFFIX,t.me,SELECT
-  - DOMAIN-SUFFIX,telegra.ph,SELECT
-  - DOMAIN-SUFFIX,telesco.pe,SELECT
-  - DOMAIN-KEYWORD,telegram,SELECT
-  - IP-CIDR,91.108.4.0/22,SELECT,no-resolve
-  - IP-CIDR,91.108.8.0/22,SELECT,no-resolve
-  - IP-CIDR,91.108.12.0/22,SELECT,no-resolve
-  - IP-CIDR,91.108.16.0/22,SELECT,no-resolve
-  - IP-CIDR,91.108.20.0/22,SELECT,no-resolve
-  - IP-CIDR,91.108.56.0/22,SELECT,no-resolve
-  - IP-CIDR,95.161.64.0/20,SELECT,no-resolve
-  - IP-CIDR,149.154.160.0/20,SELECT,no-resolve
-  - IP-CIDR6,2001:b28:f23d::/48,SELECT,no-resolve
-  - IP-CIDR6,2001:b28:f23f::/48,SELECT,no-resolve
-  - IP-CIDR6,2a0a:a980::/64,SELECT,no-resolve
+  # ─── Telegram — через прокси (AUTO) ───
+  - DOMAIN-SUFFIX,telegram.org,AUTO
+  - DOMAIN-SUFFIX,t.me,AUTO
+  - DOMAIN-SUFFIX,telegra.ph,AUTO
+  - DOMAIN-SUFFIX,telesco.pe,AUTO
+  - DOMAIN-KEYWORD,telegram,AUTO
+  - IP-CIDR,91.108.4.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.8.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.12.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.16.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.20.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.56.0/22,AUTO,no-resolve
+  - IP-CIDR,95.161.64.0/20,AUTO,no-resolve
+  - IP-CIDR,149.154.160.0/20,AUTO,no-resolve
+  - IP-CIDR6,2001:b28:f23d::/48,AUTO,no-resolve
+  - IP-CIDR6,2001:b28:f23f::/48,AUTO,no-resolve
+  - IP-CIDR6,2a0a:a980::/64,AUTO,no-resolve
   
   # ─── Прочее — через выбранную группу ───
   - MATCH,SELECT
@@ -1151,17 +1093,12 @@ async def main():
         print("⚠️  No working proxies found.")
         return
 
-    # Сохранение proxies.txt
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
     
-    # Base64 подписка
     b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
-    # ═══════════════════════════════════════════════════════════════════
-    # Генерация proxies.yaml (ПОЛНЫЙ конфиг Clash для FClash)
-    # ═══════════════════════════════════════════════════════════════════
     print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
     clash_proxies = []
     failed_count = 0
@@ -1179,12 +1116,6 @@ async def main():
         print(f"  ❌ Отброшено: {failed_count}")
     
     if clash_proxies:
-        # Группируем по SNI для статистики
-        sni_groups = group_proxies_by_sni(clash_proxies)
-        print(f"  📊 SNI-групп: {len(sni_groups)}")
-        for sni, group in sorted(sni_groups.items(), key=lambda x: -len(x[1]))[:5]:
-            print(f"     • {sni}: {len(group)} прокси")
-        
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
         print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси, full config)")
 
