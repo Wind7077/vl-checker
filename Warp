@@ -7,7 +7,7 @@ ipv6: false
 external-controller: 127.0.0.1:9090
 
 # ======================
-# DNS (ВАЖНО: НЕ fake-ip)
+# DNS (максимально лёгкий режим)
 # ======================
 dns:
   enable: true
@@ -16,14 +16,9 @@ dns:
   nameserver:
     - 1.1.1.1
     - 8.8.8.8
-  fallback:
-    - 1.0.0.1
-    - 8.8.4.4
-  fallback-filter:
-    geoip: true
 
 # ======================
-# PROXY (WARP + AmneziaWG)
+# PROXIES
 # ======================
 proxies:
 - name: "WARP"
@@ -36,23 +31,27 @@ proxies:
   allowed-ips:
     - 0.0.0.0/0
   reserved: [168, 18, 219]
-  udp: true
-  mtu: 1200
 
+  udp: true
+
+  # ключевой баланс скорости восстановления и стабильности
+  mtu: 1180
+
+  # полностью минимальный AmneziaWG (ускоряет re-handshake)
   amnezia-wg-option:
-    jc: 2
-    jmin: 20
-    jmax: 40
+    jc: 1
+    jmin: 10
+    jmax: 20
     s1: 0
     s2: 0
     h1: 1
     h2: 2
-    h3: 4
-    h4: 3
+    h3: 3
+    h4: 4
     i1: <b 0xc40000000101fc00002e1d96f5f7ff3700e0c7bc7f608e25fb3d4e9bdaff26943f2101fb4383d3d15ea0c51584f1a280db3c70fd7956c7bb>
 
 # ======================
-# PROXY GROUPS
+# PROXY GROUP
 # ======================
 proxy-groups:
 - name: PROXY
@@ -61,15 +60,7 @@ proxy-groups:
     - WARP
 
 # ======================
-# RULES (Telegram FIX)
+# RULES (минимальные, без лишней логики)
 # ======================
 rules:
-  # Telegram обязательно через прокси
-  - DOMAIN-SUFFIX,telegram.org,PROXY
-  - DOMAIN-SUFFIX,t.me,PROXY
-  - DOMAIN-SUFFIX,tdesktop.com,PROXY
-  - IP-CIDR,91.108.0.0/16,PROXY,no-resolve
-  - IP-CIDR,149.154.160.0/20,PROXY,no-resolve
-
-  # Остальное
   - MATCH,PROXY
