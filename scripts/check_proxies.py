@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
 Proxy Checker — оптимизирован для России (RU edition)
-Поддерживаемые протоколы: vless, vmess, trojan, ss, hysteria2
-Источники: sources.txt рядом со скриптом (одна строка = один URL, # = комментарий)
 """
 
 import asyncio
@@ -23,13 +21,11 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── Пути ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
 
-# ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
 PROBE_URLS = [
     ("https://api.telegram.org/",           [200, 404]),
     ("https://telegram.org/",               [200, 301, 302]),
@@ -37,7 +33,6 @@ PROBE_URLS = [
     ("https://www.google.com/generate_204", [200, 204]),
 ]
 
-# ── Настройки ─────────────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
@@ -52,7 +47,6 @@ MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 1200
 SOCKS_BASE_PORT     = 20000
 
-# ── Настройки дедупликации ────────────────────────────────────────────────────
 MAX_PER_ENDPOINT    = 2
 MAX_PER_UUID        = 2
 
@@ -173,6 +167,10 @@ def get_uuid_from_uri(uri: str) -> str:
     return ""
 
 
+def is_ip_address(s: str) -> bool:
+    return bool(re.match(r'^\d{1,3}(\.\d{1,3}){3}$', s))
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # Умная дедупликация
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -275,7 +273,18 @@ def parse_all_params(uri: str) -> dict:
         return {}
 
 
+def safe_sni(sni: str, host: str) -> str:
+    """Если sni — это IP-адрес, заменяем на host."""
+    if not sni or is_ip_address(sni):
+        return host
+    return sni
+
+
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
+    """
+    Конвертирует URI в Clash формат.
+    Возвращает dict с дополнительным полем '_sni' для группировки.
+    """
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -303,7 +312,9 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             if not uid:
                 return None
             
-            sni = params.get("sni") or params.get("peer") or params.get("servername") or host
+            raw_sni = params.get("sni") or params.get("peer") or params.get("servername") or host
+            sni = safe_sni(raw_sni, host)
+            
             sec = params.get("security", "tls").lower()
             if sec not in ("tls", "reality", "none"):
                 sec = "tls"
@@ -347,6 +358,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "network": clash_net,
                 "udp": True,
                 "servername": sni,
+                "_sni": sni,  # ⚠️ Сохраняем SNI для группировки
             }
             
             if sec == "reality":
@@ -371,8 +383,8 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             if net == "ws":
                 proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
-            elif net == "grpc":
-                proxy["grpc-opts"] = {"grpc-service-name": serviceName or ""}
+            elif net == "grpc" and serviceName:
+                proxy["grpc-opts"] = {"grpc-service-name": serviceName}
             
             return proxy
         
@@ -385,7 +397,9 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 except Exception:
                     auth = ""
             
-            sni = params.get("sni") or params.get("peer") or host
+            raw_sni = params.get("sni") or params.get("peer") or host
+            sni = safe_sni(raw_sni, host)
+            
             insecure = params.get("insecure", "0") == "1"
             obfs = params.get("obfs", "")
             obfs_password = params.get("obfs-password", "") or params.get("obfs_password", "")
@@ -399,6 +413,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "udp": True,
                 "sni": sni,
                 "skip-cert-verify": insecure or True,
+                "_sni": sni,  # ⚠️ Сохраняем SNI для группировки
             }
             if obfs == "salamander" and obfs_password:
                 proxy["obfs"] = "salamander"
@@ -409,7 +424,9 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
         # ─── TROJAN ────────────────────────────────────────────────────
         elif scheme == "trojan":
             password = p.username or ""
-            sni = params.get("sni") or params.get("peer") or host
+            raw_sni = params.get("sni") or params.get("peer") or host
+            sni = safe_sni(raw_sni, host)
+            
             net = params.get("type", "tcp").lower()
             path = params.get("path", "/") or "/"
             host_header = params.get("host", "") or host
@@ -425,12 +442,13 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 "udp": True,
                 "sni": sni,
                 "skip-cert-verify": True,
+                "_sni": sni,  # ⚠️ Сохраняем SNI для группировки
             }
             
             if net == "ws":
                 proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
-            elif net == "grpc":
-                proxy["grpc-opts"] = {"grpc-service-name": serviceName or ""}
+            elif net == "grpc" and serviceName:
+                proxy["grpc-opts"] = {"grpc-service-name": serviceName}
             
             return proxy
         
@@ -440,7 +458,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
-    """Записывает только секцию proxies: (для proxy-provider)."""
+    """Записывает только секцию proxies: (без служебных полей _sni)."""
     lines = ["proxies:"]
     for p in proxies:
         lines.append(f"  - name: {yaml_str(p['name'])}")
@@ -486,35 +504,86 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
                     if v:
                         lines.append(f"      {k}: {yaml_str(v)}")
         
-        if 'grpc-opts' in p:
-            lines.append("    grpc-opts:")
-            for k, v in p['grpc-opts'].items():
-                lines.append(f"      {k}: {yaml_str(v)}")
+        if 'grpc-opts' in p and p['grpc-opts']:
+            has_valid = any(v for v in p['grpc-opts'].values() if v)
+            if has_valid:
+                lines.append("    grpc-opts:")
+                for k, v in p['grpc-opts'].items():
+                    if v:
+                        lines.append(f"      {k}: {yaml_str(v)}")
     
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def group_proxies_by_sni(proxies: list[dict]) -> dict[str, list[dict]]:
+    """
+    Группирует прокси по их SNI.
+    Возвращает dict: {sni: [proxy1, proxy2, ...]}
+    """
+    groups = defaultdict(list)
+    for p in proxies:
+        sni = p.get('_sni', p.get('servername', p.get('sni', 'unknown')))
+        if not sni or is_ip_address(sni):
+            sni = 'unknown'
+        groups[sni].append(p)
+    return dict(groups)
+
+
+def get_test_url_for_sni(sni: str) -> str:
+    """
+    Возвращает URL для проверки прокси с данным SNI.
+    Использует сам SNI-домен — тогда Reality-сервер примет TLS-рукопожатие.
+    """
+    if sni == 'unknown':
+        return "https://1.1.1.1/cdn-cgi/trace"
+    # Для популярных доменов используем лёгкие эндпоинты
+    if sni in ("www.google.com", "google.com"):
+        return "https://www.google.com/generate_204"
+    if sni in ("www.cloudflare.com", "cloudflare.com"):
+        return "https://www.cloudflare.com/cdn-cgi/trace"
+    if sni in ("www.microsoft.com",):
+        return "https://www.microsoft.com/"
+    # Для остальных — корневой URL домена
+    return f"https://{sni}/"
+
+
+def sanitize_group_name(sni: str) -> str:
+    """Делает из SNI безопасное имя группы."""
+    # Убираем всё кроме букв, цифр, точек и дефисов
+    safe = re.sub(r'[^a-zA-Z0-9.\-]', '', sni)
+    if not safe:
+        safe = "unknown"
+    # Ограничиваем длину
+    if len(safe) > 40:
+        safe = safe[:40]
+    return f"AUTO-{safe}"
 
 
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
     """
     Записывает ПОЛНЫЙ конфиг Clash для FClash.
-    Все прокси перечислены в proxy-groups.
-    Только 3 группы: SELECT, AUTO, FALLBACK (без иконок, верхний регистр).
+    
+    КЛЮЧЕВАЯ ФИЧА: прокси группируются по SNI, и для каждой группы
+    используется свой URL проверки — тот самый домен, который указан в SNI.
+    Это позволяет FClash корректно тестировать VLESS Reality-прокси.
     """
-    proxy_names = [yaml_str(p['name']) for p in proxies]
-    top_select = proxy_names[:30]
-    all_for_test = proxy_names
+    # Группируем прокси по SNI
+    sni_groups = group_proxies_by_sni(proxies)
+    
+    # Сортируем группы по количеству прокси (большие группы первыми)
+    sorted_sni = sorted(sni_groups.keys(), key=lambda s: -len(sni_groups[s]))
+    
+    # Все имена прокси
+    all_proxy_names = [yaml_str(p['name']) for p in proxies]
     
     config = f"""# Proxy Checker — Full Clash Config
 # Сгенерировано автоматически, {len(proxies)} прокси
+# Прокси сгруппированы по SNI для корректной проверки Reality
 
 mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
-unified-delay: true
-tcp-concurrent: true
-find-process-mode: strict
-global-client-fingerprint: chrome
 
 geodata-mode: true
 geodata-loader: memorize
@@ -529,24 +598,10 @@ geox-url:
 
 profile:
   store-selected: true
-  store-fake-ip: true
-
-sniffer:
-  enable: true
-  sniff:
-    HTTP:
-      ports: [80, 8080-8880]
-      override-destination: true
-    TLS:
-      ports: [443, 8443]
-    QUIC:
-      ports: [443, 8443]
-  skip-domain:
-    - "Mijia Cloud"
-    - "dlg.io.mi.com"
 
 proxies:
 """
+    # Записываем proxies через временный файл
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml', encoding='utf-8') as tmp:
         write_clash_proxies_yaml(proxies, Path(tmp.name))
         proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
@@ -559,38 +614,37 @@ proxy-groups:
   - name: "SELECT"
     type: select
     proxies:
-      - "AUTO"
-      - "FALLBACK"
 """
-    for name in top_select:
-        config += f"      - {name}\n"
+    # Добавляем все SNI-группы в SELECT
+    for sni in sorted_sni:
+        group_name = sanitize_group_name(sni)
+        count = len(sni_groups[sni])
+        config += f"      - {yaml_str(group_name)}\n"
     config += """      - DIRECT
+
+"""
     
-  - name: "AUTO"
+    # Создаём url-test группу для каждого SNI
+    for sni in sorted_sni:
+        group_name = sanitize_group_name(sni)
+        test_url = get_test_url_for_sni(sni)
+        group_proxies = sni_groups[sni]
+        
+        config += f"""  - name: {yaml_str(group_name)}
     type: url-test
-    url: "https://cp.cloudflare.com/"
-    interval: 300
-    tolerance: 50
-    lazy: true
+    url: {yaml_str(test_url)}
+    interval: 120
+    tolerance: 100
+    lazy: false
+    expected-status: "200"
     proxies:
 """
-    for name in all_for_test:
-        config += f"      - {name}\n"
-    
-    config += """
-  - name: "FALLBACK"
-    type: fallback
-    url: "https://cp.cloudflare.com/"
-    interval: 300
-    lazy: true
-    proxies:
-"""
-    for name in all_for_test:
-        config += f"      - {name}\n"
+        for p in group_proxies:
+            config += f"      - {yaml_str(p['name'])}\n"
+        config += "\n"
     
     # ─── Rules ─────────────────────────────────────────────────
-    config += """
-rules:
+    config += """rules:
   # ─── Российские сервисы — напрямую ───
   - GEOIP,RU,DIRECT
   - DOMAIN-SUFFIX,ru,DIRECT
@@ -607,23 +661,23 @@ rules:
   # ─── Китай — напрямую ───
   - GEOIP,CN,DIRECT
   
-  # ─── Telegram — через прокси (AUTO) ───
-  - DOMAIN-SUFFIX,telegram.org,AUTO
-  - DOMAIN-SUFFIX,t.me,AUTO
-  - DOMAIN-SUFFIX,telegra.ph,AUTO
-  - DOMAIN-SUFFIX,telesco.pe,AUTO
-  - DOMAIN-KEYWORD,telegram,AUTO
-  - IP-CIDR,91.108.4.0/22,AUTO,no-resolve
-  - IP-CIDR,91.108.8.0/22,AUTO,no-resolve
-  - IP-CIDR,91.108.12.0/22,AUTO,no-resolve
-  - IP-CIDR,91.108.16.0/22,AUTO,no-resolve
-  - IP-CIDR,91.108.20.0/22,AUTO,no-resolve
-  - IP-CIDR,91.108.56.0/22,AUTO,no-resolve
-  - IP-CIDR,95.161.64.0/20,AUTO,no-resolve
-  - IP-CIDR,149.154.160.0/20,AUTO,no-resolve
-  - IP-CIDR6,2001:b28:f23d::/48,AUTO,no-resolve
-  - IP-CIDR6,2001:b28:f23f::/48,AUTO,no-resolve
-  - IP-CIDR6,2a0a:a980::/64,AUTO,no-resolve
+  # ─── Telegram — через прокси (SELECT) ───
+  - DOMAIN-SUFFIX,telegram.org,SELECT
+  - DOMAIN-SUFFIX,t.me,SELECT
+  - DOMAIN-SUFFIX,telegra.ph,SELECT
+  - DOMAIN-SUFFIX,telesco.pe,SELECT
+  - DOMAIN-KEYWORD,telegram,SELECT
+  - IP-CIDR,91.108.4.0/22,SELECT,no-resolve
+  - IP-CIDR,91.108.8.0/22,SELECT,no-resolve
+  - IP-CIDR,91.108.12.0/22,SELECT,no-resolve
+  - IP-CIDR,91.108.16.0/22,SELECT,no-resolve
+  - IP-CIDR,91.108.20.0/22,SELECT,no-resolve
+  - IP-CIDR,91.108.56.0/22,SELECT,no-resolve
+  - IP-CIDR,95.161.64.0/20,SELECT,no-resolve
+  - IP-CIDR,149.154.160.0/20,SELECT,no-resolve
+  - IP-CIDR6,2001:b28:f23d::/48,SELECT,no-resolve
+  - IP-CIDR6,2001:b28:f23f::/48,SELECT,no-resolve
+  - IP-CIDR6,2a0a:a980::/64,SELECT,no-resolve
   
   # ─── Прочее — через выбранную группу ───
   - MATCH,SELECT
@@ -1125,6 +1179,12 @@ async def main():
         print(f"  ❌ Отброшено: {failed_count}")
     
     if clash_proxies:
+        # Группируем по SNI для статистики
+        sni_groups = group_proxies_by_sni(clash_proxies)
+        print(f"  📊 SNI-групп: {len(sni_groups)}")
+        for sni, group in sorted(sni_groups.items(), key=lambda x: -len(x[1]))[:5]:
+            print(f"     • {sni}: {len(group)} прокси")
+        
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
         print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси, full config)")
 
