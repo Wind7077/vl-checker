@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 Proxy Checker — оптимизирован для России (RU edition)
+Поддерживаемые протоколы: vless, vmess, trojan, ss, hysteria2
+Источники: sources.txt рядом со скриптом (одна строка = один URL, # = комментарий)
 """
 
 import asyncio
@@ -21,11 +23,13 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+# ── Пути ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
 
+# ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
 PROBE_URLS = [
     ("https://api.telegram.org/",           [200, 404]),
     ("https://telegram.org/",               [200, 301, 302]),
@@ -33,20 +37,22 @@ PROBE_URLS = [
     ("https://www.google.com/generate_204", [200, 204]),
 ]
 
+# ── Настройки ─────────────────────────────────────────────────────────────────
 ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 500
+TOP_N               = 300
 TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 2000
+STAGE2_CANDIDATES   = 1200
 SOCKS_BASE_PORT     = 20000
 
+# ── Настройки дедупликации ────────────────────────────────────────────────────
 MAX_PER_ENDPOINT    = 2
 MAX_PER_UUID        = 2
 
@@ -296,6 +302,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
         
         proxy_name = f"{idx+1}. {host}:{port}"
         
+        # ─── VLESS ─────────────────────────────────────────────────────
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
@@ -381,6 +388,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
+        # ─── HYSTERIA2 ─────────────────────────────────────────────────
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             if not auth:
@@ -412,6 +420,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
+        # ─── TROJAN ────────────────────────────────────────────────────
         elif scheme == "trojan":
             password = p.username or ""
             raw_sni = params.get("sni") or params.get("peer") or host
@@ -507,13 +516,12 @@ def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All P
     """
     Записывает ПОЛНЫЙ конфиг Clash для FClash.
     
-    ВАЖНО: НЕ используется global-client-fingerprint!
-    Эта настройка Mihomo принудительно перезаписывает client-fingerprint 
-    каждого прокси, что ломает VLESS Reality (сервер отклоняет TLS-рукопожатие
-    с неправильным отпечатком).
-    
-    Также убраны sniffer, tcp-concurrent, find-process-mode, unified-delay —
-    они могут ломать Reality-соединения.
+    ВАЖНО: 
+    - НЕ используется global-client-fingerprint (он ломает Reality, перезаписывая отпечаток).
+    - НЕ используется sniffer (может ломать TLS-рукопожатие Reality).
+    - Используется официальный http://www.gstatic.com/generate_204 для url-test.
+    - Убран expected-status, чтобы корректно принимать код 204.
+    - Добавлен timeout: 5000 для стабильного прохождения рукопожатия.
     """
     proxy_names = [yaml_str(p['name']) for p in proxies]
     top_select = proxy_names[:30]
@@ -563,11 +571,10 @@ proxy-groups:
     
   - name: "AUTO"
     type: url-test
-    url: "https://1.1.1.1/cdn-cgi/trace"
-    interval: 120
-    tolerance: 100
-    lazy: false
-    expected-status: "200"
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 150
+    timeout: 5000
     proxies:
 """
     for name in all_for_test:
@@ -576,10 +583,9 @@ proxy-groups:
     config += """
   - name: "FALLBACK"
     type: fallback
-    url: "https://1.1.1.1/cdn-cgi/trace"
-    interval: 120
-    lazy: false
-    expected-status: "200"
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    timeout: 5000
     proxies:
 """
     for name in all_for_test:
