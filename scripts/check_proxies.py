@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
 Proxy Checker — оптимизирован для России (RU edition)
-Поддерживаемые протоколы: vless, vmess, trojan, ss, hysteria2
-Источники: sources.txt рядом со скриптом (одна строка = один URL, # = комментарий)
 """
 
 import asyncio
@@ -23,40 +21,36 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── Пути ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
 REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
 
-# ── Тестируем заблокированные в РФ ресурсы ───────────────────────────────────
+# ── ЕДИНСТВЕННЫЙ URL проверки ────────────────────────────────────────────────
+# HTTP без TLS — не конфликтует с SNI Reality-прокси
+# generate_204 возвращает 204 No Content — минимальный трафик
 PROBE_URLS = [
-    ("http://www.gstatic.com/generate_204", [200, 204]),   # ← Лёгкий HTTP без TLS
-    ("https://cp.cloudflare.com/",          [200, 204]),
-    ("https://api.telegram.org/",           [200, 404]),
-    ("https://telegram.org/",               [200, 301, 302]),
+    ("http://www.gstatic.com/generate_204", [200, 204]),
 ]
 
-# ── Настройки ─────────────────────────────────────────────────────────────────
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 500
+TOP_N               = 300
 TIMEOUT_TCP         = 1
-TIMEOUT_CURL        = 15      # ← УВЕЛИЧЕНО: 10 → 15 секунд
+TIMEOUT_CURL        = 15
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 2000    # ← УВЕЛИЧЕНО: 1200 → 2000
+STAGE2_CANDIDATES   = 2000
 SOCKS_BASE_PORT     = 20000
 
-# ── Настройки дедупликации ────────────────────────────────────────────────────
 MAX_PER_ENDPOINT    = 2
 MAX_PER_UUID        = 2
 
-HYSTERIA2_PROBE_TIMEOUT = 18  # ← УВЕЛИЧЕНО: 12 → 18 секунд
+HYSTERIA2_PROBE_TIMEOUT = 18
 
 if sys.platform == "win32":
     XRAY_BIN = Path(r"C:\xray\xray.exe")
@@ -65,10 +59,6 @@ else:
     XRAY_BIN = Path("/tmp/xray-bin/xray")
     HY2_BIN  = Path("/tmp/hysteria-bin/hysteria")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Загрузка источников
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def load_sources() -> list[str]:
     if not SOURCES_FILE.exists():
@@ -86,10 +76,6 @@ def load_sources() -> list[str]:
     print(f"  📄 Загружено {len(urls)} источников из {SOURCES_FILE.name}")
     return urls
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Helpers
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def decode_b64(data: str) -> str:
     data = data.strip()
@@ -177,10 +163,6 @@ def is_ip_address(s: str) -> bool:
     return bool(re.match(r'^\d{1,3}(\.\d{1,3}){3}$', s))
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Умная дедупликация
-# ═══════════════════════════════════════════════════════════════════════════════
-
 def smart_deduplicate(items: list[dict], 
                        max_per_endpoint: int = MAX_PER_ENDPOINT,
                        max_per_uuid: int = MAX_PER_UUID) -> tuple[list[dict], dict]:
@@ -253,10 +235,6 @@ def smart_deduplicate(items: list[dict],
     
     return result, stats
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Clash YAML Export
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
     if val is None:
@@ -510,16 +488,6 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
 
 
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
-    """
-    Записывает ПОЛНЫЙ конфиг Clash для FClash.
-    
-    КЛЮЧЕВЫЕ ИСПРАВЛЕНИЯ для корректной работы VLESS Reality:
-    - НЕ используется global-client-fingerprint (он ломает Reality).
-    - НЕ используется sniffer, tcp-concurrent, find-process-mode.
-    - URL проверки: http://www.gstatic.com/generate_204 (лёгкий HTTP).
-    - Без expected-status (чтобы принимать код 204).
-    - timeout: 5000 для стабильного рукопожатия Reality.
-    """
     proxy_names = [yaml_str(p['name']) for p in proxies]
     top_select = proxy_names[:30]
     all_for_test = proxy_names
@@ -590,7 +558,6 @@ proxy-groups:
     
     config += """
 rules:
-  # ─── Российские сервисы — напрямую ───
   - GEOIP,RU,DIRECT
   - DOMAIN-SUFFIX,ru,DIRECT
   - DOMAIN-SUFFIX,su,DIRECT
@@ -602,11 +569,7 @@ rules:
   - DOMAIN-SUFFIX,ok.ru,DIRECT
   - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
   - DOMAIN-SUFFIX,sberbank.ru,DIRECT
-  
-  # ─── Китай — напрямую ───
   - GEOIP,CN,DIRECT
-  
-  # ─── Telegram — через прокси (AUTO) ───
   - DOMAIN-SUFFIX,telegram.org,AUTO
   - DOMAIN-SUFFIX,t.me,AUTO
   - DOMAIN-SUFFIX,telegra.ph,AUTO
@@ -623,16 +586,10 @@ rules:
   - IP-CIDR6,2001:b28:f23d::/48,AUTO,no-resolve
   - IP-CIDR6,2001:b28:f23f::/48,AUTO,no-resolve
   - IP-CIDR6,2a0a:a980::/64,AUTO,no-resolve
-  
-  # ─── Прочее — через выбранную группу ───
   - MATCH,SELECT
 """
     path.write_text(config, encoding="utf-8")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Hysteria2
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def parse_hysteria2(uri: str) -> dict | None:
     try:
@@ -721,11 +678,8 @@ async def hy2_probe(item: dict) -> dict | None:
             pass
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Curl через SOCKS5
-# ═══════════════════════════════════════════════════════════════════════════════
-
 async def _curl_through_socks(socks_port: int) -> float | None:
+    """Проверяет прокси через ЕДИНСТВЕННЫЙ URL — http://www.gstatic.com/generate_204"""
     for url, ok_codes in PROBE_URLS:
         t0 = time.monotonic()
         try:
@@ -748,10 +702,6 @@ async def _curl_through_socks(socks_port: int) -> float | None:
             pass
     return None
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Stage 1 – TCP ping
-# ═══════════════════════════════════════════════════════════════════════════════
 
 async def tcp_ping(host: str, port: int, timeout: float = TIMEOUT_TCP):
     t0 = time.monotonic()
@@ -791,10 +741,6 @@ async def stage1_test(sem, uri):
                     "proto": uri.split("://")[0].lower()}
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Xray install
-# ═══════════════════════════════════════════════════════════════════════════════
-
 def install_xray() -> bool:
     if XRAY_BIN.exists():
         return True
@@ -818,10 +764,6 @@ def install_xray() -> bool:
         print(f"  ✗ xray install failed: {e}")
         return False
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Stage 2 – xray config builders
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def make_xray_config(uri: str, socks_port: int) -> dict | None:
     scheme = uri.split("://")[0].lower()
@@ -973,10 +915,6 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
                 pass
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Fetch sources
-# ═══════════════════════════════════════════════════════════════════════════════
-
 async def fetch_source(session, url: str) -> list:
     url = re.sub(r'github\.com/([^/]+)/([^/]+)/blob/(.+)',
                  r'raw.githubusercontent.com/\1/\2/refs/heads/\3', url)
@@ -993,10 +931,6 @@ async def fetch_source(session, url: str) -> list:
     return []
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Main
-# ═══════════════════════════════════════════════════════════════════════════════
-
 async def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -1005,6 +939,7 @@ async def main():
     print(f"  Proxy Checker (RU edition)  |  {ts}")
     print(f"  Протоколы: {ALLOWED_PROTOCOLS}")
     print(f"  Страны: {sorted(ALLOWED_COUNTRIES) or 'все'}")
+    print(f"  Probe URL: {PROBE_URLS[0][0]}")
     print(f"{'='*64}\n")
 
     print("📄 Loading sources…")
@@ -1066,7 +1001,7 @@ async def main():
 
     if xray_ok or hy2_ok:
         print(f"\n🌐 Stage 2 – curl probe  ({len(candidates)} candidates, concurrency={MAX_CONCURRENT_HTTP})")
-        print(f"   URLs: {' | '.join(u for u, _ in PROBE_URLS)}\n")
+        print(f"   URL: {PROBE_URLS[0][0]}\n")
         sem2 = asyncio.Semaphore(MAX_CONCURRENT_HTTP)
         done2 = 0
         for coro in asyncio.as_completed([stage2_test(sem2, i, it) for i, it in enumerate(candidates)]):
