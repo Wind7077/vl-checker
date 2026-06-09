@@ -27,8 +27,6 @@ SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
 
 # ── ЕДИНСТВЕННЫЙ URL проверки ────────────────────────────────────────────────
-# HTTP без TLS — не конфликтует с SNI Reality-прокси
-# generate_204 возвращает 204 No Content — минимальный трафик
 PROBE_URLS = [
     ("http://www.gstatic.com/generate_204", [200, 204]),
 ]
@@ -47,7 +45,8 @@ MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 5000
 SOCKS_BASE_PORT     = 20000
 
-MAX_PER_ENDPOINT    = 2
+# ИСПРАВЛЕНО: 1 вместо 2, чтобы на одном IP:port не было дубликатов с разными паролями
+MAX_PER_ENDPOINT    = 1
 MAX_PER_UUID        = 2
 
 HYSTERIA2_PROBE_TIMEOUT = 18
@@ -125,14 +124,21 @@ def parse_host_port(uri: str):
             if host and port:
                 return host, port, "udp"
         else:
-            if p.hostname and p.port:
-                return p.hostname, p.port, "tcp"
+            host = p.hostname
+            port = p.port or (443 if scheme != "ss" else 8388)
+            if host and port:
+                return host, port, "tcp"
     except Exception:
         pass
     return None
 
 
 def get_uuid_from_uri(uri: str) -> str:
+    """
+    Возвращает уникальный идентификатор для дедупликации.
+    Для VLESS/VMess/Trojan — это UUID пользователя.
+    Для SS/Hysteria2 — это пароль/токен (в комбинации с host:port).
+    """
     try:
         scheme = uri.split("://")[0].lower()
         p = urllib.parse.urlparse(uri)
@@ -144,6 +150,11 @@ def get_uuid_from_uri(uri: str) -> str:
             return p.username or ""
         elif scheme == "ss":
             userinfo = p.username or ""
+            password = p.password or ""
+            # Современный формат SIP002: ss://method:password@host:port
+            if password:
+                return f"{userinfo}:{password}"
+            # Старый формат: ss://base64(method:password)@host:port
             if ":" not in userinfo:
                 userinfo = decode_b64(userinfo)
             return userinfo
@@ -177,8 +188,17 @@ def smart_deduplicate(items: list[dict],
     def normalize_uri(uri: str) -> str:
         try:
             p = urllib.parse.urlparse(uri)
-            params = sorted(urllib.parse.parse_qsl(p.query))
-            query_str = urllib.parse.urlencode(params)
+            params = dict(urllib.parse.parse_qsl(p.query))
+            
+            # ИСПРАВЛЕНО: собираем параметры из фрагмента (#...)
+            if p.fragment and '=' in p.fragment:
+                for k, v in urllib.parse.parse_qsl(p.fragment):
+                    if k not in params:
+                        params[k] = v
+                        
+            sorted_params = sorted(params.items())
+            query_str = urllib.parse.urlencode(sorted_params)
+            
             return urllib.parse.urlunparse((
                 p.scheme, p.netloc, p.path, p.params, query_str, ''
             ))
@@ -195,6 +215,7 @@ def smart_deduplicate(items: list[dict],
     
     stats["after_exact_dedup"] = len(unique_items)
     
+    # Шаг 1: дедупликация по (uuid, host, port) — оставляем самый быстрый
     uuid_server_groups = defaultdict(list)
     for item in unique_items:
         uuid = get_uuid_from_uri(item['uri'])
@@ -208,18 +229,29 @@ def smart_deduplicate(items: list[dict],
     
     stats["after_uuid_server_dedup"] = len(after_uuid_server)
     
+    # Шаг 2: ИСПРАВЛЕНО — раздельная обработка CDN-протоколов и SS/Hysteria2
     uuid_groups = defaultdict(list)
-    for item in after_uuid_server:
-        uuid = get_uuid_from_uri(item['uri'])
-        uuid_groups[uuid].append(item)
-    
     after_uuid = []
+    
+    for item in after_uuid_server:
+        scheme = item['uri'].split("://")[0].lower()
+        uuid = get_uuid_from_uri(item['uri'])
+        
+        if scheme in ("vless", "vmess", "trojan"):
+            # Для этих протоков одинаковый UUID на разных IP = CDN, применяем лимит
+            uuid_groups[uuid].append(item)
+        else:
+            # Для SS/Hysteria2 одинаковый пароль на разных IP — это разные ноды (load balancing)
+            # НЕ применяем max_per_uuid, чтобы не удалить валидные серверы
+            after_uuid.append(item)
+            
     for uuid, group in uuid_groups.items():
         group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
         after_uuid.extend(group[:max_per_uuid])
     
     stats["after_uuid_cdn_dedup"] = len(after_uuid)
     
+    # Шаг 3: дедупликация по host:port
     endpoint_groups = defaultdict(list)
     for item in after_uuid:
         key = f"{item['host']}:{item['port']}"
@@ -263,6 +295,64 @@ def safe_sni(sni: str, host: str) -> str:
     return sni
 
 
+def parse_ss_uri(uri: str) -> dict | None:
+    """
+    Парсер для Shadowsocks URI. Поддерживает:
+    - Старый формат: ss://base64(method:password)@host:port
+    - Новый SIP002: ss://method:password@host:port?plugin=...
+    """
+    try:
+        p = urllib.parse.urlparse(uri)
+        params = dict(urllib.parse.parse_qsl(p.query))
+        
+        host = p.hostname or ""
+        if not host:
+            return None
+        port = p.port or 8388
+        
+        username = p.username or ""
+        password = p.password or ""
+        
+        # Формат SIP002: method:password в userinfo
+        if password:
+            method = username
+            pwd = password
+        else:
+            # Старый формат: base64(method:password)
+            userinfo = decode_b64(username)
+            if ":" in userinfo:
+                method, pwd = userinfo.split(":", 1)
+            else:
+                return None
+        
+        # Обработка плагина (SIP003)
+        plugin = params.get("plugin", "")
+        plugin_opts = {}
+        plugin_name = ""
+        
+        if plugin:
+            # Формат: plugin=obfs-local;obfs=http;obfs-host=cloudflare.com
+            # или plugin=v2ray-plugin;mode=websocket;host=...
+            parts = plugin.split(";")
+            if parts:
+                plugin_name = parts[0]
+                for opt in parts[1:]:
+                    if "=" in opt:
+                        k, v = opt.split("=", 1)
+                        plugin_opts[k] = v
+        
+        return {
+            "method": method,
+            "password": pwd,
+            "host": host,
+            "port": port,
+            "plugin": plugin_name,
+            "plugin_opts": plugin_opts,
+        }
+    except Exception:
+        return None
+
+
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
     try:
         scheme = uri.split("://")[0].lower()
@@ -280,6 +370,52 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
         
         proxy_name = f"{idx+1}. {host}:{port}"
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # SHADOWSOCKS (ИСПРАВЛЕНО: раньше эта ветка отсутствовала!)
+        # ═══════════════════════════════════════════════════════════════════════
+        if scheme == "ss":
+            ss = parse_ss_uri(uri)
+            if not ss:
+                return None
+            
+            proxy = {
+                "name": proxy_name,
+                "type": "ss",
+                "server": ss["host"],
+                "port": ss["port"],
+                "cipher": ss["method"],
+                "password": ss["password"],
+                "udp": True,
+            }
+            
+            plugin = ss["plugin"]
+            opts = ss["plugin_opts"]
+            
+            if plugin == "obfs-local":
+                proxy["plugin"] = "obfs"
+                plugin_opts = {"mode": opts.get("obfs", "http")}
+                if opts.get("obfs-host"):
+                    plugin_opts["host"] = opts["obfs-host"]
+                proxy["plugin-opts"] = plugin_opts
+                
+            elif plugin == "v2ray-plugin":
+                proxy["plugin"] = "v2ray-plugin"
+                plugin_opts = {"mode": opts.get("mode", "websocket")}
+                if opts.get("host"):
+                    plugin_opts["host"] = opts["host"]
+                if opts.get("path"):
+                    plugin_opts["path"] = opts["path"]
+                if opts.get("tls") == "true" or opts.get("tls") == "1":
+                    plugin_opts["tls"] = True
+                if opts.get("mux") == "true" or opts.get("mux") == "1":
+                    plugin_opts["mux"] = True
+                proxy["plugin-opts"] = plugin_opts
+            
+            return proxy
+        
+        # ═══════════════════════════════════════════════════════════════════════
+        # VLESS
+        # ═══════════════════════════════════════════════════════════════════════
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
@@ -365,6 +501,9 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # HYSTERIA2
+        # ═══════════════════════════════════════════════════════════════════════
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             if not auth:
@@ -396,6 +535,9 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # TROJAN
+        # ═══════════════════════════════════════════════════════════════════════
         elif scheme == "trojan":
             password = p.username or ""
             raw_sni = params.get("sni") or params.get("peer") or host
@@ -438,6 +580,7 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         lines.append(f"    server: {yaml_str(p['server'])}")
         lines.append(f"    port: {p['port']}")
         
+        # VLESS / VMess / Trojan поля
         if 'uuid' in p:
             lines.append(f"    uuid: {yaml_str(p['uuid'])}")
         if 'password' in p:
@@ -446,6 +589,10 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
             lines.append(f"    servername: {yaml_str(p['servername'])}")
         if 'sni' in p:
             lines.append(f"    sni: {yaml_str(p['sni'])}")
+        
+        # ИСПРАВЛЕНО: поддержка SS-поля cipher
+        if 'cipher' in p:
+            lines.append(f"    cipher: {yaml_str(p['cipher'])}")
         
         for key in ['network', 'flow', 'client-fingerprint', 'obfs', 'obfs-password']:
             if key in p and p[key]:
@@ -483,6 +630,17 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
                 for k, v in p['grpc-opts'].items():
                     if v:
                         lines.append(f"      {k}: {yaml_str(v)}")
+        
+        # ИСПРАВЛЕНО: поддержка SS плагинов
+        if 'plugin' in p and p['plugin']:
+            lines.append(f"    plugin: {yaml_str(p['plugin'])}")
+        if 'plugin-opts' in p and p['plugin-opts']:
+            lines.append("    plugin-opts:")
+            for k, v in p['plugin-opts'].items():
+                if isinstance(v, bool):
+                    lines.append(f"      {k}: {'true' if v else 'false'}")
+                else:
+                    lines.append(f"      {k}: {yaml_str(v)}")
     
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -843,13 +1001,26 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
         elif scheme == "ss":
             p        = urllib.parse.urlparse(uri)
             userinfo = p.username or ""
-            if ":" not in userinfo:
-                userinfo = decode_b64(userinfo)
-            method, password = userinfo.split(":", 1)
+            password = p.password or ""
+            host     = p.hostname or ""
+            port     = p.port or 8388
+            
+            # SIP002 формат: method:password в userinfo
+            if password:
+                method = userinfo
+                pwd = password
+            else:
+                # Старый формат: base64(method:password)
+                decoded = decode_b64(userinfo)
+                if ":" in decoded:
+                    method, pwd = decoded.split(":", 1)
+                else:
+                    return None
+            
             outbound = {
                 "protocol": "shadowsocks",
-                "settings": {"servers": [{"address": p.hostname or "", "port": p.port or 443,
-                                           "method": method, "password": password}]},
+                "settings": {"servers": [{"address": host, "port": port,
+                                           "method": method, "password": pwd}]},
                 "streamSettings": {"network": "tcp"},
             }
         else:
