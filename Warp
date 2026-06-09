@@ -1,3 +1,30 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+
+external-controller: 127.0.0.1:9090
+
+# ======================
+# DNS (ВАЖНО: НЕ fake-ip)
+# ======================
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: redir-host
+  nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  fallback:
+    - 1.0.0.1
+    - 8.8.4.4
+  fallback-filter:
+    geoip: true
+
+# ======================
+# PROXY (WARP + AmneziaWG)
+# ======================
 proxies:
 - name: "WARP"
   type: wireguard
@@ -8,37 +35,41 @@ proxies:
   public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
   allowed-ips:
     - 0.0.0.0/0
-  persistent-keepalive: 25
-  reserved:
-    - 168
-    - 18
-    - 219
+  reserved: [168, 18, 219]
   udp: true
-  mtu: 1280
-  remote-dns-resolve: true
-  dns:
-    - 1.1.1.1
-    - 1.0.0.1
+  mtu: 1200
+
   amnezia-wg-option:
-    jc: 1
-    jmin: 0
-    jmax: 0
+    jc: 2
+    jmin: 20
+    jmax: 40
     s1: 0
     s2: 0
     h1: 1
     h2: 2
-    h4: 3
     h3: 4
+    h4: 3
     i1: <b 0xc40000000101fc00002e1d96f5f7ff3700e0c7bc7f608e25fb3d4e9bdaff26943f2101fb4383d3d15ea0c51584f1a280db3c70fd7956c7bb>
 
+# ======================
+# PROXY GROUPS
+# ======================
 proxy-groups:
-- name: Cloudflare
+- name: PROXY
   type: select
-  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
     - WARP
-  url: http://cp.cloudflare.com/generate_204
-  interval: 60
 
+# ======================
+# RULES (Telegram FIX)
+# ======================
 rules:
-- MATCH,Cloudflare
+  # Telegram обязательно через прокси
+  - DOMAIN-SUFFIX,telegram.org,PROXY
+  - DOMAIN-SUFFIX,t.me,PROXY
+  - DOMAIN-SUFFIX,tdesktop.com,PROXY
+  - IP-CIDR,91.108.0.0/16,PROXY,no-resolve
+  - IP-CIDR,149.154.160.0/20,PROXY,no-resolve
+
+  # Остальное
+  - MATCH,PROXY
