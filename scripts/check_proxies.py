@@ -45,9 +45,10 @@ MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 5000
 SOCKS_BASE_PORT     = 20000
 
-# ИСПРАВЛЕНО: 1 вместо 2, чтобы на одном IP:port не было дубликатов с разными паролями
-MAX_PER_ENDPOINT    = 1
-MAX_PER_UUID        = 2
+# ИСПРАВЛЕНО: параметры дедупликации
+MAX_PER_ENDPOINT    = 1  # Максимум прокси на один IP:port
+MAX_PER_UUID        = 2  # Для VLESS/VMess/Trojan — макс. прокси с одинаковым UUID (CDN)
+MAX_PER_PASSWORD    = 5  # ИСПРАВЛЕНО: Для SS/Hysteria2 — макс. серверов с одинаковым паролем
 
 HYSTERIA2_PROBE_TIMEOUT = 18
 
@@ -137,7 +138,7 @@ def get_uuid_from_uri(uri: str) -> str:
     """
     Возвращает уникальный идентификатор для дедупликации.
     Для VLESS/VMess/Trojan — это UUID пользователя.
-    Для SS/Hysteria2 — это пароль/токен (в комбинации с host:port).
+    Для SS/Hysteria2 — это пароль/токен.
     """
     try:
         scheme = uri.split("://")[0].lower()
@@ -176,12 +177,14 @@ def is_ip_address(s: str) -> bool:
 
 def smart_deduplicate(items: list[dict], 
                        max_per_endpoint: int = MAX_PER_ENDPOINT,
-                       max_per_uuid: int = MAX_PER_UUID) -> tuple[list[dict], dict]:
+                       max_per_uuid: int = MAX_PER_UUID,
+                       max_per_password: int = MAX_PER_PASSWORD) -> tuple[list[dict], dict]:
     stats = {
         "input": len(items),
         "after_exact_dedup": 0,
         "after_uuid_server_dedup": 0,
         "after_uuid_cdn_dedup": 0,
+        "after_password_dedup": 0,
         "output": 0,
     }
     
@@ -229,7 +232,7 @@ def smart_deduplicate(items: list[dict],
     
     stats["after_uuid_server_dedup"] = len(after_uuid_server)
     
-    # Шаг 2: ИСПРАВЛЕНО — раздельная обработка CDN-протоколов и SS/Hysteria2
+    # Шаг 2: Раздельная обработка CDN-протоколов и SS/Hysteria2
     uuid_groups = defaultdict(list)
     after_uuid = []
     
@@ -241,13 +244,16 @@ def smart_deduplicate(items: list[dict],
             # Для этих протоков одинаковый UUID на разных IP = CDN, применяем лимит
             uuid_groups[uuid].append(item)
         else:
-            # Для SS/Hysteria2 одинаковый пароль на разных IP — это разные ноды (load balancing)
-            # НЕ применяем max_per_uuid, чтобы не удалить валидные серверы
-            after_uuid.append(item)
+            # Для SS/Hysteria2 — это пароль. Одинаковый пароль на разных IP — это разные ноды.
+            # НО: не оставляем все 100 серверов, а только топ-N самых быстрых
+            uuid_groups[uuid].append(item)
             
     for uuid, group in uuid_groups.items():
         group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
-        after_uuid.extend(group[:max_per_uuid])
+        # Для SS/Hysteria2 используем max_per_password, для остальных — max_per_uuid
+        scheme = group[0]['uri'].split("://")[0].lower() if group else ""
+        limit = max_per_password if scheme in ("ss", "hysteria2", "hy2") else max_per_uuid
+        after_uuid.extend(group[:limit])
     
     stats["after_uuid_cdn_dedup"] = len(after_uuid)
     
@@ -371,7 +377,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
         proxy_name = f"{idx+1}. {host}:{port}"
         
         # ═══════════════════════════════════════════════════════════════════════
-        # SHADOWSOCKS (ИСПРАВЛЕНО: раньше эта ветка отсутствовала!)
+        # SHADOWSOCKS
         # ═══════════════════════════════════════════════════════════════════════
         if scheme == "ss":
             ss = parse_ss_uri(uri)
@@ -1158,7 +1164,7 @@ async def main():
     print(f"   Было прокси:               {dedup_stats['input']}")
     print(f"   → После точных дублей:     {dedup_stats['after_exact_dedup']} (-{dedup_stats['input'] - dedup_stats['after_exact_dedup']})")
     print(f"   → После (UUID+host:port):  {dedup_stats['after_uuid_server_dedup']} (-{dedup_stats['after_exact_dedup'] - dedup_stats['after_uuid_server_dedup']})")
-    print(f"   → После (UUID на CDN):     {dedup_stats['after_uuid_cdn_dedup']} (-{dedup_stats['after_uuid_server_dedup'] - dedup_stats['after_uuid_cdn_dedup']})")
+    print(f"   → После (UUID/пароль):     {dedup_stats['after_uuid_cdn_dedup']} (-{dedup_stats['after_uuid_server_dedup'] - dedup_stats['after_uuid_cdn_dedup']})")
     print(f"   → Финал (host:port):       {dedup_stats['output']} (-{dedup_stats['after_uuid_cdn_dedup'] - dedup_stats['output']})")
     print(f"   Итого удалено дублей:      {dedup_stats['input'] - dedup_stats['output']} ({(dedup_stats['input'] - dedup_stats['output']) / dedup_stats['input'] * 100:.1f}%)\n")
 
