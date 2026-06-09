@@ -29,7 +29,7 @@ ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "trojan"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 
-TOP_N               = 300
+TOP_N               = 1000
 TIMEOUT_TCP         = 1
 MAX_CONCURRENT_TCP  = 200
 
