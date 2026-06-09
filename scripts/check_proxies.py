@@ -43,13 +43,13 @@ REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 300
+TOP_N               = 500
 TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 10
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
 MAX_CONCURRENT_HTTP = 20
-STAGE2_CANDIDATES   = 1200
+STAGE2_CANDIDATES   = 3000
 SOCKS_BASE_PORT     = 20000
 
 # ── Настройки дедупликации ────────────────────────────────────────────────────
