@@ -203,8 +203,10 @@ def smart_deduplicate(items: list[dict],
     def normalize_uri(uri: str) -> str:
         try:
             p = urllib.parse.urlparse(uri)
+            # Сортируем параметры — порядок не важен
             params = sorted(urllib.parse.parse_qsl(p.query))
             query_str = urllib.parse.urlencode(params)
+            # Без fragment (там только название/пинг)
             return urllib.parse.urlunparse((
                 p.scheme, p.netloc, p.path, p.params, query_str, ''
             ))
@@ -222,6 +224,7 @@ def smart_deduplicate(items: list[dict],
     stats["after_exact_dedup"] = len(unique_items)
     
     # ─── Шаг 2: Для каждого (UUID, host, port) оставляем 1 лучший ─────
+    # Это устраняет дубли одного аккаунта на одном сервере
     uuid_server_groups = defaultdict(list)
     for item in unique_items:
         uuid = get_uuid_from_uri(item['uri'])
@@ -231,11 +234,12 @@ def smart_deduplicate(items: list[dict],
     after_uuid_server = []
     for key, group in uuid_server_groups.items():
         group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
-        after_uuid_server.append(group[0])
+        after_uuid_server.append(group[0])  # Только самый быстрый
     
     stats["after_uuid_server_dedup"] = len(after_uuid_server)
     
     # ─── Шаг 3: Для каждого UUID на разных IP (CDN) оставляем N лучших ─
+    # Один и тот же UUID на разных IP = один сервер за CDN, достаточно 1-2
     uuid_groups = defaultdict(list)
     for item in after_uuid_server:
         uuid = get_uuid_from_uri(item['uri'])
@@ -249,6 +253,7 @@ def smart_deduplicate(items: list[dict],
     stats["after_uuid_cdn_dedup"] = len(after_uuid)
     
     # ─── Шаг 4: Для каждого host:port оставляем N разных UUID ─────────
+    # Один сервер с разными UUID = разные аккаунты, достаточно 1-2
     endpoint_groups = defaultdict(list)
     for item in after_uuid:
         key = f"{item['host']}:{item['port']}"
@@ -259,6 +264,7 @@ def smart_deduplicate(items: list[dict],
         group.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
         result.extend(group[:max_per_endpoint])
     
+    # Финальная сортировка по ping
     result.sort(key=lambda x: (x.get("tcp_ms", 9999) == 0, x.get("tcp_ms", 9999)))
     stats["output"] = len(result)
     
@@ -423,41 +429,12 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             
             return proxy
         
-        # ─── TROJAN ────────────────────────────────────────────────────
-        elif scheme == "trojan":
-            password = p.username or ""
-            sni = params.get("sni") or params.get("peer") or host
-            net = params.get("type", "tcp").lower()
-            path = params.get("path", "/") or "/"
-            host_header = params.get("host", "") or host
-            serviceName = params.get("serviceName", "")
-            
-            proxy = {
-                "name": proxy_name,
-                "type": "trojan",
-                "server": host,
-                "port": port,
-                "password": password,
-                "network": net,
-                "udp": True,
-                "sni": sni,
-                "skip-cert-verify": True,
-            }
-            
-            if net == "ws":
-                proxy["ws-opts"] = {"path": path, "headers": {"Host": host_header}}
-            elif net == "grpc":
-                proxy["grpc-opts"] = {"grpc-service-name": serviceName or ""}
-            
-            return proxy
-        
         return None
     except Exception:
         return None
 
 
 def write_clash_proxies_yaml(proxies: list[dict], path: Path):
-    """Записывает ТОЛЬКО секцию proxies: — формат proxy-provider для FClash."""
     lines = ["proxies:"]
     for p in proxies:
         lines.append(f"  - name: {yaml_str(p['name'])}")
@@ -511,20 +488,7 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def write_provider_yaml(proxies: list[dict], path: Path):
-    """
-    Записывает proxies.yaml в формате proxy-provider для FClash.
-    Содержит ТОЛЬКО секцию proxies: — без mixed-port, proxy-groups, rules.
-    FClash использует это как subscription/provider и сам добавляет группы.
-    """
-    write_clash_proxies_yaml(proxies, path)
-
-
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
-    """
-    Записывает ПОЛНЫЙ конфиг Clash (с mixed-port, proxy-groups, rules).
-    Используется если нужен standalone конфиг, а не provider.
-    """
     proxy_names = [yaml_str(p['name']) for p in proxies]
     top20 = proxy_names[:20]
     top50 = proxy_names[:50] if len(proxy_names) >= 50 else proxy_names
@@ -1059,9 +1023,9 @@ async def main():
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
     # ═══════════════════════════════════════════════════════════════════
-    # Генерация proxies.yaml (proxy-provider для FClash)
+    # Генерация proxies.yaml (полный конфиг Clash)
     # ═══════════════════════════════════════════════════════════════════
-    print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML (proxy-provider)...")
+    print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
     clash_proxies = []
     failed_count = 0
     
@@ -1078,15 +1042,14 @@ async def main():
         print(f"  ❌ Отброшено: {failed_count}")
     
     if clash_proxies:
-        # Пишем ТОЛЬКО секцию proxies: — формат proxy-provider для FClash
-        write_provider_yaml(clash_proxies, OUTPUT_DIR / "proxies.yaml")
-        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси, proxy-provider format)")
+        write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
+        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси)")
 
     print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
     print(f"   proxies_b64.txt  — base64 подписка")
     if clash_proxies:
-        print(f"   proxies.yaml     — proxy-provider ({len(clash_proxies)} прокси, только секция proxies:)\n")
+        print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)\n")
     
     print("🏆 Топ 5 самых быстрых:")
     for i, r in enumerate(top[:5]):
