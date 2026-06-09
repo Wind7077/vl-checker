@@ -497,13 +497,11 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
 def write_full_clash_config(proxies: list[dict], path: Path, title: str = "All Proxies"):
     """
     Записывает ПОЛНЫЙ конфиг Clash для FClash.
-    ВСЕ прокси перечислены в proxy-groups — FClash увидит все.
+    Все прокси перечислены в proxy-groups.
+    Только 3 группы: SELECT, AUTO, FALLBACK (без иконок, верхний регистр).
     """
     proxy_names = [yaml_str(p['name']) for p in proxies]
-    
-    # Берём топ-30 для select-группы (чтобы не раздувать меню)
     top_select = proxy_names[:30]
-    # Все прокси для url-test и fallback (FClash сам выберет лучший)
     all_for_test = proxy_names
     
     config = f"""# Proxy Checker — Full Clash Config
@@ -519,11 +517,10 @@ find-process-mode: strict
 global-client-fingerprint: chrome
 
 geodata-mode: true
-geodata-loader: standard
+geodata-loader: memorize
 geo-auto-update: true
 geo-auto-update-interval: 24
 
-geodata-loader: memorize
 geox-url:
   geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
   geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
@@ -550,7 +547,6 @@ sniffer:
 
 proxies:
 """
-    # Записываем proxies через временный файл
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.yaml', encoding='utf-8') as tmp:
         write_clash_proxies_yaml(proxies, Path(tmp.name))
         proxy_block = Path(tmp.name).read_text(encoding='utf-8').split('\n', 1)[1]
@@ -558,19 +554,19 @@ proxies:
         os.unlink(tmp.name)
     
     # ─── Proxy Groups ─────────────────────────────────────────────────
-    config += f"""
+    config += """
 proxy-groups:
-  - name: "🚀 Выбор"
+  - name: "SELECT"
     type: select
     proxies:
-      - "🎯 Auto (лучший)"
-      - "🔯 Fallback"
+      - "AUTO"
+      - "FALLBACK"
 """
     for name in top_select:
         config += f"      - {name}\n"
     config += """      - DIRECT
     
-  - name: "🎯 Auto (лучший)"
+  - name: "AUTO"
     type: url-test
     url: "https://cp.cloudflare.com/"
     interval: 300
@@ -582,7 +578,7 @@ proxy-groups:
         config += f"      - {name}\n"
     
     config += """
-  - name: "🔯 Fallback"
+  - name: "FALLBACK"
     type: fallback
     url: "https://cp.cloudflare.com/"
     interval: 300
@@ -592,114 +588,45 @@ proxy-groups:
     for name in all_for_test:
         config += f"      - {name}\n"
     
+    # ─── Rules ─────────────────────────────────────────────────
     config += """
-  - name: "📺 Telegram"
-    type: select
-    proxies:
-      - "🎯 Auto (лучший)"
-      - "🚀 Выбор"
-
-  - name: "🤖 AI (ChatGPT/Claude)"
-    type: select
-    proxies:
-      - "🎯 Auto (лучший)"
-      - "🚀 Выбор"
-
-  - name: "🎬 YouTube"
-    type: select
-    proxies:
-      - "🎯 Auto (лучший)"
-      - "🚀 Выбор"
-
-  - name: "🎥 Netflix"
-    type: select
-    proxies:
-      - "🎯 Auto (лучший)"
-      - "🚀 Выбор"
-
-  - name: "🍎 Apple"
-    type: select
-    proxies:
-      - DIRECT
-      - "🎯 Auto (лучший)"
-
-  - name: "🔍 Google"
-    type: select
-    proxies:
-      - "🎯 Auto (лучший)"
-      - "🚀 Выбор"
-
-  - name: "🐟 Прочие"
-    type: select
-    proxies:
-      - "🎯 Auto (лучший)"
-      - DIRECT
-      - "🚀 Выбор"
-
 rules:
-  # Российские сервисы — напрямую
+  # ─── Российские сервисы — напрямую ───
   - GEOIP,RU,DIRECT
   - DOMAIN-SUFFIX,ru,DIRECT
   - DOMAIN-SUFFIX,su,DIRECT
   - DOMAIN-SUFFIX,rf,DIRECT
+  - DOMAIN-SUFFIX,yandex.ru,DIRECT
+  - DOMAIN-SUFFIX,ya.ru,DIRECT
+  - DOMAIN-SUFFIX,mail.ru,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,ok.ru,DIRECT
+  - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
+  - DOMAIN-SUFFIX,sberbank.ru,DIRECT
   
-  # Китай — напрямую
+  # ─── Китай — напрямую ───
   - GEOIP,CN,DIRECT
   
-  # Telegram
-  - DOMAIN-SUFFIX,telegram.org,📺 Telegram
-  - DOMAIN-SUFFIX,t.me,📺 Telegram
-  - DOMAIN-SUFFIX,telegra.ph,📺 Telegram
-  - IP-CIDR,91.108.0.0/16,📺 Telegram,no-resolve
-  - IP-CIDR,149.154.160.0/20,📺 Telegram,no-resolve
+  # ─── Telegram — через прокси (AUTO) ───
+  - DOMAIN-SUFFIX,telegram.org,AUTO
+  - DOMAIN-SUFFIX,t.me,AUTO
+  - DOMAIN-SUFFIX,telegra.ph,AUTO
+  - DOMAIN-SUFFIX,telesco.pe,AUTO
+  - DOMAIN-KEYWORD,telegram,AUTO
+  - IP-CIDR,91.108.4.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.8.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.12.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.16.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.20.0/22,AUTO,no-resolve
+  - IP-CIDR,91.108.56.0/22,AUTO,no-resolve
+  - IP-CIDR,95.161.64.0/20,AUTO,no-resolve
+  - IP-CIDR,149.154.160.0/20,AUTO,no-resolve
+  - IP-CIDR6,2001:b28:f23d::/48,AUTO,no-resolve
+  - IP-CIDR6,2001:b28:f23f::/48,AUTO,no-resolve
+  - IP-CIDR6,2a0a:a980::/64,AUTO,no-resolve
   
-  # AI сервисы
-  - DOMAIN-SUFFIX,openai.com,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,anthropic.com,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,claude.ai,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,bard.google.com,🤖 AI (ChatGPT/Claude)
-  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI (ChatGPT/Claude)
-  
-  # YouTube
-  - DOMAIN-SUFFIX,youtube.com,🎬 YouTube
-  - DOMAIN-SUFFIX,ytimg.com,🎬 YouTube
-  - DOMAIN-SUFFIX,googlevideo.com,🎬 YouTube
-  - DOMAIN-SUFFIX,youtu.be,🎬 YouTube
-  
-  # Netflix
-  - DOMAIN-SUFFIX,netflix.com,🎥 Netflix
-  - DOMAIN-SUFFIX,nflxvideo.net,🎥 Netflix
-  - DOMAIN-SUFFIX,nflximg.net,🎥 Netflix
-  - DOMAIN-SUFFIX,nflxso.net,🎥 Netflix
-  
-  # Google
-  - DOMAIN-SUFFIX,google.com,🔍 Google
-  - DOMAIN-SUFFIX,googleapis.com,🔍 Google
-  - DOMAIN-SUFFIX,gstatic.com,🔍 Google
-  - DOMAIN-SUFFIX,googlevideo.com,🔍 Google
-  
-  # Apple
-  - DOMAIN-SUFFIX,apple.com,🍎 Apple
-  - DOMAIN-SUFFIX,icloud.com,🍎 Apple
-  - DOMAIN-SUFFIX,mzstatic.com,🍎 Apple
-  
-  # Заблокированные в РФ — через прокси
-  - DOMAIN-SUFFIX,instagram.com,🚀 Выбор
-  - DOMAIN-SUFFIX,facebook.com,🚀 Выбор
-  - DOMAIN-SUFFIX,fbcdn.net,🚀 Выбор
-  - DOMAIN-SUFFIX,twitter.com,🚀 Выбор
-  - DOMAIN-SUFFIX,x.com,🚀 Выбор
-  - DOMAIN-SUFFIX,twimg.com,🚀 Выбор
-  - DOMAIN-SUFFIX,linkedin.com,🚀 Выбор
-  - DOMAIN-SUFFIX,discord.com,🚀 Выбор
-  - DOMAIN-SUFFIX,discordapp.com,🚀 Выбор
-  - DOMAIN-SUFFIX,discordapp.net,🚀 Выбор
-  
-  # Прочее — через выбранный прокси
-  - MATCH,🐟 Прочие
+  # ─── Прочее — через выбранную группу ───
+  - MATCH,SELECT
 """
     path.write_text(config, encoding="utf-8")
 
@@ -1198,7 +1125,6 @@ async def main():
         print(f"  ❌ Отброшено: {failed_count}")
     
     if clash_proxies:
-        # ПОЛНЫЙ конфиг со всеми прокси во всех группах
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml", title="All Working")
         print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси, full config)")
 
