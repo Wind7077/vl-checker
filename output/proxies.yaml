@@ -1,5 +1,5 @@
 # Proxy Checker — Full Clash Config
-# Сгенерировано автоматически, 141 прокси
+# Сгенерировано автоматически, 129 прокси
 
 mixed-port: 7890
 allow-lan: false
@@ -21,23 +21,23 @@ profile:
   store-selected: true
 
 proxies:
-  - name: '1. 37.19.198.243:443'
+  - name: '1. 108.181.57.93:8388'
     type: ss
-    server: '37.19.198.243'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
+    server: '108.181.57.93'
+    port: 8388
+    password: 'RSo52SbxW40r'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '2. 37.19.198.244:443'
-    type: ss
-    server: '37.19.198.244'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '3. 37.19.198.160:443'
+  - name: '2. 37.19.198.160:443'
     type: ss
     server: '37.19.198.160'
+    port: 443
+    password: 'shadowsocks'
+    cipher: 'aes-128-gcm'
+    udp: true
+  - name: '3. 37.19.198.243:443'
+    type: ss
+    server: '37.19.198.243'
     port: 443
     password: 'shadowsocks'
     cipher: 'aes-128-gcm'
@@ -49,54 +49,61 @@ proxies:
     password: 'shadowsocks'
     cipher: 'aes-128-gcm'
     udp: true
-  - name: '5. 38.135.24.131:443'
+  - name: '5. tinkered-pennies-puppies.freesocks.work:443'
+    type: ss
+    server: 'tinkered-pennies-puppies.freesocks.work'
+    port: 443
+    password: 'hbGrpfvNrJsUmKmPbR3iY2'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '6. 38.135.24.131:443'
     type: ss
     server: '38.135.24.131'
     port: 443
     password: 'hbGrpfvNrJsUmKmPbR3iY2'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '6. 107.172.250.161:59556'
+  - name: '7. 107.172.250.161:59556'
     type: ss
     server: '107.172.250.161'
     port: 59556
     password: 'QTmLViU4VEmuwbOxUw4IXd'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '7. 149.28.255.6:816'
+  - name: '8. 149.28.255.6:816'
     type: ss
     server: '149.28.255.6'
     port: 816
     password: 'GyZ5Xo0ht41vYmW3H4'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '8. 156.146.38.170:443'
-    type: ss
-    server: '156.146.38.170'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '9. 156.146.38.169:443'
-    type: ss
-    server: '156.146.38.169'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '10. 156.146.38.168:443'
+  - name: '9. 156.146.38.168:443'
     type: ss
     server: '156.146.38.168'
     port: 443
     password: 'shadowsocks'
     cipher: 'aes-128-gcm'
     udp: true
-  - name: '11. 156.146.38.167:443'
+  - name: '10. 15.223.121.250:41087'
+    type: vless
+    server: '15.223.121.250'
+    port: 41087
+    uuid: '57d94cf7-ca36-4c2a-bec5-90cf38588cda'
+    servername: 'www.tesla.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'aoGL5vNnsEuKoBXQFXyHTxjvcdAn3SxT4qUgV6aJxnw'
+      short-id: '190d259bbd40d4c3'
+  - name: '11. 62.146.231.112:12012'
     type: ss
-    server: '156.146.38.167'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
+    server: '62.146.231.112'
+    port: 12012
+    password: '4e287631dc4fc8fc'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
   - name: '12. 108.181.0.177:8388'
     type: ss
@@ -112,28 +119,7 @@ proxies:
     password: 'G5p6ww4o67HB'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '14. 173.244.56.9:443'
-    type: ss
-    server: '173.244.56.9'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '15. 216.105.168.18:443'
-    type: ss
-    server: '216.105.168.18'
-    port: 443
-    password: 'hCCWOcIsK5wrFz4OX70rWf'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '16. 173.244.56.6:443'
-    type: ss
-    server: '173.244.56.6'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '17. 155.248.209.237:33333'
+  - name: '14. 155.248.209.237:33333'
     type: hysteria2
     server: '155.248.209.237'
     port: 33333
@@ -141,54 +127,77 @@ proxies:
     sni: '155.248.209.237'
     skip-cert-verify: true
     udp: true
-  - name: '18. 98.71.82.228:443'
-    type: ss
-    server: '98.71.82.228'
-    port: 443
-    password: 'am799cy2AwBWjtNe'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '19. 51.75.168.50:26179'
+  - name: '15. 51.75.168.50:26179'
     type: ss
     server: '51.75.168.50'
     port: 26179
     password: '78b6e93e54225803'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '20. 40.120.60.135:443'
+  - name: '16. 4.158.34.177:443'
     type: ss
-    server: '40.120.60.135'
+    server: '4.158.34.177'
     port: 443
     password: 'W74XFALLLuw6m5IA'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '21. 94.156.250.148:7001'
+  - name: '17. 40.120.60.135:443'
+    type: ss
+    server: '40.120.60.135'
+    port: 443
+    password: '1kVr0KATIJI7mwOF'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '18. 94.156.250.148:7001'
     type: ss
     server: '94.156.250.148'
     port: 7001
     password: 'RexnBgU7EV5ADxG'
     cipher: 'aes-256-gcm'
     udp: true
-  - name: '22. 62.146.231.112:12012'
-    type: ss
-    server: '62.146.231.112'
-    port: 12012
-    password: '4e287631dc4fc8fc'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '23. 57.129.129.247:19308'
+  - name: '19. 57.129.129.247:19308'
     type: ss
     server: '57.129.129.247'
     port: 19308
     password: '4a055e9e903128a1'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '24. series-a1.samanehha.co:443'
+  - name: '20. 149.102.144.110:18337'
     type: ss
-    server: 'series-a1.samanehha.co'
-    port: 443
-    password: 'W74XFALLLuw6m5IA'
+    server: '149.102.144.110'
+    port: 18337
+    password: '7a5af500cb295935'
     cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '21. vpn-de-002.fastervpn.world:443'
+    type: hysteria2
+    server: 'vpn-de-002.fastervpn.world'
+    port: 443
+    password: 'qQe1z5kU8kN6SlKnDt9Ru3Qp'
+    sni: 'vpn-de-002.fastervpn.world'
+    skip-cert-verify: true
+    udp: true
+  - name: '22. 195.93.253.245:49137'
+    type: ss
+    server: '195.93.253.245'
+    port: 49137
+    password: 'CwG4D80g4m9AAs1Ha4MZjW'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '23. 135.125.219.2:12911'
+    type: ss
+    server: '135.125.219.2'
+    port: 12911
+    password: '4368f055243e225f'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '24. devoracle.clarkpf.top:443'
+    type: hysteria2
+    server: 'devoracle.clarkpf.top'
+    port: 443
+    password: 'f4281a5fdfb44e0744d6f683'
+    sni: 'devoracle.clarkpf.top'
+    skip-cert-verify: true
     udp: true
   - name: '25. 84.200.91.158:443'
     type: ss
@@ -197,20 +206,20 @@ proxies:
     password: 'a742bd85-0f97-42bd-891f-aa00dbd1a461'
     cipher: 'aes-256-gcm'
     udp: true
-  - name: '26. devoracle.clarkpf.top:443'
+  - name: '26. 62.210.124.146:22000'
     type: hysteria2
-    server: 'devoracle.clarkpf.top'
-    port: 443
-    password: 'f4281a5fdfb44e0744d6f683'
-    sni: 'devoracle.clarkpf.top'
+    server: '62.210.124.146'
+    port: 22000
+    password: 'dongtaiwang.com'
+    sni: 'www.microsoft.com'
     skip-cert-verify: true
     udp: true
-  - name: '27. 8.209.74.72:20001'
+  - name: '27. 51.254.128.106:2083'
     type: ss
-    server: '8.209.74.72'
-    port: 20001
-    password: 'PWpjPo3tqhPN4yRZ'
-    cipher: 'chacha20-ietf-poly1305'
+    server: '51.254.128.106'
+    port: 2083
+    password: 'FjG3IPbny+0ZYU4/p1vULP84GcKpGoZpWKAay16VhIw='
+    cipher: 'aes-256-gcm'
     udp: true
   - name: '28. 57.129.121.230:10443'
     type: ss
@@ -219,87 +228,29 @@ proxies:
     password: 'uROuEqsL8IUMMVb4wDwnGU'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '29. 108.181.58.239:8388'
-    type: ss
-    server: '108.181.58.239'
-    port: 8388
-    password: 'CJmTCCx7Ltud'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '30. 209.46.102.22:8388'
-    type: ss
-    server: '209.46.102.22'
-    port: 8388
-    password: '1hhrqrokj3ag'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '31. 62.210.124.146:22000'
+  - name: '29. 130.61.50.75:6443'
     type: hysteria2
-    server: '62.210.124.146'
-    port: 22000
-    password: 'dongtaiwang.com'
-    sni: 'www.microsoft.com'
+    server: '130.61.50.75'
+    port: 6443
+    password: 'zhangyang'
+    sni: 'dash.cloudflare.com'
     skip-cert-verify: true
     udp: true
-  - name: '32. 51.254.128.106:2083'
+  - name: '30. 8.209.74.72:20001'
     type: ss
-    server: '51.254.128.106'
-    port: 2083
-    password: 'FjG3IPbny+0ZYU4/p1vULP84GcKpGoZpWKAay16VhIw='
-    cipher: 'aes-256-gcm'
+    server: '8.209.74.72'
+    port: 20001
+    password: 'PWpjPo3tqhPN4yRZ'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '33. 49.13.3.249:23997'
+  - name: '31. 49.13.3.249:23997'
     type: ss
     server: '49.13.3.249'
     port: 23997
     password: 'dyL+KqX8hIMn+UyADwSJOPm72A0A83TsDOFXBn6I2mA='
     cipher: '2022-blake3-aes-256-gcm'
     udp: true
-  - name: '34. 141.98.101.181:443'
-    type: ss
-    server: '141.98.101.181'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '35. 185.228.139.247:4433'
-    type: hysteria2
-    server: '185.228.139.247'
-    port: 4433
-    password: '18cf8030-1ceb-4b7d-8c0c-c036413c144e'
-    sni: 'de2.xiaoliyu.cyou'
-    skip-cert-verify: true
-    udp: true
-  - name: '36. 195.93.253.245:49137'
-    type: ss
-    server: '195.93.253.245'
-    port: 49137
-    password: 'CwG4D80g4m9AAs1Ha4MZjW'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '37. 141.98.101.179:443'
-    type: ss
-    server: '141.98.101.179'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '38. 46.225.30.16:49534'
-    type: ss
-    server: '46.225.30.16'
-    port: 49534
-    password: 'tEY1W9tCYB6R5Y22378dJ9yh4H4PAZlAM/m31aG1PYM='
-    cipher: '2022-blake3-aes-256-gcm'
-    udp: true
-  - name: '39. vpn-de-002.fastervpn.world:443'
-    type: hysteria2
-    server: 'vpn-de-002.fastervpn.world'
-    port: 443
-    password: 'qQe1z5kU8kN6SlKnDt9Ru3Qp'
-    sni: 'vpn-de-002.fastervpn.world'
-    skip-cert-verify: true
-    udp: true
-  - name: '40. 5.45.100.100:51511'
+  - name: '32. 5.45.100.100:51511'
     type: hysteria2
     server: '5.45.100.100'
     port: 51511
@@ -307,133 +258,127 @@ proxies:
     sni: 'www.bing.com'
     skip-cert-verify: true
     udp: true
-  - name: '41. 141.98.101.178:443'
+  - name: '33. 209.46.102.22:8388'
     type: ss
-    server: '141.98.101.178'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '42. 149.102.144.110:18337'
-    type: ss
-    server: '149.102.144.110'
-    port: 18337
-    password: '7a5af500cb295935'
+    server: '209.46.102.22'
+    port: 8388
+    password: '1hhrqrokj3ag'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '43. 150.241.83.60:443'
-    type: vless
-    server: '150.241.83.60'
-    port: 443
-    uuid: 'ec13d921-3072-4e16-b2cd-af709f7f7894'
-    servername: 'www.icloud.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+  - name: '34. 193.29.139.151:8080'
+    type: ss
+    server: '193.29.139.151'
+    port: 8080
+    password: 'oZIoA69Q8yhcQV8ka3Pa3A'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'xDFXqfhZ7-IQiFwXpXltNe2Axo5O33k4LAqDfAVtyz4'
-      short-id: '7b'
-  - name: '44. 15.204.97.197:23576'
-    type: vless
-    server: '15.204.97.197'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+  - name: '35. 193.29.139.235:8080'
+    type: ss
+    server: '193.29.139.235'
+    port: 8080
+    password: 'oZIoA69Q8yhcQV8ka3Pa3A'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '45. 15.204.97.219:23576'
-    type: vless
-    server: '15.204.97.219'
-    port: 23576
-    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
-    servername: 'fuck.rkn'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+  - name: '36. 82.38.31.199:8080'
+    type: ss
+    server: '82.38.31.199'
+    port: 8080
+    password: 'k1dBOmOB4oqi7Ump37a1bQ'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
-      short-id: '01'
-  - name: '46. 193.47.60.186:28687'
+  - name: '37. 46.225.30.16:49534'
+    type: ss
+    server: '46.225.30.16'
+    port: 49534
+    password: 'tEY1W9tCYB6R5Y22378dJ9yh4H4PAZlAM/m31aG1PYM='
+    cipher: '2022-blake3-aes-256-gcm'
+    udp: true
+  - name: '38. 185.228.139.247:4433'
+    type: hysteria2
+    server: '185.228.139.247'
+    port: 4433
+    password: '18cf8030-1ceb-4b7d-8c0c-c036413c144e'
+    sni: 'de2.xiaoliyu.cyou'
+    skip-cert-verify: true
+    udp: true
+  - name: '39. 193.47.60.186:28687'
     type: ss
     server: '193.47.60.186'
     port: 28687
     password: 'yKVMoB3AwiTEznpnoq2FYR'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '47. 149.22.95.183:443'
+  - name: '40. 82.38.31.15:443'
     type: ss
-    server: '149.22.95.183'
+    server: '82.38.31.15'
     port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
+    password: 'oZIoA69Q8yhcQV8ka3Pa3A'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '48. 44.242.50.106:36895'
-    type: vless
-    server: '44.242.50.106'
-    port: 36895
-    uuid: '5c875449-ae7d-46f8-b919-5a29f271dfce'
-    servername: 'www.icloud.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
+  - name: '41. 193.29.139.217:8080'
+    type: ss
+    server: '193.29.139.217'
+    port: 8080
+    password: '4a2rfixophdjffa8KVA4Aa'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'SKJQzoN8Lh8kqrDEyKzevbHHmfRhKe8XmzBxPYXF2A4'
-      short-id: '5a585c3e894bf074'
-  - name: '49. 85.208.139.98:8444'
-    type: vless
-    server: '85.208.139.98'
-    port: 8444
-    uuid: 'c931f737-cafe-4e4f-998a-a65517941256'
-    servername: 'cdnjs.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'Hp6K5hsiPY4_zATgAtef9YTxNGpSkhAHTTo9MUO7fik'
-      short-id: '77e934f68f02ab4c'
-  - name: '50. 167.104.223.14:443'
-    type: vless
-    server: '167.104.223.14'
+  - name: '42. hackney-latest-strike.freesocks.work:443'
+    type: ss
+    server: 'hackney-latest-strike.freesocks.work'
     port: 443
-    uuid: 'b67ed271-5a34-4d07-9970-f8ba27ca2c8a'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
+    password: 'XUMTygEM1jVYIvysXKqA5T'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE'
-      short-id: 'fcd9787f'
-  - name: '51. ru-2.videoproeditor.com:443'
-    type: vless
-    server: 'ru-2.videoproeditor.com'
+  - name: '43. 57.131.28.246:2083'
+    type: ss
+    server: '57.131.28.246'
+    port: 2083
+    password: '34fItyZyz69uIrxkJ+cLR1pdclvG628pv8+fzUNTIC0='
+    cipher: 'aes-256-gcm'
+    udp: true
+  - name: '44. 193.29.139.179:8080'
+    type: ss
+    server: '193.29.139.179'
+    port: 8080
+    password: 'cvII85TrW6n0OGyfpHVS1u'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '45. 193.29.139.189:8080'
+    type: ss
+    server: '193.29.139.189'
+    port: 8080
+    password: 'cvII85TrW6n0OGyfpHVS1u'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '46. 193.29.139.157:8080'
+    type: ss
+    server: '193.29.139.157'
+    port: 8080
+    password: 'cvII85TrW6n0OGyfpHVS1u'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '47. 185.213.23.63:990'
+    type: ss
+    server: '185.213.23.63'
+    port: 990
+    password: 'ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44='
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '48. 213.202.208.199:7001'
+    type: ss
+    server: '213.202.208.199'
+    port: 7001
+    password: 'RexnBgU7EV5ADxG'
+    cipher: 'aes-256-gcm'
+    udp: true
+  - name: '49. 193.29.139.157:443'
+    type: ss
+    server: '193.29.139.157'
     port: 443
-    uuid: 'ec8c34f4-3576-4138-b847-61d177367e09'
-    servername: 'ru-2.videoproeditor.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+    password: '4a2rfixophdjffa8KVA4Aa'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'ivgTfLR13A6xBsicIA28OPoav2tXlsstTTmGuETfnSk'
-      short-id: '6d6f13013d3e1d0c'
-  - name: '52. 167.104.223.44:7443'
+  - name: '50. 167.104.223.44:7443'
     type: vless
     server: '167.104.223.44'
     port: 7443
@@ -447,90 +392,28 @@ proxies:
     reality-opts:
       public-key: '5QAO98ot2U7TcGs_f6EEaQjCzNOJLNHqPf6smYsdFVI'
       short-id: 'd82fb387'
-  - name: '53. 51.91.158.180:443'
+  - name: '51. 91.107.191.12:54471'
+    type: ss
+    server: '91.107.191.12'
+    port: 54471
+    password: 'DT0mi59V4a9Se9EhyonyuptVfIe3oJpIrzD/fa8W17U=:SCf6cuqPneaNwCOKzYkOnETfih1RCUc6kRio2hPyDng='
+    cipher: '2022-blake3-aes-256-gcm'
+    udp: true
+  - name: '52. 51.195.116.82:443'
     type: vless
-    server: '51.91.158.180'
+    server: '51.195.116.82'
     port: 443
-    uuid: '7b4b7d4e-7a53-4c0c-bd8e-9f3b1b2c7f21'
-    servername: 'www.speedtest.net'
+    uuid: '21c25bef-eb3b-44a8-9b26-fa7f674e5bfc'
+    servername: 'speedtest.net'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'wwH_L9FmhJ7AyOBKm9J8YGKdVo1G-QlDEuw5-s3eGEM'
-      short-id: '9a4c7d2f8e1b6a3c'
-  - name: '54. 51.89.229.134:443'
-    type: vless
-    server: '51.89.229.134'
-    port: 443
-    uuid: '53821f3c-5b03-456a-89f3-f8379f130752'
-    servername: 'www.samsung.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '4e4FI0siWxFtLCRCVDQurn1wLTuvKWhRY0zj1SaUcyw'
-      short-id: 'a13a7cc5'
-  - name: '55. 62.141.42.201:443'
-    type: vless
-    server: '62.141.42.201'
-    port: 443
-    uuid: 'cc976b15-418b-4f0b-89ce-cd685ffbaf20'
-    servername: 'google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'odbiaA-5s0mkehtfrf2SBcrKAMDP1sFjxKHJYdDCKgc'
-      short-id: '81'
-  - name: '56. 149.22.87.240:443'
-    type: ss
-    server: '149.22.87.240'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '57. 149.22.87.204:443'
-    type: ss
-    server: '149.22.87.204'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '58. 149.22.87.241:443'
-    type: ss
-    server: '149.22.87.241'
-    port: 443
-    password: 'shadowsocks'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '59. 31.59.36.107:443'
-    type: vless
-    server: '31.59.36.107'
-    port: 443
-    uuid: '4f51ca84-43ea-4087-b8a2-938e0ccbe27a'
-    servername: 'google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4'
-  - name: '60. 47.79.144.115:40003'
-    type: ss
-    server: '47.79.144.115'
-    port: 40003
-    password: 'GTZI5AbjNAeWQG0oVNptvWJogHNKiiKA'
-    cipher: 'aes-256-gcm'
-    udp: true
-  - name: '61. hy2.aspidnet.xyz:443'
+      public-key: 'RWE5ORdQ2SzuFWX8DlaRP415wbhee9ynJkqC7yFPgQw'
+      short-id: 'd13ddfca12760d03'
+  - name: '53. hy2.aspidnet.xyz:443'
     type: hysteria2
     server: 'hy2.aspidnet.xyz'
     port: 443
@@ -540,11 +423,11 @@ proxies:
     obfs-password: 'rG07s3COMIEvdnQipRyWzx_H_2xygNC3'
     skip-cert-verify: true
     udp: true
-  - name: '62. 78.17.147.65:443'
+  - name: '54. 195.184.247.138:443'
     type: vless
-    server: '78.17.147.65'
+    server: '195.184.247.138'
     port: 443
-    uuid: 'b67ed271-5a34-4d07-9970-f8ba27ca2c8a'
+    uuid: '8bbf020e-653f-4a82-9900-1214e4e37dab'
     servername: 'www.microsoft.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
@@ -554,7 +437,21 @@ proxies:
     reality-opts:
       public-key: 'gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE'
       short-id: 'fcd9787f'
-  - name: '63. 5.196.51.152:54809'
+  - name: '55. 51.158.206.25:23576'
+    type: vless
+    server: '51.158.206.25'
+    port: 23576
+    uuid: '48ff2b70-e180-582f-8866-d9a2edeed5f5'
+    servername: 'fuck.rkn'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s'
+      short-id: '01'
+  - name: '56. 5.196.51.152:54809'
     type: vless
     server: '5.196.51.152'
     port: 54809
@@ -568,14 +465,28 @@ proxies:
     reality-opts:
       public-key: '06rvKjC9dE_Ndd-dw6B-0zAyEpn-jUs7mcNFAPQ_1G8'
       short-id: 'b4b3'
-  - name: '64. 103.106.228.175:8009'
+  - name: '57. 193.29.139.175:8080'
     type: ss
-    server: '103.106.228.175'
-    port: 8009
-    password: 'XKFKl2rULjIp74'
-    cipher: 'aes-256-gcm'
+    server: '193.29.139.175'
+    port: 8080
+    password: '1RWwXhwfAB5gAEozU4G2Pg'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '65. 144.31.157.56:443'
+  - name: '58. 5.75.196.174:443'
+    type: vless
+    server: '5.75.196.174'
+    port: 443
+    uuid: '77c79689-5cfb-4eff-b4db-aa2e853ac16d'
+    servername: 'www.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'qr9I7Hv2oZ2F0BiWgy9DmYHp0vcFEXcNRVHkyFg3OUw'
+      short-id: '1e012324864f4510'
+  - name: '59. 144.31.157.56:443'
     type: vless
     server: '144.31.157.56'
     port: 443
@@ -589,21 +500,21 @@ proxies:
     reality-opts:
       public-key: 'D-7qX4fqUFKDS2dQWFgGT4fXJnABnpM6IkU8SDHLMC0'
       short-id: '6ba85179e30d4fc2'
-  - name: '66. 193.23.222.99:55152'
+  - name: '60. 152.114.193.11:47200'
     type: vless
-    server: '193.23.222.99'
-    port: 55152
-    uuid: '827466ba-0910-4c48-b156-2f37fdbda362'
-    servername: 'cloudflare.com'
+    server: '152.114.193.11'
+    port: 47200
+    uuid: 'ffaa8e95-74e2-4ef4-8974-69dd3651b6f9'
+    servername: 'stats.vk-portal.net'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+    client-fingerprint: 'firefox'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'fX2XkujtqhnkQDy-Lwgqm_OofDs1qO5ytvVNM6aV4C4'
-      short-id: 'ddcac8ed'
-  - name: '67. 23.26.37.121:8443'
+      public-key: 'aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE'
+      short-id: 'b2a9bd658fc81dc6'
+  - name: '61. 23.26.37.121:8443'
     type: vless
     server: '23.26.37.121'
     port: 8443
@@ -617,70 +528,14 @@ proxies:
     reality-opts:
       public-key: 'upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo'
       short-id: '3ca620a7ed5f3196'
-  - name: '68. 138.124.52.85:443'
-    type: vless
-    server: '138.124.52.85'
-    port: 443
-    uuid: '09a4bf7f-f997-4174-8bef-9fab75aa186e'
-    servername: 'www.google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'K7v4Rsxa-9lBsD_IQrzXREfIME_bFmwELHQAE3Yp1ng'
-      short-id: 'b9988c11'
-  - name: '69. 77.239.114.176:19105'
-    type: vless
-    server: '77.239.114.176'
-    port: 19105
-    uuid: 'fb9e4c3a-936f-44c7-ac89-d5d422690fcf'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'IS6TNMONlIVvcUBvo2RXQvx2Jopcv4wzPyZhxPhWqT8'
-      short-id: 'e6'
-  - name: '70. 213.176.77.65:443'
-    type: vless
-    server: '213.176.77.65'
-    port: 443
-    uuid: '69a2af58-d74a-44ca-864a-e09b493f4274'
-    servername: 'www.google.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '1kAsEwUWwatnjpeQ2qUwHSccFucFOKzXVICm9tC0eWA'
-      short-id: '25425ff6fa'
-  - name: '71. 109.122.198.76:443'
-    type: vless
-    server: '109.122.198.76'
-    port: 443
-    uuid: '18afb896-6e4b-403b-b804-714b09b517e5'
-    servername: 'www.icloud.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'tMEkGmuOsuS_cgZYpj2UYBKnni559FZd-poGnH82ck8'
-      short-id: 'bfb7cb31'
-  - name: '72. 61.231.10.92:50099'
+  - name: '62. 82.38.31.183:8080'
     type: ss
-    server: '61.231.10.92'
-    port: 50099
-    password: '7e731ec3-f8e1-43f6-92cf-3978d14705c4'
+    server: '82.38.31.183'
+    port: 8080
+    password: 'k1dBOmOB4oqi7Ump37a1bQ'
     cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '73. 89.167.25.28:11005'
+  - name: '63. 89.167.25.28:11005'
     type: vless
     server: '89.167.25.28'
     port: 11005
@@ -694,59 +549,25 @@ proxies:
     reality-opts:
       public-key: 'tPxRwVtrFklP9kJ8kWgHIcR-XSBBkZiYbwGCAaBrtgE'
       short-id: 'f98c'
-  - name: '74. 178.215.238.148:8443'
+  - name: '64. 93.115.25.153:443'
     type: vless
-    server: '178.215.238.148'
-    port: 8443
-    uuid: '21c1132b-068c-46fb-880e-3268f6a30e7f'
-    servername: 'eh.vk.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'Crjd0I6hcasRXZcfNf7cs-YtJLpQ8u-t1CbwHIDAciU'
-      short-id: '478dc6'
-  - name: '75. nether2cxc.ignorelist.com:443'
-    type: vless
-    server: 'nether2cxc.ignorelist.com'
+    server: '93.115.25.153'
     port: 443
-    uuid: 'd78c12c4-6927-40b8-8550-ed9be00334da'
-    servername: 'nether2cxc.ignorelist.com'
+    uuid: '31969cf4-c1bb-4a3e-b42b-574dfb271c73'
+    servername: 'googdas.scroogethebest.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+    client-fingerprint: 'qq'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'MNfRDUdBmptd-zKqgIljosss5-oNO44Lt68hgVwa_Qo'
-      short-id: '22f2d3f943dfcb40'
-  - name: '76. pro-fi.emrata.top:753'
+      public-key: 'xwUK0ffpbKZ5_o_vXhZ8ErRDqvw2iVnRVSlZ-Vonkxo'
+      short-id: '132c271e21324e36'
+  - name: '65. 31.76.53.0:443'
     type: vless
-    server: 'pro-fi.emrata.top'
-    port: 753
-    uuid: '9ad4f937-6366-474b-9d7e-e2a694deb4e2'
-    servername: 'www.amd.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'F2VfBr2UmjDTErB_oruvW5aIvzH_xGfM2AW5_w-DF0I'
-  - name: '77. r3mrcg001269pz2.cybervena.com:50099'
-    type: ss
-    server: 'r3mrcg001269pz2.cybervena.com'
-    port: 50099
-    password: '7e731ec3-f8e1-43f6-92cf-3978d14705c4'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '78. 150.241.71.35:443'
-    type: vless
-    server: '150.241.71.35'
+    server: '31.76.53.0'
     port: 443
-    uuid: '4f51ca84-43ea-4087-b8a2-938e0ccbe27a'
+    uuid: '749a5df1-2d12-45cf-80f3-f85ea6b2e405'
     servername: 'google.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
@@ -754,10 +575,10 @@ proxies:
     udp: true
     tls: true
     reality-opts:
-      public-key: 'mDDDyruO33nuqcTS7pZOjd9oOpDHUf0aEv2TQ1DFGV4'
-  - name: '79. 148.253.211.237:443'
+      public-key: 'Fp0-VrMBeaQe9xOrehDYHt0mqTZL-5CdfuMEzoXkOE8'
+  - name: '66. 148.253.211.47:443'
     type: vless
-    server: '148.253.211.237'
+    server: '148.253.211.47'
     port: 443
     uuid: '980231fb-4372-5c81-b696-20aa34d33af0'
     servername: 'www.microsoft.com'
@@ -769,28 +590,7 @@ proxies:
     reality-opts:
       public-key: '978-Yxgtd3AWTVfiXEQqCstdwrT1qgsgleGPIRGQDl8'
       short-id: 'bdac121c7debdaba'
-  - name: '80. namrcg001640lrm.cybervena.com:50099'
-    type: ss
-    server: 'namrcg001640lrm.cybervena.com'
-    port: 50099
-    password: 'a9a0d092-6f0e-4701-81ee-454643d6d506'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '81. 146.185.209.234:443'
-    type: vless
-    server: '146.185.209.234'
-    port: 443
-    uuid: '50b95deb-6394-46c5-b88a-583e5b3ca7ee'
-    servername: 'ads.x5.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4'
-      short-id: 'f69d7af2d5fc5e0c'
-  - name: '82. 5.183.253.171:443'
+  - name: '67. 5.183.253.171:443'
     type: vless
     server: '5.183.253.171'
     port: 443
@@ -804,55 +604,34 @@ proxies:
     reality-opts:
       public-key: 'yhUfTGgu5PYRlFqMnRZkxffH_aU05AFUToGI8_EKF28'
       short-id: '8248954896'
-  - name: '83. 31.76.53.0:443'
+  - name: '68. pro-fi.emrata.top:753'
     type: vless
-    server: '31.76.53.0'
+    server: 'pro-fi.emrata.top'
+    port: 753
+    uuid: '9ad4f937-6366-474b-9d7e-e2a694deb4e2'
+    servername: 'www.amd.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'F2VfBr2UmjDTErB_oruvW5aIvzH_xGfM2AW5_w-DF0I'
+  - name: '69. 148.253.211.237:443'
+    type: vless
+    server: '148.253.211.237'
     port: 443
-    uuid: '749a5df1-2d12-45cf-80f3-f85ea6b2e405'
-    servername: 'google.com'
+    uuid: '980231fb-4372-5c81-b696-20aa34d33af0'
+    servername: 'www.microsoft.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'Fp0-VrMBeaQe9xOrehDYHt0mqTZL-5CdfuMEzoXkOE8'
-  - name: '84. 144.31.131.33:443'
-    type: vless
-    server: '144.31.131.33'
-    port: 443
-    uuid: 'ae852d97-85f5-45cf-82a4-254eba345480'
-    servername: 'cdn.cdnjst.org'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'djH9iD2QV748ocK-wPH7HvDd03lu88zHhS4G-61w6Dc'
-      short-id: 'a120'
-  - name: '85. tinkered-pennies-puppies.freesocks.work:443'
-    type: ss
-    server: 'tinkered-pennies-puppies.freesocks.work'
-    port: 443
-    password: 'hbGrpfvNrJsUmKmPbR3iY2'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '86. 51.250.106.87:443'
-    type: vless
-    server: '51.250.106.87'
-    port: 443
-    uuid: '3deceac6-e293-4ba6-b025-336d494a956c'
-    servername: 'cdp.x5.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'safari'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI'
-      short-id: '8ec792bfd725be8a'
-  - name: '87. 213.183.63.117:8443'
+      public-key: '978-Yxgtd3AWTVfiXEQqCstdwrT1qgsgleGPIRGQDl8'
+      short-id: 'bdac121c7debdaba'
+  - name: '70. 213.183.63.117:8443'
     type: vless
     server: '213.183.63.117'
     port: 8443
@@ -865,21 +644,116 @@ proxies:
     tls: true
     reality-opts:
       public-key: '92bt1gYq9EAz3SSOtKDrmqnbetNcaStEDicwrFg0_Rc'
-  - name: '88. 152.114.193.11:47200'
+  - name: '71. 144.31.190.188:443'
     type: vless
-    server: '152.114.193.11'
-    port: 47200
-    uuid: 'ffaa8e95-74e2-4ef4-8974-69dd3651b6f9'
-    servername: 'stats.vk-portal.net'
+    server: '144.31.190.188'
+    port: 443
+    uuid: 'ec8c34f4-3576-4138-b847-61d177367e09'
+    servername: 'ru-1.videoproeditor.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE'
-      short-id: 'b2a9bd658fc81dc6'
-  - name: '89. 51.250.24.222:443'
+      public-key: 'ivgTfLR13A6xBsicIA28OPoav2tXlsstTTmGuETfnSk'
+      short-id: '6d6f13013d3e1d0c'
+  - name: '72. hkt.ccwink.cc:56309'
+    type: hysteria2
+    server: 'hkt.ccwink.cc'
+    port: 56309
+    password: '2f4c3fc5-8fa2-4576-a583-8f98a6026887'
+    sni: 'hkt.ccwink.cc'
+    skip-cert-verify: true
+    udp: true
+  - name: '73. 2.26.2.8:443'
+    type: vless
+    server: '2.26.2.8'
+    port: 443
+    uuid: '94d7eefa-5c27-4c82-b159-6048c351fb9a'
+    servername: 'www.twitch.tv'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'lJzZE7GpvBZPY4TFNT9BHEtyNLNfYVkzynoeva-74F0'
+      short-id: 'f8a49c6d321be160'
+  - name: '74. 144.124.253.4:8443'
+    type: vless
+    server: '144.124.253.4'
+    port: 8443
+    uuid: '1cb91b20-49cc-59ff-8393-91808a4deede'
+    servername: 'www.ozon.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'random'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'bVhVy1hZY_iw-sljlaeVbTBBa6SPvMm0Kg0tCC8CKHM'
+      short-id: 'ffffffffff'
+  - name: '75. r3mrcg001269pz2.cybervena.com:50099'
+    type: ss
+    server: 'r3mrcg001269pz2.cybervena.com'
+    port: 50099
+    password: '7e731ec3-f8e1-43f6-92cf-3978d14705c4'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '76. it5.taskflowhub.org:2083'
+    type: ss
+    server: 'it5.taskflowhub.org'
+    port: 2083
+    password: '34fItyZyz69uIrxkJ+cLR1pdclvG628pv8+fzUNTIC0='
+    cipher: 'aes-256-gcm'
+    udp: true
+  - name: '77. 130.49.161.70:443'
+    type: hysteria2
+    server: '130.49.161.70'
+    port: 443
+    password: 'p7Q76LzlnS4hIzr1W3staBOnUe_WwSkR'
+    sni: 'hy2.aspidnet.xyz'
+    obfs: 'salamander'
+    obfs-password: 'rG07s3COMIEvdnQipRyWzx_H_2xygNC3'
+    skip-cert-verify: true
+    udp: true
+  - name: '78. r3mrcg00129437x.cybervena.com:50099'
+    type: ss
+    server: 'r3mrcg00129437x.cybervena.com'
+    port: 50099
+    password: '7e731ec3-f8e1-43f6-92cf-3978d14705c4'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '79. 23.26.37.120:8443'
+    type: vless
+    server: '23.26.37.120'
+    port: 8443
+    uuid: 'dcba77d7-bb59-4802-b32c-37fd7011fca4'
+    servername: 'google.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'upDCW94g-pSYQrmXvOrTVYlwBUrSKhYFF9QwrqObdVo'
+      short-id: '3ca620a7ed5f3196'
+  - name: '80. 51.250.108.162:443'
+    type: vless
+    server: '51.250.108.162'
+    port: 443
+    uuid: '3deceac6-e293-4ba6-b025-336d494a956c'
+    servername: 'cdp.x5.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'safari'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI'
+      short-id: '8ec792bfd725be8a'
+  - name: '81. 51.250.24.222:443'
     type: vless
     server: '51.250.24.222'
     port: 443
@@ -893,25 +767,11 @@ proxies:
     reality-opts:
       public-key: 'wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI'
       short-id: '8ec792bfd725be8a'
-  - name: '90. 3.112.126.206:54055'
+  - name: '82. 51.250.106.87:443'
     type: vless
-    server: '3.112.126.206'
-    port: 54055
-    uuid: 'a6b071ef-0d82-4f46-b04b-3310b8d6ca82'
-    servername: 'www.icloud.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'OzoYp8homkMDMozggbwqswuBiWRykfmmszFpu2_YM1g'
-      short-id: 'f0b670194e8d2401'
-  - name: '91. 51.250.17.80:443'
-    type: vless
-    server: '51.250.17.80'
+    server: '51.250.106.87'
     port: 443
-    uuid: '509deb8a-8690-47f7-8b75-d951e0c52cda'
+    uuid: 'f9dee676-214e-46f4-ad44-c5268f566e40'
     servername: 'cdp.x5.ru'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
@@ -921,35 +781,48 @@ proxies:
     reality-opts:
       public-key: 'wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI'
       short-id: '8ec792bfd725be8a'
-  - name: '92. sell.sigikala.site:2020'
+  - name: '83. 72.56.11.76:443'
     type: vless
-    server: 'sell.sigikala.site'
-    port: 2020
-    uuid: '0cbf332d-0188-4ea2-a3f5-623650825bc5'
-    servername: 'Yahoo.com'
+    server: '72.56.11.76'
+    port: 443
+    uuid: '959fde23-35b9-4266-95fb-d267e62e38e4'
+    servername: 'sellflow.org'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'hYV9JHyp6YskIc-B-0p5GhvFhmrw8yekdU_O8JhpniY'
-      short-id: 'add15237'
-  - name: '93. 96.62.214.87:29745'
+      public-key: 'SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc'
+  - name: '84. 51.250.17.80:443'
     type: vless
-    server: '96.62.214.87'
-    port: 29745
-    uuid: 'f6f44df3-d229-4dd8-a944-e7bc3a4c6b94'
-    servername: 'www.google.com'
+    server: '51.250.17.80'
+    port: 443
+    uuid: 'f9dee676-214e-46f4-ad44-c5268f566e40'
+    servername: 'cdp.x5.ru'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
-    client-fingerprint: 'random'
+    client-fingerprint: 'safari'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'zSOPQOHAiacl2VMETsLXTE_Gln5ECllb6YKy1oyv1V0'
-      short-id: 'c3'
-  - name: '94. 62.152.56.226:8443'
+      public-key: 'wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI'
+      short-id: '8ec792bfd725be8a'
+  - name: '85. cxcczechia1.chickenkiller.com:443'
+    type: vless
+    server: 'cxcczechia1.chickenkiller.com'
+    port: 443
+    uuid: 'd78c12c4-6927-40b8-8550-ed9be00334da'
+    servername: 'cxcczechia1.chickenkiller.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'K7no4vVZPV-eW6uFsq2xP3m5bwuau4bSvRU1bnFs80k'
+      short-id: 'fcfb56dcc1d63834'
+  - name: '86. 62.152.56.226:8443'
     type: vless
     server: '62.152.56.226'
     port: 8443
@@ -965,190 +838,7 @@ proxies:
       short-id: '3722621913893e97'
     grpc-opts:
       grpc-service-name: '/api'
-  - name: '95. 72.56.11.76:443'
-    type: vless
-    server: '72.56.11.76'
-    port: 443
-    uuid: '959fde23-35b9-4266-95fb-d267e62e38e4'
-    servername: 'sellflow.org'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc'
-  - name: '96. 51.250.104.246:443'
-    type: vless
-    server: '51.250.104.246'
-    port: 443
-    uuid: '509deb8a-8690-47f7-8b75-d951e0c52cda'
-    servername: 'cdp.x5.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'safari'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'wgXD4k3A16WR0aL63N9Mx8xoqFigJLyQWJXi-l3MPXI'
-      short-id: '8ec792bfd725be8a'
-  - name: '97. 54.184.242.113:58578'
-    type: vless
-    server: '54.184.242.113'
-    port: 58578
-    uuid: 'a16bb742-7c22-4be2-878c-78d49b6bcb03'
-    servername: 'www.icloud.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'kq3GiVroRamDJmiMQiTGI8xd3ZRAPwUjVvLr3FrTEiY'
-      short-id: '1dc9bbf0c627'
-  - name: '98. 95.169.191.225:443'
-    type: vless
-    server: '95.169.191.225'
-    port: 443
-    uuid: '8361e3fc-479d-466f-9583-4971c2cf2d03'
-    servername: 'finporkzov.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'edge'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '_0N3gACBkKvGKTh0q5-dmt-XqSHB3xfEHSANRXu-U0I'
-      short-id: 'f00f58383241c807'
-  - name: '99. 54.253.37.164:23951'
-    type: vless
-    server: '54.253.37.164'
-    port: 23951
-    uuid: '3e62a6f1-f8cb-40eb-9c33-fc4ed39a080e'
-    servername: 'www.tesla.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'FGnWfD70nPQhiMZUQETB_mKaR-J_2DonpOpy9eqQ_F0'
-      short-id: '8c4907b7884b31'
-  - name: '100. 64.49.44.87:19107'
-    type: vless
-    server: '64.49.44.87'
-    port: 19107
-    uuid: '9e13f74e-3ad7-437d-aba6-5def3c42b046'
-    servername: 'www.intel.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'rdfVgNqwK528X1X4ZdKe9abvTm7yMICZ5FRUmdYLF14'
-      short-id: 'bedc231e12dd39'
-  - name: '101. 45.38.60.52:443'
-    type: vless
-    server: '45.38.60.52'
-    port: 443
-    uuid: '3ade7ca1-c7e7-40a4-80f2-d1ac301b5fd6'
-    servername: 'www.amazon.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'kYkeZ9EqtO7Wsr6mgs6nqLA4M_FD516UOlGes4jVzFE'
-      short-id: '5e152318'
-  - name: '102. 72.56.14.245:443'
-    type: vless
-    server: '72.56.14.245'
-    port: 443
-    uuid: 'e438ed18-0208-4620-b7f4-56ba7045f397'
-    servername: 'gb.sellflow.org'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc'
-  - name: '103. 38.54.4.57:443'
-    type: hysteria2
-    server: '38.54.4.57'
-    port: 443
-    password: '25cccf16-5693-4c6e-9bb9-0e38da7d4475'
-    sni: 'kh2.yuntong.click'
-    obfs: 'salamander'
-    obfs-password: 'eNM/NfxTsBqQIKcN0ezARS1z0f5mIxRd9GSwhVsyJlo='
-    skip-cert-verify: true
-    udp: true
-  - name: '104. 195.184.247.138:443'
-    type: vless
-    server: '195.184.247.138'
-    port: 443
-    uuid: '8bbf020e-653f-4a82-9900-1214e4e37dab'
-    servername: 'www.microsoft.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE'
-      short-id: 'fcd9787f'
-  - name: '105. 71.19.148.74:443'
-    type: ss
-    server: '71.19.148.74'
-    port: 443
-    password: 'gqkUCvmeOTghYJXF1YIuk5'
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
-  - name: '106. 122.248.202.201:45075'
-    type: vless
-    server: '122.248.202.201'
-    port: 45075
-    uuid: '452da0f8-3034-4e5d-9e7f-9c3f58abb8ff'
-    servername: 'www.tesla.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'l6Z-68Q2EJ8nZ5mzWSAB53lp1-_nOHwV2Z18y3DT7xQ'
-      short-id: '7185b14179922a5c'
-  - name: '107. 13.212.10.113:51182'
-    type: vless
-    server: '13.212.10.113'
-    port: 51182
-    uuid: '2a222b39-411e-4d6d-800a-5d067199b6ec'
-    servername: 'www.tesla.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '7MC_kyGYEV7nG0zqKnfwUmvXsoA0fGG4g4chkqqSRGI'
-      short-id: '5ac35e1cd8ce6720'
-  - name: '108. 47.131.12.238:59597'
-    type: vless
-    server: '47.131.12.238'
-    port: 59597
-    uuid: 'ba6c3fe7-19ba-4346-8ae3-41d6a2065f19'
-    servername: 'www.tesla.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'pAg7gxX-dDZ68kwy3mEj9vyDrieu-kTvIAhxSRMJQ1w'
-      short-id: 'be3e57dff1279a7d'
-  - name: '109. 62.152.56.221:8443'
+  - name: '87. 62.152.56.221:8443'
     type: vless
     server: '62.152.56.221'
     port: 8443
@@ -1164,38 +854,49 @@ proxies:
       short-id: '3722621913893e97'
     grpc-opts:
       grpc-service-name: '/api'
-  - name: '110. 141.164.45.187:7001'
+  - name: '88. 82.38.31.182:8080'
     type: ss
-    server: '141.164.45.187'
-    port: 7001
-    password: 'RexnBgU7EV5ADxG'
-    cipher: 'aes-256-gcm'
+    server: '82.38.31.182'
+    port: 8080
+    password: 'k1dBOmOB4oqi7Ump37a1bQ'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '111. 46.137.225.209:32946'
+  - name: '89. 91.222.237.43:443'
     type: vless
-    server: '46.137.225.209'
-    port: 32946
-    uuid: '0ff7989d-59b3-4cbd-a2e4-960ac02fb2f1'
-    servername: 'www.amd.com'
+    server: '91.222.237.43'
+    port: 443
+    uuid: '87a61ee1-f6eb-48b4-ac90-c255ce067a07'
+    servername: 'ru.dendiboss.org'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'firefox'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'zdEghV1Mt50wCSUBZSd601DSMoX4KBTfcKWZ2_mYTBk'
-      short-id: '984d9ea72b9e81'
-  - name: '112. 130.49.161.70:443'
-    type: hysteria2
-    server: '130.49.161.70'
+      public-key: 'VfQv2SS_WclTga8Y8H0OCEMWLGKAHqK72nAUQyHN8js'
+      short-id: '9c2378562188c3cb'
+  - name: '90. 95.183.11.123:443'
+    type: vless
+    server: '95.183.11.123'
     port: 443
-    password: 'p7Q76LzlnS4hIzr1W3staBOnUe_WwSkR'
-    sni: 'hy2.aspidnet.xyz'
-    obfs: 'salamander'
-    obfs-password: 'rG07s3COMIEvdnQipRyWzx_H_2xygNC3'
-    skip-cert-verify: true
+    uuid: '7a85ac08-f00b-4d48-84ee-4607fdb5efef'
+    servername: 'wl-8-1.nodes.ac'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'edge'
     udp: true
-  - name: '113. sg2.yuntong.click:443'
+    tls: true
+    reality-opts:
+      public-key: 'knrqm393ghxJNYj-4qu2BYpwpG5_zOG5h5-H7yyyR38'
+      short-id: '0be28edc1b0278d6'
+  - name: '91. 38.180.197.41:8080'
+    type: ss
+    server: '38.180.197.41'
+    port: 8080
+    password: 'KixLvKzwjekG00rm'
+    cipher: 'aes-256-gcm'
+    udp: true
+  - name: '92. sg2.yuntong.click:443'
     type: hysteria2
     server: 'sg2.yuntong.click'
     port: 443
@@ -1205,49 +906,104 @@ proxies:
     obfs-password: 'eNM/NfxTsBqQIKcN0ezARS1z0f5mIxRd9GSwhVsyJlo='
     skip-cert-verify: true
     udp: true
-  - name: '114. 89.125.19.237:47200'
+  - name: '93. 89.208.210.51:443'
     type: vless
-    server: '89.125.19.237'
-    port: 47200
-    uuid: 'ffaa8e95-74e2-4ef4-8974-69dd3651b6f9'
-    servername: 'stats.vk-portal.net'
+    server: '89.208.210.51'
+    port: 443
+    uuid: '50afba1f-c22e-4cce-a529-d06251537ece'
+    servername: 'www.vk.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'random'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'bwuT_tpimT_uUeWpSn-HbRztfol4o4uCcUHcdvkeFx0'
+      short-id: '27e53bbcab7593d7'
+  - name: '94. hk01.jgpy.help:10085'
+    type: hysteria2
+    server: 'hk01.jgpy.help'
+    port: 10085
+    password: '573402b7-156e-4141-8c3b-f01b6ebedf05'
+    sni: 'apple.com'
+    skip-cert-verify: true
+    udp: true
+  - name: '95. 146.185.209.234:443'
+    type: vless
+    server: '146.185.209.234'
+    port: 443
+    uuid: '50b95deb-6394-46c5-b88a-583e5b3ca7ee'
+    servername: 'ads.x5.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'PGccrEdFmBaB1rQFJqM-a9jJ1pFsxhUP2sD9KTw5Oz4'
+      short-id: 'f69d7af2d5fc5e0c'
+  - name: '96. sell.sigikala.site:2020'
+    type: vless
+    server: 'sell.sigikala.site'
+    port: 2020
+    uuid: '0cbf332d-0188-4ea2-a3f5-623650825bc5'
+    servername: 'Yahoo.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE'
-      short-id: 'b2a9bd658fc81dc6'
-  - name: '115. 54.151.254.107:46799'
+      public-key: 'hYV9JHyp6YskIc-B-0p5GhvFhmrw8yekdU_O8JhpniY'
+      short-id: 'add15237'
+  - name: '97. finporkzov.com:443'
     type: vless
-    server: '54.151.254.107'
-    port: 46799
-    uuid: 'f232a803-ff05-4219-b16f-b4dc8497b938'
-    servername: 'www.tesla.com'
+    server: 'finporkzov.com'
+    port: 443
+    uuid: '8361e3fc-479d-466f-9583-4971c2cf2d03'
+    servername: 'finporkzov.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'edge'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '_0N3gACBkKvGKTh0q5-dmt-XqSHB3xfEHSANRXu-U0I'
+      short-id: 'f00f58383241c807'
+  - name: '98. 149.104.109.74:21273'
+    type: ss
+    server: '149.104.109.74'
+    port: 21273
+    password: 'Ll6cYfXM5DzQbdtMMb72A_jqVnNljU3yqe'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '99. pl-modx.nodexphere.net:443'
+    type: vless
+    server: 'pl-modx.nodexphere.net'
+    port: 443
+    uuid: '6a02a47b-ebbf-4593-8460-558330c04189'
+    servername: 'pl-modx.nodexphere.net'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'firefox'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'inxRtKQbaiuz18TGXqdYu0dyO_RplIhR7MDZ6rL42UA'
-      short-id: 'af0d579034a74916'
-  - name: '116. 54.169.248.107:29746'
+      public-key: '_S6MJ2-dROx_X7rUM_Gnh01MPAVVgnB0_x0t4_2XuVc'
+  - name: '100. 45.89.60.64:8443'
     type: vless
-    server: '54.169.248.107'
-    port: 29746
-    uuid: '3fd28704-112e-4451-8c5f-d6657f8ecf44'
-    servername: 'www.intel.com'
-    network: 'tcp'
+    server: '45.89.60.64'
+    port: 8443
+    uuid: 'df74ab9a-63fb-4a81-9485-10052bbd24f9'
+    servername: 'ads.x5.ru'
+    network: 'grpc'
     flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
+    client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 's1u_Iy1x_b1Ph9Tp3a7xdekHcbcqGy7VA4BpQtJ-mE0'
-      short-id: '86c4bf418676a6e2'
-  - name: '117. 45.12.75.242:26424'
+      public-key: 'wSQIBnAc0cYO9JitaNcgZ2LwkTix0_dXVpDjnZxDrCE'
+  - name: '101. 45.12.75.242:26424'
     type: vless
     server: '45.12.75.242'
     port: 26424
@@ -1261,11 +1017,39 @@ proxies:
     reality-opts:
       public-key: 'l8AubqcxQO-HRFJy4pZL1vbLOo-eXit69s-XulSELE0'
       short-id: '23103e1e'
-  - name: '118. 83.243.86.118:10443'
+  - name: '102. us01.jgpy.help:10078'
+    type: hysteria2
+    server: 'us01.jgpy.help'
+    port: 10078
+    password: '573402b7-156e-4141-8c3b-f01b6ebedf05'
+    sni: 'apple.com'
+    skip-cert-verify: true
+    udp: true
+  - name: '103. 217.16.21.116:5443'
     type: vless
-    server: '83.243.86.118'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
+    server: '217.16.21.116'
+    port: 5443
+    uuid: 'a6bd2cf2-cb83-4ac3-82a3-350cc9d0d469'
+    servername: 'max.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'LGcG8Sqv5vPDypbaEgHV0ZGqQOBkgDepPWXyDohbVXQ'
+  - name: '104. 82.38.31.155:8080'
+    type: ss
+    server: '82.38.31.155'
+    port: 8080
+    password: 'oZIoA69Q8yhcQV8ka3Pa3A'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '105. 47.253.226.114:443'
+    type: vless
+    server: '47.253.226.114'
+    port: 443
+    uuid: '055a1ce8-2a16-4a0d-a2c2-22826c9b2413'
     servername: 'www.cloudflare.com'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
@@ -1273,99 +1057,29 @@ proxies:
     udp: true
     tls: true
     reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '119. 37.9.4.224:443'
-    type: vless
-    server: '37.9.4.224'
-    port: 443
-    uuid: '734160a3-2dd9-42b6-91e3-5badd6101008'
-    servername: 'wl-2-1.legendary.ac'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'qq'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'uL4x8EbCl080G43kFlv8nbpEyseWi1Dc_bl8F7lWtm8'
-      short-id: 'aa03ec59c9695e91'
-  - name: '120. 213.202.208.199:7001'
+      public-key: 'Svl81isn16RPAFnjtmYw7A6TPnsEPLHuYYaJht65Rzc'
+  - name: '106. 82.38.31.35:8080'
     type: ss
-    server: '213.202.208.199'
-    port: 7001
-    password: 'RexnBgU7EV5ADxG'
-    cipher: 'aes-256-gcm'
+    server: '82.38.31.35'
+    port: 8080
+    password: 'oZIoA69Q8yhcQV8ka3Pa3A'
+    cipher: 'chacha20-ietf-poly1305'
     udp: true
-  - name: '121. 148.253.213.81:443'
+  - name: '107. 89.125.19.237:47200'
     type: vless
-    server: '148.253.213.81'
-    port: 443
-    uuid: 'd8ad7276-7ac8-4eb2-9429-0fdb9bb45d12'
-    servername: 'nid.bkwidjet.ru'
+    server: '89.125.19.237'
+    port: 47200
+    uuid: 'ffaa8e95-74e2-4ef4-8974-69dd3651b6f9'
+    servername: 'stats.vk-portal.net'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'iC8Bb2OV8PgEI0_4RPZecUE3vm6vsLnZ42zvbPeVIgw'
-      short-id: 'cb4d31a32bc04d7e'
-  - name: '122. 188.68.218.190:443'
-    type: vless
-    server: '188.68.218.190'
-    port: 443
-    uuid: '443211c6-8ebb-4676-b796-f3a3a94c38a6'
-    servername: 'vkvideo.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'U-XSSJrvKlc1ivt8T_TESHQ7IzjPoKnGg7dGS1N9QEY'
-      short-id: 'b980bb2ea0e081ac'
-  - name: '123. sw1tzerl4nd.gxcore.net:443'
-    type: vless
-    server: 'sw1tzerl4nd.gxcore.net'
-    port: 443
-    uuid: 'b6ce8a51-19b9-4979-91ba-b4298c26d5fc'
-    servername: 'sw1tzerl4nd.gxcore.net'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '127zCnB9vtae6HnpowaSW8eFqflCAaBV0iM1oKHBWwY'
-      short-id: 'a1ab5a56bc42'
-  - name: '124. 203.159.90.241:8443'
-    type: vless
-    server: '203.159.90.241'
-    port: 8443
-    uuid: '7b7fe91c-89cc-414d-9860-839b3845f50d'
-    servername: 'eh.vk.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'qq'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'BrGL0gTKK_Ir2VwJOa91Vd8870DswnOXhA6-F92RBGI'
-      short-id: 'a987b6bd1781daa3'
-  - name: '125. nl.riotvpn.eu:443'
-    type: vless
-    server: 'nl.riotvpn.eu'
-    port: 443
-    uuid: '0698d601-aa2f-40a8-8060-e19723564e2f'
-    servername: 'ads.x5.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '8h8t5eBWL9oERK7xWHQLFJE5j6sZdgNDQAs3EGnNbho'
-      short-id: '2f49bccf11150ef2'
-  - name: '126. uk-gthost-01.com:8443'
+      public-key: 'aom9XGtg9tre2RGo8XkCaRqlE02nrZ4smmnpLpzidRE'
+      short-id: 'b2a9bd658fc81dc6'
+  - name: '108. uk-gthost-01.com:8443'
     type: vless
     server: 'uk-gthost-01.com'
     port: 8443
@@ -1379,91 +1093,58 @@ proxies:
     reality-opts:
       public-key: 'dY9SNEllJMW63xo-JdXufhmjAxB_4uFw_QMjgufjiD8'
       short-id: 'ea10cd5686751ec5'
-  - name: '127. 45.82.252.161:443'
-    type: vless
-    server: '45.82.252.161'
-    port: 443
-    uuid: 'c1dca28f-48a9-45b9-9c1b-e0b78707a26a'
-    servername: 'hls-svod.itunes.apple.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
+  - name: '109. de5.taskflowhub.org:2083'
+    type: ss
+    server: 'de5.taskflowhub.org'
+    port: 2083
+    password: '7NuB0Y5m3aNzkKMKlFoMwkiajsu6F36c9ok4VKEZnB4='
+    cipher: 'aes-256-gcm'
     udp: true
-    tls: true
-    reality-opts:
-      public-key: 'mLmBhbVFfNuo2eUgBh6r9-5Koz9mUCn3aSzlR6IejUg'
-      short-id: '175d'
-  - name: '128. 51.250.66.119:443'
+  - name: '110. 51.250.66.119:443'
     type: vless
     server: '51.250.66.119'
     port: 443
     uuid: '87a61ee1-f6eb-48b4-ac90-c255ce067a07'
-    servername: 'smartcaptcha.yandexcloud.net'
+    servername: 'ads.x5.ru'
     network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'firefox'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'qcIX4MLWztJdONWaGzZBXZwXV2Yfv3EO6h8-Vkdx1wU'
-      short-id: '63c6cfc2ec6358dd'
-  - name: '129. 45.89.60.64:8443'
+      public-key: '6efMZQW-QEyBlfPK2yMNNax68OSrRow-FT9m3aRgrRo'
+      short-id: '8f34383988cd0965'
+  - name: '111. 71.19.148.74:443'
+    type: ss
+    server: '71.19.148.74'
+    port: 443
+    password: 'gqkUCvmeOTghYJXF1YIuk5'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '112. 193.29.139.206:8080'
+    type: ss
+    server: '193.29.139.206'
+    port: 8080
+    password: '4a2rfixophdjffa8KVA4Aa'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '113. 89.169.39.55:443'
     type: vless
-    server: '45.89.60.64'
-    port: 8443
-    uuid: 'df74ab9a-63fb-4a81-9485-10052bbd24f9'
-    servername: 'ads.x5.ru'
-    network: 'grpc'
+    server: '89.169.39.55'
+    port: 443
+    uuid: 'c61ec320-29f1-4e00-9272-8b676e6957b4'
+    servername: 'max.ru'
+    network: 'tcp'
     flow: 'xtls-rprx-vision'
     client-fingerprint: 'chrome'
     udp: true
     tls: true
     reality-opts:
-      public-key: 'wSQIBnAc0cYO9JitaNcgZ2LwkTix0_dXVpDjnZxDrCE'
-  - name: '130. 46.229.215.189:8443'
+      public-key: 'Lbug_wz0y9xgKeDK44D9kuUap0fXzNKyv_nMJxnZRzU'
+      short-id: '08000000'
+  - name: '114. 5.188.140.160:5443'
     type: vless
-    server: '46.229.215.189'
-    port: 8443
-    uuid: '9e5201b2-5061-413b-b310-36cc6ec590c6'
-    servername: 'smartcaptcha.yandexcloud.net'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '92bt1gYq9EAz3SSOtKDrmqnbetNcaStEDicwrFg0_Rc'
-  - name: '131. 178.154.227.129:443'
-    type: vless
-    server: '178.154.227.129'
-    port: 443
-    uuid: '734160a3-2dd9-42b6-91e3-5badd6101008'
-    servername: 'wl-4-2.nodes.ac'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'qq'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'Yoh3T5ra4qSt7RebGXUM1xB1HUdIQPSzoxJkfxk-eTk'
-      short-id: '6cafe8ea554e106b'
-  - name: '132. 84.201.170.224:443'
-    type: vless
-    server: '84.201.170.224'
-    port: 443
-    uuid: '87a61ee1-f6eb-48b4-ac90-c255ce067a07'
-    servername: 'api-maps.yandex.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'A-Osft0F8ZlHRA6D3rjuEebeac_-vGIOZkrTOdEZjiA'
-      short-id: 'f9b6823bf4858816'
-  - name: '133. 217.16.21.116:5443'
-    type: vless
-    server: '217.16.21.116'
+    server: '5.188.140.160'
     port: 5443
     uuid: 'a6bd2cf2-cb83-4ac3-82a3-350cc9d0d469'
     servername: 'max.ru'
@@ -1474,7 +1155,185 @@ proxies:
     tls: true
     reality-opts:
       public-key: 'LGcG8Sqv5vPDypbaEgHV0ZGqQOBkgDepPWXyDohbVXQ'
-  - name: '134. 103.119.18.159:443'
+  - name: '115. 85.208.139.98:8444'
+    type: vless
+    server: '85.208.139.98'
+    port: 8444
+    uuid: 'c931f737-cafe-4e4f-998a-a65517941256'
+    servername: 'cdnjs.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'Hp6K5hsiPY4_zATgAtef9YTxNGpSkhAHTTo9MUO7fik'
+      short-id: '77e934f68f02ab4c'
+  - name: '116. 167.160.90.51:11475'
+    type: ss
+    server: '167.160.90.51'
+    port: 11475
+    password: '523z2fgrd7jx0z5xv6o5'
+    cipher: 'aes-128-gcm'
+    udp: true
+  - name: '117. 103.200.28.25:8443'
+    type: vless
+    server: '103.200.28.25'
+    port: 8443
+    uuid: 'a2415a12-3f92-4636-9823-9828d3ceb818'
+    servername: 'www.google.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'vo6Xrwkla8OBS5O6lEinNvHXxW8DxCmb8HGHD86VzkU'
+      short-id: '0e'
+  - name: '118. 151.241.228.254:34754'
+    type: vless
+    server: '151.241.228.254'
+    port: 34754
+    uuid: '35762c02-ff2b-4526-b41b-e96e5d99528b'
+    servername: 'yahoo.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'eMijZKuJlNEciXbhyzdbewk-ot_JLMZVaA42bxKFcBM'
+      short-id: 'c9eb0359fac0c345'
+  - name: '119. 82.38.31.187:8080'
+    type: ss
+    server: '82.38.31.187'
+    port: 8080
+    password: 'k1dBOmOB4oqi7Ump37a1bQ'
+    cipher: 'chacha20-ietf-poly1305'
+    udp: true
+  - name: '120. 37.9.4.147:443'
+    type: vless
+    server: '37.9.4.147'
+    port: 443
+    uuid: '443211c6-8ebb-4676-b796-f3a3a94c38a6'
+    servername: 'www.vk.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'fLBaSnICDNyn0zZ-YqzdnoE9ZrlXZ7F7bXH46WkuGEI'
+      short-id: 'a2668873387ce099'
+  - name: '121. 72.56.14.245:443'
+    type: vless
+    server: '72.56.14.245'
+    port: 443
+    uuid: 'e438ed18-0208-4620-b7f4-56ba7045f397'
+    servername: 'gb.sellflow.org'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc'
+  - name: '122. 87.229.34.23:443'
+    type: vless
+    server: '87.229.34.23'
+    port: 443
+    uuid: '8bb2d0ca-259b-46d0-8055-d6ecbb36f306'
+    servername: 'www.samsung.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'OZVjfQBboTDTBw0baMFqzVPsVUI4FNQmspTEb0b0zW4'
+  - name: '123. 45.145.163.128:443'
+    type: vless
+    server: '45.145.163.128'
+    port: 443
+    uuid: 'c8004a0d-9da7-4d37-923d-f1f287b5976f'
+    servername: 'downdetector.su'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'qq'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: '1vSZjvhZO01oAEH3b7eebR1qF5dLU1Dq2E7xu8pwGSs'
+      short-id: '428ef87fd47a3a32'
+  - name: '124. 147.45.99.249:443'
+    type: vless
+    server: '147.45.99.249'
+    port: 443
+    uuid: 'e438ed18-0208-4620-b7f4-56ba7045f397'
+    servername: 'gb.sellflow.org'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc'
+  - name: '125. 188.68.218.190:443'
+    type: vless
+    server: '188.68.218.190'
+    port: 443
+    uuid: '443211c6-8ebb-4676-b796-f3a3a94c38a6'
+    servername: 'ads.x5.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'firefox'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'mXcTqUJOPR_X46NCMdyk7_LiKMcaa4PGk_Wm82-1Hgs'
+      short-id: 'b255976e9b8b1d25'
+  - name: '126. 137.184.218.169:36925'
+    type: vless
+    server: '137.184.218.169'
+    port: 36925
+    uuid: 'c9fd0fb1-8251-4106-b09a-f4b426736f67'
+    servername: 'www.cloudflare.com'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'chrome'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'lJ9INPpO4rdnm2Tek_yg0PGFyUrBB6MoKyvqt_Mfqm0'
+  - name: '127. 185.229.9.8:443'
+    type: vless
+    server: '185.229.9.8'
+    port: 443
+    uuid: '50afba1f-c22e-4cce-a529-d06251537ece'
+    servername: 'ads.x5.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'random'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'r6LKP3g2W5ruKICTDfH8rwM1PbMjdcgHU7cG6jppxTs'
+      short-id: '27e53bbcab7593d7'
+  - name: '128. 89.208.208.92:9443'
+    type: vless
+    server: '89.208.208.92'
+    port: 9443
+    uuid: 'cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4'
+    servername: 'loadtest.dev.urent.ru'
+    network: 'tcp'
+    flow: 'xtls-rprx-vision'
+    client-fingerprint: 'qq'
+    udp: true
+    tls: true
+    reality-opts:
+      public-key: 'aVu6XB9_RKR1xLtusyQ1_YOWCs4Ofi9GEJd6oERNH2Q'
+      short-id: '689def22fcb54e86'
+  - name: '129. 103.119.18.159:443'
     type: vless
     server: '103.119.18.159'
     port: 443
@@ -1488,89 +1347,6 @@ proxies:
     reality-opts:
       public-key: 'gXc2c9NIWxhUTb7HoBCjvo-uB1L4iQj4TH38g4YhxHE'
       short-id: 'fcd9787f'
-  - name: '135. 83.243.86.119:10443'
-    type: vless
-    server: '83.243.86.119'
-    port: 10443
-    uuid: 'f6431ff1-dec0-4a6c-be4a-ce917913b589'
-    servername: 'www.cloudflare.com'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'WeShDM0MdunM6N8btrY8tXlL0GT1Ah-0jcplNQf9FEo'
-  - name: '136. 167.160.90.51:11475'
-    type: ss
-    server: '167.160.90.51'
-    port: 11475
-    password: '523z2fgrd7jx0z5xv6o5'
-    cipher: 'aes-128-gcm'
-    udp: true
-  - name: '137. 5.188.140.160:5443'
-    type: vless
-    server: '5.188.140.160'
-    port: 5443
-    uuid: 'a6bd2cf2-cb83-4ac3-82a3-350cc9d0d469'
-    servername: 'max.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'LGcG8Sqv5vPDypbaEgHV0ZGqQOBkgDepPWXyDohbVXQ'
-  - name: '138. 37.9.4.147:443'
-    type: vless
-    server: '37.9.4.147'
-    port: 443
-    uuid: '443211c6-8ebb-4676-b796-f3a3a94c38a6'
-    servername: 'max.ru'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'firefox'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'yp2vFOv-6UbPxYnCbjsQGbOoU5bhr7bjdzkhGo7fen0'
-      short-id: 'f3cb3c2f7790bc8f'
-  - name: '139. 116.80.44.144:27724'
-    type: vless
-    server: '116.80.44.144'
-    port: 27724
-    uuid: 'ebd8539d-e249-4a39-8f90-e8585e8cc35e'
-    servername: 'www.yahoo.co.jp'
-    network: 'tcp'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: 'rYH4wPTVzSwtpXgI3U7YxppIP6oudD-425vT7pyhj1w'
-  - name: '140. 89.208.208.92:7443'
-    type: vless
-    server: '89.208.208.92'
-    port: 7443
-    uuid: 'cbc27e56-38a1-4b0d-bce3-f9e7dcb807a4'
-    servername: 'loadtest.dev.urent.ru'
-    network: 'grpc'
-    flow: 'xtls-rprx-vision'
-    client-fingerprint: 'chrome'
-    udp: true
-    tls: true
-    reality-opts:
-      public-key: '_AXs-QnufIq918tbb2pwM3MDbe7kQ6i0cIHDMLwPmGs'
-      short-id: '3210e0eee6605048'
-    grpc-opts:
-      grpc-service-name: 'grpc'
-  - name: '141. 185.213.23.63:990'
-    type: ss
-    server: '185.213.23.63'
-    port: 990
-    password: 'ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44='
-    cipher: 'chacha20-ietf-poly1305'
-    udp: true
 
 proxy-groups:
   - name: "SELECT"
@@ -1578,36 +1354,36 @@ proxy-groups:
     proxies:
       - "AUTO"
       - "FALLBACK"
-      - '1. 37.19.198.243:443'
-      - '2. 37.19.198.244:443'
-      - '3. 37.19.198.160:443'
+      - '1. 108.181.57.93:8388'
+      - '2. 37.19.198.160:443'
+      - '3. 37.19.198.243:443'
       - '4. 37.19.198.236:443'
-      - '5. 38.135.24.131:443'
-      - '6. 107.172.250.161:59556'
-      - '7. 149.28.255.6:816'
-      - '8. 156.146.38.170:443'
-      - '9. 156.146.38.169:443'
-      - '10. 156.146.38.168:443'
-      - '11. 156.146.38.167:443'
+      - '5. tinkered-pennies-puppies.freesocks.work:443'
+      - '6. 38.135.24.131:443'
+      - '7. 107.172.250.161:59556'
+      - '8. 149.28.255.6:816'
+      - '9. 156.146.38.168:443'
+      - '10. 15.223.121.250:41087'
+      - '11. 62.146.231.112:12012'
       - '12. 108.181.0.177:8388'
       - '13. 108.181.118.10:8388'
-      - '14. 173.244.56.9:443'
-      - '15. 216.105.168.18:443'
-      - '16. 173.244.56.6:443'
-      - '17. 155.248.209.237:33333'
-      - '18. 98.71.82.228:443'
-      - '19. 51.75.168.50:26179'
-      - '20. 40.120.60.135:443'
-      - '21. 94.156.250.148:7001'
-      - '22. 62.146.231.112:12012'
-      - '23. 57.129.129.247:19308'
-      - '24. series-a1.samanehha.co:443'
+      - '14. 155.248.209.237:33333'
+      - '15. 51.75.168.50:26179'
+      - '16. 4.158.34.177:443'
+      - '17. 40.120.60.135:443'
+      - '18. 94.156.250.148:7001'
+      - '19. 57.129.129.247:19308'
+      - '20. 149.102.144.110:18337'
+      - '21. vpn-de-002.fastervpn.world:443'
+      - '22. 195.93.253.245:49137'
+      - '23. 135.125.219.2:12911'
+      - '24. devoracle.clarkpf.top:443'
       - '25. 84.200.91.158:443'
-      - '26. devoracle.clarkpf.top:443'
-      - '27. 8.209.74.72:20001'
+      - '26. 62.210.124.146:22000'
+      - '27. 51.254.128.106:2083'
       - '28. 57.129.121.230:10443'
-      - '29. 108.181.58.239:8388'
-      - '30. 209.46.102.22:8388'
+      - '29. 130.61.50.75:6443'
+      - '30. 8.209.74.72:20001'
       - DIRECT
     
   - name: "AUTO"
@@ -1617,147 +1393,135 @@ proxy-groups:
     tolerance: 150
     timeout: 5000
     proxies:
-      - '1. 37.19.198.243:443'
-      - '2. 37.19.198.244:443'
-      - '3. 37.19.198.160:443'
+      - '1. 108.181.57.93:8388'
+      - '2. 37.19.198.160:443'
+      - '3. 37.19.198.243:443'
       - '4. 37.19.198.236:443'
-      - '5. 38.135.24.131:443'
-      - '6. 107.172.250.161:59556'
-      - '7. 149.28.255.6:816'
-      - '8. 156.146.38.170:443'
-      - '9. 156.146.38.169:443'
-      - '10. 156.146.38.168:443'
-      - '11. 156.146.38.167:443'
+      - '5. tinkered-pennies-puppies.freesocks.work:443'
+      - '6. 38.135.24.131:443'
+      - '7. 107.172.250.161:59556'
+      - '8. 149.28.255.6:816'
+      - '9. 156.146.38.168:443'
+      - '10. 15.223.121.250:41087'
+      - '11. 62.146.231.112:12012'
       - '12. 108.181.0.177:8388'
       - '13. 108.181.118.10:8388'
-      - '14. 173.244.56.9:443'
-      - '15. 216.105.168.18:443'
-      - '16. 173.244.56.6:443'
-      - '17. 155.248.209.237:33333'
-      - '18. 98.71.82.228:443'
-      - '19. 51.75.168.50:26179'
-      - '20. 40.120.60.135:443'
-      - '21. 94.156.250.148:7001'
-      - '22. 62.146.231.112:12012'
-      - '23. 57.129.129.247:19308'
-      - '24. series-a1.samanehha.co:443'
+      - '14. 155.248.209.237:33333'
+      - '15. 51.75.168.50:26179'
+      - '16. 4.158.34.177:443'
+      - '17. 40.120.60.135:443'
+      - '18. 94.156.250.148:7001'
+      - '19. 57.129.129.247:19308'
+      - '20. 149.102.144.110:18337'
+      - '21. vpn-de-002.fastervpn.world:443'
+      - '22. 195.93.253.245:49137'
+      - '23. 135.125.219.2:12911'
+      - '24. devoracle.clarkpf.top:443'
       - '25. 84.200.91.158:443'
-      - '26. devoracle.clarkpf.top:443'
-      - '27. 8.209.74.72:20001'
+      - '26. 62.210.124.146:22000'
+      - '27. 51.254.128.106:2083'
       - '28. 57.129.121.230:10443'
-      - '29. 108.181.58.239:8388'
-      - '30. 209.46.102.22:8388'
-      - '31. 62.210.124.146:22000'
-      - '32. 51.254.128.106:2083'
-      - '33. 49.13.3.249:23997'
-      - '34. 141.98.101.181:443'
-      - '35. 185.228.139.247:4433'
-      - '36. 195.93.253.245:49137'
-      - '37. 141.98.101.179:443'
-      - '38. 46.225.30.16:49534'
-      - '39. vpn-de-002.fastervpn.world:443'
-      - '40. 5.45.100.100:51511'
-      - '41. 141.98.101.178:443'
-      - '42. 149.102.144.110:18337'
-      - '43. 150.241.83.60:443'
-      - '44. 15.204.97.197:23576'
-      - '45. 15.204.97.219:23576'
-      - '46. 193.47.60.186:28687'
-      - '47. 149.22.95.183:443'
-      - '48. 44.242.50.106:36895'
-      - '49. 85.208.139.98:8444'
-      - '50. 167.104.223.14:443'
-      - '51. ru-2.videoproeditor.com:443'
-      - '52. 167.104.223.44:7443'
-      - '53. 51.91.158.180:443'
-      - '54. 51.89.229.134:443'
-      - '55. 62.141.42.201:443'
-      - '56. 149.22.87.240:443'
-      - '57. 149.22.87.204:443'
-      - '58. 149.22.87.241:443'
-      - '59. 31.59.36.107:443'
-      - '60. 47.79.144.115:40003'
-      - '61. hy2.aspidnet.xyz:443'
-      - '62. 78.17.147.65:443'
-      - '63. 5.196.51.152:54809'
-      - '64. 103.106.228.175:8009'
-      - '65. 144.31.157.56:443'
-      - '66. 193.23.222.99:55152'
-      - '67. 23.26.37.121:8443'
-      - '68. 138.124.52.85:443'
-      - '69. 77.239.114.176:19105'
-      - '70. 213.176.77.65:443'
-      - '71. 109.122.198.76:443'
-      - '72. 61.231.10.92:50099'
-      - '73. 89.167.25.28:11005'
-      - '74. 178.215.238.148:8443'
-      - '75. nether2cxc.ignorelist.com:443'
-      - '76. pro-fi.emrata.top:753'
-      - '77. r3mrcg001269pz2.cybervena.com:50099'
-      - '78. 150.241.71.35:443'
-      - '79. 148.253.211.237:443'
-      - '80. namrcg001640lrm.cybervena.com:50099'
-      - '81. 146.185.209.234:443'
-      - '82. 5.183.253.171:443'
-      - '83. 31.76.53.0:443'
-      - '84. 144.31.131.33:443'
-      - '85. tinkered-pennies-puppies.freesocks.work:443'
-      - '86. 51.250.106.87:443'
-      - '87. 213.183.63.117:8443'
-      - '88. 152.114.193.11:47200'
-      - '89. 51.250.24.222:443'
-      - '90. 3.112.126.206:54055'
-      - '91. 51.250.17.80:443'
-      - '92. sell.sigikala.site:2020'
-      - '93. 96.62.214.87:29745'
-      - '94. 62.152.56.226:8443'
-      - '95. 72.56.11.76:443'
-      - '96. 51.250.104.246:443'
-      - '97. 54.184.242.113:58578'
-      - '98. 95.169.191.225:443'
-      - '99. 54.253.37.164:23951'
-      - '100. 64.49.44.87:19107'
-      - '101. 45.38.60.52:443'
-      - '102. 72.56.14.245:443'
-      - '103. 38.54.4.57:443'
-      - '104. 195.184.247.138:443'
-      - '105. 71.19.148.74:443'
-      - '106. 122.248.202.201:45075'
-      - '107. 13.212.10.113:51182'
-      - '108. 47.131.12.238:59597'
-      - '109. 62.152.56.221:8443'
-      - '110. 141.164.45.187:7001'
-      - '111. 46.137.225.209:32946'
-      - '112. 130.49.161.70:443'
-      - '113. sg2.yuntong.click:443'
-      - '114. 89.125.19.237:47200'
-      - '115. 54.151.254.107:46799'
-      - '116. 54.169.248.107:29746'
-      - '117. 45.12.75.242:26424'
-      - '118. 83.243.86.118:10443'
-      - '119. 37.9.4.224:443'
-      - '120. 213.202.208.199:7001'
-      - '121. 148.253.213.81:443'
-      - '122. 188.68.218.190:443'
-      - '123. sw1tzerl4nd.gxcore.net:443'
-      - '124. 203.159.90.241:8443'
-      - '125. nl.riotvpn.eu:443'
-      - '126. uk-gthost-01.com:8443'
-      - '127. 45.82.252.161:443'
-      - '128. 51.250.66.119:443'
-      - '129. 45.89.60.64:8443'
-      - '130. 46.229.215.189:8443'
-      - '131. 178.154.227.129:443'
-      - '132. 84.201.170.224:443'
-      - '133. 217.16.21.116:5443'
-      - '134. 103.119.18.159:443'
-      - '135. 83.243.86.119:10443'
-      - '136. 167.160.90.51:11475'
-      - '137. 5.188.140.160:5443'
-      - '138. 37.9.4.147:443'
-      - '139. 116.80.44.144:27724'
-      - '140. 89.208.208.92:7443'
-      - '141. 185.213.23.63:990'
+      - '29. 130.61.50.75:6443'
+      - '30. 8.209.74.72:20001'
+      - '31. 49.13.3.249:23997'
+      - '32. 5.45.100.100:51511'
+      - '33. 209.46.102.22:8388'
+      - '34. 193.29.139.151:8080'
+      - '35. 193.29.139.235:8080'
+      - '36. 82.38.31.199:8080'
+      - '37. 46.225.30.16:49534'
+      - '38. 185.228.139.247:4433'
+      - '39. 193.47.60.186:28687'
+      - '40. 82.38.31.15:443'
+      - '41. 193.29.139.217:8080'
+      - '42. hackney-latest-strike.freesocks.work:443'
+      - '43. 57.131.28.246:2083'
+      - '44. 193.29.139.179:8080'
+      - '45. 193.29.139.189:8080'
+      - '46. 193.29.139.157:8080'
+      - '47. 185.213.23.63:990'
+      - '48. 213.202.208.199:7001'
+      - '49. 193.29.139.157:443'
+      - '50. 167.104.223.44:7443'
+      - '51. 91.107.191.12:54471'
+      - '52. 51.195.116.82:443'
+      - '53. hy2.aspidnet.xyz:443'
+      - '54. 195.184.247.138:443'
+      - '55. 51.158.206.25:23576'
+      - '56. 5.196.51.152:54809'
+      - '57. 193.29.139.175:8080'
+      - '58. 5.75.196.174:443'
+      - '59. 144.31.157.56:443'
+      - '60. 152.114.193.11:47200'
+      - '61. 23.26.37.121:8443'
+      - '62. 82.38.31.183:8080'
+      - '63. 89.167.25.28:11005'
+      - '64. 93.115.25.153:443'
+      - '65. 31.76.53.0:443'
+      - '66. 148.253.211.47:443'
+      - '67. 5.183.253.171:443'
+      - '68. pro-fi.emrata.top:753'
+      - '69. 148.253.211.237:443'
+      - '70. 213.183.63.117:8443'
+      - '71. 144.31.190.188:443'
+      - '72. hkt.ccwink.cc:56309'
+      - '73. 2.26.2.8:443'
+      - '74. 144.124.253.4:8443'
+      - '75. r3mrcg001269pz2.cybervena.com:50099'
+      - '76. it5.taskflowhub.org:2083'
+      - '77. 130.49.161.70:443'
+      - '78. r3mrcg00129437x.cybervena.com:50099'
+      - '79. 23.26.37.120:8443'
+      - '80. 51.250.108.162:443'
+      - '81. 51.250.24.222:443'
+      - '82. 51.250.106.87:443'
+      - '83. 72.56.11.76:443'
+      - '84. 51.250.17.80:443'
+      - '85. cxcczechia1.chickenkiller.com:443'
+      - '86. 62.152.56.226:8443'
+      - '87. 62.152.56.221:8443'
+      - '88. 82.38.31.182:8080'
+      - '89. 91.222.237.43:443'
+      - '90. 95.183.11.123:443'
+      - '91. 38.180.197.41:8080'
+      - '92. sg2.yuntong.click:443'
+      - '93. 89.208.210.51:443'
+      - '94. hk01.jgpy.help:10085'
+      - '95. 146.185.209.234:443'
+      - '96. sell.sigikala.site:2020'
+      - '97. finporkzov.com:443'
+      - '98. 149.104.109.74:21273'
+      - '99. pl-modx.nodexphere.net:443'
+      - '100. 45.89.60.64:8443'
+      - '101. 45.12.75.242:26424'
+      - '102. us01.jgpy.help:10078'
+      - '103. 217.16.21.116:5443'
+      - '104. 82.38.31.155:8080'
+      - '105. 47.253.226.114:443'
+      - '106. 82.38.31.35:8080'
+      - '107. 89.125.19.237:47200'
+      - '108. uk-gthost-01.com:8443'
+      - '109. de5.taskflowhub.org:2083'
+      - '110. 51.250.66.119:443'
+      - '111. 71.19.148.74:443'
+      - '112. 193.29.139.206:8080'
+      - '113. 89.169.39.55:443'
+      - '114. 5.188.140.160:5443'
+      - '115. 85.208.139.98:8444'
+      - '116. 167.160.90.51:11475'
+      - '117. 103.200.28.25:8443'
+      - '118. 151.241.228.254:34754'
+      - '119. 82.38.31.187:8080'
+      - '120. 37.9.4.147:443'
+      - '121. 72.56.14.245:443'
+      - '122. 87.229.34.23:443'
+      - '123. 45.145.163.128:443'
+      - '124. 147.45.99.249:443'
+      - '125. 188.68.218.190:443'
+      - '126. 137.184.218.169:36925'
+      - '127. 185.229.9.8:443'
+      - '128. 89.208.208.92:9443'
+      - '129. 103.119.18.159:443'
 
   - name: "FALLBACK"
     type: fallback
@@ -1765,147 +1529,135 @@ proxy-groups:
     interval: 300
     timeout: 5000
     proxies:
-      - '1. 37.19.198.243:443'
-      - '2. 37.19.198.244:443'
-      - '3. 37.19.198.160:443'
+      - '1. 108.181.57.93:8388'
+      - '2. 37.19.198.160:443'
+      - '3. 37.19.198.243:443'
       - '4. 37.19.198.236:443'
-      - '5. 38.135.24.131:443'
-      - '6. 107.172.250.161:59556'
-      - '7. 149.28.255.6:816'
-      - '8. 156.146.38.170:443'
-      - '9. 156.146.38.169:443'
-      - '10. 156.146.38.168:443'
-      - '11. 156.146.38.167:443'
+      - '5. tinkered-pennies-puppies.freesocks.work:443'
+      - '6. 38.135.24.131:443'
+      - '7. 107.172.250.161:59556'
+      - '8. 149.28.255.6:816'
+      - '9. 156.146.38.168:443'
+      - '10. 15.223.121.250:41087'
+      - '11. 62.146.231.112:12012'
       - '12. 108.181.0.177:8388'
       - '13. 108.181.118.10:8388'
-      - '14. 173.244.56.9:443'
-      - '15. 216.105.168.18:443'
-      - '16. 173.244.56.6:443'
-      - '17. 155.248.209.237:33333'
-      - '18. 98.71.82.228:443'
-      - '19. 51.75.168.50:26179'
-      - '20. 40.120.60.135:443'
-      - '21. 94.156.250.148:7001'
-      - '22. 62.146.231.112:12012'
-      - '23. 57.129.129.247:19308'
-      - '24. series-a1.samanehha.co:443'
+      - '14. 155.248.209.237:33333'
+      - '15. 51.75.168.50:26179'
+      - '16. 4.158.34.177:443'
+      - '17. 40.120.60.135:443'
+      - '18. 94.156.250.148:7001'
+      - '19. 57.129.129.247:19308'
+      - '20. 149.102.144.110:18337'
+      - '21. vpn-de-002.fastervpn.world:443'
+      - '22. 195.93.253.245:49137'
+      - '23. 135.125.219.2:12911'
+      - '24. devoracle.clarkpf.top:443'
       - '25. 84.200.91.158:443'
-      - '26. devoracle.clarkpf.top:443'
-      - '27. 8.209.74.72:20001'
+      - '26. 62.210.124.146:22000'
+      - '27. 51.254.128.106:2083'
       - '28. 57.129.121.230:10443'
-      - '29. 108.181.58.239:8388'
-      - '30. 209.46.102.22:8388'
-      - '31. 62.210.124.146:22000'
-      - '32. 51.254.128.106:2083'
-      - '33. 49.13.3.249:23997'
-      - '34. 141.98.101.181:443'
-      - '35. 185.228.139.247:4433'
-      - '36. 195.93.253.245:49137'
-      - '37. 141.98.101.179:443'
-      - '38. 46.225.30.16:49534'
-      - '39. vpn-de-002.fastervpn.world:443'
-      - '40. 5.45.100.100:51511'
-      - '41. 141.98.101.178:443'
-      - '42. 149.102.144.110:18337'
-      - '43. 150.241.83.60:443'
-      - '44. 15.204.97.197:23576'
-      - '45. 15.204.97.219:23576'
-      - '46. 193.47.60.186:28687'
-      - '47. 149.22.95.183:443'
-      - '48. 44.242.50.106:36895'
-      - '49. 85.208.139.98:8444'
-      - '50. 167.104.223.14:443'
-      - '51. ru-2.videoproeditor.com:443'
-      - '52. 167.104.223.44:7443'
-      - '53. 51.91.158.180:443'
-      - '54. 51.89.229.134:443'
-      - '55. 62.141.42.201:443'
-      - '56. 149.22.87.240:443'
-      - '57. 149.22.87.204:443'
-      - '58. 149.22.87.241:443'
-      - '59. 31.59.36.107:443'
-      - '60. 47.79.144.115:40003'
-      - '61. hy2.aspidnet.xyz:443'
-      - '62. 78.17.147.65:443'
-      - '63. 5.196.51.152:54809'
-      - '64. 103.106.228.175:8009'
-      - '65. 144.31.157.56:443'
-      - '66. 193.23.222.99:55152'
-      - '67. 23.26.37.121:8443'
-      - '68. 138.124.52.85:443'
-      - '69. 77.239.114.176:19105'
-      - '70. 213.176.77.65:443'
-      - '71. 109.122.198.76:443'
-      - '72. 61.231.10.92:50099'
-      - '73. 89.167.25.28:11005'
-      - '74. 178.215.238.148:8443'
-      - '75. nether2cxc.ignorelist.com:443'
-      - '76. pro-fi.emrata.top:753'
-      - '77. r3mrcg001269pz2.cybervena.com:50099'
-      - '78. 150.241.71.35:443'
-      - '79. 148.253.211.237:443'
-      - '80. namrcg001640lrm.cybervena.com:50099'
-      - '81. 146.185.209.234:443'
-      - '82. 5.183.253.171:443'
-      - '83. 31.76.53.0:443'
-      - '84. 144.31.131.33:443'
-      - '85. tinkered-pennies-puppies.freesocks.work:443'
-      - '86. 51.250.106.87:443'
-      - '87. 213.183.63.117:8443'
-      - '88. 152.114.193.11:47200'
-      - '89. 51.250.24.222:443'
-      - '90. 3.112.126.206:54055'
-      - '91. 51.250.17.80:443'
-      - '92. sell.sigikala.site:2020'
-      - '93. 96.62.214.87:29745'
-      - '94. 62.152.56.226:8443'
-      - '95. 72.56.11.76:443'
-      - '96. 51.250.104.246:443'
-      - '97. 54.184.242.113:58578'
-      - '98. 95.169.191.225:443'
-      - '99. 54.253.37.164:23951'
-      - '100. 64.49.44.87:19107'
-      - '101. 45.38.60.52:443'
-      - '102. 72.56.14.245:443'
-      - '103. 38.54.4.57:443'
-      - '104. 195.184.247.138:443'
-      - '105. 71.19.148.74:443'
-      - '106. 122.248.202.201:45075'
-      - '107. 13.212.10.113:51182'
-      - '108. 47.131.12.238:59597'
-      - '109. 62.152.56.221:8443'
-      - '110. 141.164.45.187:7001'
-      - '111. 46.137.225.209:32946'
-      - '112. 130.49.161.70:443'
-      - '113. sg2.yuntong.click:443'
-      - '114. 89.125.19.237:47200'
-      - '115. 54.151.254.107:46799'
-      - '116. 54.169.248.107:29746'
-      - '117. 45.12.75.242:26424'
-      - '118. 83.243.86.118:10443'
-      - '119. 37.9.4.224:443'
-      - '120. 213.202.208.199:7001'
-      - '121. 148.253.213.81:443'
-      - '122. 188.68.218.190:443'
-      - '123. sw1tzerl4nd.gxcore.net:443'
-      - '124. 203.159.90.241:8443'
-      - '125. nl.riotvpn.eu:443'
-      - '126. uk-gthost-01.com:8443'
-      - '127. 45.82.252.161:443'
-      - '128. 51.250.66.119:443'
-      - '129. 45.89.60.64:8443'
-      - '130. 46.229.215.189:8443'
-      - '131. 178.154.227.129:443'
-      - '132. 84.201.170.224:443'
-      - '133. 217.16.21.116:5443'
-      - '134. 103.119.18.159:443'
-      - '135. 83.243.86.119:10443'
-      - '136. 167.160.90.51:11475'
-      - '137. 5.188.140.160:5443'
-      - '138. 37.9.4.147:443'
-      - '139. 116.80.44.144:27724'
-      - '140. 89.208.208.92:7443'
-      - '141. 185.213.23.63:990'
+      - '29. 130.61.50.75:6443'
+      - '30. 8.209.74.72:20001'
+      - '31. 49.13.3.249:23997'
+      - '32. 5.45.100.100:51511'
+      - '33. 209.46.102.22:8388'
+      - '34. 193.29.139.151:8080'
+      - '35. 193.29.139.235:8080'
+      - '36. 82.38.31.199:8080'
+      - '37. 46.225.30.16:49534'
+      - '38. 185.228.139.247:4433'
+      - '39. 193.47.60.186:28687'
+      - '40. 82.38.31.15:443'
+      - '41. 193.29.139.217:8080'
+      - '42. hackney-latest-strike.freesocks.work:443'
+      - '43. 57.131.28.246:2083'
+      - '44. 193.29.139.179:8080'
+      - '45. 193.29.139.189:8080'
+      - '46. 193.29.139.157:8080'
+      - '47. 185.213.23.63:990'
+      - '48. 213.202.208.199:7001'
+      - '49. 193.29.139.157:443'
+      - '50. 167.104.223.44:7443'
+      - '51. 91.107.191.12:54471'
+      - '52. 51.195.116.82:443'
+      - '53. hy2.aspidnet.xyz:443'
+      - '54. 195.184.247.138:443'
+      - '55. 51.158.206.25:23576'
+      - '56. 5.196.51.152:54809'
+      - '57. 193.29.139.175:8080'
+      - '58. 5.75.196.174:443'
+      - '59. 144.31.157.56:443'
+      - '60. 152.114.193.11:47200'
+      - '61. 23.26.37.121:8443'
+      - '62. 82.38.31.183:8080'
+      - '63. 89.167.25.28:11005'
+      - '64. 93.115.25.153:443'
+      - '65. 31.76.53.0:443'
+      - '66. 148.253.211.47:443'
+      - '67. 5.183.253.171:443'
+      - '68. pro-fi.emrata.top:753'
+      - '69. 148.253.211.237:443'
+      - '70. 213.183.63.117:8443'
+      - '71. 144.31.190.188:443'
+      - '72. hkt.ccwink.cc:56309'
+      - '73. 2.26.2.8:443'
+      - '74. 144.124.253.4:8443'
+      - '75. r3mrcg001269pz2.cybervena.com:50099'
+      - '76. it5.taskflowhub.org:2083'
+      - '77. 130.49.161.70:443'
+      - '78. r3mrcg00129437x.cybervena.com:50099'
+      - '79. 23.26.37.120:8443'
+      - '80. 51.250.108.162:443'
+      - '81. 51.250.24.222:443'
+      - '82. 51.250.106.87:443'
+      - '83. 72.56.11.76:443'
+      - '84. 51.250.17.80:443'
+      - '85. cxcczechia1.chickenkiller.com:443'
+      - '86. 62.152.56.226:8443'
+      - '87. 62.152.56.221:8443'
+      - '88. 82.38.31.182:8080'
+      - '89. 91.222.237.43:443'
+      - '90. 95.183.11.123:443'
+      - '91. 38.180.197.41:8080'
+      - '92. sg2.yuntong.click:443'
+      - '93. 89.208.210.51:443'
+      - '94. hk01.jgpy.help:10085'
+      - '95. 146.185.209.234:443'
+      - '96. sell.sigikala.site:2020'
+      - '97. finporkzov.com:443'
+      - '98. 149.104.109.74:21273'
+      - '99. pl-modx.nodexphere.net:443'
+      - '100. 45.89.60.64:8443'
+      - '101. 45.12.75.242:26424'
+      - '102. us01.jgpy.help:10078'
+      - '103. 217.16.21.116:5443'
+      - '104. 82.38.31.155:8080'
+      - '105. 47.253.226.114:443'
+      - '106. 82.38.31.35:8080'
+      - '107. 89.125.19.237:47200'
+      - '108. uk-gthost-01.com:8443'
+      - '109. de5.taskflowhub.org:2083'
+      - '110. 51.250.66.119:443'
+      - '111. 71.19.148.74:443'
+      - '112. 193.29.139.206:8080'
+      - '113. 89.169.39.55:443'
+      - '114. 5.188.140.160:5443'
+      - '115. 85.208.139.98:8444'
+      - '116. 167.160.90.51:11475'
+      - '117. 103.200.28.25:8443'
+      - '118. 151.241.228.254:34754'
+      - '119. 82.38.31.187:8080'
+      - '120. 37.9.4.147:443'
+      - '121. 72.56.14.245:443'
+      - '122. 87.229.34.23:443'
+      - '123. 45.145.163.128:443'
+      - '124. 147.45.99.249:443'
+      - '125. 188.68.218.190:443'
+      - '126. 137.184.218.169:36925'
+      - '127. 185.229.9.8:443'
+      - '128. 89.208.208.92:9443'
+      - '129. 103.119.18.159:443'
 
 rules:
   - GEOIP,RU,DIRECT
