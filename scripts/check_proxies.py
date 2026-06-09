@@ -38,7 +38,7 @@ REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 300
+TOP_N               = 500
 TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 15
 TIMEOUT_XRAY_START  = 1.0
