@@ -4,17 +4,16 @@ proxies:
   server: 195.242.214.210
   port: 443
   ip: 10.2.0.2/32
-  ipv6: 2a07:b944::2:2/128
   private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
   public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
   udp: true
   mtu: 1420
   remote-dns-resolve: true
-  dns: [10.2.0.1, 2a07:b944::2:1]
+  dns: [1.1.1.1]
   amnezia-wg-option:
-    jc: 3
-    jmin: 1
-    jmax: 3
+    jc: 1
+    jmin: 10
+    jmax: 20
     s1: 0
     s2: 0
     h1: 1
