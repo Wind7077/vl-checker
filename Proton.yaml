@@ -1,35 +1,86 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 127.0.0.1:9090
+
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+
 proxies:
-- name: "WARP"
-  type: wireguard
-  private-key: WCnBbsWUPBAHzbc2Df2ovRHGaIfEnDE0QyBZmmRMGmk=
-  server: 185.107.56.162
-  port: 443
-  ip: 172.16.0.2
-  public-key: Z2pGk23p2uYtzedagHPvrF4jKm3cLpZkPedHWlQtkmk=
-  allowed-ips: ['0.0.0.0/0']
-  reserved: [219, 184, 163]
-  udp: true
-  mtu: 1280
-  remote-dns-resolve: true
-  dns: [8.8.8.8, 8.8.4.4]
-  amnezia-wg-option:
-   jc: 2
-   jmin: 40
-   jmax: 70
-   s1: 0
-   s2: 0
-   h1: 1
-   h2: 2
-   h4: 3
-   h3: 4
-   i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"proxy-groups:
-- name: Cloudflare
-  type: select
-  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
-  proxies:
-    - WARP
-  url: 'http://speed.cloudflare.com/'
-  interval: 300
+  - name: 🇷🇴 RO_21
+    type: wireguard
+    server: 195.242.214.210
+    port: 443
+    ip: 10.2.0.2
+    private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
+    public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
+    allowed-ips:
+      - 0.0.0.0/0
+    udp: true
+    mtu: 1280
+    remote-dns-resolve: true
+    dns:
+      - 1.1.1.1
+    keepalive: 25
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 40
+      s2: 55
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+
+proxy-groups:
+  - name: Proton
+    type: select
+    icon: https://res.cloudinary.com/dbulfrlrz/image/upload/v1703162849/static/logos/icons/vpn_f9embt.svg
+    proxies:
+      - 🇷🇴 RO_21
+    url: http://cp.cloudflare.com/generate_204
+    unified-delay: true
+    interval: 300
 
 rules:
-- MATCH,Cloudflare
+  - MATCH,Proton
+
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  strict-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
