@@ -1,0 +1,139 @@
+# --- Базовые настройки ядра (Mihomo) ---
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false # Отключено глобально для стабильности на мобильных сетях
+external-controller: 127.0.0.1:9090
+
+# --- Сниффер (Для корректной работы правил и обхода подмены DNS) ---
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+# --- Настройки DNS (С фильтрами для мессенджеров) ---
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - '*.telegram.org'
+    - '*.t.me'
+    - '*.whatsapp.com'
+    - '*.whatsapp.net'
+    - '*.wa.me'
+    - '*.facebook.com'
+    - '*.fbcdn.net'
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+
+# --- Прокси-ноды ---
+proxies:
+  # 1. PROTON (Основной, с включенной маскировкой Amnezia)
+  - name: "🇷🇴 Proton_RO_21"
+    type: wireguard
+    server: 195.242.214.210
+    port: 443
+    ip: 10.2.0.2
+    private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
+    public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
+    allowed-ips:
+      - 0.0.0.0/0
+    udp: true
+    mtu: 1280
+    remote-dns-resolve: true
+    dns:
+      - 1.1.1.1
+    keepalive: 25
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 40
+      s2: 55
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+
+  # 2. WARP (Запасной, без мусорных пакетов для стабильности на LTE)
+  - name: "☁️ WARP_Backup"
+    type: wireguard
+    private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
+    server: 162.159.195.1
+    port: 500
+    ip: 172.16.0.2
+    public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
+    allowed-ips:
+      - 0.0.0.0/0
+    reserved: [153, 176, 129]
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: false
+    dns: [8.8.8.8, 1.1.1.1]
+    amnezia-wg-option:
+      jc: 0
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h4: 3
+      h3: 4
+      i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
+
+# --- Группы прокси ---
+proxy-groups:
+  # ГЛАВНАЯ ГРУППА: Автоматическое переключение (Fallback)
+  - name: "Auto-Reconnect"
+    type: fallback
+    proxies:
+      - "🇷🇴 Proton_RO_21" # Проверяется первым
+      - "☁️ WARP_Backup"   # Если первый упал, трафик идет сюда
+    url: 'http://cp.cloudflare.com/generate_204' # Легковесная проверка (0 байт)
+    interval: 60  # Проверка каждую минуту (быстрая реакция на сбои)
+    tolerance: 50 # Переключит, если пинг вырастет более чем на 50мс
+
+  # Дополнительная группа для ручного выбора (если нужно)
+  - name: "Ручной выбор"
+    type: select
+    proxies:
+      - "🇷🇴 Proton_RO_21"
+      - "☁️ WARP_Backup"
+
+# --- Правила маршрутизации ---
+rules:
+  # Весь трафик идет через умную группу Auto-Reconnect
+  - MATCH,Auto-Reconnect
+
+# --- Настройки TUN для Android (Совместимые с разделением туннеля) ---
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  strict-route: false # ВАЖНО: false, чтобы приложения вне белого списка работали напрямую
+  endpoint-independent-nat: true # МАГИЯ: Сохраняет сессию при смене Wi-Fi на LTE
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
