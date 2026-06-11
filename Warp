@@ -30,20 +30,21 @@ dns:
 proxies:
   - name: "WARP"
     type: wireguard
-    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
-    server: 185.107.56.211
-    port: 443
+    private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
+    server: 162.159.195.1
+    port: 500
     ip: 172.16.0.2
-    public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
+    ipv6: 2606:4700:110:879e:bc38:897f:5e47:8e96 # Внутренний IPv6 самого туннеля WARP
+    public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
     allowed-ips: ['0.0.0.0/0']
-    reserved: [219, 184, 163]
+    reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    keepalive: 25 # Отправляет пульс каждые 25 сек, чтобы мобильный оператор не рвал NAT-сессию
+    keepalive: 25 # Добавлено: отправляет пульс каждые 25 сек, чтобы мобильный оператор не рвал NAT-сессию
     remote-dns-resolve: true
-    dns: [10.2.0.1]
+    dns: [8.8.8.8, 8.8.4.4, 2001:4860:4860::8888, 2001:4860:4860::8844]
     amnezia-wg-option:
-      jc: 0
+      jc: 4
       jmin: 40
       jmax: 70
       s1: 0
@@ -52,7 +53,7 @@ proxies:
       h2: 2
       h4: 3
       h3: 4
-      i1: <b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>
+      i1: <b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>
 
 # --- Группы прокси ---
 proxy-groups:
@@ -72,7 +73,7 @@ rules:
 tun:
   enable: true
   stack: mixed
-  mtu: 1500 # Оптимальный MTU для приема пакетов от самой ОС Android
+  mtu: 1500 # MTU для самой системы Android
   auto-route: true
   auto-detect-interface: true
   dns-hijack:
