@@ -1,4 +1,58 @@
+# --- Базовые настройки ядра (Mihomo/Clash.Meta) ---
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false # Глобальное отключение IPv6 для предотвращения утечек и микро-обрывов на мобильных сетях
+external-controller: 127.0.0.1:9090
+
+# --- Настройки DNS ---
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+
+# --- Прокси-ноды ---
 proxies:
+  - name: 🇷🇴 RO_21
+    type: wireguard
+    server: 195.242.214.210
+    port: 443
+    ip: 10.2.0.2
+    private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
+    public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
+    allowed-ips:
+      - 0.0.0.0/0 # Убрано ::/0, так как IPv6 отключен глобально для стабильности
+    udp: true
+    mtu: 1420 # Понижено с 1420 до 1280 для исключения IP-фрагментации (главная причина обрывов от DPI)
+    remote-dns-resolve: true
+    dns:
+      - 1.1.1.1
+    keepalive: 25 # (было persistent-keepalive, keepalive более корректно для Mihomo)
+    amnezia-wg-option:
+      jc: 4      # ВКЛЮЧЕНО (было 0). Генерация мусорных пакетов для маскировки от DPI
+      jmin: 40   # Минимальный размер мусорного пакета
+      jmax: 70   # Максимальный размер мусорного пакета
+      s1: 0     # ВКЛЮЧЕНО (было 0). Джиттер (шум) для инициирующего пакета
+      s2: 0     # ВКЛЮЧЕНО (было 0). Джиттер (шум) для ответного пакета
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 - name: "WARP"
   type: wireguard
   private-key: WCnBbsWUPBAHzbc2Df2ovRHGaIfEnDE0QyBZmmRMGmk=
@@ -24,7 +78,16 @@ proxies:
    h3: 4
    i1: <b 0xc60000000101ba00002e5d3f91ea9b14959cd9a47a0c25d028c9a5e54917a103e4a7c14fbd4f3116c9e5891b081006d5b4e220a5ef1390a2>
 
+# --- Группы прокси ---
 proxy-groups:
+  - name: Proton
+    type: select
+    icon: https://res.cloudinary.com/dbulfrlrz/image/upload/v1703162849/static/logos/icons/vpn_f9embt.svg
+    proxies:
+      - 🇷🇴 RO_21
+    url: http://speed.cloudflare.com/
+    unified-delay: true
+    interval: 300
 - name: Cloudflare
   type: select
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
@@ -33,5 +96,17 @@ proxy-groups:
   url: 'http://speed.cloudflare.com/'
   interval: 300
 
+# --- Правила маршрутизации ---
 rules:
+  - MATCH,Proton
+
+# --- Виртуальная сетевая карта (TUN) для Android ---
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
 - MATCH,Cloudflare
