@@ -57,7 +57,7 @@ proxies:
     allowed-ips: ['0.0.0.0/0']
     reserved: [219, 184, 163]
     udp: true
-    mtu: 1400 # Унифицировано для безобрывности
+    mtu: 1280 # Унифицировано для безобрывности
     keepalive: 25
     remote-dns-resolve: true
     dns: [10.2.0.1]
@@ -83,7 +83,7 @@ proxies:
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
     allowed-ips: ['0.0.0.0/0']
     udp: true
-    mtu: 1400
+    mtu: 1280
     keepalive: 25
     remote-dns-resolve: true
     dns: [1.1.1.1]
@@ -128,24 +128,25 @@ proxies:
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: url-test с огромным допуском для "липкого" удержания Протона
+  # ГЛАВНАЯ ГРУППА: Fallback (Жесткий приоритет Протона)
   - name: "Auto-Reconnect"
-    type: url-test # Меняем с fallback на url-test для предотвращения полных зависаний
+    type: fallback # МАГИЯ: Использует первую живую ноду из списка, игнорируя низкий пинг WARP
     proxies:
-      - "🇳🇱 Proton_NL"   # Первый в списке = приоритетный
-      - "🇨🇦 Proton_CA"   
-      - "🇷🇺 WARP_RU"     
-    url: 'http://www.gstatic.com/generate_204' # Надежный URL для проверки
-    interval: 60         # Проверка каждую минуту
-    tolerance: 1000      # МАГИЯ: Не переключится на WARP, пока пинг Протона не станет хуже пинга WARP + 1000 мс
+      - "🇳🇱 Proton_NL"   # Если жив (даже с пингом 300мс) -> используем его
+      - "🇨🇦 Proton_CA"   # Если NL упал -> переключаемся сюда
+      - "🇷🇺 WARP_RU"     # Если оба Протона мертвы -> спасаемся WARP
+    url: 'http://cp.cloudflare.com/generate_204'
+    interval: 60
+    tolerance: 50
 
-  # Группа для ручного выбора (если захочется принудительно тыкнуть WARP)
+  # Группа для ручного выбора (если захочешь сам тыкнуть WARP)
   - name: "Ручной выбор"
     type: select
     proxies:
       - "🇳🇱 Proton_NL"
       - "🇨🇦 Proton_CA"
       - "🇷🇺 WARP_RU"
+
 # --- Правила маршрутизации ---
 rules:
   - MATCH,Auto-Reconnect
