@@ -130,23 +130,22 @@ proxies:
 proxy-groups:
   # ГЛАВНАЯ ГРУППА: Fallback (Жесткий приоритет Протона)
   - name: "Auto-Reconnect"
-    type: fallback # МАГИЯ: Использует первую живую ноду из списка, игнорируя низкий пинг WARP
+    type: fallback 
     proxies:
-      - "🇳🇱 Proton_NL"   # Если жив (даже с пингом 300мс) -> используем его
-      - "🇨🇦 Proton_CA"   # Если NL упал -> переключаемся сюда
-      - "🇷🇺 WARP_RU"     # Если оба Протона мертвы -> спасаемся WARP
-    url: 'http://cp.cloudflare.com/generate_204'
+      - "🇳🇱 Proton_NL"   
+      - "🇨🇦 Proton_CA"   
+      - "🇷🇺 WARP_RU"     
+    url: 'http://www.gstatic.com/generate_204' # ЗАМЕНЕНО: Эталонный URL проверки Android (гораздо стабильнее)
     interval: 60
-    tolerance: 50
+    tolerance: 150 # УВЕЛИЧЕНО: Даем Протону "право на ошибку" в 150 мс, чтобы Clash не дергал связь из-за микро-скачков пинга
 
-  # Группа для ручного выбора (если захочешь сам тыкнуть WARP)
+  # Группа для ручного выбора
   - name: "Ручной выбор"
     type: select
     proxies:
       - "🇳🇱 Proton_NL"
       - "🇨🇦 Proton_CA"
       - "🇷🇺 WARP_RU"
-
 # --- Правила маршрутизации ---
 rules:
   - MATCH,Auto-Reconnect
