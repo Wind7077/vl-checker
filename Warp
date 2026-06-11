@@ -1,12 +1,21 @@
-# --- Базовые настройки ядра (Mihomo/Clash.Meta) ---
 mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
-ipv6: false # Глобальное отключение IPv6
+ipv6: false
 external-controller: 127.0.0.1:9090
 
-# --- Настройки DNS ---
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
 dns:
   enable: true
   ipv6: false
@@ -25,7 +34,6 @@ dns:
     - https://1.1.1.1/dns-query
     - https://8.8.8.8/dns-query
 
-# --- Прокси-ноды ---
 proxies:
   - name: "WARP"
     type: wireguard
@@ -33,47 +41,45 @@ proxies:
     server: 162.159.195.1
     port: 500
     ip: 172.16.0.2
-    # ipv6: ... (Убрано, чтобы не было микро-задержек маршрутизации на LTE)
     public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-    allowed-ips: ['0.0.0.0/0']
+    allowed-ips:
+      - 0.0.0.0/0
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    keepalive: 25 # Держит сессию живой
-    remote-dns-resolve: false # ВАЖНО: Отключено. WARP сам отлично роутит DNS внутри туннеля, принудительный ресолв вызывал фризы.
-    dns: [8.8.8.8, 1.1.1.1] # Убраны IPv6 адреса, оставлены только быстрые IPv4
+    keepalive: 25
+    remote-dns-resolve: false
+    dns: [8.8.8.8, 1.1.1.1]
     amnezia-wg-option:
-      jc: 0      # ОТКЛЮЧЕНО для WARP. Мобильные операторы дропают junk-пакеты, что вызывало переподключение сессии (фриз на 2 сек).
+      jc: 0
       jmin: 40
       jmax: 70
-      s1: 0      # ОТКЛЮЧЕНО
-      s2: 0      # ОТКЛЮЧЕНО
+      s1: 0
+      s2: 0
       h1: 1
       h2: 2
       h4: 3
       h3: 4
       i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
 
-# --- Группы прокси ---
 proxy-groups:
   - name: Cloudflare
     type: select
     icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
     proxies:
       - WARP
-    url: 'http://cp.cloudflare.com/generate_204' # ЗАМЕНЕНО: Легковесный пинг (204 No Content) вместо тяжелого speedtest. Не вызывает обрывов при проверке.
+    url: 'http://cp.cloudflare.com/generate_204'
     interval: 300
 
-# --- Правила маршрутизации ---
 rules:
   - MATCH,Cloudflare
 
-# --- Виртуальная сетевая карта (TUN) для Android ---
 tun:
   enable: true
   stack: mixed
   mtu: 1500
   auto-route: true
+  strict-route: true
   auto-detect-interface: true
   dns-hijack:
     - any:53
