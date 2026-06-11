@@ -46,18 +46,18 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. WARP NL (Голландский)
-  - name: "🇳🇱 WARP_NL"
+  # 1. PROTON NL (Голландия) - Главный приоритет
+  - name: "🇳🇱 Proton_NL"
     type: wireguard
-    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
     server: 185.107.56.211
     port: 443
     ip: 172.16.0.2
+    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
     public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
     allowed-ips: ['0.0.0.0/0']
     reserved: [219, 184, 163]
     udp: true
-    mtu: 1280
+    mtu: 1280 # Унифицировано для безобрывности
     keepalive: 25
     remote-dns-resolve: true
     dns: [10.2.0.1]
@@ -69,26 +69,24 @@ proxies:
       s2: 0
       h1: 1
       h2: 2
-      h4: 3
-      h3: 4
-      i1: <b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>"
 
-  # 2. PROTON RO (Румынский)
-  - name: "🇷🇴 Proton_RO"
+  # 2. PROTON CA (Канада) - Второй эшелон
+  - name: "🇨🇦 Proton_CA"
     type: wireguard
     server: 195.242.214.210
     port: 443
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
-    allowed-ips:
-      - 0.0.0.0/0
+    allowed-ips: ['0.0.0.0/0']
     udp: true
     mtu: 1280
-    remote-dns-resolve: true
-    dns:
-      - 1.1.1.1
     keepalive: 25
+    remote-dns-resolve: true
+    dns: [1.1.1.1]
     amnezia-wg-option:
       jc: 4
       jmin: 40
@@ -101,16 +99,15 @@ proxies:
       h4: 4
       i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
-  # 3. WARP Moscow (Российский)
-  - name: "🇷🇺 WARP_Moscow"
+  # 3. WARP RU (Москва) - Аварийный резерв
+  - name: "🇷🇺 WARP_RU"
     type: wireguard
-    private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
     server: 162.159.195.1
     port: 500
     ip: 172.16.0.2
+    private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
     public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-    allowed-ips:
-      - 0.0.0.0/0
+    allowed-ips: ['0.0.0.0/0']
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
@@ -125,30 +122,30 @@ proxies:
       s2: 0
       h1: 1
       h2: 2
-      h4: 3
-      h3: 4
+      h3: 3
+      h4: 4
       i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: url-test с высоким tolerance для приоритета Proton
+  # ГЛАВНАЯ ГРУППА: Fallback (Жесткий приоритет Протона)
   - name: "Auto-Reconnect"
-    type: url-test
+    type: fallback # МАГИЯ: Использует первую живую ноду из списка, игнорируя низкий пинг WARP
     proxies:
-      - "🇷🇴 Proton_RO"       # Первый в списке (приоритет)
-      - "🇳🇱 WARP_NL"         # Второй
-      - "🇷🇺 WARP_Moscow"     # Третий
+      - "🇳🇱 Proton_NL"   # Если жив (даже с пингом 300мс) -> используем его
+      - "🇨🇦 Proton_CA"   # Если NL упал -> переключаемся сюда
+      - "🇷🇺 WARP_RU"     # Если оба Протона мертвы -> спасаемся WARP
     url: 'http://cp.cloudflare.com/generate_204'
     interval: 60
-    tolerance: 1000 # МАГИЯ: Не переключится на WARP, если разница в пинге меньше 1000мс
+    tolerance: 50
 
-  # Дополнительная группа для ручного выбора
+  # Группа для ручного выбора (если захочешь сам тыкнуть WARP)
   - name: "Ручной выбор"
     type: select
     proxies:
-      - "🇷🇴 Proton_RO"
-      - "🇳🇱 WARP_NL"
-      - "🇷🇺 WARP_Moscow"
+      - "🇳🇱 Proton_NL"
+      - "🇨🇦 Proton_CA"
+      - "🇷🇺 WARP_RU"
 
 # --- Правила маршрутизации ---
 rules:
@@ -160,7 +157,7 @@ tun:
   stack: mixed
   mtu: 1500
   auto-route: true
-  strict-route: false
+  strict-route: false # Обязательно false, чтобы другие приложения работали напрямую
   endpoint-independent-nat: true
   auto-detect-interface: true
   dns-hijack:
