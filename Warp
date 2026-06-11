@@ -3,11 +3,10 @@ mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
-ipv6: false # Глобальное отключение IPv6 для предотвращения утечек и обрывов на LTE/Wi-Fi
-external-controller: 127.0.0.1:9090 # Необходимо для работы управления во FlClash
+ipv6: false # Глобальное отключение IPv6
+external-controller: 127.0.0.1:9090
 
-# --- Настройки DNS (Fake-IP) ---
-# Нужны для корректной работы TUN-режима и обхода отравления DNS провайдером
+# --- Настройки DNS ---
 dns:
   enable: true
   ipv6: false
@@ -34,26 +33,26 @@ proxies:
     server: 162.159.195.1
     port: 500
     ip: 172.16.0.2
-    ipv6: 2606:4700:110:879e:bc38:897f:5e47:8e96 # Внутренний IPv6 самого туннеля WARP
+    # ipv6: ... (Убрано, чтобы не было микро-задержек маршрутизации на LTE)
     public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
     allowed-ips: ['0.0.0.0/0']
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    keepalive: 25 # Добавлено: отправляет пульс каждые 25 сек, чтобы мобильный оператор не рвал NAT-сессию
-    remote-dns-resolve: true
-    dns: [8.8.8.8, 8.8.4.4, 2001:4860:4860::8888, 2001:4860:4860::8844]
+    keepalive: 25 # Держит сессию живой
+    remote-dns-resolve: false # ВАЖНО: Отключено. WARP сам отлично роутит DNS внутри туннеля, принудительный ресолв вызывал фризы.
+    dns: [8.8.8.8, 1.1.1.1] # Убраны IPv6 адреса, оставлены только быстрые IPv4
     amnezia-wg-option:
-      jc: 4
+      jc: 0      # ОТКЛЮЧЕНО для WARP. Мобильные операторы дропают junk-пакеты, что вызывало переподключение сессии (фриз на 2 сек).
       jmin: 40
       jmax: 70
-      s1: 0
-      s2: 0
+      s1: 0      # ОТКЛЮЧЕНО
+      s2: 0      # ОТКЛЮЧЕНО
       h1: 1
       h2: 2
       h4: 3
       h3: 4
-      i1: <b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>
+      i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
 
 # --- Группы прокси ---
 proxy-groups:
@@ -62,7 +61,7 @@ proxy-groups:
     icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
     proxies:
       - WARP
-    url: 'http://speed.cloudflare.com/'
+    url: 'http://cp.cloudflare.com/generate_204' # ЗАМЕНЕНО: Легковесный пинг (204 No Content) вместо тяжелого speedtest. Не вызывает обрывов при проверке.
     interval: 300
 
 # --- Правила маршрутизации ---
@@ -73,7 +72,7 @@ rules:
 tun:
   enable: true
   stack: mixed
-  mtu: 1500 # MTU для самой системы Android
+  mtu: 1500
   auto-route: true
   auto-detect-interface: true
   dns-hijack:
