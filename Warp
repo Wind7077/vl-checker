@@ -1,66 +1,79 @@
+# --- Базовые настройки ядра (Mihomo/Clash.Meta) ---
 mixed-port: 7890
 allow-lan: false
 mode: rule
-log-level: warning
-ipv6: false
+log-level: info
+ipv6: false # Глобальное отключение IPv6 для предотвращения утечек и обрывов на LTE/Wi-Fi
+external-controller: 127.0.0.1:9090 # Необходимо для работы управления во FlClash
 
-external-controller: 127.0.0.1:9090
-
-# ======================
-# DNS (максимально лёгкий режим)
-# ======================
+# --- Настройки DNS (Fake-IP) ---
+# Нужны для корректной работы TUN-режима и обхода отравления DNS провайдером
 dns:
   enable: true
   ipv6: false
-  enhanced-mode: redir-host
-  nameserver:
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
+  default-nameserver:
     - 1.1.1.1
     - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
 
-# ======================
-# PROXIES
-# ======================
+# --- Прокси-ноды ---
 proxies:
-- name: "WARP"
-  type: wireguard
-  private-key: IOqV+8Tjbpy/PFzyzcZyes/mQLWibf82RCB/lr5o3G4=
-  server: 162.159.195.1
-  port: 500
-  ip: 172.16.0.2
-  public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-  allowed-ips:
-    - 0.0.0.0/0
-  reserved: [168, 18, 219]
+  - name: "WARP"
+    type: wireguard
+    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
+    server: 185.107.56.211
+    port: 443
+    ip: 172.16.0.2
+    public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
+    allowed-ips: ['0.0.0.0/0']
+    reserved: [219, 184, 163]
+    udp: true
+    mtu: 1280
+    keepalive: 25 # Отправляет пульс каждые 25 сек, чтобы мобильный оператор не рвал NAT-сессию
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 0
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h4: 3
+      h3: 4
+      i1: <b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>
 
-  udp: true
-
-  # ключевой баланс скорости восстановления и стабильности
-  mtu: 1180
-
-  # полностью минимальный AmneziaWG (ускоряет re-handshake)
-  amnezia-wg-option:
-    jc: 1
-    jmin: 10
-    jmax: 20
-    s1: 0
-    s2: 0
-    h1: 1
-    h2: 2
-    h3: 3
-    h4: 4
-    i1: <b 0xc40000000101fc00002e1d96f5f7ff3700e0c7bc7f608e25fb3d4e9bdaff26943f2101fb4383d3d15ea0c51584f1a280db3c70fd7956c7bb>
-
-# ======================
-# PROXY GROUP
-# ======================
+# --- Группы прокси ---
 proxy-groups:
-- name: PROXY
-  type: select
-  proxies:
-    - WARP
+  - name: Cloudflare
+    type: select
+    icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
+    proxies:
+      - WARP
+    url: 'http://speed.cloudflare.com/'
+    interval: 300
 
-# ======================
-# RULES (минимальные, без лишней логики)
-# ======================
+# --- Правила маршрутизации ---
 rules:
-  - MATCH,PROXY
+  - MATCH,Cloudflare
+
+# --- Виртуальная сетевая карта (TUN) для Android ---
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500 # Оптимальный MTU для приема пакетов от самой ОС Android
+  auto-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
