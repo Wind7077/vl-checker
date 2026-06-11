@@ -69,7 +69,8 @@ proxy-groups:
     proxies:
       - WARP
     url: 'http://cp.cloudflare.com/generate_204'
-    interval: 300
+    interval: 60 # БЫЛО 300. Стало 60 (проверка каждую минуту)
+    tolerance: 50 # Если задержка выросла на 50мс, Clash поймет, что сеть "деградировала"
 
 rules:
   - MATCH,Cloudflare
