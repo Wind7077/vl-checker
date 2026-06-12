@@ -9,21 +9,21 @@ proxies:
     allowed-ips: ['0.0.0.0/0', '::/0']
     reserved: [0, 0, 0]
     udp: true
-    mtu: 1400                 # Безопасный MTU, предотвращает фрагментацию на мобильных сетях
+    mtu: 1400                 # Безопасный MTU для мобильных сетей
     keepalive: 25             # Пульс каждые 25 сек, чтобы оператор не рвал NAT
     remote-dns-resolve: true
-    dns: [10.2.0.1]           # Внутренний DNS ProtonVPN из вашего конфига
+    dns: [10.2.0.1]           # Внутренний DNS ProtonVPN
     amnezia-wg-option:
-   jc: 4
-   jmin: 40
-   jmax: 70
-   s1: 0
-   s2: 0
-   h1: 1
-   h2: 2
-   h4: 3
-   h3: 4
-   i1: <b 0xc700000001019d00002ef267d2787f429311c79a84d12ecbf30d5770685e9f54582e587aec6485e350e57c72f668323d7f49597a1bc5e97b>
+      jc: 4                   # ← Исправлен отступ (6 пробелов)
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h4: 3
+      h3: 4
+      i1: 0xc700000001019d00002ef267d2787f429311c79a84d12ecbf30d5770685e9f54582e587aec6485e350e57c72f668323d7f49597a1bc5e97b
 
 proxy-groups:
   - name: "Proton-Stable"
@@ -32,19 +32,18 @@ proxy-groups:
     proxies:
       - Proton-NL-FREE
     url: 'https://1.1.1.1/cdn-cgi/trace'
-    interval: 180             # Проверка каждые 3 минуты (оптимально, не нагружает туннель)
-    tolerance: 50             # Если задержка выросла на 50мс, Clash поймет, что сеть "деградировала"
+    interval: 180
+    tolerance: 50
 
 rules:
   - MATCH,Proton-Stable
 
-# Блок TUN для создания виртуальной сетевой карты в Android
 tun:
   enable: true
-  stack: mixed                # Максимальная совместимость на Android
-  mtu: 1500                   # Системный MTU оставляем стандартным
+  stack: mixed
+  mtu: 1500
   auto-route: true
   auto-detect-interface: true
-  strict-route: false         # Мягкая маршрутизация: предотвращает обрывы при смене Wi-Fi/LTE
+  strict-route: false
   dns-hijack:
     - any:53
