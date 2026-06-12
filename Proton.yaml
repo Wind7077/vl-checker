@@ -1,28 +1,29 @@
 proxies:
-- name: "WARP"
-  type: wireguard
-  private-key: uJzVKDHoXSW+K7mSo/gjS1b1BuZz9z+AcxdkTLMxZlA=
-  server: 138.199.50.144
-  port: 443
-  ip: 172.16.0.2
-  public-key: KZ9UhGk5qLny663HP6xWCfyIDH2xgvu9DNH5tGYmYnw=
-  allowed-ips: ['0.0.0.0/0']
-  reserved: [114, 137, 137]
-  udp: true
-  mtu: 1280
-  remote-dns-resolve: true
-  dns: [8.8.8.8, 8.8.4.4]
-  amnezia-wg-option:
-   jc: 4
-   jmin: 40
-   jmax: 70
-   s1: 0
-   s2: 0
-   h1: 1
-   h2: 2
-   h4: 3
-   h3: 4
-   i1: <b 0xc500000001012100002ef5e77b9126ed8c021b1d87aa8f2c401ec847740f253a583a0038b484ed0555f6d29e5b8a7282e22c09f45b4ad81a>
+  - name: "WARP"
+    type: wireguard
+    private-key: uJzVKDHoXSW+K7mSo/gjS1b1BuZz9z+AcxdkTLMxZlA=
+    server: 138.199.50.144
+    port: 443
+    ip: 172.16.0.2
+    public-key: KZ9UhGk5qLny663HP6xWCfyIDH2xgvu9DNH5tGYmYnw=
+    allowed-ips: ['0.0.0.0/0']
+    reserved: [114, 137, 137]
+    udp: true
+    mtu: 1280
+    keepalive: 25 # Добавлено для удержания сессии
+    remote-dns-resolve: true
+    dns: [8.8.8.8, 8.8.4.4]
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xc500000001012100002ef5e77b9126ed8c021b1d87aa8f2c401ec847740f253a583a0038b484ed0555f6d29e5b8a7282e22c09f45b4ad81a>" # ВАЖНО: взято в кавычки!
 
 proxy-groups:
 - name: Cloudflare
