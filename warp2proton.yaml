@@ -46,7 +46,7 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. WARP (Твой РАБОЧИЙ конфиг, оставляем без изменений!)
+  # 1. WARP (Твой РАБОЧИЙ конфиг)
   - name: "WARP"
     type: wireguard
     private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
@@ -84,11 +84,11 @@ proxies:
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
     allowed-ips: ['0.0.0.0/0']
     udp: true
-    mtu: 1150 # КРИТИЧНО: Уменьшено, чтобы поместиться в MTU WARP (1280) с учетом заголовков
+    mtu: 1000 # КРИТИЧНО: Уменьшено до 1000 для Android
     keepalive: 25
     remote-dns-resolve: true
     dns: [10.2.0.1]
-    dialer-proxy: "WARP" # МАГИЯ: Этот Proton подключается ЧЕРЕЗ WARP
+    dialer-proxy: "WARP" # Подключаемся ЧЕРЕЗ WARP
     amnezia-wg-option:
       jc: 4
       jmin: 40
@@ -101,7 +101,7 @@ proxies:
       h4: 4
       i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
-  # 3. PROTON Напрямую (Для сравнения и как запасной вариант)
+  # 3. PROTON Напрямую (Запасной вариант)
   - name: "Proton_Direct"
     type: wireguard
     server: 195.242.214.210
@@ -129,37 +129,19 @@ proxies:
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: Fallback (Умное переключение)
+  # ГЛАВНАЯ ГРУППА: select (Ручной выбор, без автоматического "мигания")
   - name: "Auto-Reconnect"
-    type: fallback
+    type: select
     proxies:
-      - "Proton_via_WARP"  # Пытаемся идти через цепочку (максимальная анонимность)
-      - "Proton_Direct"    # Если цепочка тормозит/лежит, идем напрямую (быстрее)
-      - "WARP"             # Если оба Протона легли, идем просто через WARP
+      - "Proton_via_WARP"  # Цепочка (максимальная анонимность)
+      - "Proton_Direct"    # Напрямую (быстрее)
+      - "WARP"             # Просто WARP
     url: 'http://www.gstatic.com/generate_204'
     interval: 60
     tolerance: 100
-
-  # Группа для ручного выбора
-  - name: "Manual_Select"
-    type: select
-    proxies:
-      - "Proton_via_WARP"
-      - "Proton_Direct"
-      - "WARP"
 
 # --- Правила маршрутизации ---
 rules:
   - MATCH,Auto-Reconnect
 
-# --- Настройки TUN для Android ---
-tun:
-  enable: true
-  stack: mixed
-  mtu: 1500
-  auto-route: true
-  strict-route: false
-  endpoint-independent-nat: true
-  auto-detect-interface: true
-  dns-hijack:
-    - any:53
+# --- Настройки TUN
