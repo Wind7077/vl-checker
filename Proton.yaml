@@ -1,28 +1,28 @@
 proxies:
-- name: 🇳🇱 NL-282
-  type: wireguard
-  server: 89.105.214.198
-  port: 51820
-  ip: 10.2.0.2/32
-  private-key: CJAiFAeiEMYgcIY2M3dMqzAFUEwxvkk+/tf66jaTT1c=
-  public-key: JeixK91RfHbu9oOfBtuJO5wdZkTHVVPHAedxyZp27jE=
-  allowed-ips: ['0.0.0.0/0', '::/0']
-  udp: true
-  mtu: 1420
-  keepalive: 25
-  remote-dns-resolve: true
-  dns: [10.2.0.1]
-  amnezia-wg-option:
-    jc: 3
-    jmin: 1
-    jmax: 3
-    s1: 0
-    s2: 0
-    h1: 1
-    h2: 2
-    h3: 3
-    h4: 4
-    i1: <b 0xca0000000101ed00004056fc1979a79d53568718dbea3d43b77719d83c928896ead176870f9d4b96541f32afbdc57adec445a007910a5d59461cca9c02fff3d87936515f03f802bba161a72faa2be18f70630235e465dfe07673a9ed8ceaf2e95e>
+  - name: "Proton-NL-FREE"
+    type: wireguard
+    server: 89.105.214.198
+    port: 51820
+    ip: 10.2.0.2
+    private-key: CJAiFAeiEMYgcIY2M3dMqzAFUEwxvkk+/tf66jaTT1c=
+    public-key: JeixK91RfHbu9oOfBtuJO5wdZkTHVVPHAedxyZp27jE=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 3
+      jmin: 1
+      jmax: 3
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: 0xca0000000101ed00004056fc1979a79d53568718dbea3d43b77719d83c928896ead176870f9d4b96541f32afbdc57adec445a007910a5d59461cca9c02fff3d87936515f03f802bba161a72faa2be18f70630235e465dfe07673a9ed8ceaf2e95e
 
 proxy-groups:
   - name: "Proton-Stable"
