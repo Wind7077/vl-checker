@@ -46,7 +46,7 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. WARP (Внешний туннель, маскирует всё от провайдера)
+  # 1. WARP (Внешний туннель, маскирует трафик от провайдера)
   - name: "WARP"
     type: wireguard
     private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
@@ -84,14 +84,13 @@ proxies:
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
     allowed-ips: ['0.0.0.0/0']
     udp: true
-    mtu: 1000 # КРИТИЧНО: Уменьшено, чтобы поместиться в MTU WARP с учетом заголовков
+    mtu: 1200
     keepalive: 25
-    remote-dns-resolve: true
-    dns: [10.2.0.1]
-    dialer-proxy: "WARP" # МАГИЯ: Подключаемся через WARP
-    # Блок amnezia-wg-option УДАЛЁН: он здесь бесполезен и только раздувает пакеты
+    remote-dns-resolve: false
+    dialer-proxy: "WARP"
+    # Amnezia и DNS удалены: в цепочке они вызывают конфликты маршрутизации и лишнюю нагрузку
 
-  # 3. PROTON Напрямую (Запасной вариант, если цепочка не нужна)
+  # 3. PROTON Напрямую (Запасной вариант)
   - name: "Proton_Direct"
     type: wireguard
     server: 195.242.214.210
@@ -119,16 +118,15 @@ proxies:
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: select (Ручной выбор, без автоматического "мигания")
   - name: "Auto-Reconnect"
     type: select
     proxies:
-      - "Proton_via_WARP"  # Цепочка (максимальная анонимность)
-      - "Proton_Direct"    # Напрямую (быстрее, если не блокируется)
-      - "WARP"             # Просто WARP (самый стабильный резерв)
-    url: 'http://cp.cloudflare.com/generate_204' # Самый лёгкий URL для проверки
-    interval: 300          # Проверка раз в 5 минут (даём цепочке время "раскачаться")
-    timeout: 5000          # Увеличен таймаут проверки до 5 секунд (спасает от ложных красных значков)
+      - "Proton_via_WARP"
+      - "Proton_Direct"
+      - "WARP"
+    url: 'http://cp.cloudflare.com/generate_204'
+    interval: 300
+    timeout: 5000
     tolerance: 100
 
 # --- Правила маршрутизации ---
@@ -141,8 +139,8 @@ tun:
   stack: mixed
   mtu: 1500
   auto-route: true
-  strict-route: true # ВАЖНО: true, чтобы весь трафик шёл строго через Clash, исключая утечки
-  endpoint-independent-nat: true # Сохраняет сессию при смене Wi-Fi на LTE
+  strict-route: true
+  endpoint-independent-nat: true
   auto-detect-interface: true
   dns-hijack:
     - any:53
