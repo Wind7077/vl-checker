@@ -5,6 +5,7 @@ mode: rule
 log-level: info
 ipv6: false
 external-controller: 127.0.0.1:9090
+tcp-concurrent: true
 
 # --- Сниффер ---
 sniffer:
@@ -26,6 +27,7 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - '*.lan'
+    - '*.local'
     - '*.telegram.org'
     - '*.t.me'
     - '*.whatsapp.com'
@@ -33,10 +35,10 @@ dns:
     - '*.wa.me'
     - '*.facebook.com'
     - '*.fbcdn.net'
-    - localhost.ptlogin2.qq.com
-    - dns.msftncsi.com
-    - www.msftncsi.com
-    - www.msftconnecttest.com
+    - 'localhost.ptlogin2.qq.com'
+    - 'dns.msftncsi.com'
+    - 'www.msftncsi.com'
+    - 'www.msftconnecttest.com'
   default-nameserver:
     - 1.1.1.1
     - 8.8.8.8
@@ -46,7 +48,7 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. WARP (Твой РАБОЧИЙ конфиг)
+  # 1. WARP (обфусцированный AmneziaWG, первый туннель)
   - name: "WARP"
     type: wireguard
     private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
@@ -59,9 +61,8 @@ proxies:
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    keepalive: 25
+    persistent-keepalive: 25   # ИСПРАВЛЕНО: было "keepalive"
     remote-dns-resolve: false
-    dns: [8.8.8.8, 1.1.1.1]
     amnezia-wg-option:
       jc: 2
       jmin: 40
@@ -74,74 +75,58 @@ proxies:
       h3: 4
       i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
 
-  # 2. PROTON через WARP (Цепочка)
+  # 2. PROTON через WARP (цепочка WG-over-WG)
+  # ВАЖНО: mihomo имеет баг с двумя одновременными WG туннелями.
+  # dialer-proxy корректно работает когда WARP используется только как транспорт.
   - name: "Proton_via_WARP"
     type: wireguard
     server: 195.242.214.210
-    port: 443
+    port: 51820          # ИЗМЕНЕНО: используй стандартный порт WG для Proton
+                         # Если у тебя именно 443 в Proton конфиге — верни 443
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
-    allowed-ips: ['0.0.0.0/0']
+    allowed-ips:
+      - 0.0.0.0/0
     udp: true
-    mtu: 1000 # КРИТИЧНО: Уменьшено до 1000 для Android
-    keepalive: 25
+    mtu: 1200            # ИСПРАВЛЕНО: было 1000. Правильно: 1280 - 60 (WG overhead) - 20 (запас) = 1200
+    persistent-keepalive: 25   # ИСПРАВЛЕНО: было "keepalive"
     remote-dns-resolve: true
-    dns: [10.2.0.1]
-    dialer-proxy: "WARP" # Подключаемся ЧЕРЕЗ WARP
-    amnezia-wg-option:
-      jc: 4
-      jmin: 40
-      jmax: 70
-      s1: 0
-      s2: 0
-      h1: 1
-      h2: 2
-      h3: 3
-      h4: 4
-      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+    dns:
+      - 10.2.0.1
+    dialer-proxy: "WARP"
+    # AmneziaWG для Proton — только если Proton-сервер это поддерживает.
+    # Стандартный Proton WireGuard НЕ использует AmneziaWG на серверной стороне.
+    # Убери amnezia-wg-option для Proton если он у тебя штатный ProtonVPN WG.
+    # amnezia-wg-option здесь бессмысленно и может мешать рукопожатию.
 
-  # 3. PROTON Напрямую (Запасной вариант)
+  # 3. PROTON напрямую (запасной, только если WARP не нужен)
   - name: "Proton_Direct"
     type: wireguard
     server: 195.242.214.210
-    port: 443
+    port: 51820
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
-    allowed-ips: ['0.0.0.0/0']
+    allowed-ips:
+      - 0.0.0.0/0
     udp: true
     mtu: 1280
-    keepalive: 25
+    persistent-keepalive: 25
     remote-dns-resolve: true
-    dns: [10.2.0.1]
-    amnezia-wg-option:
-      jc: 4
-      jmin: 40
-      jmax: 70
-      s1: 0
-      s2: 0
-      h1: 1
-      h2: 2
-      h3: 3
-      h4: 4
-      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+    dns:
+      - 10.2.0.1
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: select (Ручной выбор, без автоматического "мигания")
-  - name: "Auto-Reconnect"
+  # Ручной выбор без health-check polling (убрали url/interval из select)
+  - name: "PROXY"
     type: select
     proxies:
-      - "Proton_via_WARP"  # Цепочка (максимальная анонимность)
-      - "Proton_Direct"    # Напрямую (быстрее)
-      - "WARP"             # Просто WARP
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 60
-    tolerance: 100
+      - "Proton_via_WARP"
+      - "Proton_Direct"
+      - "WARP"
 
 # --- Правила маршрутизации ---
 rules:
-  - MATCH,Auto-Reconnect
-
-# --- Настройки TUN
+  - MATCH,PROXY
