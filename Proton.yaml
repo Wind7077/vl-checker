@@ -1,11 +1,11 @@
 proxies:
   - name: "Proton-NL-FREE"
     type: wireguard
-    server: 89.105.214.198
-    port: 443
+    server: 138.199.50.144
+    port: 51820
     ip: 10.2.0.2
-    private-key: CJAiFAeiEMYgcIY2M3dMqzAFUEwxvkk+/tf66jaTT1c=
-    public-key: JeixK91RfHbu9oOfBtuJO5wdZkTHVVPHAedxyZp27jE=
+    private-key: uJzVKDHoXSW+K7mSo/gjS1b1BuZz9z+AcxdkTLMxZlA=
+    public-key: KZ9UhGk5qLny663HP6xWCfyIDH2xgvu9DNH5tGYmYnw=
     allowed-ips:
       - 0.0.0.0/0 # Убрано ::/0, так как IPv6 отключен глобально для стабильности
     udp: true
@@ -14,9 +14,9 @@ proxies:
     remote-dns-resolve: true
     dns: [10.2.0.1]
     amnezia-wg-option:
-      jc: 3
-      jmin: 1
-      jmax: 3
+      jc: 2
+      jmin: 20
+      jmax: 50
       s1: 0
       s2: 0
       h1: 1
