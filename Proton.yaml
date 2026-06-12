@@ -1,18 +1,48 @@
+# --- Базовые настройки ядра ---
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 127.0.0.1:9090
+
+# --- Настройки DNS ---
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - '*.telegram.org'
+    - '*.t.me'
+    - '*.whatsapp.com'
+    - '*.whatsapp.net'
+    - '*.wa.me'
+    - '*.facebook.com'
+    - '*.fbcdn.net'
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+
+# --- Прокси-ноды ---
 proxies:
-   - name: "WARP"
+  - name: "WARP"
     type: wireguard
     private-key: uJzVKDHoXSW+K7mSo/gjS1b1BuZz9z+AcxdkTLMxZlA=
     server: 138.199.50.144
     port: 443
-    ip: 10.2.0.2 # Изменено с 172.16.0.2 на стандартный для Proton
+    ip: 10.2.0.2
     public-key: KZ9UhGk5qLny663HP6xWCfyIDH2xgvu9DNH5tGYmYnw=
     allowed-ips: ['0.0.0.0/0']
-    # reserved: [114, 137, 137]  <-- ПОЛНОСТЬЮ УДАЛЕНО! Это параметр Cloudflare, для Proton он ломает коннект
     udp: true
     mtu: 1280
-    keepalive: 25 # Добавлено для удержания сессии
+    keepalive: 25
     remote-dns-resolve: true
-    dns: [1.1.1.1] # Упрощено до одного надежного DNS
+    dns: [1.1.1.1]
     amnezia-wg-option:
       jc: 4
       jmin: 40
@@ -24,14 +54,29 @@ proxies:
       h3: 3
       h4: 4
       i1: "<b 0xc500000001012100002ef5e77b9126ed8c021b1d87aa8f2c401ec847740f253a583a0038b484ed0555f6d29e5b8a7282e22c09f45b4ad81a>"
-proxy-groups:
-- name: Cloudflare
-  type: select
-  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
-  proxies:
-    - WARP
-  url: 'http://speed.cloudflare.com/'
-  interval: 300
 
+# --- Группы прокси ---
+proxy-groups:
+  - name: Cloudflare
+    type: select
+    proxies:
+      - WARP
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 60
+    tolerance: 1000
+
+# --- Правила маршрутизации ---
 rules:
-- MATCH,Cloudflare
+  - MATCH,Cloudflare
+
+# --- Настройки TUN для Android ---
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  strict-route: false
+  endpoint-independent-nat: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
