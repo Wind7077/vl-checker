@@ -6,7 +6,8 @@ proxies:
     ip: 10.2.0.2
     private-key: CJAiFAeiEMYgcIY2M3dMqzAFUEwxvkk+/tf66jaTT1c=
     public-key: JeixK91RfHbu9oOfBtuJO5wdZkTHVVPHAedxyZp27jE=
-    allowed-ips: ['0.0.0.0/0', '::/0']
+    allowed-ips:
+      - 0.0.0.0/0 # Убрано ::/0, так как IPv6 отключен глобально для стабильности
     udp: true
     mtu: 1280
     keepalive: 25
