@@ -1,11 +1,12 @@
+# --- Базовые настройки ядра (Mihomo) ---
 mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
 ipv6: false
 external-controller: 127.0.0.1:9090
-tcp-concurrent: true
 
+# --- Сниффер ---
 sniffer:
   enable: true
   sniff:
@@ -17,6 +18,7 @@ sniffer:
     QUIC:
       ports: [443, 8443]
 
+# --- Настройки DNS ---
 dns:
   enable: true
   ipv6: false
@@ -24,7 +26,6 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - '*.lan'
-    - '*.local'
     - '*.telegram.org'
     - '*.t.me'
     - '*.whatsapp.com'
@@ -32,10 +33,10 @@ dns:
     - '*.wa.me'
     - '*.facebook.com'
     - '*.fbcdn.net'
-    - 'localhost.ptlogin2.qq.com'
-    - 'dns.msftncsi.com'
-    - 'www.msftncsi.com'
-    - 'www.msftconnecttest.com'
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
   default-nameserver:
     - 1.1.1.1
     - 8.8.8.8
@@ -43,7 +44,9 @@ dns:
     - https://1.1.1.1/dns-query
     - https://8.8.8.8/dns-query
 
+# --- Прокси-ноды ---
 proxies:
+  # 1. WARP (Твой РАБОЧИЙ конфиг)
   - name: "WARP"
     type: wireguard
     private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
@@ -56,8 +59,9 @@ proxies:
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    persistent-keepalive: 25  # исправлено
+    keepalive: 25
     remote-dns-resolve: false
+    dns: [8.8.8.8, 1.1.1.1]
     amnezia-wg-option:
       jc: 2
       jmin: 40
@@ -70,6 +74,7 @@ proxies:
       h3: 4
       i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
 
+  # 2. PROTON через WARP (Цепочка)
   - name: "Proton_via_WARP"
     type: wireguard
     server: 195.242.214.210
@@ -77,15 +82,13 @@ proxies:
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
-    allowed-ips:
-      - 0.0.0.0/0
+    allowed-ips: ['0.0.0.0/0']
     udp: true
-    mtu: 1000
-    persistent-keepalive: 10  # уменьшено: чаще пингует, меньше разрывов
+    mtu: 1000 # КРИТИЧНО: Уменьшено до 1000 для Android
+    keepalive: 25
     remote-dns-resolve: true
-    dns:
-      - 10.2.0.1
-    dialer-proxy: "WARP"
+    dns: [10.2.0.1]
+    dialer-proxy: "WARP" # Подключаемся ЧЕРЕЗ WARP
     amnezia-wg-option:
       jc: 4
       jmin: 40
@@ -98,6 +101,7 @@ proxies:
       h4: 4
       i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
+  # 3. PROTON Напрямую (Запасной вариант)
   - name: "Proton_Direct"
     type: wireguard
     server: 195.242.214.210
@@ -105,14 +109,12 @@ proxies:
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
-    allowed-ips:
-      - 0.0.0.0/0
+    allowed-ips: ['0.0.0.0/0']
     udp: true
     mtu: 1280
-    persistent-keepalive: 25
+    keepalive: 25
     remote-dns-resolve: true
-    dns:
-      - 10.2.0.1
+    dns: [10.2.0.1]
     amnezia-wg-option:
       jc: 4
       jmin: 40
@@ -125,13 +127,21 @@ proxies:
       h4: 4
       i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
+# --- Группы прокси ---
 proxy-groups:
-  - name: "PROXY"
-    type: select          # убраны url/interval/tolerance — они не работают в select
+  # ГЛАВНАЯ ГРУППА: select (Ручной выбор, без автоматического "мигания")
+  - name: "Auto-Reconnect"
+    type: select
     proxies:
-      - "Proton_via_WARP"
-      - "Proton_Direct"
-      - "WARP"
+      - "Proton_via_WARP"  # Цепочка (максимальная анонимность)
+      - "Proton_Direct"    # Напрямую (быстрее)
+      - "WARP"             # Просто WARP
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 60
+    tolerance: 100
 
+# --- Правила маршрутизации ---
 rules:
-  - MATCH,PROXY
+  - MATCH,Auto-Reconnect
+
+# --- Настройки TUN
