@@ -9,12 +9,12 @@ proxies:
     allowed-ips: ['0.0.0.0/0', '::/0']
     reserved: [0, 0, 0]
     udp: true
-    mtu: 1400                 # Безопасный MTU для мобильных сетей
-    keepalive: 25             # Пульс каждые 25 сек, чтобы оператор не рвал NAT
+    mtu: 1400
+    keepalive: 25
     remote-dns-resolve: true
-    dns: [10.2.0.1]           # Внутренний DNS ProtonVPN
+    dns: [10.2.0.1]
     amnezia-wg-option:
-      jc: 4                   # ← Исправлен отступ (6 пробелов)
+      jc: 4
       jmin: 40
       jmax: 70
       s1: 0
