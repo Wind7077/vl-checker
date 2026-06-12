@@ -7,6 +7,18 @@ ipv6: false
 external-controller: 127.0.0.1:9090
 tcp-concurrent: true
 
+# --- TUN ---
+tun:
+  enable: true
+  stack: gvisor
+  auto-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
+  route-exclude-address:
+    - 162.159.195.1/32    # WARP сервер — идёт мимо TUN напрямую
+    - 195.242.214.210/32  # Proton сервер — идёт через WARP (userspace), не через TUN
+
 # --- Сниффер ---
 sniffer:
   enable: true
@@ -48,7 +60,7 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. WARP (обфусцированный AmneziaWG, первый туннель)
+  # 1. WARP (AmneziaWG обфускация)
   - name: "WARP"
     type: wireguard
     private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
@@ -61,7 +73,7 @@ proxies:
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    persistent-keepalive: 25   # ИСПРАВЛЕНО: было "keepalive"
+    persistent-keepalive: 25
     remote-dns-resolve: false
     amnezia-wg-option:
       jc: 2
@@ -75,36 +87,40 @@ proxies:
       h3: 4
       i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
 
-  # 2. PROTON через WARP (цепочка WG-over-WG)
-  # ВАЖНО: mihomo имеет баг с двумя одновременными WG туннелями.
-  # dialer-proxy корректно работает когда WARP используется только как транспорт.
+  # 2. PROTON через WARP (цепочка)
   - name: "Proton_via_WARP"
     type: wireguard
     server: 195.242.214.210
-    port: 51820          # ИЗМЕНЕНО: используй стандартный порт WG для Proton
-                         # Если у тебя именно 443 в Proton конфиге — верни 443
+    port: 443
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
     allowed-ips:
       - 0.0.0.0/0
     udp: true
-    mtu: 1200            # ИСПРАВЛЕНО: было 1000. Правильно: 1280 - 60 (WG overhead) - 20 (запас) = 1200
-    persistent-keepalive: 25   # ИСПРАВЛЕНО: было "keepalive"
+    mtu: 1200
+    persistent-keepalive: 25
     remote-dns-resolve: true
     dns:
       - 10.2.0.1
     dialer-proxy: "WARP"
-    # AmneziaWG для Proton — только если Proton-сервер это поддерживает.
-    # Стандартный Proton WireGuard НЕ использует AmneziaWG на серверной стороне.
-    # Убери amnezia-wg-option для Proton если он у тебя штатный ProtonVPN WG.
-    # amnezia-wg-option здесь бессмысленно и может мешать рукопожатию.
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
-  # 3. PROTON напрямую (запасной, только если WARP не нужен)
+  # 3. PROTON напрямую (запасной)
   - name: "Proton_Direct"
     type: wireguard
     server: 195.242.214.210
-    port: 51820
+    port: 443
     ip: 10.2.0.2
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
@@ -116,10 +132,20 @@ proxies:
     remote-dns-resolve: true
     dns:
       - 10.2.0.1
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
 # --- Группы прокси ---
 proxy-groups:
-  # Ручной выбор без health-check polling (убрали url/interval из select)
   - name: "PROXY"
     type: select
     proxies:
