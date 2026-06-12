@@ -1,0 +1,302 @@
+# --- Базовые настройки ядра (Mihomo) ---
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 127.0.0.1:9090
+
+# --- Сниффер ---
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+# --- Настройки DNS ---
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - '*.telegram.org'
+    - '*.t.me'
+    - '*.whatsapp.com'
+    - '*.whatsapp.net'
+    - '*.wa.me'
+    - '*.facebook.com'
+    - '*.fbcdn.net'
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+
+# --- Прокси-ноды ---
+proxies:
+  # 1. NL-FREE#149 (Amnezia jc: 0)
+  - name: "NL-FREE#149"
+    type: wireguard
+    server: 169.150.218.137
+    port: 51820
+    ip: 10.2.0.2
+    private-key: wHtPbMRJaNkVNgogf+AHIrmceLdBCqfBIgM+zR+fOWw=
+    public-key: p3GNfkhyld5v3cODG9SVHjYCgFAzXfF4717xTxs6n3o=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 0
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>"
+
+  # 2. US-FREE#2 (Amnezia jc: 4)
+  - name: "US-FREE#2"
+    type: wireguard
+    server: 89.187.185.161
+    port: 51820
+    ip: 10.2.0.2
+    private-key: GBsUAq1Lb8IR42lLqMsIP6Zrg7NeFVqiEkOalzOHE2U=
+    public-key: ZEQHDxg/HbjznRvApyBWfUGs6T20Rvy0/DctZk6FvB4=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+
+  # 3. US-FREE#66 (Amnezia jc: 2)
+  - name: "US-FREE#66"
+    type: wireguard
+    server: 149.88.30.88
+    port: 51820
+    ip: 10.2.0.2
+    private-key: yMZqetmHpKNaTIRAQ3lmQOC70tmQmEReOOjEAHdpJlw=
+    public-key: Uqp1/VJ/Lz2VoN/2D0HEG7G8WDxLJm7+JNC5KZrUREw=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 2
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
+
+  # 4. US-FREE#96 (Amnezia jc: 0)
+  - name: "US-FREE#96"
+    type: wireguard
+    server: 149.40.62.119
+    port: 51820
+    ip: 10.2.0.2
+    private-key: gCV5+gcvuuZc7VJmj0LnP/XVc+pjT6F0EF2mNc7XFn8=
+    public-key: jShHBnjRpU3cgm2apLl0OElwSK0fs/gJTm9nnjdO8Ec=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 0
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>"
+
+  # 5. CA-FREE#31 (Amnezia jc: 4)
+  - name: "CA-FREE#31"
+    type: wireguard
+    server: 195.242.214.162
+    port: 51820
+    ip: 10.2.0.2
+    private-key: YFfF43P3x2cC9oWElDD6sYZdqWL+eZ1fwo0E/7IIE1o=
+    public-key: 358uOGHHss6pUT5v2enBtybHCun3iyH/l7g1t9BVfgo=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+
+  # 6. US-FREE#99 (Amnezia jc: 2)
+  - name: "US-FREE#99"
+    type: wireguard
+    server: 149.102.242.98
+    port: 51820
+    ip: 10.2.0.2
+    private-key: kFCljDyR3lox4Z5s4JEyE+8sSJ1knLJ3EIJ/MooGsGc=
+    public-key: 03idG1N3+mPn+n2SRqYcdFdbeUYSirXzJVnIejIv30I=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 2
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xc10000000101ec00002ed30c87a529ebb80adafffa8ea23dba93b7b43d42936e8490affd0529319f89a02a3ce2938129137278b1c263081b>"
+
+  # 7. US-FREE#105 (Amnezia jc: 0)
+  - name: "US-FREE#105"
+    type: wireguard
+    server: 79.127.147.88
+    port: 51820
+    ip: 10.2.0.2
+    private-key: aB6b3W9EalyF6iJ8NL/C877bqrAf7xjrh1CLgaMBoHQ=
+    public-key: +nfuVNp0Pevo7gksdbUCpgcNa+oowtZI/m031Ww3Iy0=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 0
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>"
+
+  # 8. CH-FREE#10 (Amnezia jc: 4)
+  - name: "CH-FREE#10"
+    type: wireguard
+    server: 135.136.39.2
+    port: 51820
+    ip: 10.2.0.2
+    private-key: wL4GNp6/4xj7RKuJk/UB5KfRxTp5LrNr32O8RXKnnlc=
+    public-key: 1WO+SU1kJCYR5ZWBVK/M7bNsvz1HWIFlq/xafhDqHnk=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1280
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1]
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+
+# --- Группы прокси ---
+proxy-groups:
+  # ГЛАВНАЯ ГРУППА: url-test (Автоматически выбирает самую быструю ноду)
+  - name: "Auto-Fastest"
+    type: url-test
+    proxies:
+      - "NL-FREE#149"
+      - "US-FREE#2"
+      - "US-FREE#66"
+      - "US-FREE#96"
+      - "CA-FREE#31"
+      - "US-FREE#99"
+      - "US-FREE#105"
+      - "CH-FREE#10"
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 60
+    tolerance: 50 # Не будет скакать между нодами, если разница в пинге меньше 50мс
+
+  # Группа для ручного выбора
+  - name: "Manual_Select"
+    type: select
+    proxies:
+      - "NL-FREE#149"
+      - "US-FREE#2"
+      - "US-FREE#66"
+      - "US-FREE#96"
+      - "CA-FREE#31"
+      - "US-FREE#99"
+      - "US-FREE#105"
+      - "CH-FREE#10"
+
+# --- Правила маршрутизации ---
+rules:
+  - MATCH,Auto-Fastest
+
+# --- Настройки TUN для Android ---
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  strict-route: false
+  endpoint-independent-nat: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
