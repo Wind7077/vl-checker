@@ -3,10 +3,10 @@ mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
-ipv6: false # Глобальное отключение IPv6 для предотвращения утечек и микро-обрывов на мобильных сетях
+ipv6: false
 external-controller: 127.0.0.1:9090
 
-# --- Настройки DNS ---
+# --- DNS ---
 dns:
   enable: true
   ipv6: false
@@ -25,7 +25,7 @@ dns:
     - https://1.1.1.1/dns-query
     - https://8.8.8.8/dns-query
 
-# --- Прокси-ноды ---
+# --- Прокси ---
 proxies:
   - name: 🇷🇴 RO_21
     type: wireguard
@@ -35,19 +35,19 @@ proxies:
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
     allowed-ips:
-      - 0.0.0.0/0 # Убрано ::/0, так как IPv6 отключен глобально для стабильности
+      - 0.0.0.0/0
     udp: true
-    mtu: 1420 # Понижено с 1420 до 1280 для исключения IP-фрагментации (главная причина обрывов от DPI)
+    mtu: 1280
     remote-dns-resolve: true
     dns:
       - 1.1.1.1
-    keepalive: 25 # (было persistent-keepalive, keepalive более корректно для Mihomo)
+    keepalive: 25
     amnezia-wg-option:
-      jc: 4      # ВКЛЮЧЕНО (было 0). Генерация мусорных пакетов для маскировки от DPI
-      jmin: 40   # Минимальный размер мусорного пакета
-      jmax: 70   # Максимальный размер мусорного пакета
-      s1: 0     # ВКЛЮЧЕНО (было 0). Джиттер (шум) для инициирующего пакета
-      s2: 0     # ВКЛЮЧЕНО (было 0). Джиттер (шум) для ответного пакета
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
       h1: 1
       h2: 2
       h3: 3
@@ -64,19 +64,12 @@ proxy-groups:
     url: http://speed.cloudflare.com/
     unified-delay: true
     interval: 300
-- name: Cloudflare
-  type: select
-  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
-  proxies:
-    - WARP
-  url: 'http://speed.cloudflare.com/'
-  interval: 300
 
-# --- Правила маршрутизации ---
+# --- Маршрутизация ---
 rules:
   - MATCH,Proton
 
-# --- Виртуальная сетевая карта (TUN) для Android ---
+# --- TUN ---
 tun:
   enable: true
   stack: mixed
@@ -85,4 +78,3 @@ tun:
   auto-detect-interface: true
   dns-hijack:
     - any:53
-- MATCH,Cloudflare
