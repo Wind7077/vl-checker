@@ -89,7 +89,17 @@ proxies:
     remote-dns-resolve: true
     dns: [10.2.0.1]
     dialer-proxy: "WARP" # Подключаемся ЧЕРЕЗ WARP
-    
+    amnezia-wg-option:
+      jc: 4
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
+      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
   # 3. PROTON Напрямую (Запасной вариант)
   - name: "Proton_Direct"
