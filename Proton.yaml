@@ -25,14 +25,24 @@ proxies:
     i1: <b 0xca0000000101ed00004056fc1979a79d53568718dbea3d43b77719d83c928896ead176870f9d4b96541f32afbdc57adec445a007910a5d59461cca9c02fff3d87936515f03f802bba161a72faa2be18f70630235e465dfe07673a9ed8ceaf2e95e>
 
 proxy-groups:
-- name: Proton
-  type: select
-  icon: https://res.cloudinary.com/dbulfrlrz/image/upload/v1703162849/static/logos/icons/vpn_f9embt.svg
-  proxies:
-    - 🇳🇱 NL-282
-  url: 'http://speed.cloudflare.com/'
-  unified-delay: true
-  interval: 300
+  - name: "Proton-Stable"
+    type: select
+    icon: https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/ProtonVPN_logo.svg/512px-ProtonVPN_logo.svg.png
+    proxies:
+      - Proton-NL-FREE
+    url: 'https://1.1.1.1/cdn-cgi/trace'
+    interval: 180
+    tolerance: 50
 
+rules:
+  - MATCH,Proton-Stable
 
-
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: false
+  dns-hijack:
+    - any:53
