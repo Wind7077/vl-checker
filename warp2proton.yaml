@@ -46,7 +46,7 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. WARP (Твой РАБОЧИЙ конфиг)
+  # 1. WARP (Внешний туннель, маскирует всё от провайдера)
   - name: "WARP"
     type: wireguard
     private-key: +CH1Ws1FQZDJocIHN05/xmjNVYQqQ7J+18WyqzE4QU8=
@@ -84,24 +84,14 @@ proxies:
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
     allowed-ips: ['0.0.0.0/0']
     udp: true
-    mtu: 1000 # КРИТИЧНО: Уменьшено до 1000 для Android
+    mtu: 1000 # КРИТИЧНО: Уменьшено, чтобы поместиться в MTU WARP с учетом заголовков
     keepalive: 25
     remote-dns-resolve: true
     dns: [10.2.0.1]
-    dialer-proxy: "WARP" # Подключаемся ЧЕРЕЗ WARP
-    amnezia-wg-option:
-      jc: 4
-      jmin: 40
-      jmax: 70
-      s1: 0
-      s2: 0
-      h1: 1
-      h2: 2
-      h3: 3
-      h4: 4
-      i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
+    dialer-proxy: "WARP" # МАГИЯ: Подключаемся через WARP
+    # Блок amnezia-wg-option УДАЛЁН: он здесь бесполезен и только раздувает пакеты
 
-  # 3. PROTON Напрямую (Запасной вариант)
+  # 3. PROTON Напрямую (Запасной вариант, если цепочка не нужна)
   - name: "Proton_Direct"
     type: wireguard
     server: 195.242.214.210
@@ -134,14 +124,25 @@ proxy-groups:
     type: select
     proxies:
       - "Proton_via_WARP"  # Цепочка (максимальная анонимность)
-      - "Proton_Direct"    # Напрямую (быстрее)
-      - "WARP"             # Просто WARP
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 60
+      - "Proton_Direct"    # Напрямую (быстрее, если не блокируется)
+      - "WARP"             # Просто WARP (самый стабильный резерв)
+    url: 'http://cp.cloudflare.com/generate_204' # Самый лёгкий URL для проверки
+    interval: 300          # Проверка раз в 5 минут (даём цепочке время "раскачаться")
+    timeout: 5000          # Увеличен таймаут проверки до 5 секунд (спасает от ложных красных значков)
     tolerance: 100
 
 # --- Правила маршрутизации ---
 rules:
   - MATCH,Auto-Reconnect
 
-# --- Настройки TUN
+# --- Настройки TUN для Android ---
+tun:
+  enable: true
+  stack: mixed
+  mtu: 1500
+  auto-route: true
+  strict-route: true # ВАЖНО: true, чтобы весь трафик шёл строго через Clash, исключая утечки
+  endpoint-independent-nat: true # Сохраняет сессию при смене Wi-Fi на LTE
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
