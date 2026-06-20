@@ -49,9 +49,11 @@ proxies:
 
 # 4. Правила маршрутизации
 rules:
-  # Чтобы VLESS могли проходить проверку (health-check), они должны ходить в нет напрямую
-  - DOMAIN-SUFFIX,generate_204,DIRECT
+  # Разрешаем Clash скачивать подписки и проверять прокси напрямую
+  - DOMAIN-SUFFIX,githubusercontent.com,DIRECT
+  - DOMAIN-SUFFIX,github.com,DIRECT
   - DOMAIN-SUFFIX,cloudflare.com,DIRECT
+  - DOMAIN-SUFFIX,generate_204,DIRECT
   
   # Весь остальной трафик идет через WARP
   - MATCH,Proxy
