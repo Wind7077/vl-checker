@@ -8,13 +8,13 @@ ipv6: false
 proxy-providers:
   vless-list:
     type: http
-    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
-    interval: 3600 # Обновляем список раз в час
-    path: ./proxy_providers/vless-list.yaml
+    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
+    interval: 3600 
+    path: ./proxy_providers/vless-b64.txt
     health-check:
       enable: true
       url: http://cp.cloudflare.com/generate_204
-      interval: 120 # Проверяем пинг каждые 2 минуты (т.к. они дохнут)
+      interval: 120 
 
 # 2. Настраиваем группы
 proxy-groups:
