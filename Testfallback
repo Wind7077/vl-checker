@@ -4,10 +4,11 @@ allow-lan: false
 mode: rule
 log-level: info
 ipv6: false
-unified-delay: true # Ускоряет переключение нод и компенсирует задержки
+unified-delay: true # Ускоряет переключение нод
 tcp-concurrent: true # Разрешает одновременное установление TCP-соединений
-find-process-mode: off # Отключаем определение процессов, чтобы избежать зависаний на Android при смене сети
+find-process-mode: off # Отключаем определение процессов (экономит батарею и предотвращает баги на Android)
 external-controller: 127.0.0.1:9090
+bind-address: "*" # Слушаем все сетевые интерфейсы (Wi-Fi и мобильную сеть одновременно)
 
 # --- Сниффер ---
 sniffer:
@@ -61,8 +62,8 @@ proxies:
     reserved: [219, 184, 163]
     udp: true
     mtu: 1280
-    keepalive: 25
-    remote-dns-resolve: false # ИСПРАВЛЕНО: Отключаем для предотвращения дедлоков при реконнекте
+    keepalive: 10 # ИСПРАВЛЕНО: 10 сек вместо 25 для мгновенного отклика heartbeat
+    remote-dns-resolve: false # ИСПРАВЛЕНО: Отключено для предотвращения дедлоков при реконнекте
     dns: [10.2.0.1]
     amnezia-wg-option:
       jc: 0
@@ -87,8 +88,8 @@ proxies:
     allowed-ips: ['0.0.0.0/0']
     udp: true
     mtu: 1280
-    keepalive: 25
-    remote-dns-resolve: false # ИСПРАВЛЕНО
+    keepalive: 10
+    remote-dns-resolve: false
     dns: [1.1.1.1]
     amnezia-wg-option:
       jc: 4
@@ -114,8 +115,8 @@ proxies:
     reserved: [153, 176, 129]
     udp: true
     mtu: 1280
-    keepalive: 25
-    remote-dns-resolve: false # ИСПРАВЛЕНО
+    keepalive: 10
+    remote-dns-resolve: false
     dns: [8.8.8.8, 1.1.1.1]
     amnezia-wg-option:
       jc: 2
@@ -131,7 +132,7 @@ proxies:
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: Fallback (Жесткий приоритет Протона)
+  # ГЛАВНАЯ ГРУППА: Fallback
   - name: "Auto-Reconnect"
     type: fallback
     proxies:
@@ -140,7 +141,7 @@ proxy-groups:
       - "🇷🇺 WARP_RU"
     url: 'http://cp.cloudflare.com/generate_204'
     interval: 10 # ИСПРАВЛЕНО: Проверяем связь каждые 10 секунд
-    tolerance: 20 # ИСПРАВЛЕНО: Меньший порог для мгновенного переключения при отвале
+    tolerance: 20 # ИСПРАВЛЕНО: Мгновенное переключение при потере пакетов
 
   # Группа для ручного выбора
   - name: "Ручной выбор"
@@ -161,21 +162,23 @@ tun:
   stack: mixed
   mtu: 1500
   auto-route: true
-  strict-route: false # Обязательно false для Android
-  endpoint-independent-nat: true # Критически важно для UDP
+  strict-route: false
+  endpoint-independent-nat: true
   auto-detect-interface: true
-  route-exclude-address: # Исключаем локальные подсети для предотвращения конфликтов роутинга при смене Wi-Fi
+  route-exclude-address: # Исключаем локальные подсети
     - 192.168.0.0/16
     - 10.0.0.0/8
     - 172.16.0.0/12
   dns-hijack:
-    - "any:53" # ИСПРАВЛЕНО: Корректный синтаксис списка строк
+    - "any:53" # Правильный синтаксис строки
 
-# --- Экспериментальные настройки (Критично для быстрого реконнекта) ---
+# --- Экспериментальные настройки и кэш ---
 experimental:
   cache-file:
     enabled: true
     path: "./cache.db"
+  quic-go-disable-gso: true # Обходит баги QUIC при смене интерфейса
+  quic-go-disable-ecn: true
 
 profile:
   store-selected: true
