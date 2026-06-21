@@ -22,13 +22,14 @@ sniffer:
     - "+.t.me"
     - "+.telegram.me"
 
-# 1. Подключаем подписку как провайдера
+# 1. Подключаем подписку через конвертер (фильтруем ошибки)
 proxy-providers:
   vless-list:
     type: http
-    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
+    # Эта ссылка прогоняет ваш .txt файл через конвертер, удаляя битые узлы
+    url: "https://api.dler.io/sub?target=clash&url=https%3A%2F%2Fraw.githubusercontent.com%2FWind7077%2Fvl-checker%2Frefs%2Fheads%2Fmain%2Foutput%2Fproxies.txt&insert=false"
     interval: 3600 
-    path: ./proxy_providers/vless-b64.txt
+    path: ./proxy_providers/vless-clean.yaml
     health-check:
       enable: true
       url: http://cp.cloudflare.com/generate_204
