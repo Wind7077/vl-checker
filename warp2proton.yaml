@@ -3,6 +3,24 @@ allow-lan: false
 mode: rule
 log-level: info
 ipv6: false
+tcp-concurrent: true # Ускоряет установку новых соединений
+
+# Сниффинг: помогает правильно рутировать трафик и рвать мертвые соединения при смене сети
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+  # Заставляем Telegram быстро переподключаться при смене Wi-Fi на мобильную сеть
+  force-domain:
+    - "+.telegram.org"
+    - "+.t.me"
+    - "+.telegram.me"
 
 # 1. Подключаем подписку как провайдера
 proxy-providers:
@@ -15,13 +33,11 @@ proxy-providers:
       enable: true
       url: http://cp.cloudflare.com/generate_204
       interval: 60 
-    # ПРИНУДИТЕЛЬНО включаем UDP для всех скачанных прокси (строго нужно для WARP)
     override:
       udp: true
 
 # 2. Настраиваем группы
 proxy-groups:
-  # Группа fallback: всегда использует самый быстрый живой прокси
   - name: "Fastest-VLESS"
     type: fallback
     use:
@@ -29,9 +45,8 @@ proxy-groups:
     url: http://cp.cloudflare.com/generate_204
     interval: 60
     proxies:
-      - DIRECT # Запасной вариант, если все VLESS умрут
+      - DIRECT
 
-  # Группа для конечного использования
   - name: "Proxy"
     type: select
     proxies:
@@ -42,22 +57,20 @@ proxy-groups:
 proxies:
   - name: "WARP-via-VLESS"
     type: wireguard
-    server: 8.34.146.154 # Можно заменить на IP 162.159.192.1
+    server: 8.34.146.154
     port: 1180
     ip: 172.16.0.2
     public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
     private-key: yKe9jypeGWBPjnNXdUB0MbDCWEybrnnITqUurx2oZ20=
     udp: true
-    # Заставляем WARP подключаться через самый быстрый VLESS
+    mtu: 1280 # Уменьшаем размер пакета, чтобы туннель внутри туннеля не рвался
     dialer-proxy: "Fastest-VLESS"
 
 # 4. Правила маршрутизации
 rules:
-  # Разрешаем Clash скачивать подписки и проверять прокси напрямую
   - DOMAIN-SUFFIX,githubusercontent.com,DIRECT
   - DOMAIN-SUFFIX,github.com,DIRECT
   - DOMAIN-SUFFIX,cloudflare.com,DIRECT
   - DOMAIN-SUFFIX,generate_204,DIRECT
   
-  # Весь остальной трафик идет через WARP
   - MATCH,Proxy
