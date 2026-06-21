@@ -4,11 +4,11 @@ allow-lan: false
 mode: rule
 log-level: info
 ipv6: false
-unified-delay: true # Ускоряет переключение нод
-tcp-concurrent: true # Разрешает одновременное установление TCP-соединений
-find-process-mode: off # Отключаем определение процессов (экономит батарею и предотвращает баги на Android)
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: off
 external-controller: 127.0.0.1:9090
-bind-address: "*" # Слушаем все сетевые интерфейсы (Wi-Fi и мобильную сеть одновременно)
+bind-address: "*"
 
 # --- Сниффер ---
 sniffer:
@@ -28,8 +28,13 @@ dns:
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  respect-rules: true # КРИТИЧНО: Заставляет DNS идти по правилам, предотвращая мертвые петли при смене сети
   fake-ip-filter:
     - '*.lan'
+    - 'cp.cloudflare.com' # КРИТИЧНО: Исключаем URL проверки из fake-ip, чтобы она не уходила в мертвый туннель
+    - 'connectivitycheck.gstatic.com'
+    - '+.stun.*.*'
+    - '+.stun.*.*.*'
     - '*.telegram.org'
     - '*.t.me'
     - '*.whatsapp.com'
@@ -50,7 +55,7 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. PROTON NL (Голландия) - Главный приоритет
+  # 1. PROTON NL
   - name: "🇳🇱 Proton_NL"
     type: wireguard
     server: 185.107.56.211
@@ -62,8 +67,9 @@ proxies:
     reserved: [219, 184, 163]
     udp: true
     mtu: 1280
-    keepalive: 10 # ИСПРАВЛЕНО: 10 сек вместо 25 для мгновенного отклика heartbeat
-    remote-dns-resolve: false # ИСПРАВЛЕНО: Отключено для предотвращения дедлоков при реконнекте
+    keepalive: 10
+    remote-dns-resolve: false
+    ip-version: ipv4 # КРИТИЧНО: Жестко фиксируем IPv4, чтобы не было попыток повиснуть на мертвом IPv6 интерфейсе
     dns: [10.2.0.1]
     amnezia-wg-option:
       jc: 0
@@ -77,7 +83,7 @@ proxies:
       h4: 4
       i1: "<b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>"
 
-  # 2. PROTON CA (Канада) - Второй эшелон
+  # 2. PROTON CA
   - name: "🇨🇦 Proton_CA"
     type: wireguard
     server: 195.242.214.210
@@ -90,6 +96,7 @@ proxies:
     mtu: 1280
     keepalive: 10
     remote-dns-resolve: false
+    ip-version: ipv4 # КРИТИЧНО
     dns: [1.1.1.1]
     amnezia-wg-option:
       jc: 4
@@ -103,7 +110,7 @@ proxies:
       h4: 4
       i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
-  # 3. WARP RU (Москва) - Аварийный резерв
+  # 3. WARP RU
   - name: "🇷🇺 WARP_RU"
     type: wireguard
     server: 162.159.195.1
@@ -117,6 +124,7 @@ proxies:
     mtu: 1280
     keepalive: 10
     remote-dns-resolve: false
+    ip-version: ipv4 # КРИТИЧНО
     dns: [8.8.8.8, 1.1.1.1]
     amnezia-wg-option:
       jc: 2
@@ -132,7 +140,6 @@ proxies:
 
 # --- Группы прокси ---
 proxy-groups:
-  # ГЛАВНАЯ ГРУППА: Fallback
   - name: "Auto-Reconnect"
     type: fallback
     proxies:
@@ -140,10 +147,17 @@ proxy-groups:
       - "🇨🇦 Proton_CA"
       - "🇷🇺 WARP_RU"
     url: 'http://cp.cloudflare.com/generate_204'
-    interval: 10 # ИСПРАВЛЕНО: Проверяем связь каждые 10 секунд
-    tolerance: 20 # ИСПРАВЛЕНО: Мгновенное переключение при потере пакетов
+    interval: 10
+    tolerance: 20
+    lazy: false # КРИТИЧНО: Запрещаем ядру "засыпать" и игнорировать пинги при простое
+    
+    # Явный блок health-check для принудительного пересоздания сокетов
+    health-check:
+      enable: true
+      url: 'http://cp.cloudflare.com/generate_204'
+      interval: 10
+      lazy: false
 
-  # Группа для ручного выбора
   - name: "Ручной выбор"
     type: select
     proxies:
@@ -154,30 +168,32 @@ proxy-groups:
 
 # --- Правила маршрутизации ---
 rules:
+  # КРИТИЧНО: Healthcheck должен идти напрямую в интернет, минуя TUN и прокси, иначе он попадет в мертвую петлю
+  - DOMAIN-KEYWORD,cloudflare,DIRECT
+  - DOMAIN-KEYWORD,gstatic,DIRECT
   - MATCH,Auto-Reconnect
 
 # --- Настройки TUN для Android ---
 tun:
   enable: true
-  stack: mixed
+  stack: system # system лучше обрабатывает разрывы интерфейсов на Android, чем mixed/gvisor
   mtu: 1500
   auto-route: true
   strict-route: false
   endpoint-independent-nat: true
   auto-detect-interface: true
-  route-exclude-address: # Исключаем локальные подсети
+  route-exclude-address:
     - 192.168.0.0/16
     - 10.0.0.0/8
     - 172.16.0.0/12
   dns-hijack:
-    - "any:53" # Правильный синтаксис строки
+    - "any:53"
 
-# --- Экспериментальные настройки и кэш ---
 experimental:
   cache-file:
     enabled: true
     path: "./cache.db"
-  quic-go-disable-gso: true # Обходит баги QUIC при смене интерфейса
+  quic-go-disable-gso: true
   quic-go-disable-ecn: true
 
 profile:
