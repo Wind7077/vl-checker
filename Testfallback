@@ -28,10 +28,10 @@ dns:
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  respect-rules: true # КРИТИЧНО: Заставляет DNS идти по правилам, предотвращая мертвые петли при смене сети
+  respect-rules: true
   fake-ip-filter:
     - '*.lan'
-    - 'cp.cloudflare.com' # КРИТИЧНО: Исключаем URL проверки из fake-ip, чтобы она не уходила в мертвый туннель
+    - 'cp.cloudflare.com'
     - 'connectivitycheck.gstatic.com'
     - '+.stun.*.*'
     - '+.stun.*.*.*'
@@ -46,6 +46,10 @@ dns:
     - dns.msftncsi.com
     - www.msftncsi.com
     - www.msftconnecttest.com
+  # ЖЕСТКАЯ ПРИВЯЗКА IP: Убираем DNS-резолв для healthcheck URL
+  hosts:
+    cp.cloudflare.com: 104.16.132.229
+    connectivitycheck.gstatic.com: 142.250.80.110
   default-nameserver:
     - 1.1.1.1
     - 8.8.8.8
@@ -69,7 +73,7 @@ proxies:
     mtu: 1280
     keepalive: 10
     remote-dns-resolve: false
-    ip-version: ipv4 # КРИТИЧНО: Жестко фиксируем IPv4, чтобы не было попыток повиснуть на мертвом IPv6 интерфейсе
+    ip-version: ipv4
     dns: [10.2.0.1]
     amnezia-wg-option:
       jc: 0
@@ -96,7 +100,7 @@ proxies:
     mtu: 1280
     keepalive: 10
     remote-dns-resolve: false
-    ip-version: ipv4 # КРИТИЧНО
+    ip-version: ipv4
     dns: [1.1.1.1]
     amnezia-wg-option:
       jc: 4
@@ -124,7 +128,7 @@ proxies:
     mtu: 1280
     keepalive: 10
     remote-dns-resolve: false
-    ip-version: ipv4 # КРИТИЧНО
+    ip-version: ipv4
     dns: [8.8.8.8, 1.1.1.1]
     amnezia-wg-option:
       jc: 2
@@ -147,17 +151,10 @@ proxy-groups:
       - "🇨🇦 Proton_CA"
       - "🇷🇺 WARP_RU"
     url: 'http://cp.cloudflare.com/generate_204'
-    interval: 10
-    tolerance: 20
-    lazy: false # КРИТИЧНО: Запрещаем ядру "засыпать" и игнорировать пинги при простое
+    interval: 15 # УВЕЛИЧЕНО: Даем Android 15 секунд на перестройку сети после смены Wi-Fi/мобильной
+    tolerance: 30
+    lazy: true # Включаем lazy, чтобы не спамить healthcheck, когда сеть нестабильна
     
-    # Явный блок health-check для принудительного пересоздания сокетов
-    health-check:
-      enable: true
-      url: 'http://cp.cloudflare.com/generate_204'
-      interval: 10
-      lazy: false
-
   - name: "Ручной выбор"
     type: select
     proxies:
@@ -168,24 +165,33 @@ proxy-groups:
 
 # --- Правила маршрутизации ---
 rules:
-  # КРИТИЧНО: Healthcheck должен идти напрямую в интернет, минуя TUN и прокси, иначе он попадет в мертвую петлю
-  - DOMAIN-KEYWORD,cloudflare,DIRECT
-  - DOMAIN-KEYWORD,gstatic,DIRECT
+  - DOMAIN,cp.cloudflare.com,DIRECT # Healthcheck идет напрямую, минуя TUN
+  - DOMAIN,connectivitycheck.gstatic.com,DIRECT
   - MATCH,Auto-Reconnect
 
 # --- Настройки TUN для Android ---
 tun:
   enable: true
-  stack: system # system лучше обрабатывает разрывы интерфейсов на Android, чем mixed/gvisor
+  stack: system
   mtu: 1500
   auto-route: true
   strict-route: false
   endpoint-independent-nat: true
   auto-detect-interface: true
+  # КРИТИЧНО: Исключаем IP-адреса серверов WireGuard и DNS из TUN-маршрутизации
+  # Это предотвращает routing loop (петлю), когда пакеты WireGuard идут через сам TUN
   route-exclude-address:
     - 192.168.0.0/16
     - 10.0.0.0/8
     - 172.16.0.0/12
+    - 185.107.56.211/32 # Proton NL
+    - 195.242.214.210/32 # Proton CA
+    - 162.159.195.1/32 # WARP RU
+    - 1.1.1.1/32 # Cloudflare DNS
+    - 1.0.0.1/32 # Cloudflare DNS
+    - 8.8.8.8/32 # Google DNS
+    - 8.8.4.4/32 # Google DNS
+    - 104.16.0.0/12 # Cloudflare IP range (для healthcheck)
   dns-hijack:
     - "any:53"
 
@@ -193,8 +199,6 @@ experimental:
   cache-file:
     enabled: true
     path: "./cache.db"
-  quic-go-disable-gso: true
-  quic-go-disable-ecn: true
 
 profile:
   store-selected: true
