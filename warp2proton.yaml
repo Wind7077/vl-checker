@@ -4,7 +4,7 @@ mode: rule
 log-level: info
 ipv6: false
 
-# 1. Подключаем вашу подписку как провайдера
+# 1. Подключаем подписку как провайдера
 proxy-providers:
   vless-list:
     type: http
@@ -14,18 +14,22 @@ proxy-providers:
     health-check:
       enable: true
       url: http://cp.cloudflare.com/generate_204
-      interval: 120 
+      interval: 60 
+    # ПРИНУДИТЕЛЬНО включаем UDP для всех скачанных прокси (строго нужно для WARP)
+    override:
+      udp: true
 
 # 2. Настраиваем группы
 proxy-groups:
-  # Группа, которая автоматически выбирает самый быстрый VLESS
+  # Группа fallback: всегда использует самый быстрый живой прокси
   - name: "Fastest-VLESS"
-    type: url-test
+    type: fallback
     use:
       - vless-list
     url: http://cp.cloudflare.com/generate_204
-    interval: 120
-    tolerance: 50 # Не переключать, если разница в пинге меньше 50мс
+    interval: 60
+    proxies:
+      - DIRECT # Запасной вариант, если все VLESS умрут
 
   # Группа для конечного использования
   - name: "Proxy"
@@ -40,11 +44,11 @@ proxies:
     type: wireguard
     server: 8.34.146.154 # Можно заменить на IP 162.159.192.1
     port: 1180
-    ip: 172.16.0.2 # Например: 172.16.0.2
-    public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo= # Публичный ключ CF
+    ip: 172.16.0.2
+    public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
     private-key: yKe9jypeGWBPjnNXdUB0MbDCWEybrnnITqUurx2oZ20=
     udp: true
-    # МАГИЯ ЗДЕСЬ: Заставляем WARP подключаться через самый быстрый VLESS
+    # Заставляем WARP подключаться через самый быстрый VLESS
     dialer-proxy: "Fastest-VLESS"
 
 # 4. Правила маршрутизации
