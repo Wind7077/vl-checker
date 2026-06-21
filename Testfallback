@@ -14,13 +14,9 @@ bind-address: "*"
 sniffer:
   enable: true
   sniff:
-    HTTP:
-      ports: [80, 8080-8880]
-      override-destination: true
-    TLS:
-      ports: [443, 8443]
-    QUIC:
-      ports: [443, 8443]
+    HTTP: { ports: [80, 8080-8880], override-destination: true }
+    TLS: { ports: [443, 8443] }
+    QUIC: { ports: [443, 8443] }
 
 # --- Настройки DNS ---
 dns:
@@ -34,7 +30,6 @@ dns:
     - 'cp.cloudflare.com'
     - 'connectivitycheck.gstatic.com'
     - '+.stun.*.*'
-    - '+.stun.*.*.*'
     - '*.telegram.org'
     - '*.t.me'
     - '*.whatsapp.com'
@@ -46,10 +41,8 @@ dns:
     - dns.msftncsi.com
     - www.msftncsi.com
     - www.msftconnecttest.com
-  # ЖЕСТКАЯ ПРИВЯЗКА IP: Убираем DNS-резолв для healthcheck URL
   hosts:
-    cp.cloudflare.com: 104.16.132.229
-    connectivitycheck.gstatic.com: 142.250.80.110
+    cp.cloudflare.com: 104.16.132.229 # Жесткий IP, чтобы не тратить время на DNS
   default-nameserver:
     - 1.1.1.1
     - 8.8.8.8
@@ -59,7 +52,6 @@ dns:
 
 # --- Прокси-ноды ---
 proxies:
-  # 1. PROTON NL
   - name: "🇳🇱 Proton_NL"
     type: wireguard
     server: 185.107.56.211
@@ -87,7 +79,6 @@ proxies:
       h4: 4
       i1: "<b 0xcd00000001014e00002e508cd55d618a8c5d76970f8f6e187c8d4af8fa9dfa10bca4c9c76b65e3684dec16b036afe07b8aa5c62638074c9c>"
 
-  # 2. PROTON CA
   - name: "🇨🇦 Proton_CA"
     type: wireguard
     server: 195.242.214.210
@@ -114,7 +105,6 @@ proxies:
       h4: 4
       i1: "<b 0xcd0000000101980000405284273edb4375d493b2f6003fa22fd37c7d6c0690c6afee96936a059efb11933be0890d83a5935c98540b5ff79bf603ca1ac38ad9f55b07f1d09cb16288aa1f16c5cedab3104b5ee9ebb91a14a9b407ca16c6>"
 
-  # 3. WARP RU
   - name: "🇷🇺 WARP_RU"
     type: wireguard
     server: 162.159.195.1
@@ -151,10 +141,10 @@ proxy-groups:
       - "🇨🇦 Proton_CA"
       - "🇷🇺 WARP_RU"
     url: 'http://cp.cloudflare.com/generate_204'
-    interval: 15 # УВЕЛИЧЕНО: Даем Android 15 секунд на перестройку сети после смены Wi-Fi/мобильной
-    tolerance: 30
-    lazy: true # Включаем lazy, чтобы не спамить healthcheck, когда сеть нестабильна
-    
+    interval: 5  # АГРЕССИВНО: Пингуем каждые 5 секунд!
+    tolerance: 15 # Мгновенное переключение при малейшей задержке
+    lazy: false   # Никогда не засыпать
+
   - name: "Ручной выбор"
     type: select
     proxies:
@@ -165,41 +155,38 @@ proxy-groups:
 
 # --- Правила маршрутизации ---
 rules:
-  - DOMAIN,cp.cloudflare.com,DIRECT # Healthcheck идет напрямую, минуя TUN
-  - DOMAIN,connectivitycheck.gstatic.com,DIRECT
+  - DOMAIN,cp.cloudflare.com,DIRECT
   - MATCH,Auto-Reconnect
 
 # --- Настройки TUN для Android ---
 tun:
   enable: true
-  stack: system
+  stack: gvisor # gvisor лучше обрабатывает обрывы интерфейсов, чем system/mixed
   mtu: 1500
   auto-route: true
+  auto-redirect: true # КРИТИЧНО: Перенаправляет трафик без жесткой привязки к мертвому интерфейсу
   strict-route: false
   endpoint-independent-nat: true
   auto-detect-interface: true
-  # КРИТИЧНО: Исключаем IP-адреса серверов WireGuard и DNS из TUN-маршрутизации
-  # Это предотвращает routing loop (петлю), когда пакеты WireGuard идут через сам TUN
   route-exclude-address:
     - 192.168.0.0/16
     - 10.0.0.0/8
     - 172.16.0.0/12
-    - 185.107.56.211/32 # Proton NL
-    - 195.242.214.210/32 # Proton CA
-    - 162.159.195.1/32 # WARP RU
-    - 1.1.1.1/32 # Cloudflare DNS
-    - 1.0.0.1/32 # Cloudflare DNS
-    - 8.8.8.8/32 # Google DNS
-    - 8.8.4.4/32 # Google DNS
-    - 104.16.0.0/12 # Cloudflare IP range (для healthcheck)
+    - 185.107.56.211/32
+    - 195.242.214.210/32
+    - 162.159.195.1/32
+    - 1.1.1.1/32
+    - 1.0.0.1/32
+    - 8.8.8.8/32
+    - 8.8.4.4/32
+    - 104.16.0.0/12
   dns-hijack:
     - "any:53"
 
 experimental:
   cache-file:
-    enabled: true
-    path: "./cache.db"
+    enabled: false # ОТКЛЮЧАЕМ КЭШ: При смене сети старый кэш мешает переподключению
 
 profile:
-  store-selected: true
-  store-fake-ip: true
+  store-selected: false # ОТКЛЮЧАЕМ: Не запоминать выбранную ноду, пусть fallback сам решает
+  store-fake-ip: false  # ОТКЛЮЧАЕМ: Не сохранять fake-ip между сменами сетей
