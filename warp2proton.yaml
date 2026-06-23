@@ -22,7 +22,6 @@ warp-common: &warp-common
    h3: 4
    i1: "<b 0xce000000010897a297ecc34cd6dd000044d0ec2e2e1ea2991f467ace4222129b5a098823784694b4897b9986ae0b7280135fa85e196d9ad980b150122129ce2a9379531b0fd3e871ca5fdb883c369832f730e272d7b8b74f393f9f0fa43f11e510ecb2219a52984410c204cf875585340c62238e14ad04dff382f2c200e0ee22fe743b9c6b8b043121c5710ec289f471c91ee414fca8b8be8419ae8ce7ffc53837f6ade262891895f3f4cecd31bc93ac5599e18e4f01b472362b8056c3172b513051f8322d1062997ef4a383b01706598d08d48c221d30e74c7ce000cdad36b706b1bf9b0607c32ec4b3203a4ee21ab64df336212b9758280803fcab14933b0e7ee1e04a7becce3e2633f4852585c567894a5f9efe9706a151b615856647e8b7dba69ab357b3982f554549bef9256111b2d67afde0b496f16962d4957ff654232aa9e845b61463908309cfd9de0a6abf5f425f577d7e5f6440652aa8da5f73588e82e9470f3b21b27b28c649506ae1a7f5f15b876f56abc4615f49911549b9bb39dd804fde182bd2dcec0c33bad9b138ca07d4a4a1650a2c2686acea05727e2a78962a840ae428f55627516e73c83dd8893b02358e81b524b4d99fda6df52b3a8d7a5291326e7ac9d773c5b43b8444554ef5aea104a738ed650aa979674bbed38da58ac29d87c29d387d80b526065baeb073ce65f075ccb56e47533aef357dceaa8293a523c5f6f790be90e4731123d3c6152a70576e90b4ab5bc5ead01576c68ab633ff7d36dcde2a0b2c68897e1acfc4d6483aaaeb635dd63c96b2b6a7a2bfe042f6aed82e5363aa850aace12ee3b1a93f30d8ab9537df483152a5527faca21efc9981b304f11fc95336f5b9637b174c5a0659e2b22e159a9fed4b8e93047371175b1d6d9cc8ab745f3b2281537d1c75fb9451871864efa5d184c38c185fd203de206751b92620f7c369e031d2041e152040920ac2c5ab5340bfc9d0561176abf10a147287ea90758575ac6a9f5ac9f390d0d5b23ee12af583383d994e22c0cf42383834bcd3ada1b3825a0664d8f3fb678261d57601ddf94a8a68a7c273a18c08aa99c7ad8c6c42eab67718843597ec9930457359dfdfbce024afc2dcf9348579a57d8d3490b2fa99f278f1c37d87dad9b221acd575192ffae1784f8e60ec7cee4068b6b988f0433d96d6a1b1865f4e155e9fe020279f434f3bf1bd117b717b92f6cd1cc9bea7d45978bcc3f24bda631a36910110a6ec06da35f8966c9279d130347594f13e9e07514fa370754d1424c0a1545c5070ef9fb2acd14233e8a50bfc5978b5bdf8bc1714731f798d21e2004117c61f2989dd44f0cf027b27d4019e81ed4b5c31db347c4a3a4d85048d7093cf16753d7b0d15e078f5c7a5205dc2f87e330a1f716738dce1c6180e9d02869b5546f1c4d2748f8c90d9693cba4e0079297d22fd61402dea32ff0eb69ebd65a5d0b687d87e3a8b2c42b648aa723c7c7daf37abcc4bb85caea2ee8f55bec20e913b3324ab8f5c3304f820d42ad1b9f2ffc1a3af9927136b4419e1e579ab4c2ae3c776d293d397d575df181e6cae0a4ada5d67ecea171cca3288d57c7bbdaee3befe745fb7d634f70386d873b90c4d6c6596bb65af68f9e5121e67ebf0d89d3c909ceedfb32ce9575a7758ff080724e1ab5d5f43074ecb53a479af21ed03d7b6899c36631c0166f9d47e5e1d4528a5d3d3f744029c4b1c190cbfbad06f5f83f7ad0429fa9a2719c56ffe3783460e166de2d8>"
 
-# Базовый шаблон MASQUE
 warp-masque: &warp-masque
   type: masque
   sni: "gosuslugi.ru"
@@ -37,7 +36,6 @@ warp-masque: &warp-masque
   dns: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1111, 2606:4700:4700::1001]
   skip-cert-verify: true
 
-# Шаблон MASQUE со SNI Сбербанка
 warp-masque-sber: &warp-masque-sber
   type: masque
   sni: "sberbank.ru"
@@ -53,31 +51,7 @@ warp-masque-sber: &warp-masque-sber
   skip-cert-verify: true
 
 proxies:
-# === СТАРЫЕ СТАБИЛЬНЫЕ TCP (H2) ===
-- name: "WARP H2 Main"
-  <<: *warp-masque
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-- name: "WARP H2 Alt"
-  <<: *warp-masque
-  server: 162.159.193.1
-  port: 854
-  network: h2
-
-# === СТАРЫЕ QUIC ===
-- name: "WARP QUIC Chrome"
-  <<: *warp-masque
-  server: 162.159.192.128
-  port: 443
-
-- name: "WARP QUIC IPv6"
-  <<: *warp-masque
-  server: "2606:4700:d0::a29f:c001"
-  port: 443
-
-# === СТАРЫЙ PROTON AWG ===
+# === PROTON AWG ===
 - name: "Proton AWG"
   type: wireguard
   server: 185.107.56.106
@@ -102,198 +76,186 @@ proxies:
    i1: "<b 0xce000000010897a297ecc34cd6dd000044d0ec2e2e1ea2991f467ace4222129b5a098823784694b4897b9986ae0b7280135fa85e196d9ad980b150122129ce2a9379531b0fd3e871ca5fdb883c369832f730e272d7b8b74f393f9f0fa43f11e510ecb2219a52984410c204cf875585340c62238e14ad04dff382f2c200e0ee22fe743b9c6b8b043121c5710ec289f471c91ee414fca8b8be8419ae8ce7ffc53837f6ade262891895f3f4cecd31bc93ac5599e18e4f01b472362b8056c3172b513051f8322d1062997ef4a383b01706598d08d48c221d30e74c7ce000cdad36b706b1bf9b0607c32ec4b3203a4ee21ab64df336212b9758280803fcab14933b0e7ee1e04a7becce3e2633f4852585c567894a5f9efe9706a151b615856647e8b7dba69ab357b3982f554549bef9256111b2d67afde0b496f16962d4957ff654232aa9e845b61463908309cfd9de0a6abf5f425f577d7e5f6440652aa8da5f73588e82e9470f3b21b27b28c649506ae1a7f5f15b876f56abc4615f49911549b9bb39dd804fde182bd2dcec0c33bad9b138ca07d4a4a1650a2c2686acea05727e2a78962a840ae428f55627516e73c83dd8893b02358e81b524b4d99fda6df52b3a8d7a5291326e7ac9d773c5b43b8444554ef5aea104a738ed650aa979674bbed38da58ac29d87c29d387d80b526065baeb073ce65f075ccb56e47533aef357dceaa8293a523c5f6f790be90e4731123d3c6152a70576e90b4ab5bc5ead01576c68ab633ff7d36dcde2a0b2c68897e1acfc4d6483aaaeb635dd63c96b2b6a7a2bfe042f6aed82e5363aa850aace12ee3b1a93f30d8ab9537df483152a5527faca21efc9981b304f11fc95336f5b9637b174c5a0659e2b22e159a9fed4b8e93047371175b1d6d9cc8ab745f3b2281537d1c75fb9451871864efa5d184c38c185fd203de206751b92620f7c369e031d2041e152040920ac2c5ab5340bfc9d0561176abf10a147287ea90758575ac6a9f5ac9f390d0d5b23ee12af583383d994e22c0cf42383834bcd3ada1b3825a0664d8f3fb678261d57601ddf94a8a68a7c273a18c08aa99c7ad8c6c42eab67718843597ec9930457359dfdfbce024afc2dcf9348579a57d8d3490b2fa99f278f1c37d87dad9b221acd575192ffae1784f8e60ec7cee4068b6b988f0433d96d6a1b1865f4e155e9fe020279f434f3bf1bd117b717b92f6cd1cc9bea7d45978bcc3f24bda631a36910110a6ec06da35f8966c9279d130347594f13e9e07514fa370754d1424c0a1545c5070ef9fb2acd14233e8a50bfc5978b5bdf8bc1714731f798d21e2004117c61f2989dd44f0cf027b27d4019e81ed4b5c31db347c4a3a4d85048d7093cf16753d7b0d15e078f5c7a5205dc2f87e330a1f716738dce1c6180e9d02869b5546f1c4d2748f8c90d9693cba4e0079297d22fd61402dea32ff0eb69ebd65a5d0b687d87e3a8b2c42b648aa723c7c7daf37abcc4bb85caea2ee8f55bec20e913b3324ab8f5c3304f820d42ad1b9f2ffc1a3af9927136b4419e1e579ab4c2ae3c776d293d397d575df181e6cae0a4ada5d67ecea171cca3288d57c7bbdaee3befe745fb7d634f70386d873b90c4d6c6596bb65af68f9e5121e67ebf0d89d3c909ceedfb32ce9575a7758ff080724e1ab5d5f43074ecb53a479af21ed03d7b6899c36631c0166f9d47e5e1d4528a5d3d3f744029c4b1c190cbfbad06f5f83f7ad0429fa9a2719c56ffe3783460e166de2d8>"
 
 # ====================================================================
-# === НОВЫЕ ВАРИАНТЫ QUIC (MASQUE) - 10 ШТУК ===
+# === H2 (TCP) - ОСНОВА СТАБИЛЬНОСТИ (Лучшие IP из скана) ===
 # ====================================================================
 
-# 1. Safari fingerprint (имитация iOS)
+- name: "H2 Main" # Loss 0%, 203 ms
+  <<: *warp-masque
+  server: 162.159.192.128
+  port: 942
+  network: h2
+
+- name: "H2 Alt" # Loss 0%, 206 ms
+  <<: *warp-masque
+  server: 8.6.112.166
+  port: 1002
+  network: h2
+
+- name: "H2 Sberbank" # Loss 0%, 214 ms
+  <<: *warp-masque-sber
+  server: 188.114.99.160
+  port: 987
+  network: h2
+
+- name: "H2 Port 443" # Loss 0%, 216 ms
+  <<: *warp-masque
+  server: 188.114.99.117
+  port: 934
+  network: h2
+
+- name: "H2 Cloudflare" # Loss 0%, 220 ms
+  <<: *warp-masque
+  sni: "cloudflare.com"
+  server: 188.114.97.14
+  port: 854
+  network: h2
+
+- name: "H2 Apple" # Loss 33.3%, 197 ms (Очень быстрый!)
+  <<: *warp-masque
+  sni: "apple.com"
+  server: 162.159.195.170
+  port: 928
+  network: h2
+
+- name: "H2 Google" # Loss 33.3%, 201 ms
+  <<: *warp-masque
+  sni: "google.com"
+  server: 8.47.69.150
+  port: 1843
+  network: h2
+
+- name: "H2 Microsoft" # Loss 33.3%, 202 ms
+  <<: *warp-masque
+  sni: "microsoft.com"
+  server: 8.47.69.38
+  port: 7152
+  network: h2
+
+- name: "H2 Telegram" # Loss 33.3%, 215 ms
+  <<: *warp-masque
+  sni: "telegram.org"
+  server: 188.114.96.109
+  port: 864
+  network: h2
+
+- name: "H2 WhatsApp" # Loss 33.3%, 216 ms
+  <<: *warp-masque
+  sni: "whatsapp.com"
+  server: 188.114.99.217
+  port: 1002
+  network: h2
+
+- name: "H2 Cloudflare Alt" # Loss 33.3%, 220 ms
+  <<: *warp-masque
+  sni: "cloudflare.com"
+  server: 188.114.98.250
+  port: 3581
+  network: h2
+
+- name: "H2 Port 8080" # Loss 33.3%, 217 ms
+  <<: *warp-masque
+  server: 188.114.98.3
+  port: 8854
+  network: h2
+
+- name: "H2 Safari" # Loss 33.3%, 230 ms
+  <<: *warp-masque
+  client-fingerprint: "safari"
+  server: 8.6.112.162
+  port: 8742
+  network: h2
+
+- name: "H2 Firefox" # Loss 33.3%, 219 ms
+  <<: *warp-masque
+  client-fingerprint: "firefox"
+  server: 188.114.96.41
+  port: 7281
+  network: h2
+
+# ====================================================================
+# === QUIC (UDP) - МАСКИРОВКА (На тех же стабильных IP) ===
+# ====================================================================
+
+- name: "QUIC Chrome"
+  <<: *warp-masque
+  server: 162.159.192.128
+  port: 942
+
+- name: "QUIC IPv6"
+  <<: *warp-masque
+  server: "2606:4700:d0::a29f:c001"
+  port: 443
+
 - name: "QUIC Safari"
   <<: *warp-masque
   client-fingerprint: "safari"
-  server: 162.159.192.128
-  port: 443
+  server: 8.6.112.166
+  port: 1002
 
-# 2. Firefox fingerprint
 - name: "QUIC Firefox"
   <<: *warp-masque
   client-fingerprint: "firefox"
-  server: 162.159.192.128
-  port: 443
+  server: 188.114.99.160
+  port: 987
 
-# 3. Edge fingerprint
 - name: "QUIC Edge"
   <<: *warp-masque
   client-fingerprint: "edge"
-  server: 162.159.192.128
-  port: 443
+  server: 188.114.99.117
+  port: 934
 
-# 4. Random fingerprint (случайный отпечаток каждый раз)
 - name: "QUIC Random"
   <<: *warp-masque
   client-fingerprint: "random"
-  server: 162.159.192.128
-  port: 443
+  server: 188.114.97.14
+  port: 854
 
-# 5. Sberbank SNI (очень "белый" трафик)
 - name: "QUIC Sberbank"
   <<: *warp-masque-sber
-  server: 162.159.192.128
-  port: 443
+  server: 162.159.195.170
+  port: 928
 
-# 6. VK SNI
 - name: "QUIC VK"
   <<: *warp-masque
   sni: "vk.com"
-  server: 162.159.192.128
-  port: 443
+  server: 8.47.69.150
+  port: 1843
 
-# 7. Yandex SNI
 - name: "QUIC Yandex"
   <<: *warp-masque
   sni: "ya.ru"
-  server: 162.159.192.128
-  port: 443
+  server: 8.47.69.38
+  port: 7152
 
-# 8. MTS SNI (мобильный оператор)
 - name: "QUIC MTS"
   <<: *warp-masque
   sni: "mts.ru"
-  server: 162.159.192.128
-  port: 443
-
-# 9. QUIC на нестандартном порту 500 (имитация IPSec)
-- name: "QUIC Port 500"
-  <<: *warp-masque
-  server: 162.159.192.128
-  port: 500
-
-# 10. QUIC на порту 8443
-- name: "QUIC Port 8443"
-  <<: *warp-masque
-  server: 162.159.199.57
-  port: 8443
+  server: 188.114.98.250
+  port: 3581
 
 # ====================================================================
-# === НОВЫЕ ВАРИАНТЫ AWG НА РАЗНЫХ ПОРТАХ ===
+# === AWG (UDP с мусором) ===
 # ====================================================================
 
-- name: "WARP AWG 2408"
+- name: "WARP AWG 942"
   <<: *warp-common
   server: 162.159.192.128
-  port: 2408
+  port: 942
 
-- name: "WARP AWG 500"
+- name: "WARP AWG 1002"
   <<: *warp-common
-  server: 162.159.192.128
-  port: 500
+  server: 8.6.112.166
+  port: 1002
 
-- name: "WARP AWG 1701"
+- name: "WARP AWG 987"
   <<: *warp-common
-  server: 162.159.192.128
-  port: 1701
+  server: 188.114.99.160
+  port: 987
 
-- name: "WARP AWG 443"
+- name: "WARP AWG 934"
   <<: *warp-common
-  server: 162.159.192.128
-  port: 443
-
-# ====================================================================
-# === СТАРЫЕ ВАРИАНТЫ H2 (TCP) ===
-# ====================================================================
-
-- name: "H2 Sberbank"
-  <<: *warp-masque-sber
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-- name: "H2 Port 443"
-  <<: *warp-masque
-  server: 162.159.192.128
-  port: 443
-  network: h2
-
-# ====================================================================
-# === НОВЫЕ 10 ВАРИАНТОВ H2 (TCP) ===
-# ====================================================================
-
-# 1. H2 с SNI Cloudflare (самый надежный)
-- name: "H2 Cloudflare"
-  <<: *warp-masque
-  sni: "cloudflare.com"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 2. H2 с SNI Apple (очень "белый" трафик)
-- name: "H2 Apple"
-  <<: *warp-masque
-  sni: "apple.com"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 3. H2 с SNI Google
-- name: "H2 Google"
-  <<: *warp-masque
-  sni: "google.com"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 4. H2 с SNI Microsoft
-- name: "H2 Microsoft"
-  <<: *warp-masque
-  sni: "microsoft.com"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 5. H2 с SNI Telegram
-- name: "H2 Telegram"
-  <<: *warp-masque
-  sni: "telegram.org"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 6. H2 с SNI WhatsApp
-- name: "H2 WhatsApp"
-  <<: *warp-masque
-  sni: "whatsapp.com"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 7. H2 на альтернативном IP с SNI Cloudflare
-- name: "H2 Cloudflare Alt"
-  <<: *warp-masque
-  sni: "cloudflare.com"
-  server: 162.159.193.1
-  port: 8443
-  network: h2
-
-# 8. H2 на порту 8080 (альтернативный HTTPS порт)
-- name: "H2 Port 8080"
-  <<: *warp-masque
-  server: 162.159.199.57
-  port: 8080
-  network: h2
-
-# 9. H2 с Safari fingerprint
-- name: "H2 Safari"
-  <<: *warp-masque
-  client-fingerprint: "safari"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
-
-# 10. H2 с Firefox fingerprint
-- name: "H2 Firefox"
-  <<: *warp-masque
-  client-fingerprint: "firefox"
-  server: 162.159.199.57
-  port: 8443
-  network: h2
+  server: 188.114.99.117
+  port: 934
 
 proxy-groups:
 - name: "Proxy"
@@ -301,25 +263,8 @@ proxy-groups:
   proxies:
     - Fallback
     - Auto
-    - "WARP H2 Main"
-    - "WARP H2 Alt"
-    - "WARP QUIC Chrome"
-    - "WARP QUIC IPv6"
-    - "QUIC Safari"
-    - "QUIC Firefox"
-    - "QUIC Edge"
-    - "QUIC Random"
-    - "QUIC Sberbank"
-    - "QUIC VK"
-    - "QUIC Yandex"
-    - "QUIC MTS"
-    - "QUIC Port 500"
-    - "QUIC Port 8443"
-    - "Proton AWG"
-    - "WARP AWG 2408"
-    - "WARP AWG 500"
-    - "WARP AWG 1701"
-    - "WARP AWG 443"
+    - "H2 Main"
+    - "H2 Alt"
     - "H2 Sberbank"
     - "H2 Port 443"
     - "H2 Cloudflare"
@@ -332,29 +277,27 @@ proxy-groups:
     - "H2 Port 8080"
     - "H2 Safari"
     - "H2 Firefox"
+    - "QUIC Chrome"
+    - "QUIC IPv6"
+    - "QUIC Safari"
+    - "QUIC Firefox"
+    - "QUIC Edge"
+    - "QUIC Random"
+    - "QUIC Sberbank"
+    - "QUIC VK"
+    - "QUIC Yandex"
+    - "QUIC MTS"
+    - "Proton AWG"
+    - "WARP AWG 942"
+    - "WARP AWG 1002"
+    - "WARP AWG 987"
+    - "WARP AWG 934"
 
 - name: "Auto"
   type: url-test
   proxies:
-    - "WARP H2 Main"
-    - "WARP H2 Alt"
-    - "WARP QUIC Chrome"
-    - "WARP QUIC IPv6"
-    - "QUIC Safari"
-    - "QUIC Firefox"
-    - "QUIC Edge"
-    - "QUIC Random"
-    - "QUIC Sberbank"
-    - "QUIC VK"
-    - "QUIC Yandex"
-    - "QUIC MTS"
-    - "QUIC Port 500"
-    - "QUIC Port 8443"
-    - "Proton AWG"
-    - "WARP AWG 2408"
-    - "WARP AWG 500"
-    - "WARP AWG 1701"
-    - "WARP AWG 443"
+    - "H2 Main"
+    - "H2 Alt"
     - "H2 Sberbank"
     - "H2 Port 443"
     - "H2 Cloudflare"
@@ -367,16 +310,31 @@ proxy-groups:
     - "H2 Port 8080"
     - "H2 Safari"
     - "H2 Firefox"
+    - "QUIC Chrome"
+    - "QUIC IPv6"
+    - "QUIC Safari"
+    - "QUIC Firefox"
+    - "QUIC Edge"
+    - "QUIC Random"
+    - "QUIC Sberbank"
+    - "QUIC VK"
+    - "QUIC Yandex"
+    - "QUIC MTS"
+    - "Proton AWG"
+    - "WARP AWG 942"
+    - "WARP AWG 1002"
+    - "WARP AWG 987"
+    - "WARP AWG 934"
   url: 'http://www.gstatic.com/generate_204'
   interval: 60
   tolerance: 50
 
 - name: "Fallback"
   type: fallback
-  # В Fallback сначала идут все H2 (TCP) варианты как самые надежные, затем UDP
+  # Сначала идут ТОП-ноды с Loss 0%, затем резервы 33.3%, в самом конце UDP
   proxies:
-    - "WARP H2 Main"
-    - "WARP H2 Alt"
+    - "H2 Main"
+    - "H2 Alt"
     - "H2 Sberbank"
     - "H2 Port 443"
     - "H2 Cloudflare"
@@ -389,6 +347,7 @@ proxy-groups:
     - "H2 Port 8080"
     - "H2 Safari"
     - "H2 Firefox"
+    - "QUIC Chrome"
     - "QUIC Safari"
     - "QUIC Firefox"
     - "QUIC Edge"
@@ -397,15 +356,12 @@ proxy-groups:
     - "QUIC VK"
     - "QUIC Yandex"
     - "QUIC MTS"
-    - "WARP QUIC Chrome"
-    - "WARP QUIC IPv6"
-    - "QUIC Port 500"
-    - "QUIC Port 8443"
+    - "QUIC IPv6"
     - "Proton AWG"
-    - "WARP AWG 2408"
-    - "WARP AWG 500"
-    - "WARP AWG 1701"
-    - "WARP AWG 443"
+    - "WARP AWG 942"
+    - "WARP AWG 1002"
+    - "WARP AWG 987"
+    - "WARP AWG 934"
   url: 'http://www.gstatic.com/generate_204'
   interval: 60
 
