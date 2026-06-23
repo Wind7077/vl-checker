@@ -197,7 +197,7 @@ proxies:
   port: 443
 
 # ====================================================================
-# === НОВЫЕ ВАРИАНТЫ H2 (TCP) ===
+# === СТАРЫЕ ВАРИАНТЫ H2 (TCP) ===
 # ====================================================================
 
 - name: "H2 Sberbank"
@@ -210,6 +210,89 @@ proxies:
   <<: *warp-masque
   server: 162.159.192.128
   port: 443
+  network: h2
+
+# ====================================================================
+# === НОВЫЕ 10 ВАРИАНТОВ H2 (TCP) ===
+# ====================================================================
+
+# 1. H2 с SNI Cloudflare (самый надежный)
+- name: "H2 Cloudflare"
+  <<: *warp-masque
+  sni: "cloudflare.com"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 2. H2 с SNI Apple (очень "белый" трафик)
+- name: "H2 Apple"
+  <<: *warp-masque
+  sni: "apple.com"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 3. H2 с SNI Google
+- name: "H2 Google"
+  <<: *warp-masque
+  sni: "google.com"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 4. H2 с SNI Microsoft
+- name: "H2 Microsoft"
+  <<: *warp-masque
+  sni: "microsoft.com"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 5. H2 с SNI Telegram
+- name: "H2 Telegram"
+  <<: *warp-masque
+  sni: "telegram.org"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 6. H2 с SNI WhatsApp
+- name: "H2 WhatsApp"
+  <<: *warp-masque
+  sni: "whatsapp.com"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 7. H2 на альтернативном IP с SNI Cloudflare
+- name: "H2 Cloudflare Alt"
+  <<: *warp-masque
+  sni: "cloudflare.com"
+  server: 162.159.193.1
+  port: 8443
+  network: h2
+
+# 8. H2 на порту 8080 (альтернативный HTTPS порт)
+- name: "H2 Port 8080"
+  <<: *warp-masque
+  server: 162.159.199.57
+  port: 8080
+  network: h2
+
+# 9. H2 с Safari fingerprint
+- name: "H2 Safari"
+  <<: *warp-masque
+  client-fingerprint: "safari"
+  server: 162.159.199.57
+  port: 8443
+  network: h2
+
+# 10. H2 с Firefox fingerprint
+- name: "H2 Firefox"
+  <<: *warp-masque
+  client-fingerprint: "firefox"
+  server: 162.159.199.57
+  port: 8443
   network: h2
 
 proxy-groups:
@@ -239,10 +322,19 @@ proxy-groups:
     - "WARP AWG 443"
     - "H2 Sberbank"
     - "H2 Port 443"
+    - "H2 Cloudflare"
+    - "H2 Apple"
+    - "H2 Google"
+    - "H2 Microsoft"
+    - "H2 Telegram"
+    - "H2 WhatsApp"
+    - "H2 Cloudflare Alt"
+    - "H2 Port 8080"
+    - "H2 Safari"
+    - "H2 Firefox"
 
 - name: "Auto"
   type: url-test
-  # Auto тестирует ВСЕ ноды и выбирает самую быструю рабочую
   proxies:
     - "WARP H2 Main"
     - "WARP H2 Alt"
@@ -265,19 +357,38 @@ proxy-groups:
     - "WARP AWG 443"
     - "H2 Sberbank"
     - "H2 Port 443"
+    - "H2 Cloudflare"
+    - "H2 Apple"
+    - "H2 Google"
+    - "H2 Microsoft"
+    - "H2 Telegram"
+    - "H2 WhatsApp"
+    - "H2 Cloudflare Alt"
+    - "H2 Port 8080"
+    - "H2 Safari"
+    - "H2 Firefox"
   url: 'http://www.gstatic.com/generate_204'
   interval: 60
   tolerance: 50
 
 - name: "Fallback"
   type: fallback
-  # В Fallback ставим сначала самые надежные TCP (H2), затем UDP
-  # Это гарантирует мгновенное восстановление связи при смене сети
+  # В Fallback сначала идут все H2 (TCP) варианты как самые надежные, затем UDP
   proxies:
     - "WARP H2 Main"
     - "WARP H2 Alt"
     - "H2 Sberbank"
     - "H2 Port 443"
+    - "H2 Cloudflare"
+    - "H2 Apple"
+    - "H2 Google"
+    - "H2 Microsoft"
+    - "H2 Telegram"
+    - "H2 WhatsApp"
+    - "H2 Cloudflare Alt"
+    - "H2 Port 8080"
+    - "H2 Safari"
+    - "H2 Firefox"
     - "QUIC Safari"
     - "QUIC Firefox"
     - "QUIC Edge"
