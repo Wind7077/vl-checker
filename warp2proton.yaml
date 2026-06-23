@@ -24,7 +24,7 @@ warp-common: &warp-common
 
 warp-masque: &warp-masque
   type: masque
-  sni: "gosuslugi.ru"
+  sni: "gosuslugi.ru" # Рекомендую использовать cloudflare.com или apple.com
   private-key: "MHcCAQEEIMJxkuVGiLRVSdlueYZ4pRAhi19a43JABdxHZIuBnSKtoAoGCCqGSM49AwEHoUQDQgAE/8w5CTzGndKX2yGU8t0M/4On8+P3vcd+mgRSwKCLlfXGd+u+LOrD69HLuDMFjnTY6yg3LK7Ig074mYGcdvcPaw=="
   public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
   ip: 172.16.0.2
@@ -39,15 +39,26 @@ proxies:
   <<: *warp-common
   server: 162.159.192.128
   port: 1180
+  
+# QUIC переведен на порт 443 (стандарт для HTTP/3)
 - name: "WARP QUIC"
   <<: *warp-masque
   server: 162.159.199.57
-  port: 8443
+  port: 443
+  
+# Альтернативный IP для QUIC (если первый под блокировкой UDP)
+- name: "WARP QUIC Alt"
+  <<: *warp-masque
+  server: 162.159.193.1
+  port: 443
+
+# H2 оставлен на 8443, так как TCP у вас работает отлично
 - name: "WARP H2"
   <<: *warp-masque
   server: 162.159.199.57
   port: 8443
   network: h2
+  
 - name: "Proton WireGuard"
   type: wireguard
   server: 185.107.56.106
@@ -68,14 +79,15 @@ proxy-groups:
     - Auto
     - WARP Default
     - WARP QUIC
+    - WARP QUIC Alt
     - WARP H2
     - Proton WireGuard
 
 - name: "Auto"
   type: url-test
   proxies:
-    - WARP Default
     - WARP QUIC
+    - WARP QUIC Alt
     - WARP H2
     - Proton WireGuard
   url: 'http://www.gstatic.com/generate_204'
@@ -84,10 +96,12 @@ proxy-groups:
 
 - name: "Fallback"
   type: fallback
+  # В Fallback я поставил H2 первым. Если QUIC у провайдера заблокирован жестко, 
+  # Fallback сразу подхватит H2 без потери времени на пинги мертвого UDP.
   proxies:
-    - WARP Default
-    - WARP QUIC
     - WARP H2
+    - WARP QUIC
+    - WARP QUIC Alt
     - Proton WireGuard
   url: 'http://www.gstatic.com/generate_204'
   interval: 60
