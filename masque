@@ -10,11 +10,11 @@ warp-masque: &warp-masque
   dns: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1111, 2606:4700:4700::1001]
 
 proxies:
-- name: "[WARP-MASQUE] QUIC"
+- name: "QUIC"
   <<: *warp-masque
   server: 162.159.198.2
   port: 443
-- name: "[WARP-MASQUE] H2"
+- name: "H2"
   <<: *warp-masque
   server: 162.159.198.2
   port: 443
@@ -25,8 +25,8 @@ proxy-groups:
   type: select
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
-    - "[WARP-MASQUE] QUIC"
-    - "[WARP-MASQUE] H2"
+    - "QUIC"
+    - "H2"
   url: 'http://speed.cloudflare.com/'
   interval: 300
 
