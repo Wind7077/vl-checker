@@ -1,34 +1,74 @@
 warp-masque: &warp-masque
   type: masque
-  sni: 4pda.to
+
+  # Не использую случайный российский домен
+  # Лучше домен Cloudflare
+  sni: www.cloudflare.com
+
   private-key: MHcCAQEEIBOX+MtQPFdEWCdK8TzjuDxkJ/+wSrjOkeSHbsCRaUm6oAoGCCqGSM49AwEHoUQDQgAEJur2SMZsboQoxcVGlpoXl+GB9sf3o6kFrOBmWO2uwMFIIQ8pOHob8rfmUI9aioKL3gps8R1I5cFN/BiUjsMXHA==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
+
   ip: 172.16.0.2
   ipv6: 2606:4700:110:8620:1daa:11e8:1493:6a70
+
   udp: true
+
   remote-dns-resolve: true
-  dns: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1111, 2606:4700:4700::1001]
+
+  dns:
+    - 1.1.1.1
+    - 1.0.0.1
+    - 2606:4700:4700::1111
+    - 2606:4700:4700::1001
+
+  # Безопасное значение для QUIC
+  mtu: 1280
+
+  # Если поддерживается твоим Mihomo
+  congestion-controller: bbr
 
 proxies:
-- name: "QUIC"
+
+# Основной вариант
+- name: "MASQUE-QUIC-198"
   <<: *warp-masque
   server: 162.159.198.2
   port: 443
-- name: "H2"
+
+# Резервный QUIC
+- name: "MASQUE-QUIC-192"
+  <<: *warp-masque
+  server: 162.159.192.1
+  port: 443
+
+# Резервный QUIC
+- name: "MASQUE-QUIC-193"
+  <<: *warp-masque
+  server: 162.159.193.1
+  port: 443
+
+# H2 как запасной вариант
+- name: "MASQUE-H2"
   <<: *warp-masque
   server: 162.159.198.2
   port: 443
   network: h2
 
 proxy-groups:
+
+# Автоматический выбор
 - name: Cloudflare
-  type: select
-  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
+  type: url-test
+
   proxies:
-    - "QUIC"
-    - "H2"
-  url: 'http://speed.cloudflare.com/'
-  interval: 300
+    - MASQUE-QUIC-198
+    - MASQUE-QUIC-192
+    - MASQUE-QUIC-193
+    - MASQUE-H2
+
+  url: https://cp.cloudflare.com/generate_204
+  interval: 180
+  tolerance: 50
 
 rules:
 - MATCH,Cloudflare
