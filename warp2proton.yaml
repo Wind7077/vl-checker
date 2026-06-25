@@ -214,53 +214,39 @@ proxies:
   network: h2
 
 # ====================================================================
-# === QUIC (UDP) - РАЗНЫЕ ПОДСЕТИ CLOUDFLARE (Обновлено) ===
+# === QUIC (UDP) - ТОЛЬКО ПРОВЕРЕННЫЕ WARP-ЭНДПОИНТЫ ===
 # ====================================================================
-# 8 уникальных IP из разных ASN/подсетей для максимальной отказоустойчивости
-
-- name: "QUIC WARP Primary"
+- name: "QUIC WARP 1"
   <<: *warp-masque
   server: 162.159.192.128
   port: 443
 
-- name: "QUIC WARP Secondary"
+- name: "QUIC WARP 2"
   <<: *warp-masque
   server: 162.159.193.1
   port: 443
 
-- name: "QUIC Edge EU"
+- name: "QUIC WARP 3"
   <<: *warp-masque
   sni: "yandex.ru"
   server: 188.114.99.160
   port: 443
 
-- name: "QUIC Edge US"
+- name: "QUIC WARP 4"
   <<: *warp-masque
   sni: "vk.com"
   server: 188.114.99.117
   port: 443
 
-- name: "QUIC Research 1"
+- name: "QUIC WARP 5"
   <<: *warp-masque
   sni: "mail.ru"
   server: 8.6.112.166
   port: 443
 
-- name: "QUIC Research 2"
-  <<: *warp-masque
-  sni: "tinkoff.ru"
-  server: 8.6.112.167
-  port: 443
-
-- name: "QUIC WARP Alt 1"
+- name: "QUIC WARP 6"
   <<: *warp-masque-sber
-  server: 162.159.195.1
-  port: 443
-
-- name: "QUIC WARP Alt 2"
-  <<: *warp-masque
-  sni: "ozon.ru"
-  server: 162.159.196.1
+  server: 162.159.198.2
   port: 443
 
 proxy-groups:
@@ -281,14 +267,12 @@ proxy-groups:
     - "H2 Ozon"
     - "H2 VTB"
     - "H2 Port 1180"
-    - "QUIC WARP Primary"
-    - "QUIC WARP Secondary"
-    - "QUIC Edge EU"
-    - "QUIC Edge US"
-    - "QUIC Research 1"
-    - "QUIC Research 2"
-    - "QUIC WARP Alt 1"
-    - "QUIC WARP Alt 2"
+    - "QUIC WARP 1"
+    - "QUIC WARP 2"
+    - "QUIC WARP 3"
+    - "QUIC WARP 4"
+    - "QUIC WARP 5"
+    - "QUIC WARP 6"
     - "Proton AWG"
 
 - name: "Auto"
@@ -306,14 +290,12 @@ proxy-groups:
     - "H2 Ozon"
     - "H2 VTB"
     - "H2 Port 1180"
-    - "QUIC WARP Primary"
-    - "QUIC WARP Secondary"
-    - "QUIC Edge EU"
-    - "QUIC Edge US"
-    - "QUIC Research 1"
-    - "QUIC Research 2"
-    - "QUIC WARP Alt 1"
-    - "QUIC WARP Alt 2"
+    - "QUIC WARP 1"
+    - "QUIC WARP 2"
+    - "QUIC WARP 3"
+    - "QUIC WARP 4"
+    - "QUIC WARP 5"
+    - "QUIC WARP 6"
     - "Proton AWG"
   url: 'http://www.gstatic.com/generate_204'
   interval: 30
@@ -335,14 +317,12 @@ proxy-groups:
     - "H2 Ozon"
     - "H2 VTB"
     - "H2 Port 1180"
-    - "QUIC WARP Primary"
-    - "QUIC WARP Secondary"
-    - "QUIC Edge EU"
-    - "QUIC Edge US"
-    - "QUIC Research 1"
-    - "QUIC Research 2"
-    - "QUIC WARP Alt 1"
-    - "QUIC WARP Alt 2"
+    - "QUIC WARP 1"
+    - "QUIC WARP 2"
+    - "QUIC WARP 3"
+    - "QUIC WARP 4"
+    - "QUIC WARP 5"
+    - "QUIC WARP 6"
     - "Proton AWG"
   url: 'http://www.gstatic.com/generate_204'
   interval: 30
