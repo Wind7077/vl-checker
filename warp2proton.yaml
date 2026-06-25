@@ -1,3 +1,36 @@
+# ====================================================================
+# ГЛОБАЛЬНЫЕ НАСТРОЙКИ DNS (Критично для обхода блокировок DNS)
+# ====================================================================
+dns:
+  enable: true
+  ipv6: false # Отключаем IPv6 в DNS, чтобы избежать утечек и ошибок на мобильных сетях
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip # Подменяет IP до проверки правил, ускоряет работу
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - '*.local'
+    - 'dns.msftncsi.com'
+    - 'www.msftncsi.com'
+    - 'www.msftconnecttest.com'
+    - 'localhost.ptlogin2.qq.com'
+    - '+.stun.*.*'
+    - '+.stun.*.*.*'
+    - '+.stun.*.*.*.*'
+    - '+.stun.*.*.*.*.*'
+  default-nameserver:
+    - 77.88.8.8   # Яндекс DNS
+    - 217.118.83.6 # МТС DNS
+  nameserver:
+    - https://common.dot.dns.yandex.net/dns-query
+    - https://dns.mts.ru/dns-query
+  fallback:
+    - https://common.dot.dns.yandex.net/dns-query
+
+# ====================================================================
+# ШАБЛОНЫ (ANCHORS)
+# ====================================================================
 warp-masque: &warp-masque
   type: masque
   sni: "gosuslugi.ru"
@@ -9,7 +42,8 @@ warp-masque: &warp-masque
   ipv6: 2606:4700:110:820f:25ec:7ccd:9ae:1618
   udp: true
   remote-dns-resolve: true
-  dns: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1111, 2606:4700:4700::1001]
+  # ЗАМЕНЕНО: Cloudflare заменен на Яндекс и МТС для прохождения IP-фильтров
+  dns: ['77.88.8.8', '77.88.8.1', '217.118.83.6']
   skip-cert-verify: true
 
 warp-masque-sber: &warp-masque-sber
@@ -23,7 +57,8 @@ warp-masque-sber: &warp-masque-sber
   ipv6: 2606:4700:110:820f:25ec:7ccd:9ae:1618
   udp: true
   remote-dns-resolve: true
-  dns: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1111, 2606:4700:4700::1001]
+  # ЗАМЕНЕНО
+  dns: ['77.88.8.8', '77.88.8.1', '217.118.83.6']
   skip-cert-verify: true
 
 proxies:
@@ -250,7 +285,6 @@ proxy-groups:
 
 - name: "Fallback"
   type: fallback
-  # Сначала H2 (TCP) на стандартных портах, затем QUIC на быстрых портах, в конце Proton
   proxies:
     - "H2 Gosuslugi"
     - "H2 Gosuslugi Alt"
@@ -277,5 +311,47 @@ proxy-groups:
   url: 'http://www.gstatic.com/generate_204'
   interval: 60
 
+# ====================================================================
+# ПРАВИЛА МАРШРУТИЗАЦИИ (Split-Tunneling)
+# ====================================================================
 rules:
-- MATCH,Proxy
+  # 1. Прямой доступ к локальным сетям и multicast
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,100.64.0.0/10,DIRECT
+  - IP-CIDR,224.0.0.0/4,DIRECT
+  - IP-CIDR6,fe80::/10,DIRECT
+  - IP-CIDR6,fc00::/7,DIRECT
+  
+  # 2. Прямой доступ к РФ (белые списки, банки, госуслуги)
+  - DOMAIN-SUFFIX,ru,DIRECT
+  - DOMAIN-SUFFIX,su,DIRECT
+  - DOMAIN-SUFFIX,xn--p1ai,DIRECT
+  - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
+  - DOMAIN-SUFFIX,sberbank.ru,DIRECT
+  - DOMAIN-SUFFIX,nalog.ru,DIRECT
+  - DOMAIN-SUFFIX,mos.ru,DIRECT
+  - DOMAIN-SUFFIX,yandex.ru,DIRECT
+  - DOMAIN-SUFFIX,yandex.net,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,mail.ru,DIRECT
+  - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
+  - DOMAIN-SUFFIX,ozon.ru,DIRECT
+  - DOMAIN-SUFFIX,vtb.ru,DIRECT
+  - DOMAIN-SUFFIX,roskazna.ru,DIRECT
+  - DOMAIN-SUFFIX,mts.ru,DIRECT
+  - DOMAIN-SUFFIX,megafon.ru,DIRECT
+  - DOMAIN-SUFFIX,beeline.ru,DIRECT
+  
+  # 3. Системные домены и телеметрия (чтобы не убить батарею и сеть)
+  - DOMAIN-KEYWORD,apple.com,DIRECT
+  - DOMAIN-SUFFIX,microsoft.com,DIRECT
+  - DOMAIN-SUFFIX,windows.net,DIRECT
+  - DOMAIN-SUFFIX,googlevideo.com,DIRECT # Для кэша YouTube, если нужно
+  - DOMAIN-KEYWORD,admarvel,DIRECT
+  - DOMAIN-KEYWORD,admaster,DIRECT
+
+  # 4. Весь остальной трафик (зарубежный) идет в прокси
+  - MATCH,Proxy
