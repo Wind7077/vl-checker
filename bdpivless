@@ -4,6 +4,7 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
+global-client-fingerprint: chrome
 
 external-controller: 127.0.0.1:9090
 
@@ -27,8 +28,17 @@ dns:
     - "ntp.*"
     - "time.*"
     - "*.yandex.ru"
-    - "*.vk.com"
+    - "*.ya.ru"
     - "*.mail.ru"
+    - "*.vk.com"
+    - "*.sberbank.ru"
+    - "*.vtb.ru"
+    - "*.gosuslugi.ru"
+    - "*.tinkoff.ru"
+    - "*.ok.ru"
+    - "*.ozon.ru"
+    - "*.wildberries.ru"
+    - "*.avito.ru"
   default-nameserver:
     - 77.88.8.8
     - 77.88.8.1
@@ -42,7 +52,6 @@ dns:
     ipcidr:
       - 240.0.0.0/4
 
-# БЕЗ JS-скрипта - чистый импорт
 proxy-providers:
   MAIN:
     type: http
@@ -53,7 +62,27 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 10000
+      timeout: 30000
+    script: |
+      function main(proxies) {
+        return proxies.map(p => {
+          // Применяем обход DPI только к VLESS (TLS-протоколы)
+          if (p['type'] === 'vless' && p['tls']) {
+            p['fragment'] = {
+              packets: 'tlshello',
+              length: '100-200',
+              interval: '1-5'
+            };
+            p['noises'] = [
+              { type: 'rand', packet: '00', delay: '1-3' }
+            ];
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
+          }
+          // Hysteria2, TUIC, SS не трогаем - они работают без модификаций
+          return p;
+        });
+      }
 
   UNIVERSAL:
     type: http
@@ -64,7 +93,25 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 10000
+      timeout: 30000
+    script: |
+      function main(proxies) {
+        return proxies.map(p => {
+          if (p['type'] === 'vless' && p['tls']) {
+            p['fragment'] = {
+              packets: 'tlshello',
+              length: '100-200',
+              interval: '1-5'
+            };
+            p['noises'] = [
+              { type: 'rand', packet: '00', delay: '1-3' }
+            ];
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
+          }
+          return p;
+        });
+      }
 
 proxy-groups:
   - name: AUTO
@@ -74,7 +121,7 @@ proxy-groups:
       - UNIVERSAL
     url: http://yandex.ru
     interval: 300
-    tolerance: 50
+    tolerance: 100
 
   - name: FALLBACK
     type: fallback
@@ -102,10 +149,52 @@ rules:
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
-  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,ya.ru,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,sberbank.ru,DIRECT
+  - DOMAIN-SUFFIX,vtb.ru,DIRECT
+  - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
+  - DOMAIN-SUFFIX,ok.ru,DIRECT
+  - DOMAIN-SUFFIX,ozon.ru,DIRECT
+  - DOMAIN-SUFFIX,wildberries.ru,DIRECT
+  - DOMAIN-SUFFIX,avito.ru,DIRECT
+  - DOMAIN-SUFFIX,2gis.ru,DIRECT
+  - DOMAIN-SUFFIX,yoomoney.ru,DIRECT
+  - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
+  - DOMAIN-SUFFIX,mts.ru,DIRECT
+  - DOMAIN-SUFFIX,megafon.ru,DIRECT
+  - DOMAIN-SUFFIX,beeline.ru,DIRECT
+  - DOMAIN-SUFFIX,tele2.ru,DIRECT
+  - DOMAIN-SUFFIX,rzd.ru,DIRECT
+  - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
+  - DOMAIN-SUFFIX,s7.ru,DIRECT
+  - DOMAIN-SUFFIX,pochta.ru,DIRECT
   - DOMAIN-SUFFIX,google.com,PROXY
+  - DOMAIN-SUFFIX,googleapis.com,PROXY
+  - DOMAIN-SUFFIX,googlevideo.com,PROXY
+  - DOMAIN-SUFFIX,gstatic.com,PROXY
+  - DOMAIN-SUFFIX,ggpht.com,PROXY
   - DOMAIN-SUFFIX,youtube.com,PROXY
+  - DOMAIN-SUFFIX,ytimg.com,PROXY
   - DOMAIN-SUFFIX,telegram.org,PROXY
+  - DOMAIN-SUFFIX,t.me,PROXY
+  - DOMAIN-SUFFIX,github.com,PROXY
+  - DOMAIN-SUFFIX,githubusercontent.com,PROXY
   - DOMAIN-SUFFIX,instagram.com,PROXY
+  - DOMAIN-SUFFIX,cdninstagram.com,PROXY
+  - DOMAIN-SUFFIX,discord.com,PROXY
+  - DOMAIN-SUFFIX,discord.gg,PROXY
+  - DOMAIN-SUFFIX,whatsapp.com,PROXY
+  - DOMAIN-SUFFIX,facebook.com,PROXY
+  - DOMAIN-SUFFIX,twitter.com,PROXY
+  - DOMAIN-SUFFIX,x.com,PROXY
+  - DOMAIN-SUFFIX,twitch.tv,PROXY
+  - DOMAIN-SUFFIX,spotify.com,PROXY
+  - DOMAIN-SUFFIX,netflix.com,PROXY
+  - DOMAIN-SUFFIX,openai.com,PROXY
+  - DOMAIN-SUFFIX,chatgpt.com,PROXY
+  - DOMAIN-SUFFIX,claude.ai,PROXY
+  - DOMAIN-SUFFIX,anthropic.com,PROXY
+  - DOMAIN-SUFFIX,perplexity.ai,PROXY
   - MATCH,PROXY
