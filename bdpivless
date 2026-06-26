@@ -4,14 +4,9 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome
-tcp-concurrent: true
 
 external-controller: 127.0.0.1:9090
 
-# =========================
-# 👁 SNIFFER
-# =========================
 sniffer:
   enable: true
   force-dns-mapping: true
@@ -21,9 +16,6 @@ sniffer:
     TLS:
     HTTP:
 
-# =========================
-# 🧬 DNS (Только Яндекс)
-# =========================
 dns:
   enable: true
   ipv6: false
@@ -34,21 +26,9 @@ dns:
     - "*.lan"
     - "ntp.*"
     - "time.*"
-    - "dns.msftncsi.com"
-    - "www.msftncsi.com"
-    - "www.msftconnecttest.com"
     - "*.yandex.ru"
-    - "*.ya.ru"
-    - "*.mail.ru"
     - "*.vk.com"
-    - "*.sberbank.ru"
-    - "*.vtb.ru"
-    - "*.gosuslugi.ru"
-    - "*.tinkoff.ru"
-    - "*.ok.ru"
-    - "*.ozon.ru"
-    - "*.wildberries.ru"
-    - "*.avito.ru"
+    - "*.mail.ru"
   default-nameserver:
     - 77.88.8.8
     - 77.88.8.1
@@ -62,9 +42,7 @@ dns:
     ipcidr:
       - 240.0.0.0/4
 
-# =========================
-# 🔥 ПОДПИСКИ (ВАРИАНТ 6: Экстремальное дробление TLS)
-# =========================
+# БЕЗ JS-скрипта - чистый импорт
 proxy-providers:
   MAIN:
     type: http
@@ -75,31 +53,7 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 20000
-    script: |
-      function main(proxies) {
-        return proxies.map(p => {
-          if (p['type'] === 'vless') {
-            // ЭКСТРЕМАЛЬНОЕ ДРОБЛЕНИЕ (как в ByeDPI hardcore)
-            // Разбиваем TLS ClientHello на 1-3 байта
-            p['fragment'] = {
-              packets: 'tlshello',
-              length: '1-3',     // Микроскопические фрагменты
-              interval: '1-2'    // Минимальная задержка
-            };
-            
-            // Убираем шумы, они могут мешать при таком дроблении
-            delete p['noises'];
-            
-            p['flow'] = p['flow'] || 'xtls-rprx-vision';
-            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
-            
-            // TCP Fast Open для ускорения handshake
-            p['tcp-fast-open'] = true;
-          }
-          return p;
-        });
-      }
+      timeout: 10000
 
   UNIVERSAL:
     type: http
@@ -110,31 +64,8 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 20000
-    script: |
-      function main(proxies) {
-        return proxies.map(p => {
-          if (p['type'] === 'vless') {
-            // ЭКСТРЕМАЛЬНОЕ ДРОБЛЕНИЕ
-            p['fragment'] = {
-              packets: 'tlshello',
-              length: '1-3',
-              interval: '1-2'
-            };
-            
-            delete p['noises'];
-            
-            p['flow'] = p['flow'] || 'xtls-rprx-vision';
-            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
-            p['tcp-fast-open'] = true;
-          }
-          return p;
-        });
-      }
+      timeout: 10000
 
-# =========================
-# 🔀 ПРОКСИ ГРУППЫ
-# =========================
 proxy-groups:
   - name: AUTO
     type: url-test
@@ -143,7 +74,7 @@ proxy-groups:
       - UNIVERSAL
     url: http://yandex.ru
     interval: 300
-    tolerance: 100
+    tolerance: 50
 
   - name: FALLBACK
     type: fallback
@@ -163,73 +94,18 @@ proxy-groups:
       - FALLBACK
       - DIRECT
 
-# =========================
-# 🌐 РУЛЫ
-# =========================
 rules:
-  # Анти-петля
   - PROCESS-NAME,com.follow.clash,DIRECT
   - PROCESS-NAME,com.greatfire.flclash,DIRECT
-  - PROCESS-NAME,com.wireguard.android,DIRECT
-  
-  # Локальные сети
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
-  
-  # Российские белые списки
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
-  - DOMAIN-SUFFIX,ya.ru,DIRECT
-  - DOMAIN-SUFFIX,mail.ru,DIRECT
   - DOMAIN-SUFFIX,vk.com,DIRECT
-  - DOMAIN-SUFFIX,sberbank.ru,DIRECT
-  - DOMAIN-SUFFIX,vtb.ru,DIRECT
-  - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
-  - DOMAIN-SUFFIX,ok.ru,DIRECT
-  - DOMAIN-SUFFIX,ozon.ru,DIRECT
-  - DOMAIN-SUFFIX,wildberries.ru,DIRECT
-  - DOMAIN-SUFFIX,avito.ru,DIRECT
-  - DOMAIN-SUFFIX,2gis.ru,DIRECT
-  - DOMAIN-SUFFIX,yoomoney.ru,DIRECT
-  - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
-  - DOMAIN-SUFFIX,mts.ru,DIRECT
-  - DOMAIN-SUFFIX,megafon.ru,DIRECT
-  - DOMAIN-SUFFIX,beeline.ru,DIRECT
-  - DOMAIN-SUFFIX,tele2.ru,DIRECT
-  - DOMAIN-SUFFIX,rzd.ru,DIRECT
-  - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
-  - DOMAIN-SUFFIX,s7.ru,DIRECT
-  - DOMAIN-SUFFIX,pochta.ru,DIRECT
-
-  # Зарубежный трафик
+  - DOMAIN-SUFFIX,mail.ru,DIRECT
   - DOMAIN-SUFFIX,google.com,PROXY
-  - DOMAIN-SUFFIX,googleapis.com,PROXY
-  - DOMAIN-SUFFIX,googlevideo.com,PROXY
-  - DOMAIN-SUFFIX,gstatic.com,PROXY
-  - DOMAIN-SUFFIX,ggpht.com,PROXY
   - DOMAIN-SUFFIX,youtube.com,PROXY
-  - DOMAIN-SUFFIX,ytimg.com,PROXY
   - DOMAIN-SUFFIX,telegram.org,PROXY
-  - DOMAIN-SUFFIX,t.me,PROXY
-  - DOMAIN-SUFFIX,github.com,PROXY
-  - DOMAIN-SUFFIX,githubusercontent.com,PROXY
   - DOMAIN-SUFFIX,instagram.com,PROXY
-  - DOMAIN-SUFFIX,cdninstagram.com,PROXY
-  - DOMAIN-SUFFIX,discord.com,PROXY
-  - DOMAIN-SUFFIX,discord.gg,PROXY
-  - DOMAIN-SUFFIX,whatsapp.com,PROXY
-  - DOMAIN-SUFFIX,facebook.com,PROXY
-  - DOMAIN-SUFFIX,twitter.com,PROXY
-  - DOMAIN-SUFFIX,x.com,PROXY
-  - DOMAIN-SUFFIX,twitch.tv,PROXY
-  - DOMAIN-SUFFIX,spotify.com,PROXY
-  - DOMAIN-SUFFIX,netflix.com,PROXY
-  - DOMAIN-SUFFIX,openai.com,PROXY
-  - DOMAIN-SUFFIX,chatgpt.com,PROXY
-  - DOMAIN-SUFFIX,claude.ai,PROXY
-  - DOMAIN-SUFFIX,anthropic.com,PROXY
-  - DOMAIN-SUFFIX,perplexity.ai,PROXY
-  
-  # Финальный роут
   - MATCH,PROXY
