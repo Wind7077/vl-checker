@@ -1,0 +1,163 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+global-client-fingerprint: chrome # Глобальный JA3 (ByeDPI метод)
+
+# =========================
+# 🗺 ГЕО-БАЗЫ (Для авто-роутинга белых списков)
+# =========================
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
+
+geox-url:
+  geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
+  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb"
+
+external-controller: 127.0.0.1:9090
+
+# =========================
+# 👁 SNIFFER
+# =========================
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    TLS:
+    HTTP:
+
+# =========================
+# 🧬 DNS
+# =========================
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.local"
+    - "*.lan"
+    - "ntp.*"
+    - "time.*"
+    - "dns.msftncsi.com"
+    - "www.msftncsi.com"
+    - "www.msftconnecttest.com"
+    - "*.yandex.ru" # Исключаем белые списки из Fake-IP
+    - "*.ya.ru"
+    - "*.mail.ru"
+    - "*.vk.com"
+    - "*.sberbank.ru"
+  default-nameserver:
+    - 8.8.8.8
+    - 1.1.1.1
+  nameserver:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.quad9.net/dns-query
+  fallback:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: RU
+    ipcidr:
+      - 240.0.0.0/4
+  respect-rules: true
+
+# =========================
+# 🔥 ПОДПИСКА + BYEDPI/ZAPRET (JS Script)
+# =========================
+proxy-providers:
+  MAIN:
+    type: http
+    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
+    interval: 3600
+    path: ./providers/main.yaml
+    health-check:
+      enable: true
+      url: http://yandex.ru # ✅ Белый список (провайдер не режет)
+      interval: 300
+      timeout: 5000
+    
+    script: |
+      function main(proxies) {
+        return proxies.map(p => {
+          p['fragment'] = {
+            packets: 'tlshello',
+            length: '10-20',
+            interval: '10-20'
+          };
+          p['noises'] = [
+            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
+            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
+          ];
+          if (!p['client-fingerprint']) {
+            p['client-fingerprint'] = 'chrome';
+          }
+          return p;
+        });
+      }
+
+# =========================
+# 🔀 ПРОКСИ ГРУППЫ
+# =========================
+proxy-groups:
+  - name: AUTO
+    type: url-test
+    use:
+      - MAIN
+    url: http://yandex.ru # ✅ Тестируем через белый список
+    interval: 300
+    tolerance: 50
+
+  - name: FALLBACK
+    type: fallback
+    use:
+      - MAIN
+    url: http://yandex.ru
+    interval: 300
+
+  - name: PROXY
+    type: select
+    use:
+      - MAIN
+    proxies:
+      - AUTO
+      - FALLBACK
+      - DIRECT
+
+# =========================
+# 🌐 РУЛЫ (TRAFFIC ROUTING)
+# =========================
+rules:
+  # 1. Анти-петля (Loop Prevention) для Android VPN
+  - PROCESS-NAME,com.follow.clash,DIRECT # Замените на имя пакета FlClash, если отличается
+  - PROCESS-NAME,com.wireguard.android,DIRECT
+  
+  # 2. Локальные сети
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  
+  # 3. АВТОМАТИЧЕСКИЕ БЕЛЫЕ СПИСКИ (GeoIP/GeoSite РФ идут напрямую)
+  - GEOSITE,ru,DIRECT
+  - GEOSITE,category-gov-ru,DIRECT
+  - GEOIP,RU,DIRECT,no-resolve
+  
+  # 4. Зарубежный трафик (Telegram, YouTube и т.д.)
+  - GEOSITE,telegram,PROXY
+  - GEOSITE,youtube,PROXY
+  - GEOSITE,google,PROXY
+  - GEOSITE,github,PROXY
+  - GEOSITE,instagram,PROXY
+  - GEOSITE,discord,PROXY
+  
+  # 5. Финальный роут
+  - MATCH,PROXY
