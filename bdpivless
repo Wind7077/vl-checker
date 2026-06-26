@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (ВАРИАНТ 3: Zapret-style split)
+# 🔥 ПОДПИСКИ (ВАРИАНТ 4: TLS-only фрагментация)
 # =========================
 proxy-providers:
   MAIN:
@@ -74,16 +74,16 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 20000
+      timeout: 30000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Zapret-style: дробим ВСЕ пакеты, не только TLS
+            // ГИБРИД: дробим только TLS (быстрый health-check + обход DPI)
             p['fragment'] = {
-              packets: 'all',        // Все пакеты (как в Zapret)
-              length: '40-60',       // Средний размер фрагментов
-              interval: '30-50'      // Большая задержка (обход DPI)
+              packets: 'tlshello',   // Только TLS handshake (не все пакеты)
+              length: '40-60',       // Параметры из Варианта 3
+              interval: '30-50'      // Задержка для обхода DPI
             };
             
             delete p['noises'];
@@ -91,8 +91,9 @@ proxy-providers:
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
             
-            // Увеличиваем timeout для медленных соединений
-            p['dialer-proxy'] = undefined; // Убираем возможные chain-proxy
+            // TCP keep-alive для стабильности долгоживущих соединений
+            p['keep-alive-idle'] = 30;
+            p['keep-alive-interval'] = 30;
           }
           return p;
         });
@@ -107,14 +108,14 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 20000
+      timeout: 30000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Zapret-style: дробим ВСЕ пакеты
+            // ГИБРИД: дробим только TLS
             p['fragment'] = {
-              packets: 'all',
+              packets: 'tlshello',
               length: '40-60',
               interval: '30-50'
             };
@@ -124,7 +125,8 @@ proxy-providers:
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
             
-            p['dialer-proxy'] = undefined;
+            p['keep-alive-idle'] = 30;
+            p['keep-alive-interval'] = 30;
           }
           return p;
         });
@@ -141,7 +143,7 @@ proxy-groups:
       - UNIVERSAL
     url: http://yandex.ru
     interval: 300
-    tolerance: 50
+    tolerance: 100
 
   - name: FALLBACK
     type: fallback
