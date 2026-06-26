@@ -4,7 +4,7 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome # Глобальный JA3 (как в WINGSV)
+global-client-fingerprint: chrome
 
 external-controller: 127.0.0.1:9090
 
@@ -21,7 +21,7 @@ sniffer:
     HTTP:
 
 # =========================
-# 🧬 DNS (Только Яндекс для локальных нужд)
+# 🧬 DNS (Только Яндекс)
 # =========================
 dns:
   enable: true
@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (CLEAN XRAY MODE)
+# 🔥 ПОДПИСКИ (CLEAN XRAY + БЕЛЫЙ СПИСОК)
 # =========================
 proxy-providers:
   MAIN:
@@ -72,18 +72,18 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204 # Стандарт для сортировки нод
+      url: http://yandex.ru # ✅ Тест через белый список
       interval: 300
-      timeout: 5000
+      timeout: 10000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // 1. Чистый VLESS Reality (нативный метод Xray/WINGSV)
+            // Чистый VLESS Reality (нативный метод Xray/WINGSV)
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
             
-            // 2. УДАЛЯЕМ агрессивные параметры, которые ломают серверы
+            // УДАЛЯЕМ агрессивные параметры
             delete p['fragment'];
             delete p['noises'];
           }
@@ -98,9 +98,9 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204
+      url: http://yandex.ru # ✅ Тест через белый список
       interval: 300
-      timeout: 5000
+      timeout: 10000
     script: |
       function main(proxies) {
         return proxies.map(p => {
@@ -123,7 +123,7 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
-    url: http://www.gstatic.com/generate_204
+    url: http://yandex.ru # ✅ Авто-выбор через белый список
     interval: 300
     tolerance: 50
 
@@ -132,7 +132,7 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
-    url: http://www.gstatic.com/generate_204
+    url: http://yandex.ru
     interval: 300
 
   - name: PROXY
@@ -146,7 +146,7 @@ proxy-groups:
       - DIRECT
 
 # =========================
-# 🌐 РУЛЫ (TRAFFIC ROUTING)
+# 🌐 РУЛЫ
 # =========================
 rules:
   # Анти-петля
@@ -160,7 +160,7 @@ rules:
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   
-  # Российские белые списки (Напрямую)
+  # Российские белые списки
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,ya.ru,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
@@ -184,7 +184,7 @@ rules:
   - DOMAIN-SUFFIX,s7.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
 
-  # Зарубежный трафик (Через прокси)
+  # Зарубежный трафик
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
@@ -213,5 +213,5 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,PROXY
   - DOMAIN-SUFFIX,perplexity.ai,PROXY
   
-  # Финальный роут 
+  # Финальный роут
   - MATCH,PROXY
