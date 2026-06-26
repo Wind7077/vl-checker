@@ -5,6 +5,7 @@ log-level: warning
 ipv6: false
 unified-delay: true
 global-client-fingerprint: chrome
+tcp-concurrent: true
 
 external-controller: 127.0.0.1:9090
 
@@ -62,7 +63,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (ВАРИАНТ 6: Проверенные параметры без мусора)
+# 🔥 ПОДПИСКИ (ВАРИАНТ 6: Экстремальное дробление TLS)
 # =========================
 proxy-providers:
   MAIN:
@@ -74,22 +75,27 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 30000
+      timeout: 20000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Проверенные РАБОЧИЕ параметры (из варианта 1)
+            // ЭКСТРЕМАЛЬНОЕ ДРОБЛЕНИЕ (как в ByeDPI hardcore)
+            // Разбиваем TLS ClientHello на 1-3 байта
             p['fragment'] = {
               packets: 'tlshello',
-              length: '100-200',
-              interval: '1-5'
+              length: '1-3',     // Микроскопические фрагменты
+              interval: '1-2'    // Минимальная задержка
             };
-            p['noises'] = [
-              { type: 'rand', packet: '00', delay: '1-3' }
-            ];
+            
+            // Убираем шумы, они могут мешать при таком дроблении
+            delete p['noises'];
+            
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
+            
+            // TCP Fast Open для ускорения handshake
+            p['tcp-fast-open'] = true;
           }
           return p;
         });
@@ -104,21 +110,23 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 30000
+      timeout: 20000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
+            // ЭКСТРЕМАЛЬНОЕ ДРОБЛЕНИЕ
             p['fragment'] = {
               packets: 'tlshello',
-              length: '100-200',
-              interval: '1-5'
+              length: '1-3',
+              interval: '1-2'
             };
-            p['noises'] = [
-              { type: 'rand', packet: '00', delay: '1-3' }
-            ];
+            
+            delete p['noises'];
+            
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
+            p['tcp-fast-open'] = true;
           }
           return p;
         });
@@ -135,7 +143,7 @@ proxy-groups:
       - UNIVERSAL
     url: http://yandex.ru
     interval: 300
-    tolerance: 150
+    tolerance: 100
 
   - name: FALLBACK
     type: fallback
