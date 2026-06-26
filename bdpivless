@@ -60,13 +60,12 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
       interval: 300
-      timeout: 30000
+      timeout: 60000
     script: |
       function main(proxies) {
         return proxies.map(p => {
-          // Применяем обход DPI только к VLESS (TLS-протоколы)
           if (p['type'] === 'vless' && p['tls']) {
             p['fragment'] = {
               packets: 'tlshello',
@@ -79,7 +78,6 @@ proxy-providers:
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
           }
-          // Hysteria2, TUIC, SS не трогаем - они работают без модификаций
           return p;
         });
       }
@@ -91,9 +89,9 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
       interval: 300
-      timeout: 30000
+      timeout: 60000
     script: |
       function main(proxies) {
         return proxies.map(p => {
@@ -119,7 +117,7 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
-    url: http://yandex.ru
+    url: http://ya.ru
     interval: 300
     tolerance: 100
 
@@ -128,7 +126,7 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
-    url: http://yandex.ru
+    url: http://ya.ru
     interval: 300
 
   - name: PROXY
