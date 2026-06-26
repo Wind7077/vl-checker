@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (CLEAN XRAY + БЕЛЫЙ СПИСОК)
+# 🔥 ПОДПИСКИ (ВАРИАНТ 1: Минимальная фрагментация)
 # =========================
 proxy-providers:
   MAIN:
@@ -72,20 +72,27 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://yandex.ru # ✅ Тест через белый список
+      url: http://yandex.ru
       interval: 300
       timeout: 10000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Чистый VLESS Reality (нативный метод Xray/WINGSV)
+            // Минимальная фрагментация - только для пробития DPI
+            p['fragment'] = {
+              packets: 'tlshello',
+              length: '100-200',  // Крупные фрагменты (не ломают серверы)
+              interval: '1-5'     // Минимальная задержка
+            };
+            
+            // Минимальный шум (один пакет)
+            p['noises'] = [
+              { type: 'rand', packet: '00', delay: '1-3' }
+            ];
+            
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
-            
-            // УДАЛЯЕМ агрессивные параметры
-            delete p['fragment'];
-            delete p['noises'];
           }
           return p;
         });
@@ -98,17 +105,27 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: http://yandex.ru # ✅ Тест через белый список
+      url: http://yandex.ru
       interval: 300
       timeout: 10000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
+            // Минимальная фрагментация - только для пробития DPI
+            p['fragment'] = {
+              packets: 'tlshello',
+              length: '100-200',  // Крупные фрагменты (не ломают серверы)
+              interval: '1-5'     // Минимальная задержка
+            };
+            
+            // Минимальный шум (один пакет)
+            p['noises'] = [
+              { type: 'rand', packet: '00', delay: '1-3' }
+            ];
+            
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
-            delete p['fragment'];
-            delete p['noises'];
           }
           return p;
         });
@@ -123,7 +140,7 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
-    url: http://yandex.ru # ✅ Авто-выбор через белый список
+    url: http://yandex.ru
     interval: 300
     tolerance: 50
 
