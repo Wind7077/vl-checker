@@ -124,16 +124,106 @@ proxy-providers:
         });
       }
 
+  IGARECK-MOBILE:
+    type: http
+    url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
+    interval: 3600
+    path: ./providers/igareck-mobile.yaml
+    health-check:
+      enable: true
+      url: http://yandex.ru
+      interval: 300
+      timeout: 5000
+    script: |
+      function main(proxies) {
+        return proxies.map(p => {
+          p['fragment'] = {
+            packets: 'tlshello',
+            length: '10-20',
+            interval: '10-20'
+          };
+          p['noises'] = [
+            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
+            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
+          ];
+          if (!p['client-fingerprint']) {
+            p['client-fingerprint'] = 'chrome';
+          }
+          return p;
+        });
+      }
+
+  IGARECK-MOBILE-2:
+    type: http
+    url: "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile-2.txt"
+    interval: 3600
+    path: ./providers/igareck-mobile-2.yaml
+    health-check:
+      enable: true
+      url: http://yandex.ru
+      interval: 300
+      timeout: 5000
+    script: |
+      function main(proxies) {
+        return proxies.map(p => {
+          p['fragment'] = {
+            packets: 'tlshello',
+            length: '10-20',
+            interval: '10-20'
+          };
+          p['noises'] = [
+            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
+            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
+          ];
+          if (!p['client-fingerprint']) {
+            p['client-fingerprint'] = 'chrome';
+          }
+          return p;
+        });
+      }
+
+  GFP-FREE:
+    type: http
+    url: "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/vless.txt"
+    interval: 3600
+    path: ./providers/gfp-free.yaml
+    health-check:
+      enable: true
+      url: http://yandex.ru
+      interval: 300
+      timeout: 5000
+    script: |
+      function main(proxies) {
+        return proxies.map(p => {
+          p['fragment'] = {
+            packets: 'tlshello',
+            length: '10-20',
+            interval: '10-20'
+          };
+          p['noises'] = [
+            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
+            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
+          ];
+          if (!p['client-fingerprint']) {
+            p['client-fingerprint'] = 'chrome';
+          }
+          return p;
+        });
+      }
+
 # =========================
 # 🔀 ПРОКСИ ГРУППЫ
 # =========================
 proxy-groups:
-  # Авто-выбор самого быстрого рабочего сервера среди ОБЕИХ подписок
+  # Авто-выбор самого быстрого рабочего сервера среди ВСЕХ подписок
   - name: AUTO
     type: url-test
     use:
       - MAIN
       - UNIVERSAL
+      - IGARECK-MOBILE
+      - IGARECK-MOBILE-2
+      - GFP-FREE
     url: http://yandex.ru
     interval: 300
     tolerance: 50
@@ -144,15 +234,21 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
+      - IGARECK-MOBILE
+      - IGARECK-MOBILE-2
+      - GFP-FREE
     url: http://yandex.ru
     interval: 300
 
-  # Ручной выбор (показывает все ноды из обеих подписок + группы AUTO/FALLBACK)
+  # Ручной выбор (показывает все ноды из всех подписок + группы AUTO/FALLBACK)
   - name: PROXY
     type: select
     use:
       - MAIN
       - UNIVERSAL
+      - IGARECK-MOBILE
+      - IGARECK-MOBILE-2
+      - GFP-FREE
     proxies:
       - AUTO
       - FALLBACK
