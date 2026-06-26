@@ -4,7 +4,7 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome
+global-client-fingerprint: chrome # Глобальный JA3 (как в WINGSV)
 
 external-controller: 127.0.0.1:9090
 
@@ -21,7 +21,7 @@ sniffer:
     HTTP:
 
 # =========================
-# 🧬 DNS (Только Яндекс)
+# 🧬 DNS (Только Яндекс для локальных нужд)
 # =========================
 dns:
   enable: true
@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ + BYEDPI/ZAPRET
+# 🔥 ПОДПИСКИ (CLEAN XRAY MODE)
 # =========================
 proxy-providers:
   MAIN:
@@ -72,25 +72,20 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://www.gstatic.com/generate_204 # Стандарт для сортировки нод
       interval: 300
-      timeout: 10000
+      timeout: 5000
     script: |
       function main(proxies) {
         return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '50-100',
-            interval: '5-15'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '5-15' }
-          ];
-          if (p['type'] === 'vless' && p['tls']) {
-            p['flow'] = 'xtls-rprx-vision';
-          }
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
+          if (p['type'] === 'vless') {
+            // 1. Чистый VLESS Reality (нативный метод Xray/WINGSV)
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
+            
+            // 2. УДАЛЯЕМ агрессивные параметры, которые ломают серверы
+            delete p['fragment'];
+            delete p['noises'];
           }
           return p;
         });
@@ -103,25 +98,17 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://www.gstatic.com/generate_204
       interval: 300
-      timeout: 10000
+      timeout: 5000
     script: |
       function main(proxies) {
         return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '50-100',
-            interval: '5-15'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '5-15' }
-          ];
-          if (p['type'] === 'vless' && p['tls']) {
-            p['flow'] = 'xtls-rprx-vision';
-          }
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
+          if (p['type'] === 'vless') {
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
+            delete p['fragment'];
+            delete p['noises'];
           }
           return p;
         });
@@ -136,16 +123,16 @@ proxy-groups:
     use:
       - MAIN
       - UNIVERSAL
-    url: http://yandex.ru
+    url: http://www.gstatic.com/generate_204
     interval: 300
-    tolerance: 100
+    tolerance: 50
 
   - name: FALLBACK
     type: fallback
     use:
       - MAIN
       - UNIVERSAL
-    url: http://yandex.ru
+    url: http://www.gstatic.com/generate_204
     interval: 300
 
   - name: PROXY
@@ -159,7 +146,7 @@ proxy-groups:
       - DIRECT
 
 # =========================
-# 🌐 РУЛЫ
+# 🌐 РУЛЫ (TRAFFIC ROUTING)
 # =========================
 rules:
   # Анти-петля
@@ -173,7 +160,7 @@ rules:
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   
-  # Российские белые списки
+  # Российские белые списки (Напрямую)
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,ya.ru,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
@@ -197,7 +184,7 @@ rules:
   - DOMAIN-SUFFIX,s7.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
 
-  # Зарубежный трафик
+  # Зарубежный трафик (Через прокси)
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
@@ -226,5 +213,5 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,PROXY
   - DOMAIN-SUFFIX,perplexity.ai,PROXY
   
-  # Финальный роут
+  # Финальный роут 
   - MATCH,PROXY
