@@ -4,12 +4,12 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome # Глобальный JA3 (ByeDPI метод)
+global-client-fingerprint: chrome # Глобальный JA3 отпечаток (ByeDPI метод)
 
 external-controller: 127.0.0.1:9090
 
 # =========================
-# 👁 SNIFFER
+# 👁 SNIFFER (Критически важно)
 # =========================
 sniffer:
   enable: true
@@ -21,7 +21,7 @@ sniffer:
     HTTP:
 
 # =========================
-# 🧬 DNS
+# 🧬 DNS (Полностью на Яндексе)
 # =========================
 dns:
   enable: true
@@ -36,7 +36,7 @@ dns:
     - "dns.msftncsi.com"
     - "www.msftncsi.com"
     - "www.msftconnecttest.com"
-    # Исключаем белые списки из Fake-IP (чтобы приложения видели реальные IP)
+    # Белые списки РФ (чтобы приложения видели реальные IP)
     - "*.yandex.ru"
     - "*.ya.ru"
     - "*.mail.ru"
@@ -45,19 +45,23 @@ dns:
     - "*.vtb.ru"
     - "*.gosuslugi.ru"
     - "*.tinkoff.ru"
+    - "*.ok.ru"
+    - "*.ozon.ru"
+    - "*.wildberries.ru"
+    - "*.avito.ru"
+  # Только Яндекс DNS (заблокированные dns.google и cloudflare убраны)
   default-nameserver:
-    - 8.8.8.8
-    - 1.1.1.1
+    - 77.88.8.8
+    - 77.88.8.1
   nameserver:
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.quad9.net/dns-query
+    - 77.88.8.8
+    - 77.88.8.1
   fallback:
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.google/dns-query
+    - 77.88.8.8
+    - 77.88.8.1
   fallback-filter:
     ipcidr:
       - 240.0.0.0/4
-  respect-rules: true # DNS-запросы к заблокированным сайтам пойдут через PROXY
 
 # =========================
 # 🔥 ПОДПИСКА + BYEDPI/ZAPRET (JS Script)
@@ -78,18 +82,24 @@ proxy-providers:
     script: |
       function main(proxies) {
         return proxies.map(p => {
+          // 1. Фрагментация TLS (Аналог --split-tls из ByeDPI / Zapret)
           p['fragment'] = {
             packets: 'tlshello',
             length: '10-20',
             interval: '10-20'
           };
+          
+          // 2. UDP Шумы (Аналог --fake-gen из Zapret)
           p['noises'] = [
             { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
             { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
           ];
+          
+          // 3. Принудительный отпечаток браузера
           if (!p['client-fingerprint']) {
             p['client-fingerprint'] = 'chrome';
           }
+          
           return p;
         });
       }
@@ -98,14 +108,16 @@ proxy-providers:
 # 🔀 ПРОКСИ ГРУППЫ
 # =========================
 proxy-groups:
+  # Авто-выбор самого быстрого рабочего сервера
   - name: AUTO
     type: url-test
     use:
       - MAIN
-    url: http://yandex.ru 
+    url: http://yandex.ru
     interval: 300
     tolerance: 50
 
+  # Резерв если AUTO падает
   - name: FALLBACK
     type: fallback
     use:
@@ -113,6 +125,7 @@ proxy-groups:
     url: http://yandex.ru
     interval: 300
 
+  # Ручной выбор
   - name: PROXY
     type: select
     use:
@@ -127,7 +140,7 @@ proxy-groups:
 # =========================
 rules:
   # 1. Анти-петля (Loop Prevention) для Android VPN
-  - PROCESS-NAME,com.follow.clash,DIRECT 
+  - PROCESS-NAME,com.follow.clash,DIRECT
   - PROCESS-NAME,com.greatfire.flclash,DIRECT
   - PROCESS-NAME,com.wireguard.android,DIRECT
   
@@ -152,11 +165,21 @@ rules:
   - DOMAIN-SUFFIX,2gis.ru,DIRECT
   - DOMAIN-SUFFIX,yoomoney.ru,DIRECT
   - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
+  - DOMAIN-SUFFIX,mts.ru,DIRECT
+  - DOMAIN-SUFFIX,megafon.ru,DIRECT
+  - DOMAIN-SUFFIX,beeline.ru,DIRECT
+  - DOMAIN-SUFFIX,tele2.ru,DIRECT
+  - DOMAIN-SUFFIX,rzd.ru,DIRECT
+  - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
+  - DOMAIN-SUFFIX,s7.ru,DIRECT
+  - DOMAIN-SUFFIX,pochta.ru,DIRECT
 
   # 4. Зарубежный трафик (Через прокси)
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
+  - DOMAIN-SUFFIX,gstatic.com,PROXY
+  - DOMAIN-SUFFIX,ggpht.com,PROXY
   - DOMAIN-SUFFIX,youtube.com,PROXY
   - DOMAIN-SUFFIX,ytimg.com,PROXY
   - DOMAIN-SUFFIX,telegram.org,PROXY
@@ -171,8 +194,16 @@ rules:
   - DOMAIN-SUFFIX,facebook.com,PROXY
   - DOMAIN-SUFFIX,twitter.com,PROXY
   - DOMAIN-SUFFIX,x.com,PROXY
+  - DOMAIN-SUFFIX,twitch.tv,PROXY
+  - DOMAIN-SUFFIX,spotify.com,PROXY
+  - DOMAIN-SUFFIX,netflix.com,PROXY
+  - DOMAIN-SUFFIX,openai.com,PROXY
+  - DOMAIN-SUFFIX,chatgpt.com,PROXY
+  - DOMAIN-SUFFIX,claude.ai,PROXY
+  - DOMAIN-SUFFIX,anthropic.com,PROXY
+  - DOMAIN-SUFFIX,perplexity.ai,PROXY
   
   # 5. Финальный роут 
-  # Все сайты, не указанные выше, пойдут через PROXY. 
-  # Если хотите, чтобы неизвестные сайты шли напрямую, замените PROXY на DIRECT.
+  # Весь трафик, не указанный выше, идет через прокси
+  # (самый безопасный вариант при строгих белых списках)
   - MATCH,PROXY
