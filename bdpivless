@@ -6,19 +6,6 @@ ipv6: false
 unified-delay: true
 global-client-fingerprint: chrome # Глобальный JA3 (ByeDPI метод)
 
-# =========================
-# 🗺 ГЕО-БАЗЫ (Для авто-роутинга белых списков)
-# =========================
-geodata-mode: true
-geodata-loader: memconservative
-geo-auto-update: true
-geo-update-interval: 24
-
-geox-url:
-  geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
-  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
-  mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb"
-
 external-controller: 127.0.0.1:9090
 
 # =========================
@@ -49,11 +36,15 @@ dns:
     - "dns.msftncsi.com"
     - "www.msftncsi.com"
     - "www.msftconnecttest.com"
-    - "*.yandex.ru" # Исключаем белые списки из Fake-IP
+    # Исключаем белые списки из Fake-IP (чтобы приложения видели реальные IP)
+    - "*.yandex.ru"
     - "*.ya.ru"
     - "*.mail.ru"
     - "*.vk.com"
     - "*.sberbank.ru"
+    - "*.vtb.ru"
+    - "*.gosuslugi.ru"
+    - "*.tinkoff.ru"
   default-nameserver:
     - 8.8.8.8
     - 1.1.1.1
@@ -64,11 +55,9 @@ dns:
     - https://cloudflare-dns.com/dns-query
     - https://dns.google/dns-query
   fallback-filter:
-    geoip: true
-    geoip-code: RU
     ipcidr:
       - 240.0.0.0/4
-  respect-rules: true
+  respect-rules: true # DNS-запросы к заблокированным сайтам пойдут через PROXY
 
 # =========================
 # 🔥 ПОДПИСКА + BYEDPI/ZAPRET (JS Script)
@@ -81,10 +70,11 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://yandex.ru # ✅ Белый список (провайдер не режет)
+      url: http://yandex.ru # ✅ Тест через белый список
       interval: 300
       timeout: 5000
     
+    # 🧬 JS-СКРИПТ: Внедряет fragment и noises в каждую ноду подписки
     script: |
       function main(proxies) {
         return proxies.map(p => {
@@ -112,7 +102,7 @@ proxy-groups:
     type: url-test
     use:
       - MAIN
-    url: http://yandex.ru # ✅ Тестируем через белый список
+    url: http://yandex.ru 
     interval: 300
     tolerance: 50
 
@@ -137,7 +127,8 @@ proxy-groups:
 # =========================
 rules:
   # 1. Анти-петля (Loop Prevention) для Android VPN
-  - PROCESS-NAME,com.follow.clash,DIRECT # Замените на имя пакета FlClash, если отличается
+  - PROCESS-NAME,com.follow.clash,DIRECT 
+  - PROCESS-NAME,com.greatfire.flclash,DIRECT
   - PROCESS-NAME,com.wireguard.android,DIRECT
   
   # 2. Локальные сети
@@ -146,18 +137,42 @@ rules:
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   
-  # 3. АВТОМАТИЧЕСКИЕ БЕЛЫЕ СПИСКИ (GeoIP/GeoSite РФ идут напрямую)
-  - GEOSITE,ru,DIRECT
-  - GEOSITE,category-gov-ru,DIRECT
-  - GEOIP,RU,DIRECT,no-resolve
+  # 3. Российские белые списки (Напрямую)
+  - DOMAIN-SUFFIX,yandex.ru,DIRECT
+  - DOMAIN-SUFFIX,ya.ru,DIRECT
+  - DOMAIN-SUFFIX,mail.ru,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,sberbank.ru,DIRECT
+  - DOMAIN-SUFFIX,vtb.ru,DIRECT
+  - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
+  - DOMAIN-SUFFIX,ok.ru,DIRECT
+  - DOMAIN-SUFFIX,ozon.ru,DIRECT
+  - DOMAIN-SUFFIX,wildberries.ru,DIRECT
+  - DOMAIN-SUFFIX,avito.ru,DIRECT
+  - DOMAIN-SUFFIX,2gis.ru,DIRECT
+  - DOMAIN-SUFFIX,yoomoney.ru,DIRECT
+  - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
+
+  # 4. Зарубежный трафик (Через прокси)
+  - DOMAIN-SUFFIX,google.com,PROXY
+  - DOMAIN-SUFFIX,googleapis.com,PROXY
+  - DOMAIN-SUFFIX,googlevideo.com,PROXY
+  - DOMAIN-SUFFIX,youtube.com,PROXY
+  - DOMAIN-SUFFIX,ytimg.com,PROXY
+  - DOMAIN-SUFFIX,telegram.org,PROXY
+  - DOMAIN-SUFFIX,t.me,PROXY
+  - DOMAIN-SUFFIX,github.com,PROXY
+  - DOMAIN-SUFFIX,githubusercontent.com,PROXY
+  - DOMAIN-SUFFIX,instagram.com,PROXY
+  - DOMAIN-SUFFIX,cdninstagram.com,PROXY
+  - DOMAIN-SUFFIX,discord.com,PROXY
+  - DOMAIN-SUFFIX,discord.gg,PROXY
+  - DOMAIN-SUFFIX,whatsapp.com,PROXY
+  - DOMAIN-SUFFIX,facebook.com,PROXY
+  - DOMAIN-SUFFIX,twitter.com,PROXY
+  - DOMAIN-SUFFIX,x.com,PROXY
   
-  # 4. Зарубежный трафик (Telegram, YouTube и т.д.)
-  - GEOSITE,telegram,PROXY
-  - GEOSITE,youtube,PROXY
-  - GEOSITE,google,PROXY
-  - GEOSITE,github,PROXY
-  - GEOSITE,instagram,PROXY
-  - GEOSITE,discord,PROXY
-  
-  # 5. Финальный роут
+  # 5. Финальный роут 
+  # Все сайты, не указанные выше, пойдут через PROXY. 
+  # Если хотите, чтобы неизвестные сайты шли напрямую, замените PROXY на DIRECT.
   - MATCH,PROXY
