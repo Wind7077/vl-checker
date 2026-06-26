@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (ВАРИАНТ 4: TLS-only фрагментация)
+# 🔥 ПОДПИСКИ (ВАРИАНТ 5: Рабочие параметры + большой timeout)
 # =========================
 proxy-providers:
   MAIN:
@@ -79,19 +79,22 @@ proxy-providers:
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // ГИБРИД: дробим только TLS (быстрый health-check + обход DPI)
+            // Возвращаем РАБОЧИЕ параметры из варианта 1
             p['fragment'] = {
-              packets: 'tlshello',   // Только TLS handshake (не все пакеты)
-              length: '40-60',       // Параметры из Варианта 3
-              interval: '30-50'      // Задержка для обхода DPI
+              packets: 'tlshello',
+              length: '100-200',   // Крупные фрагменты (работало!)
+              interval: '1-5'      // Минимальная задержка (работало!)
             };
             
-            delete p['noises'];
+            // Минимальный шум (работало!)
+            p['noises'] = [
+              { type: 'rand', packet: '00', delay: '1-3' }
+            ];
             
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
             
-            // TCP keep-alive для стабильности долгоживущих соединений
+            // TCP keep-alive для стабильности
             p['keep-alive-idle'] = 30;
             p['keep-alive-interval'] = 30;
           }
@@ -113,14 +116,16 @@ proxy-providers:
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // ГИБРИД: дробим только TLS
+            // Возвращаем РАБОЧИЕ параметры из варианта 1
             p['fragment'] = {
               packets: 'tlshello',
-              length: '40-60',
-              interval: '30-50'
+              length: '100-200',
+              interval: '1-5'
             };
             
-            delete p['noises'];
+            p['noises'] = [
+              { type: 'rand', packet: '00', delay: '1-3' }
+            ];
             
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
@@ -143,7 +148,7 @@ proxy-groups:
       - UNIVERSAL
     url: http://yandex.ru
     interval: 300
-    tolerance: 100
+    tolerance: 150
 
   - name: FALLBACK
     type: fallback
