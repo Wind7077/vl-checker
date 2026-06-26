@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (ВАРИАНТ 1: Минимальная фрагментация)
+# 🔥 ПОДПИСКИ (ВАРИАНТ 2: Агрессивная фрагментация без шумов)
 # =========================
 proxy-providers:
   MAIN:
@@ -74,22 +74,21 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 10000
+      timeout: 15000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Минимальная фрагментация - только для пробития DPI
+            // Агрессивная фрагментация (как в ByeDPI --split-tls)
+            // Дробим TLS ClientHello на очень мелкие части
             p['fragment'] = {
               packets: 'tlshello',
-              length: '100-200',  // Крупные фрагменты (не ломают серверы)
-              interval: '1-5'     // Минимальная задержка
+              length: '10-30',    // Мелкие фрагменты (как в ByeDPI)
+              interval: '10-30'   // Задержка между фрагментами
             };
             
-            // Минимальный шум (один пакет)
-            p['noises'] = [
-              { type: 'rand', packet: '00', delay: '1-3' }
-            ];
+            // УБИРАЕМ шумы полностью
+            delete p['noises'];
             
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
@@ -107,22 +106,20 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 10000
+      timeout: 15000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Минимальная фрагментация - только для пробития DPI
+            // Агрессивная фрагментация (как в ByeDPI --split-tls)
             p['fragment'] = {
               packets: 'tlshello',
-              length: '100-200',  // Крупные фрагменты (не ломают серверы)
-              interval: '1-5'     // Минимальная задержка
+              length: '10-30',    // Мелкие фрагменты (как в ByeDPI)
+              interval: '10-30'   // Задержка между фрагментами
             };
             
-            // Минимальный шум (один пакет)
-            p['noises'] = [
-              { type: 'rand', packet: '00', delay: '1-3' }
-            ];
+            // УБИРАЕМ шумы полностью
+            delete p['noises'];
             
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
