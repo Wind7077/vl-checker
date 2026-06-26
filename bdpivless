@@ -62,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ (ВАРИАНТ 5: Рабочие параметры + большой timeout)
+# 🔥 ПОДПИСКИ (ВАРИАНТ 6: Проверенные параметры без мусора)
 # =========================
 proxy-providers:
   MAIN:
@@ -79,24 +79,17 @@ proxy-providers:
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Возвращаем РАБОЧИЕ параметры из варианта 1
+            // Проверенные РАБОЧИЕ параметры (из варианта 1)
             p['fragment'] = {
               packets: 'tlshello',
-              length: '100-200',   // Крупные фрагменты (работало!)
-              interval: '1-5'      // Минимальная задержка (работало!)
+              length: '100-200',
+              interval: '1-5'
             };
-            
-            // Минимальный шум (работало!)
             p['noises'] = [
               { type: 'rand', packet: '00', delay: '1-3' }
             ];
-            
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
-            
-            // TCP keep-alive для стабильности
-            p['keep-alive-idle'] = 30;
-            p['keep-alive-interval'] = 30;
           }
           return p;
         });
@@ -116,22 +109,16 @@ proxy-providers:
       function main(proxies) {
         return proxies.map(p => {
           if (p['type'] === 'vless') {
-            // Возвращаем РАБОЧИЕ параметры из варианта 1
             p['fragment'] = {
               packets: 'tlshello',
               length: '100-200',
               interval: '1-5'
             };
-            
             p['noises'] = [
               { type: 'rand', packet: '00', delay: '1-3' }
             ];
-            
             p['flow'] = p['flow'] || 'xtls-rprx-vision';
             p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
-            
-            p['keep-alive-idle'] = 30;
-            p['keep-alive-interval'] = 30;
           }
           return p;
         });
