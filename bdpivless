@@ -4,12 +4,12 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome # Глобальный JA3 отпечаток (ByeDPI метод)
+global-client-fingerprint: chrome
 
 external-controller: 127.0.0.1:9090
 
 # =========================
-# 👁 SNIFFER (Критически важно)
+# 👁 SNIFFER
 # =========================
 sniffer:
   enable: true
@@ -21,7 +21,7 @@ sniffer:
     HTTP:
 
 # =========================
-# 🧬 DNS (Полностью на Яндексе)
+# 🧬 DNS (Только Яндекс)
 # =========================
 dns:
   enable: true
@@ -36,7 +36,6 @@ dns:
     - "dns.msftncsi.com"
     - "www.msftncsi.com"
     - "www.msftconnecttest.com"
-    # Белые списки РФ (чтобы приложения видели реальные IP)
     - "*.yandex.ru"
     - "*.ya.ru"
     - "*.mail.ru"
@@ -63,7 +62,7 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ + BYEDPI/ZAPRET (JS Script)
+# 🔥 ПОДПИСКИ + BYEDPI/ZAPRET
 # =========================
 proxy-providers:
   MAIN:
@@ -75,19 +74,21 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 5000
+      timeout: 10000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           p['fragment'] = {
             packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
+            length: '50-100',
+            interval: '5-15'
           };
           p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
+            { type: 'rand', packet: '0123456789abcdef', delay: '5-15' }
           ];
+          if (p['type'] === 'vless' && p['tls']) {
+            p['flow'] = 'xtls-rprx-vision';
+          }
           if (!p['client-fingerprint']) {
             p['client-fingerprint'] = 'chrome';
           }
@@ -104,19 +105,21 @@ proxy-providers:
       enable: true
       url: http://yandex.ru
       interval: 300
-      timeout: 5000
+      timeout: 10000
     script: |
       function main(proxies) {
         return proxies.map(p => {
           p['fragment'] = {
             packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
+            length: '50-100',
+            interval: '5-15'
           };
           p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
+            { type: 'rand', packet: '0123456789abcdef', delay: '5-15' }
           ];
+          if (p['type'] === 'vless' && p['tls']) {
+            p['flow'] = 'xtls-rprx-vision';
+          }
           if (!p['client-fingerprint']) {
             p['client-fingerprint'] = 'chrome';
           }
@@ -128,7 +131,6 @@ proxy-providers:
 # 🔀 ПРОКСИ ГРУППЫ
 # =========================
 proxy-groups:
-  # Авто-выбор самого быстрого рабочего сервера среди ОБЕИХ подписок
   - name: AUTO
     type: url-test
     use:
@@ -136,9 +138,8 @@ proxy-groups:
       - UNIVERSAL
     url: http://yandex.ru
     interval: 300
-    tolerance: 50
+    tolerance: 100
 
-  # Резерв если AUTO падает
   - name: FALLBACK
     type: fallback
     use:
@@ -147,7 +148,6 @@ proxy-groups:
     url: http://yandex.ru
     interval: 300
 
-  # Ручной выбор (показывает все ноды из обеих подписок + группы AUTO/FALLBACK)
   - name: PROXY
     type: select
     use:
@@ -159,21 +159,21 @@ proxy-groups:
       - DIRECT
 
 # =========================
-# 🌐 РУЛЫ (TRAFFIC ROUTING)
+# 🌐 РУЛЫ
 # =========================
 rules:
-  # 1. Анти-петля (Loop Prevention) для Android VPN
+  # Анти-петля
   - PROCESS-NAME,com.follow.clash,DIRECT
   - PROCESS-NAME,com.greatfire.flclash,DIRECT
   - PROCESS-NAME,com.wireguard.android,DIRECT
   
-  # 2. Локальные сети
+  # Локальные сети
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   
-  # 3. Российские белые списки (Напрямую)
+  # Российские белые списки
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,ya.ru,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
@@ -197,7 +197,7 @@ rules:
   - DOMAIN-SUFFIX,s7.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
 
-  # 4. Зарубежный трафик (Через прокси)
+  # Зарубежный трафик
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
@@ -226,6 +226,5 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,PROXY
   - DOMAIN-SUFFIX,perplexity.ai,PROXY
   
-  # 5. Финальный роут 
-  # Весь трафик, не указанный выше, идет через прокси
+  # Финальный роут
   - MATCH,PROXY
