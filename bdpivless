@@ -4,7 +4,7 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome # Базовый JA3 отпечаток (актуален только для нод без своего fingerprint-профиля, см. providers)
+global-client-fingerprint: chrome
 
 external-controller: 127.0.0.1:9090
 
@@ -38,6 +38,7 @@ dns:
     - "www.msftconnecttest.com"
     - "*.yandex.ru"
     - "*.ya.ru"
+    - "*.yastatic.net" # Добавлено для корректной работы тестового файла
     - "*.mail.ru"
     - "*.vk.com"
     - "*.sberbank.ru"
@@ -62,20 +63,14 @@ dns:
       - 240.0.0.0/4
 
 # =========================
-# 🔥 ПОДПИСКИ + МУЛЬТИПРОФИЛЬНЫЙ ОБХОД DPI
+# 🔥 ПОДПИСКИ + МУЛЬТИПРОФИЛЬНЫЙ ОБХОД DPI (WINGSV STYLE)
 # =========================
-# Идея: вместо одного фиксированного fragment/noise на ноду — каждая нода
-# клонируется в 4 варианта (L/M/H/RAW) с разной фрагментацией TLS ClientHello,
-# разным "мусорным" трафиком и разным JA3-отпечатком. url-test сам отсеет
-# те клоны, которые DPI всё равно режет, и оставит рабочие — это и повышает
-# процент "белых" (не заблокированных) подключений на тех же исходных нодах,
-# по аналогии с тем, что делают cfray / Hiddify-Reality-Scanner / WINGS-N.
-#
-# ВАЖНО: это x4 к числу нод в каждом провайдере. Если список большой (200+ нод),
-# на слабом телефоне парсинг и health-check могут заметно тормозить и есть
-# мобильный трафик. Если стало тяжело — уберите профиль H или RAW (см. ниже,
-# закомментировать строку profiles.push(...) не нужно, просто удалите объект
-# из массива profiles).
+# Каждая нода клонируется в 4 варианта:
+# [L] Light: Мелкая фрагментация + Chrome JA3
+# [M] Medium: Средняя фрагментация + Firefox JA3 + HTTP шум
+# [H] Heavy: Агрессивная микро-фрагментация + Safari JA3 + множественные шумы
+# [RAW] Clean: Без фрагментации (для Hysteria2/TUIC или если DPI спит)
+# url-test сам оставит только те клоны, которые пробили DPI!
 
 proxy-providers:
   MAIN:
@@ -83,13 +78,12 @@ proxy-providers:
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
     interval: 3600
     path: ./providers/main.yaml
-    # Опционально: отфильтровать явный мусор по имени ноды ещё до скрипта
-    # filter: "(?i)^((?!(test|expired|⛔|💀|dead)).)*$"
     health-check:
       enable: true
-      url: "https://speed.cloudflare.com/__down?bytes=51200" # ~50КБ, контролируемый размер вместо HTML-страницы
+      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg" # ✅ Белый список + фиксированный размер
+      expected-status: "[200,301,302]" # ✅ Требует реального скачивания файла
       interval: 600
-      timeout: 8000
+      timeout: 15000 # Увеличено до 15с, так как скачивание через фрагментацию требует времени
     script: |
       function main(proxies) {
         const profiles = [
@@ -129,38 +123,20 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: "https://speed.cloudflare.com/__down?bytes=51200"
+      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      expected-status: "[200,301,302]"
       interval: 600
-      timeout: 8000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' },
-            noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' },
-            noises: [
-              { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-            ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' },
-            noises: [
-              { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' },
-              { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' }
-            ] },
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; }
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
-          }
-        }
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
         return out;
       }
 
@@ -171,38 +147,20 @@ proxy-providers:
     path: ./providers/igareck-mobile.yaml
     health-check:
       enable: true
-      url: "https://speed.cloudflare.com/__down?bytes=51200"
+      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      expected-status: "[200,301,302]"
       interval: 600
-      timeout: 8000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' },
-            noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' },
-            noises: [
-              { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-            ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' },
-            noises: [
-              { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' },
-              { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' }
-            ] },
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; }
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
-          }
-        }
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
         return out;
       }
 
@@ -213,38 +171,20 @@ proxy-providers:
     path: ./providers/igareck-mobile-2.yaml
     health-check:
       enable: true
-      url: "https://speed.cloudflare.com/__down?bytes=51200"
+      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      expected-status: "[200,301,302]"
       interval: 600
-      timeout: 8000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' },
-            noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' },
-            noises: [
-              { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-            ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' },
-            noises: [
-              { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' },
-              { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' }
-            ] },
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; }
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
-          }
-        }
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
         return out;
       }
 
@@ -255,38 +195,20 @@ proxy-providers:
     path: ./providers/gfp-free.yaml
     health-check:
       enable: true
-      url: "https://speed.cloudflare.com/__down?bytes=51200"
+      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      expected-status: "[200,301,302]"
       interval: 600
-      timeout: 8000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' },
-            noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' },
-            noises: [
-              { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-            ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' },
-            noises: [
-              { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' },
-              { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' }
-            ] },
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; }
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
-          }
-        }
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
         return out;
       }
 
@@ -302,10 +224,11 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: "https://speed.cloudflare.com/__down?bytes=51200"
+    url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+    expected-status: "[200,301,302]"
     interval: 180
     tolerance: 50
-    lazy: true # тестировать активно только выбранную ноду, не молотить весь пул каждые 3 минуты
+    lazy: true
 
   - name: FALLBACK
     type: fallback
@@ -315,7 +238,8 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: "https://speed.cloudflare.com/__down?bytes=51200"
+    url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+    expected-status: "[200,301,302]"
     interval: 300
 
   - name: PROXY
@@ -335,17 +259,21 @@ proxy-groups:
 # 🌐 РУЛЫ (TRAFFIC ROUTING)
 # =========================
 rules:
+  # Анти-петля
   - PROCESS-NAME,com.follow.clash,DIRECT
   - PROCESS-NAME,com.greatfire.flclash,DIRECT
   - PROCESS-NAME,com.wireguard.android,DIRECT
 
+  # Локальные сети
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
 
+  # Российские белые списки (Напрямую)
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,ya.ru,DIRECT
+  - DOMAIN-SUFFIX,yastatic.net,DIRECT # Статика Яндекса
   - DOMAIN-SUFFIX,mail.ru,DIRECT
   - DOMAIN-SUFFIX,vk.com,DIRECT
   - DOMAIN-SUFFIX,sberbank.ru,DIRECT
@@ -367,6 +295,7 @@ rules:
   - DOMAIN-SUFFIX,s7.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
 
+  # Зарубежный трафик (Через прокси)
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
@@ -395,4 +324,5 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,PROXY
   - DOMAIN-SUFFIX,perplexity.ai,PROXY
 
+  # Финальный роут
   - MATCH,PROXY
