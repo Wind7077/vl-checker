@@ -63,30 +63,19 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://ya.ru
-      expected-status: "[200,301,302]"
+      url: https://ya.ru/favicon.ico
+      expected-status: 200
       interval: 300
-      timeout: 15000
+      timeout: 10000
     script: |
       function main(proxies) {
-        const profiles = [
-          { tag: 'S', fp: 'chrome', frag: null },
-          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
-          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
-        ];
-        const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            delete clone['noises'];
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
+        return proxies.map(p => {
+          if (p['type'] === 'vless') {
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
           }
-        }
-        return out;
+          return p;
+        });
       }
 
   UNIVERSAL:
@@ -96,30 +85,19 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: http://ya.ru
-      expected-status: "[200,301,302]"
+      url: https://ya.ru/favicon.ico
+      expected-status: 200
       interval: 300
-      timeout: 15000
+      timeout: 10000
     script: |
       function main(proxies) {
-        const profiles = [
-          { tag: 'S', fp: 'chrome', frag: null },
-          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
-          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
-        ];
-        const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            delete clone['noises'];
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
+        return proxies.map(p => {
+          if (p['type'] === 'vless') {
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
           }
-        }
-        return out;
+          return p;
+        });
       }
 
   IGARECK-MOBILE:
@@ -129,30 +107,19 @@ proxy-providers:
     path: ./providers/igareck-mobile.yaml
     health-check:
       enable: true
-      url: http://ya.ru
-      expected-status: "[200,301,302]"
+      url: https://ya.ru/favicon.ico
+      expected-status: 200
       interval: 300
-      timeout: 15000
+      timeout: 10000
     script: |
       function main(proxies) {
-        const profiles = [
-          { tag: 'S', fp: 'chrome', frag: null },
-          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
-          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
-        ];
-        const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            delete clone['noises'];
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
+        return proxies.map(p => {
+          if (p['type'] === 'vless') {
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
           }
-        }
-        return out;
+          return p;
+        });
       }
 
   IGARECK-MOBILE-2:
@@ -162,30 +129,19 @@ proxy-providers:
     path: ./providers/igareck-mobile-2.yaml
     health-check:
       enable: true
-      url: http://ya.ru
-      expected-status: "[200,301,302]"
+      url: https://ya.ru/favicon.ico
+      expected-status: 200
       interval: 300
-      timeout: 15000
+      timeout: 10000
     script: |
       function main(proxies) {
-        const profiles = [
-          { tag: 'S', fp: 'chrome', frag: null },
-          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
-          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
-        ];
-        const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            delete clone['noises'];
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
+        return proxies.map(p => {
+          if (p['type'] === 'vless') {
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
           }
-        }
-        return out;
+          return p;
+        });
       }
 
   GFP-FREE:
@@ -195,30 +151,19 @@ proxy-providers:
     path: ./providers/gfp-free.yaml
     health-check:
       enable: true
-      url: http://ya.ru
-      expected-status: "[200,301,302]"
+      url: https://ya.ru/favicon.ico
+      expected-status: 200
       interval: 300
-      timeout: 15000
+      timeout: 10000
     script: |
       function main(proxies) {
-        const profiles = [
-          { tag: 'S', fp: 'chrome', frag: null },
-          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
-          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
-        ];
-        const out = [];
-        for (const p of proxies) {
-          for (const prof of profiles) {
-            const clone = JSON.parse(JSON.stringify(p));
-            clone['name'] = p['name'] + ' [' + prof.tag + ']';
-            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
-            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            delete clone['noises'];
-            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
-            out.push(clone);
+        return proxies.map(p => {
+          if (p['type'] === 'vless') {
+            p['flow'] = p['flow'] || 'xtls-rprx-vision';
+            p['client-fingerprint'] = p['client-fingerprint'] || 'chrome';
           }
-        }
-        return out;
+          return p;
+        });
       }
 
 proxy-groups:
@@ -230,11 +175,10 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: http://ya.ru
-    expected-status: "[200,301,302]"
+    url: https://ya.ru/favicon.ico
+    expected-status: 200
     interval: 300
     tolerance: 50
-    lazy: true
 
   - name: FALLBACK
     type: fallback
@@ -244,8 +188,8 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: http://ya.ru
-    expected-status: "[200,301,302]"
+    url: https://ya.ru/favicon.ico
+    expected-status: 200
     interval: 300
 
   - name: PROXY
