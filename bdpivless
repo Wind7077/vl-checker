@@ -8,9 +8,6 @@ global-client-fingerprint: chrome
 
 external-controller: 127.0.0.1:9090
 
-# =========================
-# 👁 SNIFFER
-# =========================
 sniffer:
   enable: true
   force-dns-mapping: true
@@ -20,9 +17,6 @@ sniffer:
     TLS:
     HTTP:
 
-# =========================
-# 🧬 DNS (Яндекс)
-# =========================
 dns:
   enable: true
   ipv6: false
@@ -38,7 +32,6 @@ dns:
     - "www.msftconnecttest.com"
     - "*.yandex.ru"
     - "*.ya.ru"
-    - "*.yastatic.net" # Добавлено для корректной работы тестового файла
     - "*.mail.ru"
     - "*.vk.com"
     - "*.sberbank.ru"
@@ -62,16 +55,6 @@ dns:
     ipcidr:
       - 240.0.0.0/4
 
-# =========================
-# 🔥 ПОДПИСКИ + МУЛЬТИПРОФИЛЬНЫЙ ОБХОД DPI (WINGSV STYLE)
-# =========================
-# Каждая нода клонируется в 4 варианта:
-# [L] Light: Мелкая фрагментация + Chrome JA3
-# [M] Medium: Средняя фрагментация + Firefox JA3 + HTTP шум
-# [H] Heavy: Агрессивная микро-фрагментация + Safari JA3 + множественные шумы
-# [RAW] Clean: Без фрагментации (для Hysteria2/TUIC или если DPI спит)
-# url-test сам оставит только те клоны, которые пробили DPI!
-
 proxy-providers:
   MAIN:
     type: http
@@ -80,26 +63,16 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg" # ✅ Белый список + фиксированный размер
-      expected-status: "[200,301,302]" # ✅ Требует реального скачивания файла
-      interval: 600
-      timeout: 15000 # Увеличено до 15с, так как скачивание через фрагментацию требует времени
+      url: http://ya.ru
+      expected-status: "[200,301,302]"
+      interval: 300
+      timeout: 60000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' },
-            noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' },
-            noises: [
-              { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-            ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' },
-            noises: [
-              { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' },
-              { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' },
-              { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' }
-            ] },
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
@@ -123,16 +96,16 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      url: http://ya.ru
       expected-status: "[200,301,302]"
-      interval: 600
-      timeout: 15000
+      interval: 300
+      timeout: 60000
     script: |
       function main(proxies) {
         const profiles = [
           { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
@@ -147,16 +120,16 @@ proxy-providers:
     path: ./providers/igareck-mobile.yaml
     health-check:
       enable: true
-      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      url: http://ya.ru
       expected-status: "[200,301,302]"
-      interval: 600
-      timeout: 15000
+      interval: 300
+      timeout: 60000
     script: |
       function main(proxies) {
         const profiles = [
           { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
@@ -171,16 +144,16 @@ proxy-providers:
     path: ./providers/igareck-mobile-2.yaml
     health-check:
       enable: true
-      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      url: http://ya.ru
       expected-status: "[200,301,302]"
-      interval: 600
-      timeout: 15000
+      interval: 300
+      timeout: 60000
     script: |
       function main(proxies) {
         const profiles = [
           { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
@@ -195,16 +168,16 @@ proxy-providers:
     path: ./providers/gfp-free.yaml
     health-check:
       enable: true
-      url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+      url: http://ya.ru
       expected-status: "[200,301,302]"
-      interval: 600
-      timeout: 15000
+      interval: 300
+      timeout: 60000
     script: |
       function main(proxies) {
         const profiles = [
           { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
           { tag: 'RAW', fp: null, frag: null, noises: null }
         ];
         const out = [];
@@ -212,9 +185,6 @@ proxy-providers:
         return out;
       }
 
-# =========================
-# 🔀 ПРОКСИ ГРУППЫ
-# =========================
 proxy-groups:
   - name: AUTO
     type: url-test
@@ -224,9 +194,9 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+    url: http://ya.ru
     expected-status: "[200,301,302]"
-    interval: 180
+    interval: 300
     tolerance: 50
     lazy: true
 
@@ -238,7 +208,7 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: "https://weather.yastatic.net/s3/weather-frontend/front2/_next/static/media/ru_black.a7a69ab7.svg"
+    url: http://ya.ru
     expected-status: "[200,301,302]"
     interval: 300
 
@@ -255,25 +225,16 @@ proxy-groups:
       - FALLBACK
       - DIRECT
 
-# =========================
-# 🌐 РУЛЫ (TRAFFIC ROUTING)
-# =========================
 rules:
-  # Анти-петля
   - PROCESS-NAME,com.follow.clash,DIRECT
   - PROCESS-NAME,com.greatfire.flclash,DIRECT
   - PROCESS-NAME,com.wireguard.android,DIRECT
-
-  # Локальные сети
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
-
-  # Российские белые списки (Напрямую)
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,ya.ru,DIRECT
-  - DOMAIN-SUFFIX,yastatic.net,DIRECT # Статика Яндекса
   - DOMAIN-SUFFIX,mail.ru,DIRECT
   - DOMAIN-SUFFIX,vk.com,DIRECT
   - DOMAIN-SUFFIX,sberbank.ru,DIRECT
@@ -294,8 +255,6 @@ rules:
   - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
   - DOMAIN-SUFFIX,s7.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
-
-  # Зарубежный трафик (Через прокси)
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
@@ -323,6 +282,4 @@ rules:
   - DOMAIN-SUFFIX,claude.ai,PROXY
   - DOMAIN-SUFFIX,anthropic.com,PROXY
   - DOMAIN-SUFFIX,perplexity.ai,PROXY
-
-  # Финальный роут
   - MATCH,PROXY
