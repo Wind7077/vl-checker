@@ -4,13 +4,10 @@ mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
-global-client-fingerprint: chrome # Глобальный JA3 отпечаток (ByeDPI метод)
+global-client-fingerprint: chrome
 
 external-controller: 127.0.0.1:9090
 
-# =========================
-# 👁 SNIFFER (Критически важно)
-# =========================
 sniffer:
   enable: true
   force-dns-mapping: true
@@ -20,9 +17,6 @@ sniffer:
     TLS:
     HTTP:
 
-# =========================
-# 🧬 DNS (Полностью на Яндексе)
-# =========================
 dns:
   enable: true
   ipv6: false
@@ -36,7 +30,6 @@ dns:
     - "dns.msftncsi.com"
     - "www.msftncsi.com"
     - "www.msftconnecttest.com"
-    # Белые списки РФ (чтобы приложения видели реальные IP)
     - "*.yandex.ru"
     - "*.ya.ru"
     - "*.mail.ru"
@@ -62,9 +55,6 @@ dns:
     ipcidr:
       - 240.0.0.0/4
 
-# =========================
-# 🔥 ПОДПИСКИ + BYEDPI/ZAPRET (JS Script)
-# =========================
 proxy-providers:
   MAIN:
     type: http
@@ -73,26 +63,30 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
+      expected-status: "[200,301,302]"
       interval: 300
-      timeout: 5000
+      timeout: 60000
     script: |
       function main(proxies) {
-        return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-          ];
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
+        const profiles = [
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'RAW', fp: null, frag: null, noises: null }
+        ];
+        const out = [];
+        for (const p of proxies) {
+          for (const prof of profiles) {
+            const clone = JSON.parse(JSON.stringify(p));
+            clone['name'] = p['name'] + ' [' + prof.tag + ']';
+            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
+            if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; }
+            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
+            out.push(clone);
           }
-          return p;
-        });
+        }
+        return out;
       }
 
   UNIVERSAL:
@@ -102,26 +96,21 @@ proxy-providers:
     path: ./providers/universal.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
+      expected-status: "[200,301,302]"
       interval: 300
-      timeout: 5000
+      timeout: 60000
     script: |
       function main(proxies) {
-        return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-          ];
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
-          }
-          return p;
-        });
+        const profiles = [
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'RAW', fp: null, frag: null, noises: null }
+        ];
+        const out = [];
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        return out;
       }
 
   IGARECK-MOBILE:
@@ -131,26 +120,21 @@ proxy-providers:
     path: ./providers/igareck-mobile.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
+      expected-status: "[200,301,302]"
       interval: 300
-      timeout: 5000
+      timeout: 60000
     script: |
       function main(proxies) {
-        return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-          ];
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
-          }
-          return p;
-        });
+        const profiles = [
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'RAW', fp: null, frag: null, noises: null }
+        ];
+        const out = [];
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        return out;
       }
 
   IGARECK-MOBILE-2:
@@ -160,26 +144,21 @@ proxy-providers:
     path: ./providers/igareck-mobile-2.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
+      expected-status: "[200,301,302]"
       interval: 300
-      timeout: 5000
+      timeout: 60000
     script: |
       function main(proxies) {
-        return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-          ];
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
-          }
-          return p;
-        });
+        const profiles = [
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'RAW', fp: null, frag: null, noises: null }
+        ];
+        const out = [];
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        return out;
       }
 
   GFP-FREE:
@@ -189,33 +168,24 @@ proxy-providers:
     path: ./providers/gfp-free.yaml
     health-check:
       enable: true
-      url: http://yandex.ru
+      url: http://ya.ru
+      expected-status: "[200,301,302]"
       interval: 300
-      timeout: 5000
+      timeout: 60000
     script: |
       function main(proxies) {
-        return proxies.map(p => {
-          p['fragment'] = {
-            packets: 'tlshello',
-            length: '10-20',
-            interval: '10-20'
-          };
-          p['noises'] = [
-            { type: 'rand', packet: '0123456789abcdef', delay: '10-20' },
-            { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: yandex.ru\r\n\r\n', delay: '5-10' }
-          ];
-          if (!p['client-fingerprint']) {
-            p['client-fingerprint'] = 'chrome';
-          }
-          return p;
-        });
+        const profiles = [
+          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
+          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
+          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
+          { tag: 'RAW', fp: null, frag: null, noises: null }
+        ];
+        const out = [];
+        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        return out;
       }
 
-# =========================
-# 🔀 ПРОКСИ ГРУППЫ
-# =========================
 proxy-groups:
-  # Авто-выбор самого быстрого рабочего сервера среди ВСЕХ подписок
   - name: AUTO
     type: url-test
     use:
@@ -224,11 +194,12 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: http://yandex.ru
+    url: http://ya.ru
+    expected-status: "[200,301,302]"
     interval: 300
     tolerance: 50
+    lazy: true
 
-  # Резерв если AUTO падает
   - name: FALLBACK
     type: fallback
     use:
@@ -237,10 +208,10 @@ proxy-groups:
       - IGARECK-MOBILE
       - IGARECK-MOBILE-2
       - GFP-FREE
-    url: http://yandex.ru
+    url: http://ya.ru
+    expected-status: "[200,301,302]"
     interval: 300
 
-  # Ручной выбор (показывает все ноды из всех подписок + группы AUTO/FALLBACK)
   - name: PROXY
     type: select
     use:
@@ -254,22 +225,14 @@ proxy-groups:
       - FALLBACK
       - DIRECT
 
-# =========================
-# 🌐 РУЛЫ (TRAFFIC ROUTING)
-# =========================
 rules:
-  # 1. Анти-петля (Loop Prevention) для Android VPN
   - PROCESS-NAME,com.follow.clash,DIRECT
   - PROCESS-NAME,com.greatfire.flclash,DIRECT
   - PROCESS-NAME,com.wireguard.android,DIRECT
-  
-  # 2. Локальные сети
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
-  
-  # 3. Российские белые списки (Напрямую)
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,ya.ru,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
@@ -292,8 +255,6 @@ rules:
   - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
   - DOMAIN-SUFFIX,s7.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
-
-  # 4. Зарубежный трафик (Через прокси)
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,googlevideo.com,PROXY
@@ -321,7 +282,4 @@ rules:
   - DOMAIN-SUFFIX,claude.ai,PROXY
   - DOMAIN-SUFFIX,anthropic.com,PROXY
   - DOMAIN-SUFFIX,perplexity.ai,PROXY
-  
-  # 5. Финальный роут 
-  # Весь трафик, не указанный выше, идет через прокси
   - MATCH,PROXY
