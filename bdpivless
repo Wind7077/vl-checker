@@ -66,22 +66,22 @@ proxy-providers:
       url: http://ya.ru
       expected-status: "[200,301,302]"
       interval: 300
-      timeout: 60000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
-          { tag: 'RAW', fp: null, frag: null, noises: null }
+          { tag: 'S', fp: 'chrome', frag: null },
+          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
+          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
         ];
         const out = [];
         for (const p of proxies) {
           for (const prof of profiles) {
             const clone = JSON.parse(JSON.stringify(p));
             clone['name'] = p['name'] + ' [' + prof.tag + ']';
+            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
             if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
-            if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; }
+            delete clone['noises'];
             if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
             out.push(clone);
           }
@@ -99,17 +99,26 @@ proxy-providers:
       url: http://ya.ru
       expected-status: "[200,301,302]"
       interval: 300
-      timeout: 60000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
-          { tag: 'RAW', fp: null, frag: null, noises: null }
+          { tag: 'S', fp: 'chrome', frag: null },
+          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
+          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
         ];
         const out = [];
-        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        for (const p of proxies) {
+          for (const prof of profiles) {
+            const clone = JSON.parse(JSON.stringify(p));
+            clone['name'] = p['name'] + ' [' + prof.tag + ']';
+            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
+            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
+            delete clone['noises'];
+            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
+            out.push(clone);
+          }
+        }
         return out;
       }
 
@@ -123,17 +132,26 @@ proxy-providers:
       url: http://ya.ru
       expected-status: "[200,301,302]"
       interval: 300
-      timeout: 60000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
-          { tag: 'RAW', fp: null, frag: null, noises: null }
+          { tag: 'S', fp: 'chrome', frag: null },
+          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
+          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
         ];
         const out = [];
-        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        for (const p of proxies) {
+          for (const prof of profiles) {
+            const clone = JSON.parse(JSON.stringify(p));
+            clone['name'] = p['name'] + ' [' + prof.tag + ']';
+            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
+            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
+            delete clone['noises'];
+            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
+            out.push(clone);
+          }
+        }
         return out;
       }
 
@@ -147,17 +165,26 @@ proxy-providers:
       url: http://ya.ru
       expected-status: "[200,301,302]"
       interval: 300
-      timeout: 60000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
-          { tag: 'RAW', fp: null, frag: null, noises: null }
+          { tag: 'S', fp: 'chrome', frag: null },
+          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
+          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
         ];
         const out = [];
-        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        for (const p of proxies) {
+          for (const prof of profiles) {
+            const clone = JSON.parse(JSON.stringify(p));
+            clone['name'] = p['name'] + ' [' + prof.tag + ']';
+            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
+            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
+            delete clone['noises'];
+            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
+            out.push(clone);
+          }
+        }
         return out;
       }
 
@@ -171,17 +198,26 @@ proxy-providers:
       url: http://ya.ru
       expected-status: "[200,301,302]"
       interval: 300
-      timeout: 60000
+      timeout: 15000
     script: |
       function main(proxies) {
         const profiles = [
-          { tag: 'L', fp: 'chrome', frag: { packets: 'tlshello', length: '10-20', interval: '10-20' }, noises: [ { type: 'rand', packet: '0123456789abcdef', delay: '10-20' } ] },
-          { tag: 'M', fp: 'firefox', frag: { packets: 'tlshello', length: '40-100', interval: '20-40' }, noises: [ { type: 'rand', packet: '0123456789abcdef0123456789abcdef', delay: '15-30' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '5-10' } ] },
-          { tag: 'H', fp: 'safari', frag: { packets: 'tlshello', length: '1-10', interval: '1-10' }, noises: [ { type: 'rand', packet: '00112233445566778899aabbccddeeff', delay: '1-10' }, { type: 'rand', packet: 'ffeeddccbbaa99887766554433221100', delay: '1-10' }, { type: 'str', packet: 'GET / HTTP/1.1\r\nHost: ya.ru\r\n\r\n', delay: '1-5' } ] },
-          { tag: 'RAW', fp: null, frag: null, noises: null }
+          { tag: 'S', fp: 'chrome', frag: null },
+          { tag: 'M', fp: 'chrome', frag: { packets: 'tlshello', length: '100-200', interval: '1-5' } },
+          { tag: 'H', fp: 'firefox', frag: { packets: 'tlshello', length: '20-50', interval: '10-20' } }
         ];
         const out = [];
-        for (const p of proxies) { for (const prof of profiles) { const clone = JSON.parse(JSON.stringify(p)); clone['name'] = p['name'] + ' [' + prof.tag + ']'; if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; } if (prof.noises) { clone['noises'] = prof.noises; } else { delete clone['noises']; } if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; } out.push(clone); } }
+        for (const p of proxies) {
+          for (const prof of profiles) {
+            const clone = JSON.parse(JSON.stringify(p));
+            clone['name'] = p['name'] + ' [' + prof.tag + ']';
+            if (clone['type'] === 'vless') { clone['flow'] = clone['flow'] || 'xtls-rprx-vision'; }
+            if (prof.frag) { clone['fragment'] = prof.frag; } else { delete clone['fragment']; }
+            delete clone['noises'];
+            if (prof.fp) { clone['client-fingerprint'] = prof.fp; } else { delete clone['client-fingerprint']; }
+            out.push(clone);
+          }
+        }
         return out;
       }
 
