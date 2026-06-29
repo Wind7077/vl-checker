@@ -45,38 +45,30 @@ dns:
     - 1.1.1.1
     - 9.9.9.9
 
-# ДВЕ ПОДПИСКИ: Shadowsocks и Trojan
 proxy-providers:
-  ss-sub:
-    type: http
-    url: "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/ss.txt"
-    interval: 3600
-    path: ./ss.txt
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
-
   trojan-sub:
     type: http
     url: "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/trojan.txt"
     interval: 3600
     path: ./trojan.txt
+    # Фильтруем список: оставляем только Европу и США (там ноды Proton)
+    # Отбрасываем Азию, Индию и прочие, чтобы не грузить телефон
+    filter: "US|UK|DE|NL|FR|CA|🇺🇸|🇬🇧|🇩🇪|🇳🇱|🇫🇷|🇨🇦|USA|Germany|Netherlands|France|Canada"
+    exclude-filter: "CN|HK|IN|RU|🇨🇳|🇭🇰|🇮🇳|🇷🇺"
     health-check:
       enable: true
-      interval: 300
+      interval: 600 # Пингуем реже (раз в 10 минут), чтобы не жрать батарею
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-  # Объединяем обе подписки и выбираем самый быстрый
   - name: "First-Hop"
     type: url-test
     use:
-      - ss-sub
       - trojan-sub
     url: "http://www.gstatic.com/generate_204"
-    interval: 300
+    interval: 600
     tolerance: 50
+    lazy: true # ЛЕНИВЫЙ РЕЖИМ: пингует серверы только когда идет трафик. Экономит CPU!
 
   - name: "Proxy"
     type: select
@@ -95,8 +87,8 @@ proxies:
       - "0.0.0.0/0"
     persistent-keepalive: 25
     udp: true
-    mtu: 900
-    dialer-proxy: "First-Hop" # Proton пойдет через SS или Trojan
+    mtu: 1000 # Оптимально для Trojan + WireGuard
+    dialer-proxy: "First-Hop"
     remote-dns-resolve: true
     dns:
       - 1.1.1.1
