@@ -48,13 +48,24 @@ proxy-providers:
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
     interval: 3600
     path: ./my-subscription.yaml
+    # Принудительно включаем поддержку UDP для всех скачанных VLESS нод
+    override:
+      udp: true 
     health-check:
       enable: true
-      interval: 300 # Проверка живости каждые 5 минут
+      interval: 300
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-  # 1. Автоматический выбор самого быстрого
+  # 1. Группа для выбора "фундамента" (через какой VLESS пойдет Proton)
+  - name: "First-Hop"
+    type: select
+    use:
+      - my-subscription
+    proxies:
+      - Auto-Fastest
+
+  # 2. Автоматический выбор самого быстрого (только TCP пинг, UDP у многих отваливается)
   - name: "Auto-Fastest"
     type: url-test
     use:
@@ -64,21 +75,11 @@ proxy-groups:
     tolerance: 50
     lazy: true
 
-  # 2. Группа для первого хопа (позволяет выбрать вручную, если авто-выбор не справился)
-  - name: "First-Hop"
-    type: select
-    use:
-      - my-subscription
-    proxies:
-      - Auto-Fastest
-
-  # 3. Финальный выбор
+  # 3. Главная группа (Всегда используем Proton!)
   - name: "Proxy"
     type: select
     proxies:
-      - Proton-WG
-      - First-Hop
-      - DIRECT
+      - Proton-WG # Здесь больше нет First-Hop, чтобы вы случайно не переключились на VLESS напрямую
 
 proxies:
   - name: "Proton-WG"
@@ -92,8 +93,8 @@ proxies:
       - "0.0.0.0/0"
     persistent-keepalive: 25
     udp: true
-    mtu: 1100
-    dialer-proxy: "First-Hop" # Proton пойдет через First-Hop (который по умолчанию использует Auto-Fastest)
+    mtu: 1050 # Снижен MTU для лучшей проходимости через заголовки VLESS
+    dialer-proxy: "First-Hop" # Proton стучится в интернет только через First-Hop
     remote-dns-resolve: true
     dns:
       - 10.2.0.1
