@@ -10,11 +10,17 @@ profile:
   store-selected: true
   store-fake-ip: true
 
+# Исправленный сниффер (HTTPS -> TLS)
 sniffer:
   enable: true
   sniff:
-    HTTP: { targets: [new] }
-    HTTPS: { targets: [new] }
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
 
 tun:
   enable: true
@@ -30,6 +36,9 @@ dns:
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - localhost.ptlogin2.qq.com
   nameserver:
     - 8.8.8.8
     - 8.8.4.4
@@ -41,7 +50,7 @@ proxies:
     server: 8.35.211.20
     port: 3854
     ip: 172.16.0.2
-    private-key: "6DGzA1vi7wn2sIZWdWuTfz42NiVIpO+xqkeFbes/wWw=" # Замените на ваш полный ключ
+    private-key: "6DGzA1vi7wn2sIZWdWuTfz42NiVIpO+xqkeFbes/wWw="
     public-key: "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="
     allowed-ips:
       - "0.0.0.0/0"
@@ -77,7 +86,7 @@ proxies:
     persistent-keepalive: 25
     udp: true
     mtu: 1100
-    dialer-proxy: "WG-First" # Эта строка направляет Proton через первый профиль!
+    dialer-proxy: "WG-First" # Направляет трафик Proton через первый сервер
     remote-dns-resolve: true
     dns:
       - 10.2.0.1
