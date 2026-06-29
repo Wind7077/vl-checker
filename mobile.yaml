@@ -41,6 +41,9 @@ dns:
   nameserver:
     - 8.8.8.8
     - 8.8.4.4
+  fallback:
+    - 1.1.1.1
+    - 9.9.9.9
 
 proxy-providers:
   my-subscription:
@@ -48,16 +51,14 @@ proxy-providers:
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
     interval: 3600
     path: ./my-subscription.yaml
-    # ГЛАВНАЯ ФИШКА: Исключаем все VLESS (148 шт), так как 90% из них имеют xtls-vision и блокируют UDP.
-    # Останутся только 6 нод Hysteria2, которые гарантированно пропустят UDP-хендшейк к Proton! [[12]]
-    exclude-type: "vless"
+    exclude-type: "vless" # VLESS Vision физически блокирует UDP
+    filter: ".*:443$"     # ОСТАВЛЯЕМ ТОЛЬКО Hysteria2 на порту 443! Мобильные операторы режут другие UDP-порты.
     health-check:
       enable: true
       interval: 300
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-  # Автоматический выбор самого быстрого из Hysteria2
   - name: "First-Hop"
     type: url-test
     use:
@@ -83,11 +84,11 @@ proxies:
       - "0.0.0.0/0"
     persistent-keepalive: 25
     udp: true
-    mtu: 900 # Снижен для проходимости через заголовки Hysteria2 + WireGuard
+    mtu: 800 # КРИТИЧНО ДЛЯ МОБИЛЬНОГО! Снижаем до 800 из-за CGNAT и LTE-заголовков.
     dialer-proxy: "First-Hop"
     remote-dns-resolve: true
     dns:
-      - 10.2.0.1
+      - 1.1.1.1 # Игнорируем DNS мобильного оператора
     amnezia-wg-option:
       jc: 1
       jmin: 40
