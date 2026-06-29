@@ -45,24 +45,35 @@ dns:
     - 1.1.1.1
     - 9.9.9.9
 
+# ДВЕ ПОДПИСКИ: Shadowsocks и Trojan
 proxy-providers:
-  my-subscription:
+  ss-sub:
     type: http
-    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
+    url: "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/ss.txt"
     interval: 3600
-    path: ./my-subscription.yaml
-    exclude-type: "vless" # VLESS Vision физически блокирует UDP
-    filter: ".*:443$"     # ОСТАВЛЯЕМ ТОЛЬКО Hysteria2 на порту 443! Мобильные операторы режут другие UDP-порты.
+    path: ./ss.txt
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
+
+  trojan-sub:
+    type: http
+    url: "https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/trojan.txt"
+    interval: 3600
+    path: ./trojan.txt
     health-check:
       enable: true
       interval: 300
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
+  # Объединяем обе подписки и выбираем самый быстрый
   - name: "First-Hop"
     type: url-test
     use:
-      - my-subscription
+      - ss-sub
+      - trojan-sub
     url: "http://www.gstatic.com/generate_204"
     interval: 300
     tolerance: 50
@@ -84,11 +95,11 @@ proxies:
       - "0.0.0.0/0"
     persistent-keepalive: 25
     udp: true
-    mtu: 800 # КРИТИЧНО ДЛЯ МОБИЛЬНОГО! Снижаем до 800 из-за CGNAT и LTE-заголовков.
-    dialer-proxy: "First-Hop"
+    mtu: 900
+    dialer-proxy: "First-Hop" # Proton пойдет через SS или Trojan
     remote-dns-resolve: true
     dns:
-      - 1.1.1.1 # Игнорируем DNS мобильного оператора
+      - 1.1.1.1
     amnezia-wg-option:
       jc: 1
       jmin: 40
