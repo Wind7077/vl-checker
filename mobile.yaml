@@ -48,24 +48,24 @@ proxy-providers:
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
     interval: 3600
     path: ./my-subscription.yaml
-    override:
-      udp: true # Принудительно требуем UDP у всех серверов
+    # ГЛАВНАЯ ФИШКА: Исключаем все VLESS (148 шт), так как 90% из них имеют xtls-vision и блокируют UDP.
+    # Останутся только 6 нод Hysteria2, которые гарантированно пропустят UDP-хендшейк к Proton! [[12]]
+    exclude-type: "vless"
     health-check:
       enable: true
       interval: 300
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-  # 1. Группа Fallback: сама перебирает серверы, если UDP заблокирован
+  # Автоматический выбор самого быстрого из Hysteria2
   - name: "First-Hop"
-    type: fallback
+    type: url-test
     use:
       - my-subscription
     url: "http://www.gstatic.com/generate_204"
     interval: 300
-    timeout: 2000 # Если сервер Vision не пропускает UDP, он быстро отвалится
+    tolerance: 50
 
-  # 2. Главная группа (Всегда Proton)
   - name: "Proxy"
     type: select
     proxies:
@@ -83,7 +83,7 @@ proxies:
       - "0.0.0.0/0"
     persistent-keepalive: 25
     udp: true
-    mtu: 900 # СНИЖЕН MTU для проходимости через заголовки VLESS
+    mtu: 900 # Снижен для проходимости через заголовки Hysteria2 + WireGuard
     dialer-proxy: "First-Hop"
     remote-dns-resolve: true
     dns:
