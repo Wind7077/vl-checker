@@ -42,38 +42,45 @@ dns:
     - 8.8.8.8
     - 8.8.4.4
 
-# Автоматическое скачивание всех 159 прокси из подписки
 proxy-providers:
   my-subscription:
     type: http
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
-    interval: 3600 # Обновлять список каждый час
+    interval: 3600
     path: ./my-subscription.yaml
     health-check:
       enable: true
-      interval: 600
+      interval: 300 # Проверка живости каждые 5 минут
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-  # Группа, которая тестирует ВСЕ 159 прокси и выбирает самый быстрый
+  # 1. Автоматический выбор самого быстрого
   - name: "Auto-Fastest"
     type: url-test
     use:
-      - my-subscription # Берем все серверы из скачанной подписки
+      - my-subscription
     url: "http://www.gstatic.com/generate_204"
-    interval: 300 # Проверка каждые 5 минут
+    interval: 300
     tolerance: 50
+    lazy: true
 
-  # Финальная группа для выхода в интернет
+  # 2. Группа для первого хопа (позволяет выбрать вручную, если авто-выбор не справился)
+  - name: "First-Hop"
+    type: select
+    use:
+      - my-subscription
+    proxies:
+      - Auto-Fastest
+
+  # 3. Финальный выбор
   - name: "Proxy"
     type: select
     proxies:
       - Proton-WG
-      - Auto-Fastest
+      - First-Hop
       - DIRECT
 
 proxies:
-  # Ваш Proton (Второй хоп)
   - name: "Proton-WG"
     type: wireguard
     server: 185.107.56.219
@@ -86,7 +93,7 @@ proxies:
     persistent-keepalive: 25
     udp: true
     mtu: 1100
-    dialer-proxy: "Auto-Fastest" # Proton пойдет через самый быстрый сервер из подписки!
+    dialer-proxy: "First-Hop" # Proton пойдет через First-Hop (который по умолчанию использует Auto-Fastest)
     remote-dns-resolve: true
     dns:
       - 10.2.0.1
