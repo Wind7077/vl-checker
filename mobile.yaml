@@ -48,38 +48,28 @@ proxy-providers:
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies.yaml"
     interval: 3600
     path: ./my-subscription.yaml
-    # Принудительно включаем поддержку UDP для всех скачанных VLESS нод
     override:
-      udp: true 
+      udp: true # Принудительно требуем UDP у всех серверов
     health-check:
       enable: true
       interval: 300
       url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-  # 1. Группа для выбора "фундамента" (через какой VLESS пойдет Proton)
+  # 1. Группа Fallback: сама перебирает серверы, если UDP заблокирован
   - name: "First-Hop"
-    type: select
-    use:
-      - my-subscription
-    proxies:
-      - Auto-Fastest
-
-  # 2. Автоматический выбор самого быстрого (только TCP пинг, UDP у многих отваливается)
-  - name: "Auto-Fastest"
-    type: url-test
+    type: fallback
     use:
       - my-subscription
     url: "http://www.gstatic.com/generate_204"
     interval: 300
-    tolerance: 50
-    lazy: true
+    timeout: 2000 # Если сервер Vision не пропускает UDP, он быстро отвалится
 
-  # 3. Главная группа (Всегда используем Proton!)
+  # 2. Главная группа (Всегда Proton)
   - name: "Proxy"
     type: select
     proxies:
-      - Proton-WG # Здесь больше нет First-Hop, чтобы вы случайно не переключились на VLESS напрямую
+      - Proton-WG
 
 proxies:
   - name: "Proton-WG"
@@ -93,8 +83,8 @@ proxies:
       - "0.0.0.0/0"
     persistent-keepalive: 25
     udp: true
-    mtu: 1050 # Снижен MTU для лучшей проходимости через заголовки VLESS
-    dialer-proxy: "First-Hop" # Proton стучится в интернет только через First-Hop
+    mtu: 900 # СНИЖЕН MTU для проходимости через заголовки VLESS
+    dialer-proxy: "First-Hop"
     remote-dns-resolve: true
     dns:
       - 10.2.0.1
