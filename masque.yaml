@@ -1,4 +1,4 @@
-# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Внешний щит, пробивает МТС) ---
+# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Внешний щит, оптимизирован под LTE) ---
 warp-common: &warp-common
   type: wireguard
   ip: 172.16.0.2
@@ -9,12 +9,14 @@ warp-common: &warp-common
   reserved: [185, 93, 172]
   udp: true
   mtu: 1280
+  keepalive: 15 # Учащаем, чтобы NAT МТС не убивал UDP-сессию
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   amnezia-wg-option:
-   jc: 10
-   jmin: 50
-   jmax: 100
+   # Ускоренный handshake для LTE (без долгих пауз)
+   jc: 5       # Немного мусора для обхода базового DPI
+   jmin: 10    # Снижено: быстрая отправка
+   jmax: 20    # Снижено: убираем долгий jitter, который убивал LTE
    s1: 0
    s2: 0
    h1: 1
@@ -31,12 +33,12 @@ warp-masque: &warp-masque
   ip: 172.16.0.2
   ipv6: 2606:4700:110:846a:a144:fa58:8f97:d9de
   udp: true
+  keepalive: 15
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
-  packet-encoding: packetaddr
+  # packet-encoding убран, так как он конфликтует с dialer-proxy (цепочками)
 
 # --- БАЗОВЫЕ НАСТРОЙКИ PROTON (Внутренний туннель) ---
-# ВАЖНО: Amnezia шум УБРАН. Он не нужен внутри WARP и только вызывал таймауты!
 proton-new: &proton-new
   type: wireguard
   ip: 10.2.0.2
@@ -45,20 +47,17 @@ proton-new: &proton-new
   public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
-  mtu: 1200 # Снижен с 1280 до 1200, чтобы влезать внутрь внешнего WARP без фрагментации
-  keepalive: 25
+  mtu: 1000 # КРИТИЧНО ДЛЯ LTE! Снижено до 1000, чтобы "матрешка" влезала без фрагментации
+  keepalive: 15
   remote-dns-resolve: true
   dns: [10.2.0.1, '2a07:b944::2:1']
 
 proxies:
-# 1. Прямые подключения WARP
 - name: "WARP-Default"
   <<: *warp-common
   server: engage.cloudflareclient.com
   port: 2408
-  fake_packets: "10-20"
-  fake_packets_size: "20-50"
-  fake_packets_delay: "10-50"
+  # fake_packets убраны: на LTE МТС они вызывают мгновенный сброс сессии базовой станцией
 
 - name: "WARP-QUIC"
   <<: *warp-masque
@@ -81,16 +80,13 @@ proxies:
       enable: true
       min: 50
       max: 150
-  fake_packets: "5-15"
-  fake_packets_size: "40-100"
-  fake_packets_delay: "10-50"
 
-# 2. PROTON ВНУТРИ WARP (Чистый WireGuard без лишнего шума)
-- name: "Proton-via-Default"
+# PROTON ВНУТРИ WARP
+- name: "Proton-via-H2"
   <<: *proton-new
   server: 195.242.214.194
   port: 51820
-  dialer-proxy: "WARP-Default"
+  dialer-proxy: "WARP-H2" # TCP (H2) сам восстанавливает потерянные в LTE пакеты!
 
 - name: "Proton-via-QUIC"
   <<: *proton-new
@@ -98,46 +94,47 @@ proxies:
   port: 51820
   dialer-proxy: "WARP-QUIC"
 
-- name: "Proton-via-H2"
+- name: "Proton-via-Default"
   <<: *proton-new
   server: 195.242.214.194
   port: 51820
-  dialer-proxy: "WARP-H2"
+  dialer-proxy: "WARP-Default"
 
 - name: "Proton-via-IPv6"
   <<: *proton-new
   server: 2a0d:5600:19:41::10
   port: 51820
-  dialer-proxy: "WARP-Default"
+  dialer-proxy: "WARP-H2"
 
 proxy-groups:
+  # ПРИОРИТЕТ ОТДАН H2 (TCP), так как он надежнее на шумном мобильном LTE
   - name: "Proton-Relay"
     type: url-test
     tolerance: 150
-    interval: 120    # Тестируем раз в 2 минуты, чтобы не забивать канал
-    timeout: 5000    # Даем 5 секунд на двойной handshake (убирает таймауты и баг кнопки)
+    interval: 120
+    timeout: 6000 # Увеличено до 6 сек, чтобы LTE успел установить двойную цепь
     proxies:
-      - "Proton-via-QUIC"
-      - "Proton-via-H2"
-      - "Proton-via-Default"
-      - "Proton-via-IPv6"
+      - "Proton-via-H2"     # Приоритет 1: TCP надежен при потерях пакетов в LTE
+      - "Proton-via-QUIC"   # Приоритет 2
+      - "Proton-via-IPv6"   # Приоритет 3
+      - "Proton-via-Default" # Приоритет 4
     url: 'http://www.gstatic.com/generate_204'
 
   - name: "WARP-Direct"
     type: url-test
     tolerance: 100
     interval: 60
-    timeout: 3000
+    timeout: 4000
     proxies:
-      - "WARP-QUIC"
       - "WARP-H2"
+      - "WARP-QUIC"
       - "WARP-Default"
     url: 'http://speed.cloudflare.com/cdn-cgi/trace'
 
   - name: "Main-Fallback"
     type: fallback
     interval: 120
-    timeout: 5000    # Увеличен таймаут для корректной работы цепочек
+    timeout: 6000
     proxies:
       - "Proton-Relay"
       - "WARP-Direct"
