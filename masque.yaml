@@ -35,7 +35,7 @@ warp-masque: &warp-masque
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
 
-# --- БАЗОВЫЕ НАСТРОЙКИ PROTON VPN (RU) ---
+# --- БАЗОВЫЕ НАСТРОЙКИ PROTON VPN (RU) — МАКС ШУМ ---
 proton-common: &proton-common
   type: wireguard
   ip: 10.2.0.2
@@ -48,15 +48,18 @@ proton-common: &proton-common
   remote-dns-resolve: true
   dns: [10.2.0.1]
   amnezia-wg-option:
-   jc: 10
+   jc: 15
    jmin: 50
-   jmax: 100
-   s1: 0
-   s2: 0
-   h1: 1
-   h2: 2
-   h3: 3
-   h4: 4
+   jmax: 1000
+   s1: 86
+   s2: 113
+   h1: 2911432435
+   h2: 3782841093
+   h3: 1408566297
+   h4: 4067193581
+  fake_packets: "20-40"
+  fake_packets_size: "40-200"
+  fake_packets_delay: "10-150"
 
 # --- СПИСОК ПРОКСЕЙ ---
 proxies:
@@ -97,46 +100,35 @@ proxies:
   <<: *proton-common
   server: 185.107.56.130
   port: 443
-  fake_packets: "10-20"
-  fake_packets_size: "20-50"
-  fake_packets_delay: "10-50"
 
 - name: "🇳🇱 Proton_NL"
   <<: *proton-common
   server: 185.107.56.211
   port: 443
-  ip: 172.16.0.2 # Внутренний IP туннеля (оставлен как в твоем примере)
+  ip: 172.16.0.2
   private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
   public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
   reserved: [219, 184, 163]
-  # Применяем МАКСИМАЛЬНЫЙ шум, чтобы NL так же пробивал DPI МТС
-  amnezia-wg-option:
-    jc: 10
-    jmin: 50
-    jmax: 100
-    s1: 0
-    s2: 0
-    h1: 1
-    h2: 2
-    h3: 3
-    h4: 4
-  fake_packets: "10-20"
-  fake_packets_size: "20-50"
-  fake_packets_delay: "10-50"
+
+# Proton через WARP (двойной туннель) — резерв на случай если прямые IP Proton
+# забанены на уровне ASN/IP и никакая обфускация хендшейка не спасёт
+- name: "Proton-via-WARP"
+  <<: *proton-common
+  server: 185.107.56.130
+  port: 443
+  dialer-proxy: "Default-WARP"
 
 # --- ГРУППЫ ПРОКСЕЙ (АВТОВЫБОР И FALLBACK) ---
 proxy-groups:
-  # 1. Автовыбор лучшего Proton (RU или NL)
   - name: "Proton-Auto"
     type: url-test
-    tolerance: 100 # Переключится только если разница в пинге > 100мс (защищает от флуда при смене сетей)
+    tolerance: 100
     proxies:
       - "Proton-WG-RU"
       - "🇳🇱 Proton_NL"
     url: 'http://www.gstatic.com/generate_204'
     interval: 60
 
-  # 2. Автовыбор лучшего WARP
   - name: "WARP-Auto"
     type: url-test
     tolerance: 100
@@ -147,35 +139,28 @@ proxy-groups:
     url: 'http://speed.cloudflare.com/cdn-cgi/trace'
     interval: 60
 
-  # 3. ГЛАВНАЯ ГРУППА (Fallback)
-  # Всегда пытается использовать Proton. Если МТС его заблокирует или он "умрет" при смене сети,
-  # она МГНОВЕННО переключит весь трафик на WARP.
   - name: "Main-Fallback"
     type: fallback
     proxies:
       - "Proton-Auto"
+      - "Proton-via-WARP"
       - "WARP-Auto"
     url: 'http://www.gstatic.com/generate_204'
     interval: 60
 
-# --- ПРАВИЛА МАРШРУТИЗАЦИИ (БЕСШОВНОСТЬ И СТАБИЛЬНОСТЬ) ---
+# --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rules:
-  # Локальные сети и CGNAT (КРИТИЧНО для МТС при переключении Wi-Fi <-> LTE)
   - GEOIP,private,DIRECT,no-resolve
   - DOMAIN-SUFFIX,local,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
-  - IP-CIDR,100.64.0.0/10,DIRECT # Серые IP мобильных операторов (CGNAT), идут мимо туннеля
+  - IP-CIDR,100.64.0.0/10,DIRECT
   - IP-CIDR,224.0.0.0/4,DIRECT
   - IP-CIDR,fe80::/10,DIRECT
-  
-  # DNS серверы (чтобы не уходили в туннель и не вызывали петель)
   - IP-CIDR,1.1.1.1/32,DIRECT
   - IP-CIDR,1.0.0.1/32,DIRECT
   - IP-CIDR,8.8.8.8/32,DIRECT
   - IP-CIDR,8.8.4.4/32,DIRECT
-  
-  # Весь остальной интернет идет в Main-Fallback
   - MATCH,Main-Fallback
