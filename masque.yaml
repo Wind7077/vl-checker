@@ -1,4 +1,4 @@
-# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Внешний щит, пробивает МТС) ---
+# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Внешний щит с максимальным шумом для МТС) ---
 warp-common: &warp-common
   type: wireguard
   ip: 172.16.0.2
@@ -35,8 +35,7 @@ warp-masque: &warp-masque
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   packet-encoding: packetaddr
 
-# --- БАЗОВЫЕ НАСТРОЙКИ PROTON (Внутренний туннель) ---
-# ВАЖНО: Amnezia шум УБРАН. Он не нужен внутри WARP и только вызывал таймауты!
+# --- БАЗОВЫЕ НАСТРОЙКИ PROTON (Внутренний туннель, чистый WG) ---
 proton-new: &proton-new
   type: wireguard
   ip: 10.2.0.2
@@ -45,13 +44,12 @@ proton-new: &proton-new
   public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
-  mtu: 1200 # Снижен с 1280 до 1200, чтобы влезать внутрь внешнего WARP без фрагментации
+  mtu: 1200 
   keepalive: 25
   remote-dns-resolve: true
   dns: [10.2.0.1, '2a07:b944::2:1']
 
 proxies:
-# 1. Прямые подключения WARP
 - name: "WARP-Default"
   <<: *warp-common
   server: engage.cloudflareclient.com
@@ -85,12 +83,12 @@ proxies:
   fake_packets_size: "40-100"
   fake_packets_delay: "10-50"
 
-# 2. PROTON ВНУТРИ WARP (Чистый WireGuard без лишнего шума)
-- name: "Proton-via-Default"
+# PROTON ВНУТРИ WARP
+- name: "Proton-via-H2"
   <<: *proton-new
   server: 195.242.214.194
   port: 51820
-  dialer-proxy: "WARP-Default"
+  dialer-proxy: "WARP-H2"
 
 - name: "Proton-via-QUIC"
   <<: *proton-new
@@ -98,11 +96,11 @@ proxies:
   port: 51820
   dialer-proxy: "WARP-QUIC"
 
-- name: "Proton-via-H2"
+- name: "Proton-via-Default"
   <<: *proton-new
   server: 195.242.214.194
   port: 51820
-  dialer-proxy: "WARP-H2"
+  dialer-proxy: "WARP-Default"
 
 - name: "Proton-via-IPv6"
   <<: *proton-new
@@ -111,23 +109,22 @@ proxies:
   dialer-proxy: "WARP-Default"
 
 proxy-groups:
+  # В автотесте оставлены только 2 самых надежных узла, чтобы не убивать LTE-канал параллельными запросами
   - name: "Proton-Relay"
     type: url-test
     tolerance: 150
-    interval: 120    # Тестируем раз в 2 минуты, чтобы не забивать канал
-    timeout: 5000    # Даем 5 секунд на двойной handshake (убирает таймауты и баг кнопки)
+    interval: 180     # Проверяем раз в 3 минуты
+    timeout: 10000    # ВАЖНО: 10 секунд! Дает время прожевать шум Amnezia и не вызывает баг кнопки пинга
     proxies:
-      - "Proton-via-QUIC"
       - "Proton-via-H2"
-      - "Proton-via-Default"
-      - "Proton-via-IPv6"
+      - "Proton-via-QUIC"
     url: 'http://www.gstatic.com/generate_204'
 
   - name: "WARP-Direct"
     type: url-test
     tolerance: 100
     interval: 60
-    timeout: 3000
+    timeout: 5000
     proxies:
       - "WARP-QUIC"
       - "WARP-H2"
@@ -136,12 +133,21 @@ proxy-groups:
 
   - name: "Main-Fallback"
     type: fallback
-    interval: 120
-    timeout: 5000    # Увеличен таймаут для корректной работы цепочек
+    interval: 180
+    timeout: 10000    # 10 секунд для корректной работы цепочек
     proxies:
       - "Proton-Relay"
       - "WARP-Direct"
     url: 'http://www.gstatic.com/generate_204'
+    
+  # Группа для ручного выбора, если захочешь проверить Default или IPv6
+  - name: "Proton-Manual"
+    type: select
+    proxies:
+      - "Proton-via-H2"
+      - "Proton-via-QUIC"
+      - "Proton-via-Default"
+      - "Proton-via-IPv6"
 
 rules:
   - GEOIP,private,DIRECT,no-resolve
