@@ -12,7 +12,7 @@ warp-common: &warp-common
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   amnezia-wg-option:
-   jc: 8
+   jc: 10
    jmin: 50
    jmax: 100
    s1: 67
@@ -25,8 +25,7 @@ warp-common: &warp-common
 
 warp-masque: &warp-masque
   type: masque
-  # КРИТИЧНО: Пустой SNI не вызывает блокировку TSPU!
-  sni: ""
+  sni: max.ru
   private-key: MHcCAQEEIF0kkGh0QwcQbrKMG/7IOsERReGoXAhaeGLdwPoGBGUEoAoGCCqGSM49AwEHoUQDQgAEPm33c6cVhWVM/iV6kJPC4AtrgHhMEdeVcj0h7d6MmEQhRyRfbUzx86iR4fFKiZDPMfnaUGmKAjoP0VQcezwwlw==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
   ip: 172.16.0.2
@@ -50,25 +49,52 @@ proton-new: &proton-new
   dns: [10.2.0.1, '2a07:b944::2:1']
 
 proxies:
-- name: "WARP-Default"
+# === ОСНОВНЫЕ WARP ENDPOINT-Ы ===
+- name: "WARP-Classic"
   <<: *warp-common
   server: engage.cloudflareclient.com
   port: 2408
 
-- name: "WARP-QUIC"
+# === АЛЬТЕРНАТИВНЫЕ ENDPOINT-Ы (обход блокировки engage) ===
+- name: "WARP-Alt-192"
+  <<: *warp-common
+  server: 162.159.192.1
+  port: 2408
+
+- name: "WARP-Alt-193"
+  <<: *warp-common
+  server: 162.159.193.1
+  port: 2408
+
+- name: "WARP-Alt-1002"
+  <<: *warp-common
+  server: 162.159.192.1
+  port: 1002
+
+- name: "WARP-RU-Native"
+  <<: *warp-common
+  server: 188.114.99.224
+  port: 1002
+
+# === MASQUE (QUIC/H2) НА АЛЬТЕРНАТИВНЫХ IP ===
+- name: "MASQUE-QUIC-198"
   <<: *warp-masque
   server: 162.159.198.2
   port: 443
-  quic-version: [1, 2]
+  quic-version: [1]
 
-- name: "WARP-H2"
+- name: "MASQUE-QUIC-192"
+  <<: *warp-masque
+  server: 162.159.192.1
+  port: 443
+  quic-version: [1]
+
+- name: "MASQUE-H2-198"
   <<: *warp-masque
   server: 162.159.198.2
   port: 443
   network: h2
   skip-cert-verify: true
-  # Fingerprint Firefox (не подозрительный для TSPU)
-  client-fingerprint: firefox
   tls:
     fragment:
       packets: "tlshello,1"
@@ -79,69 +105,90 @@ proxies:
       min: 50
       max: 150
 
+# === PROTON ЧЕРЕЗ WARP (используем самые стабильные endpoint-ы) ===
+- name: "Proton-via-MASQUE-198"
+  <<: *proton-new
+  server: 195.242.214.194
+  port: 51820
+  dialer-proxy: "MASQUE-QUIC-198"
+
+- name: "Proton-via-MASQUE-192"
+  <<: *proton-new
+  server: 195.242.214.194
+  port: 51820
+  dialer-proxy: "MASQUE-QUIC-192"
+
+- name: "Proton-via-Alt-192"
+  <<: *proton-new
+  server: 195.242.214.194
+  port: 51820
+  dialer-proxy: "WARP-Alt-192"
+
+- name: "Proton-via-RU-Native"
+  <<: *proton-new
+  server: 195.242.214.194
+  port: 51820
+  dialer-proxy: "WARP-RU-Native"
+
 - name: "Proton-via-H2"
   <<: *proton-new
   server: 195.242.214.194
   port: 51820
-  dialer-proxy: "WARP-H2"
-
-- name: "Proton-via-QUIC"
-  <<: *proton-new
-  server: 195.242.214.194
-  port: 51820
-  dialer-proxy: "WARP-QUIC"
-
-- name: "Proton-via-Default"
-  <<: *proton-new
-  server: 195.242.214.194
-  port: 51820
-  dialer-proxy: "WARP-Default"
-
-- name: "Proton-via-IPv6"
-  <<: *proton-new
-  server: 2a0d:5600:19:41::10
-  port: 51820
-  dialer-proxy: "WARP-Default"
+  dialer-proxy: "MASQUE-H2-198"
 
 proxy-groups:
-# ВАЖНО: Только 2 узла в автотесте! Больше 3 параллельных = заморозка 120 сек
 - name: "AUTO"
   type: url-test
   tolerance: 150
-  interval: 300        # 5 минут между тестами (не забиваем канал)
-  timeout: 15000       # 15 секунд на установку цепочки
+  interval: 180
+  timeout: 12000
   proxies:
-    - "WARP-QUIC"      # Только QUIC (UDP, не создает параллельных TLS)
-    - "WARP-Default"   # Только Default (UDP)
+    - "MASQUE-QUIC-198"
+    - "MASQUE-QUIC-192"
+    - "WARP-Alt-192"
+    - "WARP-Alt-193"
+    - "WARP-Alt-1002"
+    - "WARP-RU-Native"
+    - "WARP-Classic"
+    - "Proton-via-MASQUE-198"
+    - "Proton-via-MASQUE-192"
+    - "Proton-via-Alt-192"
   url: 'http://www.gstatic.com/generate_204'
 
-# FALLBACK: Сначала быстрые UDP, потом цепочки
 - name: "FALLBACK"
   type: fallback
-  interval: 300
-  timeout: 15000
+  interval: 180
+  timeout: 12000
   proxies:
-    - "WARP-QUIC"
-    - "WARP-Default"
-    - "Proton-via-QUIC"
-    - "Proton-via-Default"
-    - "WARP-H2"
+    - "MASQUE-QUIC-198"
+    - "MASQUE-QUIC-192"
+    - "WARP-Alt-192"
+    - "WARP-Alt-193"
+    - "WARP-RU-Native"
+    - "Proton-via-MASQUE-198"
+    - "Proton-via-Alt-192"
+    - "WARP-Classic"
     - "Proton-via-H2"
   url: 'http://www.gstatic.com/generate_204'
 
-# SELECT: Все узлы для ручного выбора
 - name: "SELECT"
   type: select
   proxies:
     - "AUTO"
     - "FALLBACK"
+    - "MASQUE-QUIC-198"
+    - "MASQUE-QUIC-192"
+    - "MASQUE-H2-198"
+    - "WARP-Alt-192"
+    - "WARP-Alt-193"
+    - "WARP-Alt-1002"
+    - "WARP-RU-Native"
+    - "WARP-Classic"
+    - "Proton-via-MASQUE-198"
+    - "Proton-via-MASQUE-192"
+    - "Proton-via-Alt-192"
+    - "Proton-via-RU-Native"
     - "Proton-via-H2"
-    - "Proton-via-QUIC"
-    - "Proton-via-Default"
-    - "Proton-via-IPv6"
-    - "WARP-H2"
-    - "WARP-QUIC"
-    - "WARP-Default"
 
 rules:
   - GEOIP,private,DIRECT,no-resolve
