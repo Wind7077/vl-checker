@@ -1,3 +1,4 @@
+# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Внешний щит, пробивает МТС) ---
 warp-common: &warp-common
   type: wireguard
   ip: 172.16.0.2
@@ -8,15 +9,14 @@ warp-common: &warp-common
   reserved: [185, 93, 172]
   udp: true
   mtu: 1280
-  keepalive: 25
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   amnezia-wg-option:
    jc: 10
    jmin: 50
    jmax: 100
-   s1: 67
-   s2: 89
+   s1: 0
+   s2: 0
    h1: 1
    h2: 2
    h3: 3
@@ -25,16 +25,18 @@ warp-common: &warp-common
 
 warp-masque: &warp-masque
   type: masque
-  sni: max.ru
+  sni: 4pda.to
   private-key: MHcCAQEEIF0kkGh0QwcQbrKMG/7IOsERReGoXAhaeGLdwPoGBGUEoAoGCCqGSM49AwEHoUQDQgAEPm33c6cVhWVM/iV6kJPC4AtrgHhMEdeVcj0h7d6MmEQhRyRfbUzx86iR4fFKiZDPMfnaUGmKAjoP0VQcezwwlw==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
   ip: 172.16.0.2
   ipv6: 2606:4700:110:846a:a144:fa58:8f97:d9de
   udp: true
-  keepalive: 25
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
+  packet-encoding: packetaddr
 
+# --- БАЗОВЫЕ НАСТРОЙКИ PROTON (Внутренний туннель) ---
+# ВАЖНО: Amnezia шум УБРАН. Он не нужен внутри WARP и только вызывал таймауты!
 proton-new: &proton-new
   type: wireguard
   ip: 10.2.0.2
@@ -43,31 +45,20 @@ proton-new: &proton-new
   public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
-  mtu: 1150
+  mtu: 1200 # Снижен с 1280 до 1200, чтобы влезать внутрь внешнего WARP без фрагментации
   keepalive: 25
   remote-dns-resolve: true
   dns: [10.2.0.1, '2a07:b944::2:1']
 
 proxies:
+# 1. Прямые подключения WARP
 - name: "WARP-Default"
   <<: *warp-common
   server: engage.cloudflareclient.com
   port: 2408
-
-- name: "WARP-Alt-192"
-  <<: *warp-common
-  server: 162.159.192.1
-  port: 2408
-
-- name: "WARP-Alt-193"
-  <<: *warp-common
-  server: 162.159.193.1
-  port: 2408
-
-- name: "WARP-Port-1002"
-  <<: *warp-common
-  server: 162.159.192.1
-  port: 1002
+  fake_packets: "10-20"
+  fake_packets_size: "20-50"
+  fake_packets_delay: "10-50"
 
 - name: "WARP-QUIC"
   <<: *warp-masque
@@ -90,30 +81,16 @@ proxies:
       enable: true
       min: 50
       max: 150
+  fake_packets: "5-15"
+  fake_packets_size: "40-100"
+  fake_packets_delay: "10-50"
 
+# 2. PROTON ВНУТРИ WARP (Чистый WireGuard без лишнего шума)
 - name: "Proton-via-Default"
   <<: *proton-new
   server: 195.242.214.194
   port: 51820
   dialer-proxy: "WARP-Default"
-
-- name: "Proton-via-Alt-192"
-  <<: *proton-new
-  server: 195.242.214.194
-  port: 51820
-  dialer-proxy: "WARP-Alt-192"
-
-- name: "Proton-via-Alt-193"
-  <<: *proton-new
-  server: 195.242.214.194
-  port: 51820
-  dialer-proxy: "WARP-Alt-193"
-
-- name: "Proton-via-Port-1002"
-  <<: *proton-new
-  server: 195.242.214.194
-  port: 51820
-  dialer-proxy: "WARP-Port-1002"
 
 - name: "Proton-via-QUIC"
   <<: *proton-new
@@ -134,64 +111,37 @@ proxies:
   dialer-proxy: "WARP-Default"
 
 proxy-groups:
-- name: "AUTO"
-  type: url-test
-  tolerance: 150
-  interval: 180
-  timeout: 15000
-  proxies:
-    - "WARP-QUIC"
-    - "WARP-H2"
-    - "WARP-Default"
-    - "WARP-Alt-192"
-    - "WARP-Alt-193"
-    - "WARP-Port-1002"
-    - "Proton-via-QUIC"
-    - "Proton-via-H2"
-    - "Proton-via-Default"
-    - "Proton-via-Alt-192"
-    - "Proton-via-Alt-193"
-    - "Proton-via-Port-1002"
-  url: 'http://www.gstatic.com/generate_204'
+  - name: "Proton-Relay"
+    type: url-test
+    tolerance: 150
+    interval: 120    # Тестируем раз в 2 минуты, чтобы не забивать канал
+    timeout: 5000    # Даем 5 секунд на двойной handshake (убирает таймауты и баг кнопки)
+    proxies:
+      - "Proton-via-QUIC"
+      - "Proton-via-H2"
+      - "Proton-via-Default"
+      - "Proton-via-IPv6"
+    url: 'http://www.gstatic.com/generate_204'
 
-- name: "FALLBACK"
-  type: fallback
-  interval: 180
-  timeout: 15000
-  proxies:
-    - "WARP-QUIC"
-    - "WARP-H2"
-    - "WARP-Alt-192"
-    - "WARP-Alt-193"
-    - "WARP-Port-1002"
-    - "WARP-Default"
-    - "Proton-via-QUIC"
-    - "Proton-via-H2"
-    - "Proton-via-Alt-192"
-    - "Proton-via-Alt-193"
-    - "Proton-via-Port-1002"
-    - "Proton-via-Default"
-    - "Proton-via-IPv6"
-  url: 'http://www.gstatic.com/generate_204'
+  - name: "WARP-Direct"
+    type: url-test
+    tolerance: 100
+    interval: 60
+    timeout: 3000
+    proxies:
+      - "WARP-QUIC"
+      - "WARP-H2"
+      - "WARP-Default"
+    url: 'http://speed.cloudflare.com/cdn-cgi/trace'
 
-- name: "SELECT"
-  type: select
-  proxies:
-    - "AUTO"
-    - "FALLBACK"
-    - "WARP-QUIC"
-    - "WARP-H2"
-    - "WARP-Default"
-    - "WARP-Alt-192"
-    - "WARP-Alt-193"
-    - "WARP-Port-1002"
-    - "Proton-via-QUIC"
-    - "Proton-via-H2"
-    - "Proton-via-Default"
-    - "Proton-via-Alt-192"
-    - "Proton-via-Alt-193"
-    - "Proton-via-Port-1002"
-    - "Proton-via-IPv6"
+  - name: "Main-Fallback"
+    type: fallback
+    interval: 120
+    timeout: 5000    # Увеличен таймаут для корректной работы цепочек
+    proxies:
+      - "Proton-Relay"
+      - "WARP-Direct"
+    url: 'http://www.gstatic.com/generate_204'
 
 rules:
   - GEOIP,private,DIRECT,no-resolve
@@ -207,4 +157,7 @@ rules:
   - IP-CIDR,1.0.0.1/32,DIRECT
   - IP-CIDR,8.8.8.8/32,DIRECT
   - IP-CIDR,8.8.4.4/32,DIRECT
-  - MATCH,SELECT
+  - MATCH,Main-Fallback
+
+
+
