@@ -44,12 +44,13 @@ proton-new: &proton-new
   public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
-  mtu: 1200 
+  mtu: 1200
   keepalive: 25
   remote-dns-resolve: true
   dns: [10.2.0.1, '2a07:b944::2:1']
 
 proxies:
+# Прямые подключения WARP
 - name: "WARP-Default"
   <<: *warp-common
   server: engage.cloudflareclient.com
@@ -83,7 +84,7 @@ proxies:
   fake_packets_size: "40-100"
   fake_packets_delay: "10-50"
 
-# PROTON ВНУТРИ WARP
+# PROTON ВНУТРИ WARP (Double VPN)
 - name: "Proton-via-H2"
   <<: *proton-new
   server: 195.242.214.194
@@ -109,45 +110,52 @@ proxies:
   dialer-proxy: "WARP-Default"
 
 proxy-groups:
-  # В автотесте оставлены только 2 самых надежных узла, чтобы не убивать LTE-канал параллельными запросами
-  - name: "Proton-Relay"
-    type: url-test
-    tolerance: 150
-    interval: 180     # Проверяем раз в 3 минуты
-    timeout: 10000    # ВАЖНО: 10 секунд! Дает время прожевать шум Amnezia и не вызывает баг кнопки пинга
-    proxies:
-      - "Proton-via-H2"
-      - "Proton-via-QUIC"
-    url: 'http://www.gstatic.com/generate_204'
+# ═══════════════════════════════════════════════════════════
+# 3 ГЛАВНЫЕ ГРУППЫ (все прокси в каждой)
+# ═══════════════════════════════════════════════════════════
 
-  - name: "WARP-Direct"
-    type: url-test
-    tolerance: 100
-    interval: 60
-    timeout: 5000
-    proxies:
-      - "WARP-QUIC"
-      - "WARP-H2"
-      - "WARP-Default"
-    url: 'http://speed.cloudflare.com/cdn-cgi/trace'
+# AUTO - Автоматический выбор самого быстрого
+- name: "AUTO"
+  type: url-test
+  tolerance: 100
+  interval: 120
+  timeout: 10000
+  proxies:
+    - "WARP-QUIC"
+    - "WARP-H2"
+    - "Proton-via-H2"
+    - "Proton-via-QUIC"
+    - "WARP-Default"
+    - "Proton-via-Default"
+    - "Proton-via-IPv6"
+  url: 'http://www.gstatic.com/generate_204'
 
-  - name: "Main-Fallback"
-    type: fallback
-    interval: 180
-    timeout: 10000    # 10 секунд для корректной работы цепочек
-    proxies:
-      - "Proton-Relay"
-      - "WARP-Direct"
-    url: 'http://www.gstatic.com/generate_204'
-    
-  # Группа для ручного выбора, если захочешь проверить Default или IPv6
-  - name: "Proton-Manual"
-    type: select
-    proxies:
-      - "Proton-via-H2"
-      - "Proton-via-QUIC"
-      - "Proton-via-Default"
-      - "Proton-via-IPv6"
+# FALLBACK - Переключение при падении первого
+- name: "FALLBACK"
+  type: fallback
+  interval: 120
+  timeout: 10000
+  proxies:
+    - "Proton-via-H2"
+    - "Proton-via-QUIC"
+    - "WARP-H2"
+    - "WARP-QUIC"
+    - "Proton-via-Default"
+    - "Proton-via-IPv6"
+    - "WARP-Default"
+  url: 'http://www.gstatic.com/generate_204'
+
+# SELECT - Ручной выбор
+- name: "SELECT"
+  type: select
+  proxies:
+    - "Proton-via-H2"
+    - "Proton-via-QUIC"
+    - "Proton-via-Default"
+    - "Proton-via-IPv6"
+    - "WARP-H2"
+    - "WARP-QUIC"
+    - "WARP-Default"
 
 rules:
   - GEOIP,private,DIRECT,no-resolve
@@ -163,4 +171,4 @@ rules:
   - IP-CIDR,1.0.0.1/32,DIRECT
   - IP-CIDR,8.8.8.8/32,DIRECT
   - IP-CIDR,8.8.4.4/32,DIRECT
-  - MATCH,Main-Fallback
+  - MATCH,SELECT
