@@ -1,4 +1,4 @@
-# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Нижний уровень) ---
+# --- БАЗОВЫЕ НАСТРОЙКИ WARP (Внешний щит, пробивает МТС) ---
 warp-common: &warp-common
   type: wireguard
   ip: 172.16.0.2
@@ -35,7 +35,8 @@ warp-masque: &warp-masque
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   packet-encoding: packetaddr
 
-# --- БАЗОВЫЕ НАСТРОЙКИ PROTON (Верхний уровень) ---
+# --- БАЗОВЫЕ НАСТРОЙКИ PROTON (Внутренний туннель) ---
+# ВАЖНО: Amnezia шум УБРАН. Он не нужен внутри WARP и только вызывал таймауты!
 proton-new: &proton-new
   type: wireguard
   ip: 10.2.0.2
@@ -44,23 +45,13 @@ proton-new: &proton-new
   public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
-  mtu: 1150 # КРИТИЧНО! Снижено с 1280 до 1150, чтобы пакет влезал внутрь WARP без фрагментации
+  mtu: 1200 # Снижен с 1280 до 1200, чтобы влезать внутрь внешнего WARP без фрагментации
   keepalive: 25
-  remote-dns-resolve: false # ОТКЛЮЧЕНО! IP сервера уже известен, это уберет DNS-петли и зависания
+  remote-dns-resolve: true
   dns: [10.2.0.1, '2a07:b944::2:1']
-  amnezia-wg-option:
-    jc: 10
-    jmin: 50
-    jmax: 100
-    s1: 0
-    s2: 0
-    h1: 1
-    h2: 2
-    h3: 3
-    h4: 4
 
 proxies:
-# 1. Прямые подключения WARP (Нижний уровень)
+# 1. Прямые подключения WARP
 - name: "WARP-Default"
   <<: *warp-common
   server: engage.cloudflareclient.com
@@ -94,8 +85,7 @@ proxies:
   fake_packets_size: "40-100"
   fake_packets_delay: "10-50"
 
-# 2. PROTON ВНУТРИ WARP (Proxy Chaining)
-# ВНИМАНИЕ: Убран H2 из цепочки! TCP over TCP вызывает дикие лаги и таймауты.
+# 2. PROTON ВНУТРИ WARP (Чистый WireGuard без лишнего шума)
 - name: "Proton-via-Default"
   <<: *proton-new
   server: 195.242.214.194
@@ -108,30 +98,36 @@ proxies:
   port: 51820
   dialer-proxy: "WARP-QUIC"
 
-- name: "Proton-via-IPv6-Default"
+- name: "Proton-via-H2"
+  <<: *proton-new
+  server: 195.242.214.194
+  port: 51820
+  dialer-proxy: "WARP-H2"
+
+- name: "Proton-via-IPv6"
   <<: *proton-new
   server: 2a0d:5600:19:41::10
   port: 51820
   dialer-proxy: "WARP-Default"
 
-# --- ГРУППЫ ПРОКСЕЙ ---
 proxy-groups:
   - name: "Proton-Relay"
     type: url-test
-    tolerance: 100
-    interval: 60
-    timeout: 1500 # Уменьшено до 1.5 сек, чтобы интерфейс не вис
+    tolerance: 150
+    interval: 120    # Тестируем раз в 2 минуты, чтобы не забивать канал
+    timeout: 5000    # Даем 5 секунд на двойной handshake (убирает таймауты и баг кнопки)
     proxies:
       - "Proton-via-QUIC"
+      - "Proton-via-H2"
       - "Proton-via-Default"
-      - "Proton-via-IPv6-Default"
+      - "Proton-via-IPv6"
     url: 'http://www.gstatic.com/generate_204'
 
   - name: "WARP-Direct"
     type: url-test
     tolerance: 100
     interval: 60
-    timeout: 1500
+    timeout: 3000
     proxies:
       - "WARP-QUIC"
       - "WARP-H2"
@@ -140,14 +136,13 @@ proxy-groups:
 
   - name: "Main-Fallback"
     type: fallback
-    interval: 60
-    timeout: 1500
+    interval: 120
+    timeout: 5000    # Увеличен таймаут для корректной работы цепочек
     proxies:
       - "Proton-Relay"
       - "WARP-Direct"
     url: 'http://www.gstatic.com/generate_204'
 
-# --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rules:
   - GEOIP,private,DIRECT,no-resolve
   - DOMAIN-SUFFIX,local,DIRECT
