@@ -11,11 +11,11 @@ warp-common: &warp-common
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   amnezia-wg-option:
-   jc: 12
-   jmin: 40
-   jmax: 120
-   s1: 8
-   s2: 4
+   jc: 10
+   jmin: 50
+   jmax: 100
+   s1: 0
+   s2: 0
    h1: 1
    h2: 2
    h3: 3
@@ -24,7 +24,7 @@ warp-common: &warp-common
 
 warp-masque: &warp-masque
   type: masque
-  sni: max.ru
+  sni: cloudflare.com
   private-key: MHcCAQEEIF0kkGh0QwcQbrKMG/7IOsERReGoXAhaeGLdwPoGBGUEoAoGCCqGSM49AwEHoUQDQgAEPm33c6cVhWVM/iV6kJPC4AtrgHhMEdeVcj0h7d6MmEQhRyRfbUzx86iR4fFKiZDPMfnaUGmKAjoP0VQcezwwlw==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
   ip: 172.16.0.2
@@ -32,7 +32,6 @@ warp-masque: &warp-masque
   udp: true
   remote-dns-resolve: true
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
-  packet-encoding: packetaddr
 
 proton-new: &proton-new
   type: wireguard
@@ -42,7 +41,7 @@ proton-new: &proton-new
   public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
-  mtu: 1200
+  mtu: 1080
   keepalive: 25
   remote-dns-resolve: true
   dns: [10.2.0.1, '2a07:b944::2:1']
@@ -52,9 +51,6 @@ proxies:
   <<: *warp-common
   server: engage.cloudflareclient.com
   port: 2408
-  fake_packets: "8-16"
-  fake_packets_size: "33-97"
-  fake_packets_delay: "5-80"
 
 - name: "WARP-QUIC"
   <<: *warp-masque
@@ -77,9 +73,6 @@ proxies:
       enable: true
       min: 50
       max: 150
-  fake_packets: "5-15"
-  fake_packets_size: "40-100"
-  fake_packets_delay: "10-50"
 
 - name: "Proton-via-H2"
   <<: *proton-new
@@ -109,28 +102,26 @@ proxy-groups:
 - name: "AUTO"
   type: url-test
   tolerance: 150
-  interval: 300        # Проверяем раз в 5 минут (экономим LTE)
-  timeout: 15000       # 15 секунд! Это ключ к избавлению от таймаутов
-  lazy: true           # Ленивое подключение — убирает зависания UI
+  interval: 180
+  timeout: 15000
   proxies:
-    - "WARP-QUIC"
-    - "WARP-H2"
     - "Proton-via-QUIC"
     - "Proton-via-H2"
-    - "WARP-Default"
     - "Proton-via-Default"
+    - "WARP-QUIC"
+    - "WARP-H2"
+    - "WARP-Default"
   url: 'http://www.gstatic.com/generate_204'
 
 - name: "FALLBACK"
   type: fallback
-  interval: 300
-  timeout: 15000       # 15 секунд!
-  lazy: true
+  interval: 180
+  timeout: 15000
   proxies:
-    - "WARP-H2"        # Сначала быстрые прямые WARP
-    - "WARP-QUIC"
-    - "Proton-via-H2"  # Потом медленные цепочки Proton
     - "Proton-via-QUIC"
+    - "Proton-via-H2"
+    - "WARP-QUIC"
+    - "WARP-H2"
     - "Proton-via-Default"
     - "WARP-Default"
   url: 'http://www.gstatic.com/generate_204'
