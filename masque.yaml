@@ -108,32 +108,38 @@ proxies:
 proxy-groups:
 - name: "AUTO"
   type: url-test
-  tolerance: 100
-  interval: 120
-  timeout: 8000
+  tolerance: 150
+  interval: 300        # Проверяем раз в 5 минут (экономим LTE)
+  timeout: 15000       # 15 секунд! Это ключ к избавлению от таймаутов
+  lazy: true           # Ленивое подключение — убирает зависания UI
   proxies:
     - "WARP-QUIC"
+    - "WARP-H2"
     - "Proton-via-QUIC"
+    - "Proton-via-H2"
     - "WARP-Default"
     - "Proton-via-Default"
-    - "Proton-via-IPv6"
   url: 'http://www.gstatic.com/generate_204'
 
 - name: "FALLBACK"
   type: fallback
-  interval: 120
-  timeout: 8000
+  interval: 300
+  timeout: 15000       # 15 секунд!
+  lazy: true
   proxies:
+    - "WARP-H2"        # Сначала быстрые прямые WARP
+    - "WARP-QUIC"
+    - "Proton-via-H2"  # Потом медленные цепочки Proton
     - "Proton-via-QUIC"
     - "Proton-via-Default"
-    - "WARP-QUIC"
     - "WARP-Default"
-    - "Proton-via-IPv6"
   url: 'http://www.gstatic.com/generate_204'
 
 - name: "SELECT"
   type: select
   proxies:
+    - "AUTO"
+    - "FALLBACK"
     - "Proton-via-H2"
     - "Proton-via-QUIC"
     - "Proton-via-Default"
