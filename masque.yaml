@@ -48,19 +48,19 @@ proton-common: &proton-common
   remote-dns-resolve: true
   dns: [10.2.0.1]
   amnezia-wg-option:
-   jc: 15
+   jc: 10
    jmin: 50
-   jmax: 1000
+   jmax: 200
    s1: 0
    s2: 0
    h1: 1
    h2: 2
    h3: 3
    h4: 4
-  fake_packets: "20-40"
-  fake_packets_size: "40-200"
-  fake_packets_delay: "10-150"
-
+  fake_packets: "15-30"
+  fake_packets_size: "40-150"
+  fake_packets_delay: "10-100"
+  
 # --- СПИСОК ПРОКСЕЙ ---
 proxies:
 - name: "Default-WARP"
