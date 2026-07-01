@@ -55,18 +55,6 @@ dns:
     - '+.stun.*.*.*'
     - '+.stun.*.*.*.*'
     - '+.stun.*.*.*.*.*'
-    - '*.yandex.ru'
-    - '*.ya.ru'
-    - '*.mail.ru'
-    - '*.vk.com'
-    - '*.sberbank.ru'
-    - '*.vtb.ru'
-    - '*.gosuslugi.ru'
-    - '*.tinkoff.ru'
-    - '*.ok.ru'
-    - '*.ozon.ru'
-    - '*.wildberries.ru'
-    - '*.avito.ru'
   default-nameserver:
     - 77.88.8.8
     - 217.118.83.6
@@ -88,22 +76,24 @@ proxy-providers:
       interval: 300
 
 # ====================================================================
-# ШАБЛОНЫ (Все ключи и настройки строго из репо)
+# ШАБЛОНЫ (Все ключи из вашего репо)
 # ====================================================================
-warp-common: &warp-common
-  type: wireguard
-  ip: 172.16.0.2
-  ipv6: 2606:4700:110:882c:af48:5723:12f3:21ef
-  private-key: CBbODE++ihCToj/ClkSktHNqpDiI6/x2SLBKvvetFXY=
-  public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-  allowed-ips: ['0.0.0.0/0', '::/0']
-  reserved: [185, 93, 172]
-  udp: true
-  mtu: 1280
-  remote-dns-resolve: true
-  dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
-  amnezia-wg-option: {jc: 10, jmin: 50, jmax: 100, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
 
+# Рабочий Proton ключ (из Fallback.yaml)
+proton-working: &proton-working
+  type: wireguard
+  ip: 10.2.0.2
+  ipv6: 2a07:b944::2:2
+  private-key: sFAyGyyW7SB4vulxb85y1gzyiriJVUJprZY4/ywXcUE=
+  public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+  allowed-ips: ['0.0.0.0/0', '::/0']
+  udp: true
+  mtu: 1200
+  keepalive: 25
+  remote-dns-resolve: true
+  dns: [10.2.0.1, '2a07:b944::2:1']
+
+# WARP Masque шаблоны (разные SNI и ключи)
 warp-masque-gos: &warp-masque-gos
   type: masque
   sni: "gosuslugi.ru"
@@ -130,16 +120,6 @@ warp-masque-sber: &warp-masque-sber
   dns: [8.8.8.8, 8.8.4.4]
   skip-cert-verify: true
 
-warp-masque-ms: &warp-masque-ms
-  type: masque
-  sni: www.microsoft.com
-  private-key: MHcCAQEEIF0kkGh0QwcQbrKMG/7IOsERReGoXAhaeGLdwPoGBGUEoAoGCCqGSM49AwEHoUQDQgAEPm33c6cVhWVM/iV6kJPC4AtrgHhMEdeVcj0h7d6MmEQhRyRfbUzx86iR4fFKiZDPMfnaUGmKAjoP0VQcezwwlw==
-  public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
-  ip: 172.16.0.2
-  udp: true
-  remote-dns-resolve: true
-  dns: [tls://1.1.1.1, tls://1.0.0.1]
-
 warp-masque-4pda: &warp-masque-4pda
   type: masque
   sni: 4pda.to
@@ -152,201 +132,164 @@ warp-masque-4pda: &warp-masque-4pda
   dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
   packet-encoding: packetaddr
 
-# Шаблоны Proton
-proton-key1: &proton-key1
-  type: wireguard
-  ip: 10.2.0.2
-  ipv6: 2a07:b944::2:2
-  private-key: sFAyGyyW7SB4vulxb85y1gzyiriJVUJprZY4/ywXcUE=
-  public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
-  allowed-ips: ['0.0.0.0/0', '::/0']
+warp-masque-ms: &warp-masque-ms
+  type: masque
+  sni: www.microsoft.com
+  private-key: MHcCAQEEIJqQWXur5wh9Ba+cWqCtPylQPLaTPpVsQbrY6WMIcG/MoAoGCCqGSM49AwEHoUQDQgAEzkoDQfVclj06t1zxI1r+vVVL4Pi0lTaII/rWH+1jytzBX7/1wbsRcdUI7hVBJW/Hc00OoOVvPF8WDtuP7Sl+DQ==
+  public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
+  ip: 172.16.0.2
   udp: true
-  mtu: 1200
-  keepalive: 25
   remote-dns-resolve: true
-  dns: [10.2.0.1, '2a07:b944::2:1']
+  dns: [tls://1.1.1.1, tls://1.0.0.1]
 
-proton-clean: &proton-clean
+# WARP Amnezia шаблоны (разные ключи и endpoints)
+warp-awg-1: &warp-awg-1
   type: wireguard
-  ip: 10.2.0.2
-  private-key: +M453tPjxh3nVQcdzmjgeGoGizQ7fzzWw3UVDGki5Eo=
-  public-key: aQ8bxW84kPY54cmd75U9rIHzg/mlpV1mJluXdm/6hFI=
+  ip: 172.16.0.2
+  ipv6: 2606:4700:110:882c:af48:5723:12f3:21ef
+  private-key: CBbODE++ihCToj/ClkSktHNqpDiI6/x2SLBKvvetFXY=
+  public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
   allowed-ips: ['0.0.0.0/0', '::/0']
+  reserved: [185, 93, 172]
   udp: true
   mtu: 1280
-  keepalive: 25
   remote-dns-resolve: true
-  dns: [10.2.0.1]
-  amnezia-wg-option: {jc: 12, jmin: 30, jmax: 120, s1: 8, s2: 4, h1: 1, h2: 2, h3: 3, h4: 4}
+  dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
+  amnezia-wg-option: {jc: 10, jmin: 50, jmax: 100, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
 
-free-wg: &free-wg
+warp-awg-2: &warp-awg-2
   type: wireguard
+  ip: 172.16.0.2
+  ipv6: 2606:4700:110:89ee:57a3:cdf5:f015:8d96
+  private-key: eCu03SLNaHwgvUB7XFsoAZPuBVYAXQ053K/D4YeUEEQ=
+  public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
+  allowed-ips: ['0.0.0.0/0', '::/0']
+  reserved: [182, 191, 93]
+  udp: true
+  mtu: 1280
+  remote-dns-resolve: true
+  dns: [9.9.9.9, 149.112.112.112, 2620:fe::fe, 2620:fe::9]
+  amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h4: 3, h3: 4}
+
+warp-awg-3: &warp-awg-3
+  type: wireguard
+  private-key: uJzVKDHoXSW+K7mSo/gjS1b1BuZz9z+AcxdkTLMxZlA=
+  server: 138.199.50.144
+  port: 443
   ip: 10.2.0.2
+  public-key: KZ9UhGk5qLny663HP6xWCfyIDH2xgvu9DNH5tGYmYnw=
   allowed-ips: ['0.0.0.0/0']
   udp: true
   mtu: 1280
   keepalive: 25
   remote-dns-resolve: true
-  dns: [10.2.0.1]
+  dns: [1.1.1.1]
   amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
 
+warp-awg-4: &warp-awg-4
+  type: wireguard
+  ip: 172.16.0.2
+  ipv6: 2606:4700:110:83cc:93ae:6b86:847e:7a7b
+  private-key: WKYWE9XC2HlEiEiS6iQ1t0EhOElGQbeSQBFdpiT6Rm4=
+  public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
+  allowed-ips: ['0.0.0.0/0']
+  reserved: [209, 203, 243]
+  udp: true
+  mtu: 1280
+  remote-dns-resolve: true
+  dns: [8.8.8.8, 8.8.4.4, 2001:4860:4860::8888, 2001:4860:4860::8844]
+  amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h4: 3, h3: 4}
+
 # ====================================================================
-# СПИСОК ПРОКСЕЙ (Разные ключи и диалеры из репо)
+# СПИСОК ПРОКСЕЙ
 # ====================================================================
 proxies:
   # ========================================
-  # 1. PROTON VIA WARP (7 нод: разные ключи Proton + разные диалеры WARP/Masque)
+  # 4 PROTON ЧЕРЕЗ WARP MASQUE (Разные SNI)
   # ========================================
   
-  # Нода 1: Proton (Key 1) -> WARP Default (Key WARP 1)
-  - name: "Proton-via-WARP-Default"
-    <<: *proton-key1
+  # 1. Proton через Masque Gosuslugi
+  - name: "Proton-via-Masque-Gos"
+    <<: *proton-working
     server: 195.242.214.194
     port: 51820
-    dialer-proxy: "WARP-Default"
+    dialer-proxy: "WARP-MASQUE-GOS"
 
-  # Нода 2: Proton NL (Key 2) -> WARP H2 (Masque MS)
-  - name: "Proton-via-WARP-H2"
-    type: wireguard
-    ip: 10.2.0.2
-    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
-    public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
-    allowed-ips: ['0.0.0.0/0', '::/0']
-    udp: true
-    mtu: 1280
-    remote-dns-resolve: true
-    dns: [10.2.0.1]
-    server: 185.107.56.211
-    port: 443
-    reserved: [219, 184, 163]
-    dialer-proxy: "WARP-H2"
-
-  # Нода 3: Proton AWG (Key 3) -> WARP QUIC (Masque MS)
-  - name: "Proton-via-WARP-QUIC"
-    type: wireguard
-    ip: 10.2.0.2
-    private-key: "KNc52wBsl1OdEFFoGFYlW7hW9ZsfehPHoLp+lLg8y0M="
-    public-key: "V0F3qTpofzp/VUXX8hhmBksXcKJV9hNMOe3D2i3A9lk="
-    allowed-ips: ['0.0.0.0/0', '::/0']
-    udp: true
-    remote-dns-resolve: true
-    dns: [10.2.0.1]
-    amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h4: 3, h3: 4}
-    server: 185.107.56.106
-    port: 51820
-    dialer-proxy: "WARP-QUIC"
-
-  # Нода 4: Proton WG-RU (Key 4) -> H2 Gosuslugi
-  - name: "Proton-via-WARP-Masque-Gos"
-    <<: *proton-clean
-    server: 185.107.56.130
-    port: 443
-    fake_packets: "8-16"
-    fake_packets_size: "33-97"
-    fake_packets_delay: "5-80"
-    dialer-proxy: "H2 Gosuslugi"
-
-  # Нода 5: US-1 (Key 5) -> QUIC Sberbank
-  - name: "Proton-via-WARP-Masque-Sber"
-    type: wireguard
-    server: 149.22.88.139
-    port: 51820
-    ip: 10.2.0.2
-    private-key: 0IFpgEVbm0kUqNqbKPNgKSu1Z1ZhtQSzeqm4UK7fiGc=
-    public-key: yT2Tued8a5BBI+AL0o+Kc3oSQdQlUew8tRzrHTYQnV4=
-    allowed-ips: ['0.0.0.0/0']
-    udp: true
-    mtu: 1400
-    remote-dns-resolve: true
-    dns: [1.1.1.1]
-    keepalive: 25
-    amnezia-wg-option: {jc: 1, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
-    dialer-proxy: "QUIC Sberbank"
-
-  # Нода 6: Proton (Key 1) -> WARP Original (Key WARP 2)
-  - name: "Proton-via-WARP-Original"
-    <<: *proton-key1
+  # 2. Proton через Masque Sberbank
+  - name: "Proton-via-Masque-Sber"
+    <<: *proton-working
     server: 195.242.214.194
     port: 51820
-    dialer-proxy: "WARP-Original"
+    dialer-proxy: "WARP-MASQUE-SBER"
 
-  # Нода 7: Proton NL (Key 2) -> WARP AWG (Key WARP 3)
-  - name: "Proton-via-WARP-AWG"
-    type: wireguard
-    ip: 10.2.0.2
-    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
-    public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
-    allowed-ips: ['0.0.0.0/0', '::/0']
-    udp: true
-    mtu: 1280
-    remote-dns-resolve: true
-    dns: [10.2.0.1]
-    reserved: [219, 184, 163]
-    server: 185.107.56.211
-    port: 443
-    dialer-proxy: "WARP-AWG-Default"
-
-  # Нода 8: IPv6 -> WARP Default
-  - name: "Proton-via-IPv6"
-    <<: *proton-key1
-    server: 2a0d:5600:19:41::10
+  # 3. Proton через Masque 4pda
+  - name: "Proton-via-Masque-4pda"
+    <<: *proton-working
+    server: 195.242.214.194
     port: 51820
-    dialer-proxy: "WARP-Default"
+    dialer-proxy: "WARP-MASQUE-4PDA"
 
-  # ========================================
-  # 2. CLEAN PROTON (Разные серверы и ключи)
-  # ========================================
-  - name: "Proton AWG"
-    type: wireguard
-    server: 185.107.56.106
+  # 4. Proton через Masque Microsoft
+  - name: "Proton-via-Masque-MS"
+    <<: *proton-working
+    server: 195.242.214.194
     port: 51820
-    ip: 10.2.0.2
-    private-key: "KNc52wBsl1OdEFFoGFYlW7hW9ZsfehPHoLp+lLg8y0M="
-    public-key: "V0F3qTpofzp/VUXX8hhmBksXcKJV9hNMOe3D2i3A9lk="
-    allowed-ips: ['0.0.0.0/0', '::/0']
-    udp: true
-    remote-dns-resolve: true
-    dns: [10.2.0.1]
-    amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h4: 3, h3: 4}
+    dialer-proxy: "WARP-MASQUE-MS"
 
-  - name: "Proton-WG-RU"
-    <<: *proton-clean
-    server: 185.107.56.130
-    port: 443
-    fake_packets: "8-16"
-    fake_packets_size: "33-97"
-    fake_packets_delay: "5-80"
-
-  - name: "🇳🇱 Proton_NL"
-    <<: *proton-clean
-    server: 185.107.56.211
-    port: 443
-    private-key: gCyrLJwHsZznMzdOkqhOrzoZqzbvlj+03uuACy1jBGU=
-    public-key: 1+Zfm0ZR01P0ZZi+dNC46mDJdiVOLoM+OQPGjL+Z7DE=
-    reserved: [219, 184, 163]
-    fake_packets: "8-16"
-    fake_packets_size: "33-97"
-    fake_packets_delay: "5-80"
-
-  - name: "US-1"
-    type: wireguard
-    server: 149.22.88.139
+  # ========================================
+  # 4 PROTON ЧЕРЕЗ WARP AMNEZIA (Разные endpoints)
+  # ========================================
+  
+  # 5. Proton через WARP AWG 1 (engage.cloudflareclient.com)
+  - name: "Proton-via-AWG-1"
+    <<: *proton-working
+    server: 195.242.214.194
     port: 51820
-    ip: 10.2.0.2
-    private-key: 0IFpgEVbm0kUqNqbKPNgKSu1Z1ZhtQSzeqm4UK7fiGc=
-    public-key: yT2Tued8a5BBI+AL0o+Kc3oSQdQlUew8tRzrHTYQnV4=
-    allowed-ips: ['0.0.0.0/0']
-    udp: true
-    mtu: 1400
-    remote-dns-resolve: true
-    dns: [1.1.1.1]
-    keepalive: 25
-    amnezia-wg-option: {jc: 1, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
+    dialer-proxy: "WARP-AWG-1"
+
+  # 6. Proton через WARP AWG 2 (mfi.tribukvy.ltd)
+  - name: "Proton-via-AWG-2"
+    <<: *proton-working
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "WARP-AWG-2"
+
+  # 7. Proton через WARP AWG 3 (138.199.50.144)
+  - name: "Proton-via-AWG-3"
+    <<: *proton-working
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "WARP-AWG-3"
+
+  # 8. Proton через WARP AWG 4 (162.159.195.1)
+  - name: "Proton-via-AWG-4"
+    <<: *proton-working
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "WARP-AWG-4"
 
   # ========================================
-  # 3. MASQUE & DIRECT H2/QUIC
+  # WARP MASQUE NODES (Для диалеров)
   # ========================================
-  - name: "WARP-H2"
+  - name: "WARP-MASQUE-GOS"
+    <<: *warp-masque-gos
+    server: 162.159.199.57
+    port: 8443
+    network: h2
+
+  - name: "WARP-MASQUE-SBER"
+    <<: *warp-masque-sber
+    server: 162.159.199.57
+    port: 8443
+    network: h2
+
+  - name: "WARP-MASQUE-4PDA"
+    <<: *warp-masque-4pda
+    server: 162.159.198.2
+    port: 443
+    network: h2
+
+  - name: "WARP-MASQUE-MS"
     <<: *warp-masque-ms
     server: 162.159.198.2
     port: 443
@@ -356,202 +299,29 @@ proxies:
       fragment: {packets: "tlshello,1", interval: "5-15", length: "100-200"}
       padding: {enable: true, min: 50, max: 150}
 
-  - name: "WARP-QUIC"
-    <<: *warp-masque-ms
-    server: 162.159.198.2
-    port: 443
-    quic-version: [1]
-
-  - name: "H2 Gosuslugi"
-    <<: *warp-masque-gos
-    server: 162.159.199.57
-    port: 8443
-    network: h2
-
-  - name: "H2 Gosuslugi Alt"
-    <<: *warp-masque-gos
-    server: 162.159.193.1
-    port: 854
-    network: h2
-
-  - name: "H2 Sberbank"
-    <<: *warp-masque-sber
-    server: 162.159.199.57
-    port: 8443
-    network: h2
-
-  - name: "H2 Mos.ru"
-    <<: *warp-masque-gos
-    sni: "mos.ru"
-    server: 162.159.199.57
-    port: 8443
-    network: h2
-
-  - name: "H2 Yandex"
-    <<: *warp-masque-gos
-    sni: "yandex.ru"
-    server: 162.159.199.57
-    port: 8443
-    network: h2
-
-  - name: "H2 VK"
-    <<: *warp-masque-gos
-    sni: "vk.com"
-    server: 162.159.199.57
-    port: 8443
-    network: h2
-
-  - name: "H2 Mail.ru"
-    <<: *warp-masque-gos
-    sni: "mail.ru"
-    server: 162.159.199.57
-    port: 8443
-    network: h2
-
-  - name: "H2 Port 1180"
-    <<: *warp-masque-gos
-    server: 162.159.192.128
-    port: 1180
-    network: h2
-
-  - name: "QUIC Sberbank"
-    <<: *warp-masque-sber
-    server: 162.159.198.3
-    port: 443
-
-  - name: "QUIC Gosuslugi"
-    <<: *warp-masque-gos
-    server: 162.159.198.2
-    port: 443
-
-  - name: "QUIC Yandex"
-    <<: *warp-masque-gos
-    sni: "yandex.ru"
-    server: 162.159.193.1
-    port: 443
-
-  - name: "QUIC VK"
-    <<: *warp-masque-gos
-    sni: "vk.com"
-    server: 162.159.195.1
-    port: 443
-
-  - name: "H2-4pda"
-    <<: *warp-masque-4pda
-    server: 162.159.198.2
-    port: 443
-    network: h2
-
-  - name: "QUIC-4pda"
-    <<: *warp-masque-4pda
-    server: 162.159.198.2
-    port: 443
-
   # ========================================
-  # 4. CLEAN WARP
+  # WARP AMNEZIA NODES (Для диалеров)
   # ========================================
-  - name: "WARP-Default"
-    <<: *warp-common
+  - name: "WARP-AWG-1"
+    <<: *warp-awg-1
     server: engage.cloudflareclient.com
     port: 2408
     fake_packets: "10-20"
     fake_packets_size: "20-50"
     fake_packets_delay: "10-50"
 
-  - name: "WARP-Original"
-    type: wireguard
-    private-key: uJzVKDHoXSW+K7mSo/gjS1b1BuZz9z+AcxdkTLMxZlA=
-    server: 138.199.50.144
-    port: 443
-    ip: 10.2.0.2
-    public-key: KZ9UhGk5qLny663HP6xWCfyIDH2xgvu9DNH5tGYmYnw=
-    allowed-ips: ['0.0.0.0/0']
-    udp: true
-    mtu: 1280
-    keepalive: 25
-    remote-dns-resolve: true
-    dns: [1.1.1.1]
-    amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
-
-  - name: "WARP-AWG-Default"
-    type: wireguard
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:89ee:57a3:cdf5:f015:8d96
-    private-key: eCu03SLNaHwgvUB7XFsoAZPuBVYAXQ053K/D4YeUEEQ=
-    public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-    allowed-ips: ['0.0.0.0/0', '::/0']
-    reserved: [182, 191, 93]
-    udp: true
-    mtu: 1280
-    remote-dns-resolve: true
-    dns: [9.9.9.9, 149.112.112.112, 2620:fe::fe, 2620:fe::9]
-    amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h4: 3, h3: 4}
+  - name: "WARP-AWG-2"
+    <<: *warp-awg-2
     server: mfi.tribukvy.ltd
     port: 4500
 
-  # ========================================
-  # 5. FREE WIREGUARDS
-  # ========================================
-  - name: "NL-FREE#149"
-    <<: *free-wg
-    server: 169.150.218.137
-    port: 51820
-    private-key: wHtPbMRJaNkVNgogf+AHIrmceLdBCqfBIgM+zR+fOWw=
-    public-key: p3GNfkhyld5v3cODG9SVHjYCgFAzXfF4717xTxs6n3o=
-    amnezia-wg-option: {jc: 0, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
+  - name: "WARP-AWG-3"
+    <<: *warp-awg-3
 
-  - name: "US-FREE#2"
-    <<: *free-wg
-    server: 89.187.185.161
-    port: 51820
-    private-key: GBsUAq1Lb8IR42lLqMsIP6Zrg7NeFVqiEkOalzOHE2U=
-    public-key: ZEQHDxg/HbjznRvApyBWfUGs6T20Rvy0/DctZk6FvB4=
-
-  - name: "US-FREE#66"
-    <<: *free-wg
-    server: 149.88.30.88
-    port: 51820
-    private-key: yMZqetmHpKNaTIRAQ3lmQOC70tmQmEReOOjEAHdpJlw=
-    public-key: Uqp1/VJ/Lz2VoN/2D0HEG7G8WDxLJm7+JNC5KZrUREw=
-    amnezia-wg-option: {jc: 2, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
-
-  - name: "US-FREE#96"
-    <<: *free-wg
-    server: 149.40.62.119
-    port: 51820
-    private-key: gCV5+gcvuuZc7VJmj0LnP/XVc+pjT6F0EF2mNc7XFn8=
-    public-key: jShHBnjRpU3cgm2apLl0OElwSK0fs/gJTm9nnjdO8Ec=
-    amnezia-wg-option: {jc: 0, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
-
-  - name: "CA-FREE#31"
-    <<: *free-wg
-    server: 195.242.214.162
-    port: 51820
-    private-key: YFfF43P3x2cC9oWElDD6sYZdqWL+eZ1fwo0E/7IIE1o=
-    public-key: 358uOGHHss6pUT5v2enBtybHCun3iyH/l7g1t9BVfgo=
-
-  - name: "US-FREE#99"
-    <<: *free-wg
-    server: 149.102.242.98
-    port: 51820
-    private-key: kFCljDyR3lox4Z5s4JEyE+8sSJ1knLJ3EIJ/MooGsGc=
-    public-key: 03idG1N3+mPn+n2SRqYcdFdbeUYSirXzJVnIejIv30I=
-    amnezia-wg-option: {jc: 2, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
-
-  - name: "US-FREE#105"
-    <<: *free-wg
-    server: 79.127.147.88
-    port: 51820
-    private-key: aB6b3W9EalyF6iJ8NL/C877bqrAf7xjrh1CLgaMBoHQ=
-    public-key: +nfuVNp0Pevo7gksdbUCpgcNa+oowtZI/m031Ww3Iy0=
-    amnezia-wg-option: {jc: 0, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
-
-  - name: "CH-FREE#10"
-    <<: *free-wg
-    server: 135.136.39.2
-    port: 51820
-    private-key: wL4GNp6/4xj7RKuJk/UB5KfRxTp5LrNr32O8RXKnnlc=
-    public-key: 1WO+SU1kJCYR5ZWBVK/M7bNsvz1HWIFlq/xafhDqHnk=
+  - name: "WARP-AWG-4"
+    <<: *warp-awg-4
+    server: 162.159.195.1
+    port: 500
 
 # =========================
 # ПРОКСИ ГРУППЫ
@@ -565,45 +335,16 @@ proxy-groups:
     use:
       - MAIN
     proxies:
-      - "Proton-via-WARP-Default"
-      - "Proton-via-WARP-H2"
-      - "Proton-via-WARP-QUIC"
-      - "Proton-via-WARP-Masque-Gos"
-      - "Proton-via-WARP-Masque-Sber"
-      - "Proton-via-WARP-Original"
-      - "Proton-via-WARP-AWG"
-      - "Proton-via-IPv6"
-      - "Proton AWG"
-      - "Proton-WG-RU"
-      - "🇳🇱 Proton_NL"
-      - "US-1"
-      - "WARP-H2"
-      - "WARP-QUIC"
-      - "H2 Gosuslugi"
-      - "H2 Gosuslugi Alt"
-      - "H2 Sberbank"
-      - "H2 Mos.ru"
-      - "H2 Yandex"
-      - "H2 VK"
-      - "H2 Mail.ru"
-      - "H2 Port 1180"
-      - "QUIC Sberbank"
-      - "QUIC Gosuslugi"
-      - "QUIC Yandex"
-      - "QUIC VK"
-      - "H2-4pda"
-      - "QUIC-4pda"
-      - "WARP-Default"
-      - "WARP-Original"
-      - "WARP-AWG-Default"
-      - "NL-FREE#149"
-      - "US-FREE#2"
-      - "US-FREE#66"
-      - "US-FREE#96"
-      - "CA-FREE#31"
-      - "US-FREE#99"
-      - "US-FREE#105"
-      - "CH-FREE#10"
+      # 4 через Masque
+      - "Proton-via-Masque-Gos"
+      - "Proton-via-Masque-Sber"
+      - "Proton-via-Masque-4pda"
+      - "Proton-via-Masque-MS"
+      # 4 через Amnezia
+      - "Proton-via-AWG-1"
+      - "Proton-via-AWG-2"
+      - "Proton-via-AWG-3"
+      - "Proton-via-AWG-4"
 
   - name: AUTO
     type: url-test
@@ -613,45 +354,14 @@ proxy-groups:
     use:
       - MAIN
     proxies:
-      - "Proton-via-WARP-Default"
-      - "Proton-via-WARP-H2"
-      - "Proton-via-WARP-QUIC"
-      - "Proton-via-WARP-Masque-Gos"
-      - "Proton-via-WARP-Masque-Sber"
-      - "Proton-via-WARP-Original"
-      - "Proton-via-WARP-AWG"
-      - "Proton-via-IPv6"
-      - "Proton AWG"
-      - "Proton-WG-RU"
-      - "🇳🇱 Proton_NL"
-      - "US-1"
-      - "WARP-H2"
-      - "WARP-QUIC"
-      - "H2 Gosuslugi"
-      - "H2 Gosuslugi Alt"
-      - "H2 Sberbank"
-      - "H2 Mos.ru"
-      - "H2 Yandex"
-      - "H2 VK"
-      - "H2 Mail.ru"
-      - "H2 Port 1180"
-      - "QUIC Sberbank"
-      - "QUIC Gosuslugi"
-      - "QUIC Yandex"
-      - "QUIC VK"
-      - "H2-4pda"
-      - "QUIC-4pda"
-      - "WARP-Default"
-      - "WARP-Original"
-      - "WARP-AWG-Default"
-      - "NL-FREE#149"
-      - "US-FREE#2"
-      - "US-FREE#66"
-      - "US-FREE#96"
-      - "CA-FREE#31"
-      - "US-FREE#99"
-      - "US-FREE#105"
-      - "CH-FREE#10"
+      - "Proton-via-Masque-Gos"
+      - "Proton-via-Masque-Sber"
+      - "Proton-via-Masque-4pda"
+      - "Proton-via-Masque-MS"
+      - "Proton-via-AWG-1"
+      - "Proton-via-AWG-2"
+      - "Proton-via-AWG-3"
+      - "Proton-via-AWG-4"
 
   - name: SELECT
     type: select
@@ -661,45 +371,14 @@ proxy-groups:
       - FALLBACK
       - AUTO
       - DIRECT
-      - "Proton-via-WARP-Default"
-      - "Proton-via-WARP-H2"
-      - "Proton-via-WARP-QUIC"
-      - "Proton-via-WARP-Masque-Gos"
-      - "Proton-via-WARP-Masque-Sber"
-      - "Proton-via-WARP-Original"
-      - "Proton-via-WARP-AWG"
-      - "Proton-via-IPv6"
-      - "Proton AWG"
-      - "Proton-WG-RU"
-      - "🇳🇱 Proton_NL"
-      - "US-1"
-      - "WARP-H2"
-      - "WARP-QUIC"
-      - "H2 Gosuslugi"
-      - "H2 Gosuslugi Alt"
-      - "H2 Sberbank"
-      - "H2 Mos.ru"
-      - "H2 Yandex"
-      - "H2 VK"
-      - "H2 Mail.ru"
-      - "H2 Port 1180"
-      - "QUIC Sberbank"
-      - "QUIC Gosuslugi"
-      - "QUIC Yandex"
-      - "QUIC VK"
-      - "H2-4pda"
-      - "QUIC-4pda"
-      - "WARP-Default"
-      - "WARP-Original"
-      - "WARP-AWG-Default"
-      - "NL-FREE#149"
-      - "US-FREE#2"
-      - "US-FREE#66"
-      - "US-FREE#96"
-      - "CA-FREE#31"
-      - "US-FREE#99"
-      - "US-FREE#105"
-      - "CH-FREE#10"
+      - "Proton-via-Masque-Gos"
+      - "Proton-via-Masque-Sber"
+      - "Proton-via-Masque-4pda"
+      - "Proton-via-Masque-MS"
+      - "Proton-via-AWG-1"
+      - "Proton-via-AWG-2"
+      - "Proton-via-AWG-3"
+      - "Proton-via-AWG-4"
 
 # =========================
 # РУЛЫ
