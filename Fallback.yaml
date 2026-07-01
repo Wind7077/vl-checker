@@ -55,6 +55,18 @@ dns:
     - '+.stun.*.*.*'
     - '+.stun.*.*.*.*'
     - '+.stun.*.*.*.*.*'
+    - '*.yandex.ru'
+    - '*.ya.ru'
+    - '*.mail.ru'
+    - '*.vk.com'
+    - '*.sberbank.ru'
+    - '*.vtb.ru'
+    - '*.gosuslugi.ru'
+    - '*.tinkoff.ru'
+    - '*.ok.ru'
+    - '*.ozon.ru'
+    - '*.wildberries.ru'
+    - '*.avito.ru'
   default-nameserver:
     - 77.88.8.8
     - 217.118.83.6
@@ -121,6 +133,18 @@ warp-masque-sber: &warp-masque-sber
   dns: [8.8.8.8, 8.8.4.4]
   skip-cert-verify: true
 
+warp-masque-4pda: &warp-masque-4pda
+  type: masque
+  sni: 4pda.to
+  private-key: MHcCAQEEIF0kkGh0QwcQbrKMG/7IOsERReGoXAhaeGLdwPoGBGUEoAoGCCqGSM49AwEHoUQDQgAEPm33c6cVhWVM/iV6kJPC4AtrgHhMEdeVcj0h7d6MmEQhRyRfbUzx86iR4fFKiZDPMfnaUGmKAjoP0VQcezwwlw==
+  public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
+  ip: 172.16.0.2
+  ipv6: 2606:4700:110:846a:a144:fa58:8f97:d9de
+  udp: true
+  remote-dns-resolve: true
+  dns: [tls://1.1.1.1, tls://1.0.0.1, '2606:4700:4700::1111', '2606:4700:4700::1001']
+  packet-encoding: packetaddr
+
 proton-new: &proton-new
   type: wireguard
   ip: 10.2.0.2
@@ -159,7 +183,7 @@ free-wg: &free-wg
   amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
 
 # ====================================================================
-# СПИСОК ПРОКСЕЙ (Все ноды из репо, дубликаты удалены)
+# СПИСОК ПРОКСЕЙ (Все ноды из всех файлов, дубликаты удалены)
 # ====================================================================
 proxies:
   # 1. Proton via WARP (Clean)
@@ -207,6 +231,21 @@ proxies:
     fake_packets: "8-16"
     fake_packets_size: "33-97"
     fake_packets_delay: "5-80"
+
+  - name: "US-1"
+    type: wireguard
+    server: 149.22.88.139
+    port: 51820
+    ip: 10.2.0.2
+    private-key: 0IFpgEVbm0kUqNqbKPNgKSu1Z1ZhtQSzeqm4UK7fiGc=
+    public-key: yT2Tued8a5BBI+AL0o+Kc3oSQdQlUew8tRzrHTYQnV4=
+    allowed-ips: ['0.0.0.0/0']
+    udp: true
+    mtu: 1400
+    remote-dns-resolve: true
+    dns: [1.1.1.1]
+    keepalive: 25
+    amnezia-wg-option: {jc: 1, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
 
   # 3. Masque (Proton via Masque + WARP Masque H2/QUIC)
   - name: "Proton-via-H2"
@@ -363,6 +402,17 @@ proxies:
     server: 162.159.199.1
     port: 443
 
+  - name: "H2-4pda"
+    <<: *warp-masque-4pda
+    server: 162.159.198.2
+    port: 443
+    network: h2
+
+  - name: "QUIC-4pda"
+    <<: *warp-masque-4pda
+    server: 162.159.198.2
+    port: 443
+
   # 4. Clean WARP
   - name: "WARP-Default"
     <<: *warp-common
@@ -386,6 +436,22 @@ proxies:
     remote-dns-resolve: true
     dns: [1.1.1.1]
     amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
+
+  - name: "WARP-AWG-Default"
+    type: wireguard
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:89ee:57a3:cdf5:f015:8d96
+    private-key: eCu03SLNaHwgvUB7XFsoAZPuBVYAXQ053K/D4YeUEEQ=
+    public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    reserved: [182, 191, 93]
+    udp: true
+    mtu: 1280
+    remote-dns-resolve: true
+    dns: [9.9.9.9, 149.112.112.112, 2620:fe::fe, 2620:fe::9]
+    amnezia-wg-option: {jc: 4, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h4: 3, h3: 4}
+    server: mfi.tribukvy.ltd
+    port: 4500
 
   # 5. Free WireGuards
   - name: "NL-FREE#149"
@@ -470,6 +536,7 @@ proxy-groups:
       - "Proton AWG"
       - "Proton-WG-RU"
       - "🇳🇱 Proton_NL"
+      - "US-1"
       
       # 3. Masque (Proton via Masque + WARP Masque H2/QUIC)
       - "Proton-via-H2"
@@ -496,10 +563,13 @@ proxy-groups:
       - "QUIC Mail.ru"
       - "QUIC Tinkoff"
       - "QUIC Nalog"
+      - "H2-4pda"
+      - "QUIC-4pda"
       
       # 4. Clean WARP
       - "WARP-Default"
       - "WARP-Original"
+      - "WARP-AWG-Default"
       
       # 5. Free WireGuards
       - "NL-FREE#149"
@@ -525,6 +595,7 @@ proxy-groups:
       - "Proton AWG"
       - "Proton-WG-RU"
       - "🇳🇱 Proton_NL"
+      - "US-1"
       - "Proton-via-H2"
       - "Proton-via-QUIC"
       - "WARP-H2"
@@ -549,8 +620,11 @@ proxy-groups:
       - "QUIC Mail.ru"
       - "QUIC Tinkoff"
       - "QUIC Nalog"
+      - "H2-4pda"
+      - "QUIC-4pda"
       - "WARP-Default"
       - "WARP-Original"
+      - "WARP-AWG-Default"
       - "NL-FREE#149"
       - "US-FREE#2"
       - "US-FREE#66"
@@ -574,6 +648,7 @@ proxy-groups:
       - "Proton AWG"
       - "Proton-WG-RU"
       - "🇳🇱 Proton_NL"
+      - "US-1"
       - "Proton-via-H2"
       - "Proton-via-QUIC"
       - "WARP-H2"
@@ -598,8 +673,11 @@ proxy-groups:
       - "QUIC Mail.ru"
       - "QUIC Tinkoff"
       - "QUIC Nalog"
+      - "H2-4pda"
+      - "QUIC-4pda"
       - "WARP-Default"
       - "WARP-Original"
+      - "WARP-AWG-Default"
       - "NL-FREE#149"
       - "US-FREE#2"
       - "US-FREE#66"
@@ -639,6 +717,16 @@ rules:
   - DOMAIN-SUFFIX,mts.ru,DIRECT
   - DOMAIN-SUFFIX,megafon.ru,DIRECT
   - DOMAIN-SUFFIX,beeline.ru,DIRECT
+  - DOMAIN-SUFFIX,wildberries.ru,DIRECT
+  - DOMAIN-SUFFIX,avito.ru,DIRECT
+  - DOMAIN-SUFFIX,2gis.ru,DIRECT
+  - DOMAIN-SUFFIX,yoomoney.ru,DIRECT
+  - DOMAIN-SUFFIX,ok.ru,DIRECT
+  - DOMAIN-SUFFIX,tele2.ru,DIRECT
+  - DOMAIN-SUFFIX,rzd.ru,DIRECT
+  - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
+  - DOMAIN-SUFFIX,s7.ru,DIRECT
+  - DOMAIN-SUFFIX,pochta.ru,DIRECT
 
   - DOMAIN-SUFFIX,google.com,SELECT
   - DOMAIN-SUFFIX,telegram.org,SELECT
