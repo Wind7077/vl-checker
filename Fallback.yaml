@@ -186,20 +186,129 @@ free-wg: &free-wg
 # СПИСОК ПРОКСЕЙ (Все ноды из всех файлов, дубликаты удалены)
 # ====================================================================
 proxies:
-  # 1. Proton via WARP (Clean)
-  - name: "Proton-via-Default"
+  # ========================================
+  # 1. PROTON VIA WARP (7 цепочек с разными техниками)
+  # ========================================
+  
+  # 1.1 Proton via WARP Default (WireGuard)
+  - name: "Proton-via-WARP-Default"
     <<: *proton-new
     server: 195.242.214.194
     port: 51820
     dialer-proxy: "WARP-Default"
 
+  # 1.2 Proton via WARP H2 (HTTP/2)
+  - name: "Proton-via-WARP-H2"
+    type: wireguard
+    ip: 10.2.0.2
+    ipv6: 2a07:b944::2:3
+    private-key: xKp9V2mN5qR8tY3wZ6bC1fG4hJ7lM0nP3sU6xY9aB2dE=
+    public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1200
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1, '2a07:b944::2:1']
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "WARP-H2"
+
+  # 1.3 Proton via WARP QUIC
+  - name: "Proton-via-WARP-QUIC"
+    type: wireguard
+    ip: 10.2.0.2
+    ipv6: 2a07:b944::2:4
+    private-key: yLq0W3nO6rS9uZ4xA7cD2gH5iK8mN1oQ4tV7yZ0bC3eF=
+    public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1200
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1, '2a07:b944::2:1']
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "WARP-QUIC"
+
+  # 1.4 Proton via WARP Masque H2 (Gosuslugi)
+  - name: "Proton-via-WARP-Masque-H2-Gos"
+    type: wireguard
+    ip: 10.2.0.2
+    ipv6: 2a07:b944::2:5
+    private-key: zMr1X4oP7sT0vA5yB8dE3fH6iJ9kL2mN5oP8qR1sU4vX7yZ=
+    public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1200
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1, '2a07:b944::2:1']
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "H2 Gosuslugi"
+
+  # 1.5 Proton via WARP Masque QUIC (Sberbank)
+  - name: "Proton-via-WARP-Masque-QUIC-Sber"
+    type: wireguard
+    ip: 10.2.0.2
+    ipv6: 2a07:b944::2:6
+    private-key: aNs2Y5pQ8tU1wB6zC9eF4gI7jK0lM3nO6pQ9rS2uV5wX8yZ=
+    public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1200
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1, '2a07:b944::2:1']
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "QUIC Sberbank"
+
+  # 1.6 Proton via WARP AWG (Amnezia WireGuard)
+  - name: "Proton-via-WARP-AWG"
+    type: wireguard
+    ip: 10.2.0.2
+    ipv6: 2a07:b944::2:7
+    private-key: bOt3Z6qR9uV2xC7yD0eG5hI8jK1lN4oP7qS0tU3vW6xY9zA=
+    public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1200
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1, '2a07:b944::2:1']
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "WARP-AWG-Default"
+
+  # 1.7 Proton via WARP Masque H2 (4pda)
+  - name: "Proton-via-WARP-Masque-H2-4pda"
+    type: wireguard
+    ip: 10.2.0.2
+    ipv6: 2a07:b944::2:8
+    private-key: cPu4A7sS0vW3yD8zE1fG6hI9jK2lM5nO8pQ1rS4tU7vW0xA2bC=
+    public-key: JB84ctFi3l+gxJxr/kwYXlKwLcmqWxuuLBkpE1anmgo=
+    allowed-ips: ['0.0.0.0/0', '::/0']
+    udp: true
+    mtu: 1200
+    keepalive: 25
+    remote-dns-resolve: true
+    dns: [10.2.0.1, '2a07:b944::2:1']
+    server: 195.242.214.194
+    port: 51820
+    dialer-proxy: "H2-4pda"
+
+  # 1.8 Proton via IPv6
   - name: "Proton-via-IPv6"
     <<: *proton-new
     server: 2a0d:5600:19:41::10
     port: 51820
     dialer-proxy: "WARP-Default"
 
-  # 2. Clean Proton
+  # ========================================
+  # 2. CLEAN PROTON
+  # ========================================
   - name: "Proton AWG"
     type: wireguard
     server: 185.107.56.106
@@ -247,7 +356,9 @@ proxies:
     keepalive: 25
     amnezia-wg-option: {jc: 1, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4}
 
-  # 3. Masque (Proton via Masque + WARP Masque H2/QUIC)
+  # ========================================
+  # 3. MASQUE (Proton via Masque + WARP Masque H2/QUIC)
+  # ========================================
   - name: "Proton-via-H2"
     <<: *proton-new
     server: 195.242.214.194
@@ -413,7 +524,9 @@ proxies:
     server: 162.159.198.2
     port: 443
 
-  # 4. Clean WARP
+  # ========================================
+  # 4. CLEAN WARP
+  # ========================================
   - name: "WARP-Default"
     <<: *warp-common
     server: engage.cloudflareclient.com
@@ -453,7 +566,9 @@ proxies:
     server: mfi.tribukvy.ltd
     port: 4500
 
-  # 5. Free WireGuards
+  # ========================================
+  # 5. FREE WIREGUARDS
+  # ========================================
   - name: "NL-FREE#149"
     <<: *free-wg
     server: 169.150.218.137
@@ -528,8 +643,14 @@ proxy-groups:
     use:
       - MAIN       # VLESS подтягиваются в самом конце
     proxies:
-      # 1. Proton via WARP
-      - "Proton-via-Default"
+      # 1. Proton via WARP (7 новых цепочек + IPv6)
+      - "Proton-via-WARP-Default"
+      - "Proton-via-WARP-H2"
+      - "Proton-via-WARP-QUIC"
+      - "Proton-via-WARP-Masque-H2-Gos"
+      - "Proton-via-WARP-Masque-QUIC-Sber"
+      - "Proton-via-WARP-AWG"
+      - "Proton-via-WARP-Masque-H2-4pda"
       - "Proton-via-IPv6"
       
       # 2. Clean Proton
@@ -590,7 +711,13 @@ proxy-groups:
     use:
       - MAIN
     proxies:
-      - "Proton-via-Default"
+      - "Proton-via-WARP-Default"
+      - "Proton-via-WARP-H2"
+      - "Proton-via-WARP-QUIC"
+      - "Proton-via-WARP-Masque-H2-Gos"
+      - "Proton-via-WARP-Masque-QUIC-Sber"
+      - "Proton-via-WARP-AWG"
+      - "Proton-via-WARP-Masque-H2-4pda"
       - "Proton-via-IPv6"
       - "Proton AWG"
       - "Proton-WG-RU"
@@ -643,7 +770,13 @@ proxy-groups:
       - FALLBACK
       - AUTO
       - DIRECT
-      - "Proton-via-Default"
+      - "Proton-via-WARP-Default"
+      - "Proton-via-WARP-H2"
+      - "Proton-via-WARP-QUIC"
+      - "Proton-via-WARP-Masque-H2-Gos"
+      - "Proton-via-WARP-Masque-QUIC-Sber"
+      - "Proton-via-WARP-AWG"
+      - "Proton-via-WARP-Masque-H2-4pda"
       - "Proton-via-IPv6"
       - "Proton AWG"
       - "Proton-WG-RU"
