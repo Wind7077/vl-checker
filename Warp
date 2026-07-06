@@ -49,6 +49,16 @@ proxy-groups:
   timeout: 3000
   lazy: true
 
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+
 dns:
   enable: true
   ipv6: true
