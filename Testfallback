@@ -37,7 +37,7 @@ warp-masque-mts: &warp-masque-mts
   udp: true
   remote-dns-resolve: true
   skip-cert-verify: true
-  client-fingerprint: chrome
+  client-fingerprint: curl
   network: tcp # Принудительный TCP, так как UDP/QUIC на LTE МТС часто режется
   dns:
     - 'quic://ac3755.dns.nextdns.io'
@@ -56,7 +56,7 @@ warp-masque-sber: &warp-masque-sber
   udp: true
   remote-dns-resolve: true
   skip-cert-verify: true
-  client-fingerprint: chrome
+  client-fingerprint: curl
   network: h2 # HTTP/2 поверх TCP
   dns:
     - 'quic://ac3755.dns.nextdns.io'
@@ -75,7 +75,7 @@ warp-masque-ozon: &warp-masque-ozon
   udp: true
   remote-dns-resolve: true
   skip-cert-verify: true
-  client-fingerprint: chrome
+  client-fingerprint: curl
   network: tcp
   dns:
     - 'quic://ac3755.dns.nextdns.io'
