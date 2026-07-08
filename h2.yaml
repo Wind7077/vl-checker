@@ -1,6 +1,9 @@
+keep-alive-idle: 10
+keep-alive-interval: 5
+disable-keep-alive: false
+
 warp-masque-mts: &warp-masque-mts
   type: masque
-  network: h2
   sni: shop.mts.ru
   private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
@@ -10,31 +13,31 @@ warp-masque-mts: &warp-masque-mts
   remote-dns-resolve: true
   skip-cert-verify: true
   client-fingerprint: curl
+  udp: true
   dns:
     - 'https://ac3755.dns.nextdns.io'
     - 8.8.8.8
     - 8.8.4.4
 
 proxies:
-- name: "MTS Shop (H2)"
-  <<: *warp-masque-mts
-  server: 162.159.198.2
-  port: 443
+  - name: "MTS Shop"
+    <<: *warp-masque-mts
+    server: 162.159.198.2
+    port: 443
 
 proxy-groups:
-- name: Cloudflare
-  type: url-test
-  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
-  proxies:
-    - "MTS Shop (H2)"
-  url: 'https://cp.cloudflare.com/generate_204'
-  interval: 60
-  timeout: 500
-  lazy: false
+  - name: Cloudflare
+    type: select
+    proxies:
+      - "MTS Shop"
+    url: 'https://cp.cloudflare.com/generate_204'
+    interval: 120
+    timeout: 2000
+    lazy: false
 
 dns:
   enable: true
-  ipv6: true
+  ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   default-nameserver:
@@ -50,15 +53,25 @@ dns:
     - '*.lan'
     - '+.local'
 
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+
 tun:
   enable: true
-  stack: system
+  stack: mixed
   auto-route: true
   auto-detect-interface: true
-  strict-route: false
   dns-hijack:
-    - any:53
+    - 'any:53'
   mtu: 1280
 
 rules:
-- MATCH,Cloudflare
+  - MATCH,Cloudflare
