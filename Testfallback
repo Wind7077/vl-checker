@@ -8,6 +8,7 @@ warp-common: &warp-common
   reserved: [209, 203, 243]
   udp: true
   mtu: 1280
+  persistent-keepalive: 25
   remote-dns-resolve: true
   dns:
     - 'quic://ac3755.dns.nextdns.io'
@@ -32,8 +33,7 @@ warp-masque-mts: &warp-masque-mts
   sni: shop.mts.ru
   private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
-  ip: 172.16.0.2/32            # ВАЖНО: Добавлена маска /32 для стабильности TUN
-  ipv6: 2606:4700:110:89bb:fa68:f3bf:636:815e/128 # ВАЖНО: Добавлена маска /128
+  ip: 172.16.0.2/32
   udp: true
   mtu: 1280
   remote-dns-resolve: true
@@ -52,7 +52,6 @@ warp-masque-sber: &warp-masque-sber
   private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
   ip: 172.16.0.2/32
-  ipv6: 2606:4700:110:89bb:fa68:f3bf:636:815e/128
   udp: true
   mtu: 1280
   remote-dns-resolve: true
@@ -71,7 +70,6 @@ warp-masque-ozon: &warp-masque-ozon
   private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
   ip: 172.16.0.2/32
-  ipv6: 2606:4700:110:89bb:fa68:f3bf:636:815e/128
   udp: true
   mtu: 1280
   remote-dns-resolve: true
@@ -109,24 +107,10 @@ proxy-groups:
   type: select
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
-    - "Auto MTS Optimal"
-    - "1. Amnezia WG (Default)"
-    - "2. MTS Shop (QUIC)"
-    - "3. Sberbank (QUIC)"
-    - "4. Ozon (QUIC)"
-  url: 'http://speed.cloudflare.com/'
-  interval: 300
-
-- name: Auto MTS Optimal
-  type: url-test
-  proxies:
     - "2. MTS Shop (QUIC)"
     - "3. Sberbank (QUIC)"
     - "4. Ozon (QUIC)"
     - "1. Amnezia WG (Default)"
-  url: 'http://speed.cloudflare.com/'
-  interval: 300
-  tolerance: 50
 
 rules:
 - MATCH,Cloudflare
