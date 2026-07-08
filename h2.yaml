@@ -1,63 +1,29 @@
-warp-masque-h2: &warp-masque-h2
+warp-masque: &warp-masque
   type: masque
-  # Взяли рабочий SNI и ключи из твоей ноды MTS
-  sni: shop.mts.ru
-  private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
+  sni: 4pda.to
+  private-key: MHcCAQEEIF7fB8cjRXBg/yFnHtZrI9ihyis7heBGd54SLKRR8kp6oAoGCCqGSM49AwEHoUQDQgAEMN78gMNHW2kWp95P3kZtmP8E7PnF5ebI0WpUGUXEfCd1L/FPRw6Sxj43L7wo57kefF4L0d5UvIZdYVaBbjdsMA==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
-  ip: 172.16.0.2
-  ipv6: 2606:4700:110:89bb:fa68:f3bf:636:815e
+  ipv6: 2606:4700:110:81a7:ead1:90e5:9b8c:af86
+  allowed-ips: ['::/0']
   udp: true
-  mtu: 1280
   remote-dns-resolve: true
   skip-cert-verify: true
   client-fingerprint: curl
-  network: h2 # Жестко задаем HTTP/2
-  # Только IPv6 DNS-серверы для резолвинга внутри туннеля
-  dns: 
-    - 'https://[2606:4700:4700::1111]/dns-query'
-    - 'https://[2620:fe::fe]/dns-query'
-  # Keep-Alive для удержания H2 сессии и защиты от сбросов NAT-ом провайдера
-  keep-alive-idle: 30
-  keep-alive-interval: 30
+  dns: [2001:4860:4860::8888, 2001:4860:4860::8844]
+  network: h2
 
 proxies:
-- name: "[WARP-MASQUE] H2"
-  <<: *warp-masque-h2
-  # Используем официальный домен и принудительный IPv6, чтобы не зависеть от блокировок конкретных IP
-  server: engage.cloudflareclient.com
+- name: "[WARP-MASQUE] H2 (IPv6)"
+  <<: *warp-masque
+  server: 2606:4700:103::   # непроверено под H2 конкретно, см. пояснение выше
   port: 443
-  ip-version: ipv6-prefer
 
 proxy-groups:
 - name: Cloudflare
   type: select
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
-    - "[WARP-MASQUE] H2"
-  # ВАЖНО: Убрали url и interval! 
-  # Именно healthcheck каждые 300 сек вызывал микро-разрывы, из-за которых Telegram писал "Connected".
+    - "[WARP-MASQUE] H2 (IPv6)"
 
-dns:
-  enable: true
-  ipv6: true
-  prefer-h3: true
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  default-nameserver:
-    - 8.8.8.8
-    - 1.1.1.1
-  nameserver:
-    - 'https://[2606:4700:4700::1111]/dns-query'
-    - 'https://[2620:fe::fe]/dns-query'
-  fallback:
-    - 'tls://[2606:4700:4700::1111]'
-    - 'tls://[2620:fe::9]'
-  fake-ip-filter:
-    - '*.lan'
-    - '+.local'
-    - '+.t.me'
-    - '+.telegram.org'
-    - '+.telesco.pe'
-
-tun:
-  enable: true
+rules:
+- MATCH,Cloudflare
