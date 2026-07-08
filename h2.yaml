@@ -1,3 +1,15 @@
+unified-delay: true
+tcp-concurrent: true
+keep-alive-interval: 15
+keep-alive-idle: 600
+find-process-mode: off
+sniffer:
+  enable: false
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
 warp-masque-mts: &warp-masque-mts
   type: masque
   sni: shop.mts.ru
@@ -23,20 +35,17 @@ proxies:
 
 proxy-groups:
 - name: Cloudflare
-  type: url-test
+  type: select
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
     - "MTS Shop (H2)"
-  url: 'https://cp.cloudflare.com/generate_204'
-  interval: 60
-  timeout: 500
-  lazy: false
 
 dns:
   enable: true
   ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  cache-algorithm: lru
   default-nameserver:
     - 8.8.8.8
     - 1.1.1.1
@@ -46,6 +55,11 @@ dns:
   fallback:
     - 'tls://1.1.1.1'
     - 'tls://8.8.4.4'
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
   fake-ip-filter:
     - '*.lan'
     - '+.local'
