@@ -23,7 +23,7 @@ proxies:
 
 proxy-groups:
 - name: Cloudflare
-  type: select
+  type: url-test
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
     - "MTS Shop (H2)"
@@ -55,7 +55,7 @@ tun:
   stack: system
   auto-route: true
   auto-detect-interface: true
-  strict-route: false
+  strict-route: true
   dns-hijack:
     - 'any:53'
   mtu: 1280
