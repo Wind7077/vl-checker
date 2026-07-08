@@ -61,15 +61,3 @@ dns:
 
 tun:
   enable: true
-  stack: gvisor
-  auto-route: true
-  auto-detect-interface: true
-  strict-route: false
-  dns-hijack:
-    - 'any:53'
-  mtu: 1280
-
-rules:
-- DOMAIN-SUFFIX,t.me,Cloudflare
-- DOMAIN-SUFFIX,telegram.org,Cloudflare
-- MATCH,Cloudflare
