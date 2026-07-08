@@ -1,17 +1,11 @@
-unified-delay: true
-tcp-concurrent: true
-keep-alive-interval: 15
-keep-alive-idle: 600
-find-process-mode: off
-sniffer:
-  enable: false
-
-profile:
-  store-selected: true
-  store-fake-ip: true
+# Глобальные настройки для мгновенного сброса мертвых TCP-соединений
+disable-keep-alive: false # Перебиваем принудительное отключение keep-alive на Android
+keep-alive-idle: 10       # Начинаем проверку сокета через 10 сек простоя
+keep-alive-interval: 5    # Повторяем проверку каждые 5 сек. Если сети нет - обрываем сокет за ~15 сек
 
 warp-masque-mts: &warp-masque-mts
   type: masque
+  network: h2  # КРИТИЧНО! По умолчанию MASQUE использует QUIC (UDP). H2 (TCP) позволяет ядру убить сокет при смене сети.
   sni: shop.mts.ru
   private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
@@ -35,17 +29,20 @@ proxies:
 
 proxy-groups:
 - name: Cloudflare
-  type: select
+  type: url-test
   icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
     - "MTS Shop (H2)"
+  url: 'https://cp.cloudflare.com/generate_204'
+  interval: 60
+  timeout: 500
+  lazy: false
 
 dns:
   enable: true
   ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  cache-algorithm: lru
   default-nameserver:
     - 8.8.8.8
     - 1.1.1.1
@@ -55,11 +52,6 @@ dns:
   fallback:
     - 'tls://1.1.1.1'
     - 'tls://8.8.4.4'
-  fallback-filter:
-    geoip: true
-    geoip-code: CN
-    ipcidr:
-      - 240.0.0.0/4
   fake-ip-filter:
     - '*.lan'
     - '+.local'
