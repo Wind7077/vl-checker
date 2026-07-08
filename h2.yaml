@@ -1,3 +1,21 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: off
+global-client-fingerprint: chrome
+
+# Критически важные настройки для быстрого пробуждения Android
+keep-alive-idle: 30
+keep-alive-interval: 15
+
+# Сохранение кэша между перезапусками и выходами из сна
+profile:
+  store-selected: true
+  store-fake-ip: true
+
 proxies:
 - name: "MTS Shop (QUIC)"
   type: masque
@@ -12,7 +30,7 @@ proxies:
   mtu: 1280
   remote-dns-resolve: true
   skip-cert-verify: true
-  client-fingerprint: curl
+  client-fingerprint: chrome # Заменено с curl на chrome для Cloudflare Masque
   dns:
     - 'quic://ac3755.dns.nextdns.io'
     - 'https://ac3755.dns.nextdns.io'
@@ -37,15 +55,22 @@ dns:
   fake-ip-filter:
     - '*.lan'
     - '+.local'
+    # Домены Telegram добавлены в фильтр, чтобы избежать проблем с MTProto и Fake-IP
+    - '+.telegram.org'
+    - '+.t.me'
+    - '+.telegra.ph'
+    - '+.telesco.pe'
+    - '+.tg.dev'
 
 tun:
   enable: true
-  stack: gvisor
+  stack: mixed # СТЕК ИЗМЕНЕН С gvisor НА mixed. Главное исправление для Android.
   auto-route: true
   auto-detect-interface: true
   strict-route: false
   dns-hijack:
     - 'any:53'
+    - 'tcp://any:53' # Добавлен перехват TCP DNS для предотвращения утечек при пробуждении
   mtu: 1280
 
 rules:
