@@ -1,8 +1,5 @@
-proxies:
-- name: "Cloudflare H2 MASQUE"
+warp-masque-mts: &warp-masque-mts
   type: masque
-  server: 162.159.198.2
-  port: 443
   sni: shop.mts.ru
   private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
   public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
@@ -12,44 +9,65 @@ proxies:
   mtu: 1280
   remote-dns-resolve: true
   skip-cert-verify: true
-  client-fingerprint: chrome
+  client-fingerprint: curl
   dns:
-    - 1.1.1.1
+    - 'https://ac3755.dns.nextdns.io'
     - 8.8.8.8
+    - 8.8.4.4
+
+proxies:
+- name: "MTS Shop (H2)"
+  <<: *warp-masque-mts
+  server: 162.159.198.2
+  port: 443
 
 proxy-groups:
 - name: Cloudflare
-  type: select
+  type: url-test
+  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
   proxies:
-    - "Cloudflare H2 MASQUE"
+    - "MTS Shop (H2)"
+  url: 'https://cp.cloudflare.com/generate_204'
+  interval: 60
+  timeout: 500
+  lazy: false
 
 dns:
   enable: true
   ipv6: true
-  prefer-h3: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-
   default-nameserver:
-    - 1.1.1.1
     - 8.8.8.8
-
+    - 1.1.1.1
   nameserver:
-    - https://1.1.1.1/dns-query
-    - https://8.8.8.8/dns-query
-
+    - 'https://1.1.1.1/dns-query'
+    - 'https://8.8.8.8/dns-query'
+  fallback:
+    - 'tls://1.1.1.1'
+    - 'tls://8.8.4.4'
   fake-ip-filter:
     - '*.lan'
     - '+.local'
 
 tun:
   enable: true
-  stack: gvisor
+  stack: system
   auto-route: true
+  auto-detect-interface: true
   strict-route: false
-  mtu: 1280
+  route-exclude-address:
+    - 192.168.0.0/16
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 100.64.0.0/10
+    - 127.0.0.0/8
+    - 224.0.0.0/3
+    - 255.255.255.255/32
   dns-hijack:
     - any:53
+    - tcp://any:53
+  mtu: 1280
 
 rules:
 - MATCH,Cloudflare
