@@ -7,11 +7,10 @@ tcp-concurrent: true
 find-process-mode: off
 global-client-fingerprint: chrome
 
-# Критически важные настройки для быстрого пробуждения Android
 keep-alive-idle: 30
 keep-alive-interval: 15
 
-# Сохранение кэша между перезапусками и выходами из сна
+# КРИТИЧЕСКИ ВАЖНО: Сохранение кэша между перезапусками и выходами из сна
 profile:
   store-selected: true
   store-fake-ip: true
@@ -28,9 +27,8 @@ proxies:
   ipv6: 2606:4700:110:89bb:fa68:f3bf:636:815e/128
   udp: true
   mtu: 1280
-  remote-dns-resolve: true
   skip-cert-verify: true
-  client-fingerprint: chrome # Заменено с curl на chrome для Cloudflare Masque
+  client-fingerprint: chrome
   dns:
     - 'quic://ac3755.dns.nextdns.io'
     - 'https://ac3755.dns.nextdns.io'
@@ -40,6 +38,24 @@ proxy-groups:
   type: select
   proxies:
     - "MTS Shop (QUIC)"
+
+# Настройка сниффера с исключением Telegram (убирает буферизацию MTProto)
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - '+.telegram.org'
+    - '+.t.me'
+    - '+.telegra.ph'
+    - '+.telesco.pe'
+    - '+.tg.dev'
 
 dns:
   enable: true
@@ -55,23 +71,33 @@ dns:
   fake-ip-filter:
     - '*.lan'
     - '+.local'
-    # Домены Telegram добавлены в фильтр, чтобы избежать проблем с MTProto и Fake-IP
     - '+.telegram.org'
     - '+.t.me'
     - '+.telegra.ph'
     - '+.telesco.pe'
     - '+.tg.dev'
+    # Исключаем реальные IP-адреса дата-центров Telegram во избежание конфликтов сокетов
+    - '149.154.160.0/20'
+    - '91.108.4.0/22'
+    - '91.108.8.0/22'
+    - '91.108.12.0/22'
+    - '91.108.16.0/22'
+    - '91.108.56.0/22'
+    - '91.108.20.0/22'
+    - '91.108.24.0/22'
+    - '95.161.64.0/20'
 
 tun:
   enable: true
-  stack: mixed # СТЕК ИЗМЕНЕН С gvisor НА mixed. Главное исправление для Android.
+  stack: mixed
   auto-route: true
   auto-detect-interface: true
   strict-route: false
   dns-hijack:
     - 'any:53'
-    - 'tcp://any:53' # Добавлен перехват TCP DNS для предотвращения утечек при пробуждении
   mtu: 1280
+  # Позволяет ядру мгновенно отбрасывать мертвые UDP/QUIC сессии после сна
+  endpoint-independent-nat: true
 
 rules:
 - MATCH,MTS
