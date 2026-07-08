@@ -1,26 +1,64 @@
+warp-masque-mts: &warp-masque-mts
+  type: masque
+  sni: shop.mts.ru
+  private-key: MHcCAQEEIAxbO8TUXCmPXVXKFZ2l6Zx5gGTXhWEKDBAO73eFe8ZGoAoGCCqGSM49AwEHoUQDQgAEd9oGIwj/f8lx44YwcWL9FF7HxmoFhZCICJI6ODo2t2kzbtf1PdDv6BgFzhnWsl1J6lPucmeNbldHPCdUhJEugQ==
+  public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
+  ip: 172.16.0.2/32
+  ipv6: 2606:4700:110:89bb:fa68:f3bf:636:815e/128
+  udp: true
+  mtu: 1280
+  remote-dns-resolve: true
+  skip-cert-verify: true
+  client-fingerprint: curl
+  dns:
+    - 'https://ac3755.dns.nextdns.io'
+    - 8.8.8.8
+    - 8.8.4.4
+
 proxies:
-  - name: "[WARP-MASQUE] H2"
-    type: masque
-    sni: 4pda.to
-    private-key: MHcCAQEEIF7fB8cjRXBg/yFnHtZrI9ihyis7heBGd54SLKRR8kp6oAoGCCqGSM49AwEHoUQDQgAEMN78gMNHW2kWp95P3kZtmP8E7PnF5ebI0WpUGUXEfCd1L/FPRw6Sxj43L7wo57kefF4L0d5UvIZdYVaBbjdsMA==
-    public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
-    ipv6: 2606:4700:110:81a7:ead1:90e5:9b8c:af86
-    udp: true
-    remote-dns-resolve: true
-    dns: ['2001:4860:4860::8888', '2001:4860:4860::8844']
-    mtu: 1280
-    server: engage.cloudflareclient.com
-    port: 443
-    network: h2
+- name: "MTS Shop (H2)"
+  <<: *warp-masque-mts
+  server: 162.159.198.2
+  port: 443
 
 proxy-groups:
-  - name: Cloudflare
-    type: select
-    icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
-    proxies:
-      - "[WARP-MASQUE] H2"
-    url: 'http://speed.cloudflare.com/'
-    interval: 300
+- name: Cloudflare
+  type: select
+  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
+  proxies:
+    - "MTS Shop (H2)"
+  url: 'https://cp.cloudflare.com/generate_204'
+  interval: 60
+  timeout: 500
+  lazy: false
+
+dns:
+  enable: true
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+    - 8.8.8.8
+    - 1.1.1.1
+  nameserver:
+    - 'https://1.1.1.1/dns-query'
+    - 'https://8.8.8.8/dns-query'
+  fallback:
+    - 'tls://1.1.1.1'
+    - 'tls://8.8.4.4'
+  fake-ip-filter:
+    - '*.lan'
+    - '+.local'
+
+tun:
+  enable: true
+  stack: system
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: false
+  dns-hijack:
+    - 'any:53'
+  mtu: 1280
 
 rules:
-  - MATCH,Cloudflare
+- MATCH,Cloudflare
