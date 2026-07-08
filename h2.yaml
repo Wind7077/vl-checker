@@ -1,1 +1,37 @@
+warp-masque: &warp-masque
+  type: masque
+  sni: 4pda.to
+  private-key: MHcCAQEEIPrO5Dj3zAq+N84RD4+tjJH9TESDBQBbFPle8NfInLsuoAoGCCqGSM49AwEHoUQDQgAETLICh68A+qQnzck+05daZOzlq2p1MLmVtUvEWkZqBlFHALuZwJmhF4rVnYnHku2EtVAMIUmVT//fGeAk+FRPzg==
+  public-key: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==
+  ip: 172.16.0.2
+  ipv6: 2606:4700:110:881f:a679:e085:8b15:d835
+  udp: true
+  remote-dns-resolve: true
+  # Оставлены только IPv6 DNS-серверы (Quad9 + Cloudflare) для полного IPv6-резолвинга
+  dns: [2620:fe::fe, 2620:fe::9, 2606:4700:4700::1111, 2606:4700:4700::1001]
+  # Keep-Alive настройки для предотвращения разрывов сессии NAT-ом провайдера
+  keep-alive-idle: 30
+  keep-alive-interval: 30
 
+proxies:
+- name: "[WARP-MASQUE] H2"
+  <<: *warp-masque
+  # Заменен IPv4 на стабильный публичный IPv6-эндпоинт Cloudflare WARP
+  server: 2606:4700:d0::4503:69c8:2808:38c7
+  port: 443
+  network: h2
+
+proxy-groups:
+- name: Cloudflare
+  type: select
+  icon: https://www.vectorlogo.zone/logos/cloudflare/cloudflare-icon.svg
+  proxies:
+    - "[WARP-MASQUE] H2"
+  # УДАЛЕНЫ url и interval! Именно healthcheck (проверка url каждые 300 сек) 
+  # вызывает микро-разрывы соединения, из-за которых Telegram пишет "Connected".
+  # Теперь группа работает как жесткий select без автоматических переключений.
+
+rules:
+- DOMAIN-SUFFIX,t.me,Cloudflare
+- DOMAIN-SUFFIX,telegram.org,Cloudflare
+- MATCH,Cloudflare
