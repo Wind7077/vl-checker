@@ -6,7 +6,7 @@ ipv6: false
 unified-delay: true
 tcp-concurrent: true
 find-process-mode: off
-global-client-fingerprint: random
+global-client-fingerprint: chrome
 
 dns:
   enable: true
@@ -14,10 +14,11 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   default-nameserver:
-    - 1.1.1.1
-  nameserver:
     - https://dns.nextdns.io/ac3755
-    - quic://ac3755.dns.nextdns.io
+    - 8.8.8.8
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
   respect-rules: false
 
 tun:
