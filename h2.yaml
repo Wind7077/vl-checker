@@ -15,15 +15,13 @@ dns:
   fake-ip-range: 198.18.0.1/16
   default-nameserver:
     - 1.1.1.1
-    - 8.8.8.8
   nameserver:
-    - https://1.1.1.1/dns-query
-    - https://8.8.8.8/dns-query
+    - quic://ac3755.dns.nextdns.io
   respect-rules: false
 
 tun:
   enable: true
-  stack: system
+  stack: gvisor
   auto-route: true
   auto-detect-interface: true
   dns-hijack:
