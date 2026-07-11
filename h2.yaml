@@ -6,7 +6,7 @@ ipv6: false
 unified-delay: true
 tcp-concurrent: true
 find-process-mode: off
-global-client-fingerprint: chrome
+global-client-fingerprint: random
 
 dns:
   enable: true
@@ -21,7 +21,7 @@ dns:
 
 tun:
   enable: true
-  stack: gvisor
+  stack: system
   auto-route: true
   auto-detect-interface: true
   dns-hijack:
