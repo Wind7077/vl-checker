@@ -1,0 +1,161 @@
+# ============================================================
+#  Mihomo / Clash Meta — VLESS for Telegram (RU)
+#  Обновлено: 2026-07-22
+# ============================================================
+
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+external-controller: 127.0.0.1:9090
+
+# =========================
+# 🌐 DNS
+# =========================
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+    - 8.8.8.8
+    - 77.88.8.8              # Yandex DNS
+  nameserver:
+    - udp://45.90.28.0#ac3755   # NextDNS UDP
+  fallback:
+    - https://dns.nextdns.io/ac3755
+    - udp://8.8.8.8
+  fake-ip-filter:
+    - "*.local"
+    - "*.lan"
+    - "ntp.*"
+    - "time.*"
+    # --- Telegram: не подменять IP, иначе клиент ломается ---
+    - "*.telegram.org"
+    - "*.t.me"
+    - "*.telegram.me"
+    - "*.tdesktop.com"
+    - "*.telegra.ph"
+    - "*.telesco.pe"
+
+# =========================
+# 🔥 ПОДПИСКИ (AUTO UPDATE)
+# =========================
+proxy-providers:
+  MAIN:
+    type: http
+    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
+    interval: 3600
+    path: ./providers/main.yaml
+    health-check:
+      enable: true
+      url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+      interval: 300
+      lazy: true
+
+  MOBILE_WL:
+    type: http
+    # raw.githack.com заменён на jsdelivr (стабильнее)
+    url: "https://cdn.jsdelivr.net/gh/igareck/vpn-configs-for-russia@main/Vless-Reality-White-Lists-Rus-Mobile.txt"
+    interval: 3600
+    path: ./providers/mobile_wl.yaml
+    health-check:
+      enable: true
+      url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+      interval: 300
+      lazy: true
+
+  VLESS_UNIVERSAL:
+    type: http
+    url: "https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_universal.txt"
+    interval: 3600
+    path: ./providers/vless_universal.yaml
+    health-check:
+      enable: true
+      url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+      interval: 300
+      lazy: true
+
+# =========================
+# 🔀 ПРОКСИ-ГРУППЫ
+# =========================
+proxy-groups:
+  - name: AUTO
+    type: url-test
+    use:
+      - MAIN
+      - MOBILE_WL
+      - VLESS_UNIVERSAL
+    url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: FALLBACK
+    type: fallback
+    use:
+      - MAIN
+      - MOBILE_WL
+      - VLESS_UNIVERSAL
+    url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+    interval: 300
+    lazy: true
+
+  - name: PROXY
+    type: select
+    proxies:
+      - AUTO
+      - FALLBACK
+      - DIRECT
+
+  - name: GLOBAL
+    type: select
+    proxies:
+      - PROXY
+      - AUTO
+      - DIRECT
+
+# =========================
+# 🌐 ПРАВИЛА МАРШРУТИЗАЦИИ
+# =========================
+rules:
+  # ---------- Telegram (домены) ----------
+  - DOMAIN-SUFFIX,telegram.org,PROXY
+  - DOMAIN-SUFFIX,t.me,PROXY
+  - DOMAIN-SUFFIX,telegram.me,PROXY
+  - DOMAIN-SUFFIX,tdesktop.com,PROXY
+  - DOMAIN-SUFFIX,telegra.ph,PROXY
+  - DOMAIN-SUFFIX,telesco.pe,PROXY
+
+  # ---------- Telegram (IP-диапазоны) ----------
+  - IP-CIDR,149.154.160.0/20,PROXY,no-resolve
+  - IP-CIDR,91.108.4.0/22,PROXY,no-resolve
+  - IP-CIDR,91.108.8.0/22,PROXY,no-resolve
+  - IP-CIDR,91.108.12.0/22,PROXY,no-resolve
+  - IP-CIDR,91.108.16.0/22,PROXY,no-resolve
+  - IP-CIDR,91.108.20.0/22,PROXY,no-resolve
+  - IP-CIDR,91.108.56.0/22,PROXY,no-resolve
+  - IP-CIDR,95.161.64.0/20,PROXY,no-resolve
+
+  # ---------- Google / YouTube ----------
+  - DOMAIN-SUFFIX,google.com,PROXY
+  - DOMAIN-SUFFIX,googleapis.com,PROXY
+  - DOMAIN-SUFFIX,gstatic.com,PROXY
+  - DOMAIN-SUFFIX,youtube.com,PROXY
+  - DOMAIN-SUFFIX,ytimg.com,PROXY
+  - DOMAIN-SUFFIX,ggpht.com,PROXY
+
+  # ---------- GitHub ----------
+  - DOMAIN-SUFFIX,github.com,PROXY
+  - DOMAIN-SUFFIX,githubusercontent.com,PROXY
+  - DOMAIN-SUFFIX,github.io,PROXY
+
+  # ---------- Локальная сеть ----------
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+
+  # ---------- Всё остальное ----------
+  - MATCH,GLOBAL
