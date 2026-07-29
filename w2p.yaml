@@ -7,7 +7,9 @@ proxies:
     ipv6: 2606:4700:110:8f8a:8a1d:1d7f:ccc5:8111/128
     private-key: sJmSRbII7zoyk8z2hJ09yfFqQugA5RLAtR/x/jV5gE8=
     public-key: bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-    dns: 8.8.8.8,8.8.4.4
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     mtu: 1280
     udp: true
     amnezia-wg-option:
@@ -31,11 +33,22 @@ proxies:
     ipv6: 2a07:b944::2:2/128
     private-key: AABXG2noEPBZxHy/VM6aWU8x4nFpoBeKeUxhsn31Dmo=
     public-key: iKGECV5NZgXQ8mDSvupfeStGXBHDiO8VOOLs5U7KpGc=
-    dns: 45.90.28.0,45.90.30.0
+    dns:
+      - 45.90.28.0
+      - 45.90.30.0
     mtu: 1400
     udp: true
+    amnezia-wg-option:
+      jc: 1
+      jmin: 40
+      jmax: 70
+      s1: 0
+      s2: 0
+      h1: 1
+      h2: 2
+      h3: 3
+      h4: 4
 
-    
 proxy-groups:
   - name: PROXY
     type: select
