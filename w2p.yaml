@@ -35,3 +35,14 @@ proxies:
     mtu: 1400
     udp: true
 
+    
+proxy-groups:
+  - name: PROXY
+    type: select
+    proxies:
+      - proton-in
+      - DIRECT
+
+mode: rule
+rules:
+  - MATCH,PROXY
