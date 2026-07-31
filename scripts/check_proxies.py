@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Proxy Checker — Telegram Edition (MTS LTE optimized)
-Один этап: прокси → https://api.telegram.org/bot.../getMe
+Proxy Checker — Telegram Edition
+Проверка на сервере → YAML для FlClash (mihomo) на Android / MTS LTE
+
+Единственный этап: прокси → https://api.telegram.org/bot.../getMe (×3 пинга)
 """
 
 import asyncio
@@ -27,32 +29,31 @@ REPO_ROOT    = SCRIPT_DIR.parent
 SOURCES_FILE = REPO_ROOT / "sources.txt"
 OUTPUT_DIR   = REPO_ROOT / "output"
 
-# ── ЕДИНСТВЕННЫЙ URL проверки — Telegram Bot API ─────────────────────────────
+# ── Probe: Telegram Bot API ──────────────────────────────────────────────────
 TELEGRAM_PROBE_URL = "https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe"
-TELEGRAM_OK_CODES  = [200, 401, 404]  # 401 = токен неверный, но сервер доступен
+TELEGRAM_OK_CODES  = [200, 401, 404]  # 401/404 = сервер Telegram доступен
 
 ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
 REQUIRE_REALITY     = True
-ALLOWED_COUNTRIES   = set()
 
-TOP_N               = 1500
-TIMEOUT_TCP         = 2          # чуть больше для LTE
-TIMEOUT_CURL        = 12
-TIMEOUT_XRAY_START  = 1.2
-MAX_CONCURRENT      = 15         # одновременных proxy-проверок (LTE не любит много)
-STAGE_CANDIDATES    = 8000
+TOP_N               = 800        # FlClash на телефоне не любит >1000 прокси
+TIMEOUT_TCP         = 2
+TIMEOUT_CURL        = 10
+TIMEOUT_XRAY_START  = 1.0
+MAX_CONCURRENT      = 40         # серверный канал — можно много
+STAGE_CANDIDATES    = 10000
 SOCKS_BASE_PORT     = 20000
 
-# Стабильность: сколько пингов делать на каждый прокси
+# Стабильность (критично для LTE: выбираем прокси с минимальным jitter)
 STABILITY_PINGS     = 3
-STABILITY_INTERVAL  = 0.3       # пауза между пингами, сек
+STABILITY_INTERVAL  = 0.2
 
 # Дедупликация
 MAX_PER_ENDPOINT    = 1
 MAX_PER_UUID        = 2
 MAX_PER_PASSWORD    = 5
 
-HYSTERIA2_PROBE_TIMEOUT = 15
+HYSTERIA2_PROBE_TIMEOUT = 12
 
 if sys.platform == "win32":
     XRAY_BIN = Path(r"C:\xray\xray.exe")
@@ -77,7 +78,7 @@ def load_sources() -> list[str]:
             if line and not line.startswith("#"):
                 urls.append(line)
     if not urls:
-        print(f"  ❌ {SOURCES_FILE} не содержит ни одного URL.")
+        print(f"  ❌ {SOURCES_FILE} пуст.")
         sys.exit(1)
     print(f"  📄 Загружено {len(urls)} источников из {SOURCES_FILE.name}")
     return urls
@@ -191,7 +192,6 @@ def smart_deduplicate(items: list[dict],
         "after_exact_dedup": 0,
         "after_uuid_server_dedup": 0,
         "after_uuid_cdn_dedup": 0,
-        "after_password_dedup": 0,
         "output": 0,
     }
 
@@ -218,7 +218,6 @@ def smart_deduplicate(items: list[dict],
             unique_items.append(item)
     stats["after_exact_dedup"] = len(unique_items)
 
-    # (uuid, host, port)
     uuid_server_groups = defaultdict(list)
     for item in unique_items:
         uuid = get_uuid_from_uri(item['uri'])
@@ -227,11 +226,10 @@ def smart_deduplicate(items: list[dict],
 
     after_uuid_server = []
     for key, group in uuid_server_groups.items():
-        group.sort(key=lambda x: (x.get("avg_ms", 9999) == 0, x.get("avg_ms", 9999)))
+        group.sort(key=lambda x: (x.get("avg_ms", 9999), x.get("jitter_ms", 9999)))
         after_uuid_server.append(group[0])
     stats["after_uuid_server_dedup"] = len(after_uuid_server)
 
-    # UUID / password limits
     uuid_groups = defaultdict(list)
     after_uuid = []
     for item in after_uuid_server:
@@ -239,13 +237,12 @@ def smart_deduplicate(items: list[dict],
         uuid_groups[uuid].append(item)
 
     for uuid, group in uuid_groups.items():
-        group.sort(key=lambda x: (x.get("avg_ms", 9999) == 0, x.get("avg_ms", 9999)))
+        group.sort(key=lambda x: (x.get("avg_ms", 9999), x.get("jitter_ms", 9999)))
         scheme = group[0]['uri'].split("://")[0].lower() if group else ""
         limit = max_per_password if scheme in ("ss", "hysteria2", "hy2") else max_per_uuid
         after_uuid.extend(group[:limit])
     stats["after_uuid_cdn_dedup"] = len(after_uuid)
 
-    # host:port
     endpoint_groups = defaultdict(list)
     for item in after_uuid:
         key = f"{item['host']}:{item['port']}"
@@ -253,16 +250,17 @@ def smart_deduplicate(items: list[dict],
 
     result = []
     for key, group in endpoint_groups.items():
-        group.sort(key=lambda x: (x.get("avg_ms", 9999) == 0, x.get("avg_ms", 9999)))
+        group.sort(key=lambda x: (x.get("avg_ms", 9999), x.get("jitter_ms", 9999)))
         result.extend(group[:max_per_endpoint])
 
-    result.sort(key=lambda x: (x.get("avg_ms", 9999) == 0, x.get("avg_ms", 9999)))
+    # Финальная сортировка: avg + jitter (LTE-критерий)
+    result.sort(key=lambda x: (x.get("avg_ms", 9999), x.get("jitter_ms", 9999)))
     stats["output"] = len(result)
     return result, stats
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# CLASH YAML
+# CLASH YAML (mihomo / FlClash compatible)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def yaml_str(val):
@@ -292,42 +290,6 @@ def safe_sni(sni: str, host: str) -> str:
     return sni
 
 
-def parse_ss_uri(uri: str) -> dict | None:
-    try:
-        p = urllib.parse.urlparse(uri)
-        params = dict(urllib.parse.parse_qsl(p.query))
-        host = p.hostname or ""
-        if not host:
-            return None
-        port = p.port or 8388
-        username = p.username or ""
-        password = p.password or ""
-        if password:
-            method = username
-            pwd = password
-        else:
-            userinfo = decode_b64(username)
-            if ":" in userinfo:
-                method, pwd = userinfo.split(":", 1)
-            else:
-                return None
-        plugin = params.get("plugin", "")
-        plugin_opts = {}
-        plugin_name = ""
-        if plugin:
-            parts = plugin.split(";")
-            if parts:
-                plugin_name = parts[0]
-                for opt in parts[1:]:
-                    if "=" in opt:
-                        k, v = opt.split("=", 1)
-                        plugin_opts[k] = v
-        return {"method": method, "password": pwd, "host": host, "port": port,
-                "plugin": plugin_name, "plugin_opts": plugin_opts}
-    except Exception:
-        return None
-
-
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
     try:
         scheme = uri.split("://")[0].lower()
@@ -342,31 +304,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             return None
         proxy_name = f"{idx+1}. {host}:{port}"
 
-        if scheme == "ss":
-            ss = parse_ss_uri(uri)
-            if not ss:
-                return None
-            proxy = {"name": proxy_name, "type": "ss", "server": ss["host"],
-                     "port": ss["port"], "cipher": ss["method"],
-                     "password": ss["password"], "udp": True}
-            plugin = ss["plugin"]
-            opts = ss["plugin_opts"]
-            if plugin == "obfs-local":
-                proxy["plugin"] = "obfs"
-                po = {"mode": opts.get("obfs", "http")}
-                if opts.get("obfs-host"):
-                    po["host"] = opts["obfs-host"]
-                proxy["plugin-opts"] = po
-            elif plugin == "v2ray-plugin":
-                proxy["plugin"] = "v2ray-plugin"
-                po = {"mode": opts.get("mode", "websocket")}
-                if opts.get("host"): po["host"] = opts["host"]
-                if opts.get("path"): po["path"] = opts["path"]
-                if opts.get("tls") in ("true", "1"): po["tls"] = True
-                if opts.get("mux") in ("true", "1"): po["mux"] = True
-                proxy["plugin-opts"] = po
-            return proxy
-
+        # ── VLESS ──
         if scheme == "vless":
             uid = p.username or params.get("uuid", "")
             if not uid:
@@ -380,13 +318,14 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
             if sec not in ("tls", "reality", "none"):
                 sec = "tls"
             fp = params.get("fp", "chrome")
-            valid_fps = ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"]
-            if fp not in valid_fps: fp = "chrome"
+            if fp not in ("chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random"):
+                fp = "chrome"
             net = params.get("type", "tcp").lower()
-            valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic", "httpupgrade", "splithttp"]
-            if net not in valid_nets: net = "tcp"
+            if net not in ("tcp", "ws", "grpc", "http", "h2", "kcp", "quic", "httpupgrade", "splithttp"):
+                net = "tcp"
             clash_net = net
-            if net in ("h2", "httpupgrade", "splithttp"): clash_net = "tcp"
+            if net in ("h2", "httpupgrade", "splithttp"):
+                clash_net = "tcp"
             pbk = params.get("pbk", "")
             sid = params.get("sid", "")
             path = params.get("path", "/") or "/"
@@ -400,6 +339,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 flow = "xtls-rprx-vision"
             elif flow and flow not in valid_flows:
                 flow = ""
+
             proxy = {"name": proxy_name, "type": "vless", "server": host,
                      "port": port, "uuid": uid, "network": clash_net,
                      "udp": True, "servername": sni}
@@ -423,6 +363,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 proxy["grpc-opts"] = {"grpc-service-name": serviceName}
             return proxy
 
+        # ── HYSTERIA2 ──
         elif scheme in ("hysteria2", "hy2"):
             auth = p.username or p.password or params.get("password", "") or params.get("auth", "")
             if not auth:
@@ -441,6 +382,7 @@ def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
                 proxy["obfs-password"] = obfs_password
             return proxy
 
+        # ── TROJAN ──
         elif scheme == "trojan":
             password = p.username or ""
             raw_sni = params.get("sni") or params.get("peer") or host
@@ -515,18 +457,22 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
 
 
 def write_full_clash_config(proxies: list[dict], path: Path):
+    """Полный конфиг для FlClash (mihomo)."""
     proxy_names = [yaml_str(p['name']) for p in proxies]
     top_select = proxy_names[:30]
-    all_for_test = proxy_names
+    all_names = proxy_names
 
-    config = f"""# Proxy Checker — Telegram Edition (MTS LTE)
+    config = f"""# Proxy Checker — Telegram Edition
+# Для FlClash (mihomo) на Android / MTS LTE
 # Сгенерировано: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}
-# Прокси: {len(proxies)} | Probe: api.telegram.org
+# Прокси: {len(proxies)} | Probe: api.telegram.org | Пингов: {STABILITY_PINGS}
 
 mixed-port: 7890
 allow-lan: false
 mode: rule
 log-level: info
+unified-delay: true
+external-controller: 127.0.0.1:9090
 
 geodata-mode: true
 geodata-loader: memorize
@@ -541,6 +487,10 @@ geox-url:
 
 profile:
   store-selected: true
+
+# TCP-keepalive для стабильности на LTE
+keep-alive-interval: 15
+keep-alive-idle: 30
 
 proxies:
 """
@@ -565,34 +515,36 @@ proxy-groups:
   - name: "AUTO"
     type: url-test
     url: "https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe"
-    interval: 180
-    tolerance: 100
+    interval: 120
+    tolerance: 80
     timeout: 5000
     proxies:
 """
-    for name in all_for_test:
+    for name in all_names:
         config += f"      - {name}\n"
 
     config += """
   - name: "FALLBACK"
     type: fallback
     url: "https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe"
-    interval: 180
+    interval: 120
     timeout: 5000
     proxies:
 """
-    for name in all_for_test:
+    for name in all_names:
         config += f"      - {name}\n"
 
     config += """
 rules:
-  # Telegram — всегда через прокси
+  # ── Telegram → прокси ──
   - DOMAIN-SUFFIX,telegram.org,AUTO
   - DOMAIN-SUFFIX,t.me,AUTO
   - DOMAIN-SUFFIX,telegra.ph,AUTO
   - DOMAIN-SUFFIX,telesco.pe,AUTO
   - DOMAIN-SUFFIX,telegram.me,AUTO
   - DOMAIN-SUFFIX,telegram.dog,AUTO
+  - DOMAIN-SUFFIX,tdesktop.com,AUTO
+  - DOMAIN-SUFFIX,telega.one,AUTO
   - DOMAIN-KEYWORD,telegram,AUTO
   - IP-CIDR,91.108.4.0/22,AUTO,no-resolve
   - IP-CIDR,91.108.8.0/22,AUTO,no-resolve
@@ -605,7 +557,8 @@ rules:
   - IP-CIDR6,2001:b28:f23d::/48,AUTO,no-resolve
   - IP-CIDR6,2001:b28:f23f::/48,AUTO,no-resolve
   - IP-CIDR6,2a0a:a980::/64,AUTO,no-resolve
-  # Российские сервисы — напрямую
+
+  # ── Россия → DIRECT ──
   - GEOIP,RU,DIRECT
   - DOMAIN-SUFFIX,ru,DIRECT
   - DOMAIN-SUFFIX,su,DIRECT
@@ -619,7 +572,9 @@ rules:
   - DOMAIN-SUFFIX,sberbank.ru,DIRECT
   - DOMAIN-SUFFIX,mts.ru,DIRECT
   - DOMAIN-SUFFIX,mtsmail.ru,DIRECT
-  # Остальное
+  - DOMAIN-SUFFIX,mgts.ru,DIRECT
+
+  # ── Остальное ──
   - MATCH,SELECT
 """
     path.write_text(config, encoding="utf-8")
@@ -798,11 +753,11 @@ def parse_hysteria2(uri: str) -> dict | None:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TELEGRAM PROBE (единственный этап проверки)
+# ЕДИНСТВЕННЫЙ ЭТАП ПРОВЕРКИ: прокси → Telegram API
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def tcp_gate(host: str, port: int, timeout: float = TIMEOUT_TCP) -> bool:
-    """Быстрая TCP-проверка: если порт закрыт — не тратим время на xray."""
+    """Быстрый TCP-коннект. Не этап, а gate внутри единственного этапа."""
     try:
         _, writer = await asyncio.wait_for(
             asyncio.open_connection(host, port), timeout=timeout
@@ -817,21 +772,18 @@ async def tcp_gate(host: str, port: int, timeout: float = TIMEOUT_TCP) -> bool:
         return False
 
 
-async def curl_telegram_through_socks(socks_port: int) -> float | None:
-    """
-    Пинг до Telegram API через SOCKS5-прокси.
-    Возвращает латентность в мс или None.
-    """
+async def curl_telegram(socks_port: int) -> float | None:
+    """Один пинг до Telegram API через SOCKS5."""
     t0 = time.monotonic()
     try:
         proc = await asyncio.create_subprocess_exec(
             "curl", "-s", "-o", "/dev/null",
             "--socks5-hostname", f"127.0.0.1:{socks_port}",
             "--max-time", str(TIMEOUT_CURL),
-            "--connect-timeout", "6",
+            "--connect-timeout", "5",
             "-w", "%{http_code}",
             "--insecure", "-L",
-            "-A", "Mozilla/5.0 (Linux; Android 14; MTS) AppleWebKit/537.36",
+            "-A", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36",
             TELEGRAM_PROBE_URL,
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
         )
@@ -844,17 +796,18 @@ async def curl_telegram_through_socks(socks_port: int) -> float | None:
     return None
 
 
-async def stability_probe(socks_port: int, pings: int = STABILITY_PINGS) -> dict | None:
+async def stability_probe(socks_port: int) -> dict | None:
     """
-    Несколько пингов до Telegram для оценки стабильности (важно на LTE).
-    Возвращает {avg_ms, min_ms, max_ms, jitter_ms, success_rate}.
+    STABILITY_PINGS пингов до Telegram.
+    На выходе: avg, min, max, jitter, success_rate.
+    Jitter — ключевая метрика для LTE: чем меньше, тем стабильнее канал.
     """
     latencies = []
-    for i in range(pings):
-        lat = await curl_telegram_through_socks(socks_port)
+    for i in range(STABILITY_PINGS):
+        lat = await curl_telegram(socks_port)
         if lat is not None:
             latencies.append(lat)
-        if i < pings - 1:
+        if i < STABILITY_PINGS - 1:
             await asyncio.sleep(STABILITY_INTERVAL)
 
     if not latencies:
@@ -864,24 +817,18 @@ async def stability_probe(socks_port: int, pings: int = STABILITY_PINGS) -> dict
     mn = round(min(latencies), 1)
     mx = round(max(latencies), 1)
     jitter = round(mx - mn, 1)
-    success = round(len(latencies) / pings * 100, 0)
+    success = round(len(latencies) / STABILITY_PINGS * 100, 0)
 
-    return {
-        "avg_ms": avg,
-        "min_ms": mn,
-        "max_ms": mx,
-        "jitter_ms": jitter,
-        "success_rate": success,
-        "pings": len(latencies),
-    }
+    return {"avg_ms": avg, "min_ms": mn, "max_ms": mx,
+            "jitter_ms": jitter, "success_rate": success}
 
 
-async def check_single_proxy(sem, idx: int, uri: str) -> dict | None:
+async def check_proxy(sem, idx: int, uri: str) -> dict | None:
     """
-    ЕДИНСТВЕННЫЙ этап проверки:
-    1. TCP gate (быстро, без xray)
-    2. Запуск xray/hysteria2
-    3. Пинг до api.telegram.org (×3 для стабильности)
+    Единственный этап:
+      1. TCP gate (быстро, без xray — отсев мёртвых IP)
+      2. Запуск xray / hysteria2
+      3. STABILITY_PINGS × curl → api.telegram.org
     """
     hp = parse_host_port(uri)
     if not hp:
@@ -890,9 +837,8 @@ async def check_single_proxy(sem, idx: int, uri: str) -> dict | None:
     scheme = uri.split("://")[0].lower()
 
     async with sem:
-        # ── TCP gate ──
+        # TCP gate
         if proto_type == "udp":
-            # Для hysteria2 просто резолвим хост
             try:
                 loop = asyncio.get_event_loop()
                 await asyncio.wait_for(loop.getaddrinfo(host, port), timeout=TIMEOUT_TCP)
@@ -902,14 +848,14 @@ async def check_single_proxy(sem, idx: int, uri: str) -> dict | None:
             if not await tcp_gate(host, port):
                 return None
 
-        # ── Запуск прокси и пинг до Telegram ──
+        # Probe через прокси
         if scheme in ("hysteria2", "hy2"):
-            return await _probe_hysteria2(uri, host, port, idx)
+            return await _probe_hy2(uri, host, port, idx)
         else:
             return await _probe_xray(uri, host, port, scheme, idx)
 
 
-async def _probe_xray(uri: str, host: str, port: int, scheme: str, idx: int) -> dict | None:
+async def _probe_xray(uri, host, port, scheme, idx) -> dict | None:
     socks_port = SOCKS_BASE_PORT + idx
     cfg = make_xray_config(uri, socks_port)
     if cfg is None:
@@ -926,15 +872,10 @@ async def _probe_xray(uri: str, host: str, port: int, scheme: str, idx: int) -> 
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
         await asyncio.sleep(TIMEOUT_XRAY_START)
-
         stats = await stability_probe(socks_port)
         if stats is None:
             return None
-
-        return {
-            "uri": uri, "host": host, "port": port,
-            "proto": scheme, **stats,
-        }
+        return {"uri": uri, "host": host, "port": port, "proto": scheme, **stats}
     except Exception:
         return None
     finally:
@@ -950,13 +891,12 @@ async def _probe_xray(uri: str, host: str, port: int, scheme: str, idx: int) -> 
             pass
 
 
-async def _probe_hysteria2(uri: str, host: str, port: int, idx: int) -> dict | None:
+async def _probe_hy2(uri, host, port, idx) -> dict | None:
     cfg = parse_hysteria2(uri)
     if not cfg:
         return None
 
     socks_port = SOCKS_BASE_PORT + 10000 + idx
-
     hy2_config = {
         "server": f"{cfg['host']}:{cfg['port']}",
         "auth": cfg["auth"],
@@ -977,15 +917,10 @@ async def _probe_hysteria2(uri: str, host: str, port: int, idx: int) -> dict | N
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
         await asyncio.sleep(1.5)
-
         stats = await stability_probe(socks_port)
         if stats is None:
             return None
-
-        return {
-            "uri": uri, "host": host, "port": port,
-            "proto": "hysteria2", **stats,
-        }
+        return {"uri": uri, "host": host, "port": port, "proto": "hysteria2", **stats}
     except Exception:
         return None
     finally:
@@ -1002,7 +937,7 @@ async def _probe_hysteria2(uri: str, host: str, port: int, idx: int) -> dict | N
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FETCH SOURCES
+# FETCH
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def fetch_source(session, url: str) -> list:
@@ -1030,21 +965,20 @@ async def main():
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     print(f"\n{'='*64}")
-    print(f"  Proxy Checker — Telegram Edition (MTS LTE)")
+    print(f"  Proxy Checker — Telegram Edition")
     print(f"  {ts}")
     print(f"  Протоколы: {ALLOWED_PROTOCOLS}")
     print(f"  Probe: {TELEGRAM_PROBE_URL}")
-    print(f"  Стабильность: {STABILITY_PINGS} пинга на прокси")
-    print(f"  Concurrency: {MAX_CONCURRENT}")
+    print(f"  Пингов на прокси: {STABILITY_PINGS} | Concurrency: {MAX_CONCURRENT}")
+    print(f"  Выход: YAML для FlClash (mihomo) / Android / MTS LTE")
     print(f"{'='*64}\n")
 
-    # ── Загрузка источников ──
     print("📄 Loading sources…")
     SOURCES = load_sources()
     print()
 
     print("📥 Fetching sources…")
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False, limit=20)) as s:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False, limit=30)) as s:
         batches = await asyncio.gather(*[fetch_source(s, u) for u in SOURCES])
     all_configs = list(dict.fromkeys(c for b in batches for c in b))
     print(f"\n📋 Unique configs: {len(all_configs)}")
@@ -1056,105 +990,93 @@ async def main():
     print("  Протоколы: " + ", ".join(f"{k}={v}" for k, v in sorted(proto_counts.items())))
 
     filtered = filter_configs(all_configs)
-    print(f"🔎 After protocol filter: {len(filtered)}\n")
+    print(f"🔎 After filter: {len(filtered)}\n")
     if not filtered:
-        print("⚠️  No configs after filtering.")
+        print("⚠️  Nothing to check.")
         return
 
-    # ── Подготовка бинарников ──
+    # Бинарники
     print("🛠  Preparing binaries…")
     xray_ok = install_xray()
     hy2_needed = any(c.startswith(("hysteria2://", "hy2://")) for c in filtered)
     hy2_ok = install_hysteria2() if hy2_needed else False
-
     if not xray_ok and not hy2_ok:
-        print("  ❌ Нет доступных бинарников — выход.")
+        print("  ❌ No binaries available.")
         return
 
-    # ── ЕДИНСТВЕННЫЙ ЭТАП: прокси → Telegram API ──
+    # ── ЕДИНСТВЕННЫЙ ЭТАП ──
     candidates = filtered[:STAGE_CANDIDATES]
-    print(f"\n🚀 Проверка через Telegram API  ({len(candidates)} configs, concurrency={MAX_CONCURRENT})")
-    print(f"   URL: {TELEGRAM_PROBE_URL}")
-    print(f"   Пингов на прокси: {STABILITY_PINGS} (интервал {STABILITY_INTERVAL}s)\n")
+    print(f"\n🚀 Checking via Telegram API ({len(candidates)} configs, conc={MAX_CONCURRENT})")
+    print(f"   {TELEGRAM_PROBE_URL}")
+    print(f"   {STABILITY_PINGS} pings × {STABILITY_INTERVAL}s interval\n")
 
     sem = asyncio.Semaphore(MAX_CONCURRENT)
     working = []
     done = 0
 
-    for coro in asyncio.as_completed([check_single_proxy(sem, i, uri) for i, uri in enumerate(candidates)]):
+    for coro in asyncio.as_completed([check_proxy(sem, i, uri) for i, uri in enumerate(candidates)]):
         r = await coro
         done += 1
         if r:
             working.append(r)
-        if done % 50 == 0 or done == len(candidates):
+        if done % 100 == 0 or done == len(candidates):
             print(f"  … {done}/{len(candidates)} checked, {len(working)} working")
 
-    # Сортировка: сначала по avg_ms, потом по jitter (LTE-оптимизация)
+    # Сортировка: avg_ms, затем jitter (для LTE стабильность важнее)
     working.sort(key=lambda x: (x["avg_ms"], x["jitter_ms"]))
-    print(f"\n  ✅ Working proxies: {len(working)}")
+    print(f"\n  ✅ Working: {len(working)}")
 
     if not working:
-        print("⚠️  No working proxies found.")
+        print("⚠️  No working proxies.")
         return
 
-    # ── Дедупликация ──
-    print(f"\n🧹 Smart Deduplication...")
-    working, dedup_stats = smart_deduplicate(working)
-
-    print(f"   Было прокси:               {dedup_stats['input']}")
-    print(f"   → После точных дублей:     {dedup_stats['after_exact_dedup']} (-{dedup_stats['input'] - dedup_stats['after_exact_dedup']})")
-    print(f"   → После (UUID+host:port):  {dedup_stats['after_uuid_server_dedup']} (-{dedup_stats['after_exact_dedup'] - dedup_stats['after_uuid_server_dedup']})")
-    print(f"   → После (UUID/пароль):     {dedup_stats['after_uuid_cdn_dedup']} (-{dedup_stats['after_uuid_server_dedup'] - dedup_stats['after_uuid_cdn_dedup']})")
-    print(f"   → Финал (host:port):       {dedup_stats['output']} (-{dedup_stats['after_uuid_cdn_dedup'] - dedup_stats['output']})")
-    print(f"   Итого удалено дублей:      {dedup_stats['input'] - dedup_stats['output']} ({(dedup_stats['input'] - dedup_stats['output']) / max(dedup_stats['input'],1) * 100:.1f}%)\n")
+    # Дедупликация
+    print(f"\n🧹 Deduplication…")
+    working, ds = smart_deduplicate(working)
+    print(f"   {ds['input']} → {ds['after_exact_dedup']} (exact) "
+          f"→ {ds['after_uuid_server_dedup']} (uuid+server) "
+          f"→ {ds['after_uuid_cdn_dedup']} (uuid/cdn) "
+          f"→ {ds['output']} (endpoint)")
+    print(f"   Удалено: {ds['input'] - ds['output']} "
+          f"({(ds['input'] - ds['output']) / max(ds['input'],1) * 100:.1f}%)\n")
 
     top = working[:TOP_N]
 
-    # Статистика по протоколам
-    working_protos: dict[str, int] = {}
+    # Статистика
+    protos: dict[str, int] = {}
     for r in top:
-        working_protos[r["proto"]] = working_protos.get(r["proto"], 0) + 1
-    print("  По протоколам: " + ", ".join(f"{k}={v}" for k, v in sorted(working_protos.items())))
+        protos[r["proto"]] = protos.get(r["proto"], 0) + 1
+    print("  Протоколы: " + ", ".join(f"{k}={v}" for k, v in sorted(protos.items())))
 
-    # ── Сохранение ──
+    # Сохранение
     uri_lines = [r["uri"] for r in top]
     (OUTPUT_DIR / "proxies.txt").write_text("\n".join(uri_lines) + "\n", encoding="utf-8")
-
     b64 = base64.b64encode("\n".join(uri_lines).encode()).decode()
     (OUTPUT_DIR / "proxies_b64.txt").write_text(b64, encoding="utf-8")
 
-    print(f"\n🔨 Конвертация {len(top)} прокси в Clash YAML...")
+    print(f"\n🔨 Converting to Clash YAML (mihomo/FlClash)…")
     clash_proxies = []
-    failed_count = 0
     for i, r in enumerate(top):
         cp = uri_to_clash_proxy(r["uri"], i)
         if cp:
             clash_proxies.append(cp)
-        else:
-            failed_count += 1
 
-    success_rate = (len(clash_proxies) / len(top) * 100) if top else 0
-    print(f"  ✅ Сконвертировано: {len(clash_proxies)}/{len(top)} ({success_rate:.1f}%)")
-    if failed_count > 0:
-        print(f"  ❌ Отброшено: {failed_count}")
-
+    print(f"  ✅ {len(clash_proxies)}/{len(top)} converted")
     if clash_proxies:
         write_full_clash_config(clash_proxies, OUTPUT_DIR / "proxies.yaml")
-        print(f"  💾 Сохранено: proxies.yaml ({len(clash_proxies)} прокси)")
+        print(f"  💾 proxies.yaml ({len(clash_proxies)} proxies)")
 
-    print(f"\n📁 Сохранено в {OUTPUT_DIR}/")
+    print(f"\n📁 Output: {OUTPUT_DIR}/")
     print(f"   proxies.txt      — {len(top)} URI")
-    print(f"   proxies_b64.txt  — base64 подписка")
+    print(f"   proxies_b64.txt  — base64 subscription")
     if clash_proxies:
-        print(f"   proxies.yaml     — Full Clash config ({len(clash_proxies)} прокси)")
+        print(f"   proxies.yaml     — FlClash config")
 
-    # ── Топ-10 с метриками ──
-    print(f"\n🏆 Топ 10 (avg / jitter / success):")
+    print(f"\n🏆 Top 10 (avg / jitter / success):")
     for i, r in enumerate(top[:10]):
-        print(f"   {i+1:2d}. [{r['proto']:10s}] {r['host']}:{r['port']}")
-        print(f"       avg={r['avg_ms']}ms  jitter={r['jitter_ms']}ms  "
-              f"min={r['min_ms']}ms  max={r['max_ms']}ms  "
-              f"success={r['success_rate']:.0f}%")
+        print(f"   {i+1:2d}. [{r['proto']:10s}] {r['host']}:{r['port']}  "
+              f"avg={r['avg_ms']}ms  jit={r['jitter_ms']}ms  "
+              f"ok={r['success_rate']:.0f}%")
     print()
 
 
