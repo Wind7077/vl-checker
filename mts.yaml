@@ -5,18 +5,37 @@ log-level: warning
 ipv6: false
 external-controller: 127.0.0.1:9090
 
+# =========================
+# DNS
+# =========================
+
 dns:
   enable: true
   ipv6: false
   enhanced-mode: fake-ip
+
+  # Bootstrap DNS.
+  # Нужны для первоначального разрешения имён DNS-серверов.
   default-nameserver:
-    - 8.8.8.8
-    - 77.88.8.8          # Yandex DNS — резолвит NextDNS без похода через CF
+    - 77.88.8.8
+    - 9.9.9.9
+
+  # Основной DNS — NextDNS с твоим профилем
   nameserver:
-    - udp://45.90.28.0#ac3755   # основной — UDP NextDNS
+    - https://dns.nextdns.io/ac3755
+
+  # Независимые резервные DNS
   fallback:
-    - https://dns.nextdns.io/ac3755   # запасной — тот же профиль, но DoH
-    - udp://8.8.8.8
+    - https://dns.quad9.net/dns-query
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+
+  # DNS для разрешения адресов proxy-серверов
+  proxy-server-nameserver:
+    - 77.88.8.8
+    - 9.9.9.9
+
+  # Не отправляем локальные/служебные домены в fake-IP
   fake-ip-filter:
     - "*.local"
     - "*.lan"
@@ -24,9 +43,11 @@ dns:
     - "time.*"
 
 # =========================
-# 🔥 ПОДПИСКИ (AUTO UPDATE)
+# ПОДПИСКИ (AUTO UPDATE)
 # =========================
+
 proxy-providers:
+
   MAIN:
     type: http
     url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
@@ -34,7 +55,7 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: https://t.me
+      url: "https://www.gstatic.com/generate_204"
       interval: 300
 
   MOBILE_WL:
@@ -44,7 +65,7 @@ proxy-providers:
     path: ./providers/mobile_wl.yaml
     health-check:
       enable: true
-      url: https://t.me
+      url: "https://www.gstatic.com/generate_204"
       interval: 300
 
   VLESS_UNIVERSAL:
@@ -54,32 +75,38 @@ proxy-providers:
     path: ./providers/vless_universal.yaml
     health-check:
       enable: true
-      url: https://t.me
+      url: "https://www.gstatic.com/generate_204"
       interval: 300
 
 # =========================
-# 🔀 ПРОКСИ ГРУППЫ
+# ПРОКСИ ГРУППЫ
 # =========================
+
 proxy-groups:
+
+  # Автоматически выбирает самый быстрый рабочий узел
   - name: AUTO
     type: url-test
     use:
       - MAIN
       - MOBILE_WL
       - VLESS_UNIVERSAL
-    url: https://t.me
+    url: "https://www.gstatic.com/generate_204"
     interval: 300
     tolerance: 50
 
+  # Переключается на следующий узел,
+  # если текущий перестал работать
   - name: FALLBACK
     type: fallback
     use:
       - MAIN
       - MOBILE_WL
       - VLESS_UNIVERSAL
-    url: https://t.me
+    url: "https://www.gstatic.com/generate_204"
     interval: 300
 
+  # Основная группа выбора
   - name: PROXY
     type: select
     proxies:
@@ -87,6 +114,7 @@ proxy-groups:
       - FALLBACK
       - DIRECT
 
+  # Глобальная группа
   - name: GLOBAL
     type: select
     proxies:
@@ -95,13 +123,32 @@ proxy-groups:
       - DIRECT
 
 # =========================
-# 🌐 РУЛЫ (TRAFFIC ROUTING)
+# РУЛЫ (TRAFFIC ROUTING)
 # =========================
+
 rules:
+
+  # Google
   - DOMAIN-SUFFIX,google.com,PROXY
+
+  # Telegram
   - DOMAIN-SUFFIX,telegram.org,PROXY
+
+  # YouTube
   - DOMAIN-SUFFIX,youtube.com,PROXY
+
+  # GitHub
   - DOMAIN-SUFFIX,github.com,PROXY
+
+  # Локальные сети напрямую
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
+
+  # Всё остальное через GLOBAL
   - MATCH,GLOBAL
+
+# =========================
+# CLIENT FINGERPRINT
+# =========================
+
+global-client-fingerprint: curl
