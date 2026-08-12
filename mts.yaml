@@ -14,28 +14,27 @@ dns:
   ipv6: false
   enhanced-mode: fake-ip
 
-  # Bootstrap DNS.
-  # Нужны для первоначального разрешения имён DNS-серверов.
+  # Yandex DNS — bootstrap
   default-nameserver:
     - 77.88.8.8
-    - 9.9.9.9
+    - 77.88.8.1
 
-  # Основной DNS — NextDNS с твоим профилем
+  # Основной DNS — Yandex DoH
   nameserver:
-    - https://dns.nextdns.io/ac3755
+    - https://77.88.8.8/dns-query
+    - https://77.88.8.1/dns-query
 
-  # Независимые резервные DNS
+  # Резервный DNS — также Yandex
   fallback:
-    - https://dns.quad9.net/dns-query
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
+    - 77.88.8.8
+    - 77.88.8.1
 
   # DNS для разрешения адресов proxy-серверов
   proxy-server-nameserver:
     - 77.88.8.8
-    - 9.9.9.9
+    - 77.88.8.1
 
-  # Не отправляем локальные/служебные домены в fake-IP
+  # Исключения из Fake-IP
   fake-ip-filter:
     - "*.local"
     - "*.lan"
@@ -55,7 +54,7 @@ proxy-providers:
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: "https://www.gstatic.com/generate_204"
+      url: "https://api.telegram.org"
       interval: 300
 
   MOBILE_WL:
@@ -65,7 +64,7 @@ proxy-providers:
     path: ./providers/mobile_wl.yaml
     health-check:
       enable: true
-      url: "https://www.gstatic.com/generate_204"
+      url: "https://api.telegram.org"
       interval: 300
 
   VLESS_UNIVERSAL:
@@ -75,7 +74,7 @@ proxy-providers:
     path: ./providers/vless_universal.yaml
     health-check:
       enable: true
-      url: "https://www.gstatic.com/generate_204"
+      url: "https://api.telegram.org"
       interval: 300
 
 # =========================
@@ -84,29 +83,28 @@ proxy-providers:
 
 proxy-groups:
 
-  # Автоматически выбирает самый быстрый рабочий узел
+  # Автоматический выбор самого быстрого узла
   - name: AUTO
     type: url-test
     use:
       - MAIN
       - MOBILE_WL
       - VLESS_UNIVERSAL
-    url: "https://www.gstatic.com/generate_204"
+    url: "https://api.telegram.org"
     interval: 300
     tolerance: 50
 
-  # Переключается на следующий узел,
-  # если текущий перестал работать
+  # Автоматическое переключение при отказе
   - name: FALLBACK
     type: fallback
     use:
       - MAIN
       - MOBILE_WL
       - VLESS_UNIVERSAL
-    url: "https://www.gstatic.com/generate_204"
+    url: "https://api.telegram.org"
     interval: 300
 
-  # Основная группа выбора
+  # Основная группа
   - name: PROXY
     type: select
     proxies:
@@ -140,11 +138,11 @@ rules:
   # GitHub
   - DOMAIN-SUFFIX,github.com,PROXY
 
-  # Локальные сети напрямую
+  # Локальные сети
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
 
-  # Всё остальное через GLOBAL
+  # Всё остальное
   - MATCH,GLOBAL
 
 # =========================
