@@ -28,7 +28,7 @@ OUTPUT_DIR   = REPO_ROOT / "output"
 
 # ── ЕДИНСТВЕННЫЙ URL проверки ────────────────────────────────────────────────
 PROBE_URLS = [
-    ("https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe", [200, 401, 404]),
+    ("https://www.gstatic.com/generate_204", [200, 204, 401, 404]),
 ]
 
 ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
