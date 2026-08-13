@@ -1,9 +1,9 @@
 warp-common: &warp-common
   type: wireguard
-  ip: 10.2.0.2/32
-  ipv6: 2a07:b944::2:2/128
-  private-key: IHMqIgtX6HqzA+sts857nGRgm2hdfaXGKFIhajzSLXw=
-  public-key: WM3qIvkeeD+ouwERuqCVZds82cvh+vsGQPG6ibBGDGA=
+  ip: 10.2.0.1/32
+  ipv6: 2a07:b944::2:1
+  private-key: sDgcRKshKruafTneGs/P+CCd6Hzky2btiLXkXsWmr3A=
+  public-key: dsRnvFvkIU88ibWwPaJ86srhLNHfiKUWxFTIpg4IOms=
   allowed-ips: ['0.0.0.0/0', '::/0']
   udp: true
   mtu: 1420
@@ -15,7 +15,7 @@ warp-common: &warp-common
     - 2a02:6b8::feed:0ff
     - 2a02:6b8:0:1::feed:0ff
   amnezia-wg-option:
-   jc: 3
+   jc: 2
    jmin: 1
    jmax: 3
    s1: 0
@@ -29,8 +29,8 @@ warp-common: &warp-common
 proxies:
 - name: "[PROTON-AWG] NL-FREE#126"
   <<: *warp-common
-  server: 185.107.56.69
-  port: 443
+  server: 169.150.218.36
+  port: 53
 
 proxy-groups:
 - name: Proton
