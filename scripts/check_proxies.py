@@ -31,7 +31,7 @@ PROBE_URLS = [
     ("https://www.gstatic.com/generate_204", [200, 204, 401, 404]),
 ]
 
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "ss", "trojan"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
