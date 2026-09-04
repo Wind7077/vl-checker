@@ -31,12 +31,12 @@ PROBE_URLS = [
     ("https://www.gstatic.com/generate_204", [200, 204, 401, 404]),
 ]
 
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "ss", "trojan"]
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
 
-TOP_N               = 1500
+TOP_N               = 2500
 TIMEOUT_TCP         = 1
 TIMEOUT_CURL        = 12
 TIMEOUT_XRAY_START  = 1.0
