@@ -1097,14 +1097,36 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             host   = p.hostname or ""
             port   = p.port or 443
             params = dict(urllib.parse.parse_qsl(p.query))
+            pwd    = p.username or ""
+            # ИСПРАВЛЕНО: раньше транспорт хардкодился как tcp+tls,
+            # из-за чего ws/grpc/reality-трояны молча отваливались на Stage 2
+            net    = params.get("type", "tcp")
+            sec    = params.get("security", "tls")
+            sni    = params.get("sni", params.get("peer", host))
+            fp     = params.get("fp", "chrome")
+            pbk    = params.get("pbk", "")
+            sid    = params.get("sid", "")
             outbound = {
                 "protocol": "trojan",
                 "settings": {"servers": [{"address": host, "port": port,
-                                           "password": p.username or ""}]},
-                "streamSettings": {"network": "tcp", "security": "tls",
-                                   "tlsSettings": {"serverName": params.get("sni", host),
-                                                   "allowInsecure": True}},
+                                           "password": pwd}]},
+                "streamSettings": {"network": net},
             }
+            ss = outbound["streamSettings"]
+            if sec == "reality":
+                ss["security"] = "reality"
+                ss["realitySettings"] = {
+                    "serverName": sni, "fingerprint": fp,
+                    "publicKey": pbk, "shortId": sid,
+                }
+            else:
+                ss["security"] = "tls"
+                ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp, "allowInsecure": True}
+            if net == "ws":
+                ss["wsSettings"] = {"path": params.get("path", "/"),
+                                     "headers": {"Host": params.get("host", host)}}
+            elif net == "grpc":
+                ss["grpcSettings"] = {"serviceName": params.get("serviceName", "")}
 
         elif scheme == "vmess":
             raw  = decode_b64(uri[len("vmess://"):])
