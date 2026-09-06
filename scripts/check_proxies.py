@@ -31,7 +31,8 @@ PROBE_URLS = [
     ("https://www.gstatic.com/generate_204", [200, 204, 401, 404]),
 ]
 
-ALLOWED_PROTOCOLS   = ["vless", "hysteria2"]
+# ИЗМЕНЕНО: добавлены vmess и trojan в список разрешённых протоколов
+ALLOWED_PROTOCOLS   = ["vless", "hysteria2", "vmess", "trojan"]
 REQUIRE_REALITY     = True
 ALLOWED_COUNTRIES   = set()
 GEO_BATCH_SIZE      = 100
@@ -124,6 +125,17 @@ def parse_host_port(uri: str):
             port = p.port or 443
             if host and port:
                 return host, port, "udp"
+        elif scheme == "vmess":
+            # vmess:// — base64 JSON, urlparse не годится для host:port
+            try:
+                raw = decode_b64(uri[len("vmess://"):])
+                cfg = json.loads(raw)
+                host = cfg.get("add", "")
+                port = int(cfg.get("port", 443))
+                if host and port:
+                    return host, port, "tcp"
+            except Exception:
+                pass
         else:
             host = p.hostname
             port = p.port or (443 if scheme != "ss" else 8388)
@@ -359,9 +371,112 @@ def parse_ss_uri(uri: str) -> dict | None:
         return None
 
 
+def parse_vmess_uri(uri: str) -> dict | None:
+    """
+    Парсер для VMess URI стандарта v2rayN (base64 JSON):
+    vmess://base64({"v":"2","ps":"...","add":"host","port":"443",
+                     "id":"uuid","aid":"0","scy":"auto","net":"ws",
+                     "type":"none","host":"","path":"/","tls":"tls","sni":"","alpn":""})
+    """
+    try:
+        raw = decode_b64(uri[len("vmess://"):])
+        cfg = json.loads(raw)
+
+        host = cfg.get("add", "")
+        if not host:
+            return None
+        try:
+            port = int(cfg.get("port", 443))
+        except (ValueError, TypeError):
+            port = 443
+
+        uid = cfg.get("id", "")
+        if not uid:
+            return None
+
+        try:
+            aid = int(cfg.get("aid", 0) or 0)
+        except (ValueError, TypeError):
+            aid = 0
+
+        net = (cfg.get("net", "tcp") or "tcp").lower()
+        valid_nets = ["tcp", "ws", "grpc", "http", "h2", "kcp", "quic", "httpupgrade", "splithttp"]
+        if net not in valid_nets:
+            net = "tcp"
+
+        return {
+            "host": host,
+            "port": port,
+            "id": uid,
+            "aid": aid,
+            "scy": cfg.get("scy", "auto") or "auto",
+            "net": net,
+            "type": cfg.get("type", "none") or "none",
+            "host_header": cfg.get("host", "") or "",
+            "path": cfg.get("path", "/") or "/",
+            "tls": cfg.get("tls", "") or "",
+            "sni": cfg.get("sni", "") or "",
+            "alpn": cfg.get("alpn", "") or "",
+            "service_name": cfg.get("path", "") or "",  # grpc serviceName обычно в path
+        }
+    except Exception:
+        return None
+
+
 def uri_to_clash_proxy(uri: str, idx: int = 0) -> dict | None:
     try:
         scheme = uri.split("://")[0].lower()
+
+        # ═══════════════════════════════════════════════════════════════════════
+        # VMESS — отдельная ветка: адрес/порт берутся из base64 JSON, а не из urlparse
+        # ═══════════════════════════════════════════════════════════════════════
+        if scheme == "vmess":
+            vm = parse_vmess_uri(uri)
+            if not vm:
+                return None
+
+            host = vm["host"]
+            port = vm["port"]
+            proxy_name = f"{idx+1}. {host}:{port}"
+            net = vm["net"]
+            clash_net = net
+            if net in ("h2", "httpupgrade", "splithttp"):
+                clash_net = "tcp"
+
+            raw_sni = vm["sni"] or vm["host_header"] or host
+            sni = safe_sni(raw_sni, host)
+
+            proxy = {
+                "name": proxy_name,
+                "type": "vmess",
+                "server": host,
+                "port": port,
+                "uuid": vm["id"],
+                "alterId": vm["aid"],
+                "cipher": vm["scy"],
+                "network": clash_net,
+                "udp": True,
+            }
+
+            if vm["tls"] == "tls":
+                proxy["tls"] = True
+                proxy["servername"] = sni
+                proxy["skip-cert-verify"] = True
+                if vm["alpn"]:
+                    proxy["alpn"] = [a.strip() for a in vm["alpn"].split(",") if a.strip()]
+            else:
+                proxy["tls"] = False
+
+            if net == "ws":
+                ws_host = vm["host_header"] or host
+                proxy["ws-opts"] = {"path": vm["path"] or "/", "headers": {"Host": ws_host}}
+            elif net == "grpc":
+                service_name = vm["service_name"] or vm["path"].lstrip("/")
+                if service_name:
+                    proxy["grpc-opts"] = {"grpc-service-name": service_name}
+
+            return proxy
+
         p = urllib.parse.urlparse(uri)
         params = parse_all_params(uri)
         
@@ -596,9 +711,13 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
         if 'sni' in p:
             lines.append(f"    sni: {yaml_str(p['sni'])}")
         
-        # ИСПРАВЛЕНО: поддержка SS-поля cipher
+        # ИСПРАВЛЕНО: поддержка SS-поля cipher (используется также в VMess)
         if 'cipher' in p:
             lines.append(f"    cipher: {yaml_str(p['cipher'])}")
+
+        # ДОБАВЛЕНО: alterId для VMess
+        if 'alterId' in p:
+            lines.append(f"    alterId: {p['alterId']}")
         
         for key in ['network', 'flow', 'client-fingerprint', 'obfs', 'obfs-password']:
             if key in p and p[key]:
@@ -610,6 +729,12 @@ def write_clash_proxies_yaml(proxies: list[dict], path: Path):
             lines.append(f"    udp: {'true' if p['udp'] else 'false'}")
         if 'tls' in p:
             lines.append(f"    tls: {'true' if p['tls'] else 'false'}")
+
+        # ДОБАВЛЕНО: alpn (список) для VMess/VLESS
+        if 'alpn' in p and p['alpn']:
+            lines.append("    alpn:")
+            for a in p['alpn']:
+                lines.append(f"      - {yaml_str(a)}")
         
         if 'reality-opts' in p and p['reality-opts']:
             lines.append("    reality-opts:")
@@ -1003,6 +1128,8 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             if net == "ws":
                 ss["wsSettings"] = {"path": cfg.get("path", "/"),
                                      "headers": {"Host": cfg.get("host", host)}}
+            elif net == "grpc":
+                ss["grpcSettings"] = {"serviceName": cfg.get("path", "")}
 
         elif scheme == "ss":
             p        = urllib.parse.urlparse(uri)
