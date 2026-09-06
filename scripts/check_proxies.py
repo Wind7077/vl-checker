@@ -39,10 +39,10 @@ GEO_BATCH_SIZE      = 100
 
 TOP_N               = 2500
 TIMEOUT_TCP         = 1
-TIMEOUT_CURL        = 12
+TIMEOUT_CURL        = 6
 TIMEOUT_XRAY_START  = 1.0
 MAX_CONCURRENT_TCP  = 200
-MAX_CONCURRENT_HTTP = 20
+MAX_CONCURRENT_HTTP = 50
 STAGE2_CANDIDATES   = 10000
 SOCKS_BASE_PORT     = 20000
 
@@ -991,7 +991,7 @@ async def _curl_through_socks(socks_port: int) -> float | None:
                 "curl", "-s", "-o", "/dev/null",
                 "--socks5-hostname", f"127.0.0.1:{socks_port}",
                 "--max-time", str(TIMEOUT_CURL),
-                "--connect-timeout", "5",
+                "--connect-timeout", "3",
                 "-w", "%{http_code}",
                 "--insecure", "-L",
                 "-A", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
