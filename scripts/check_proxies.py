@@ -46,6 +46,12 @@ MAX_CONCURRENT_HTTP = 20
 STAGE2_CANDIDATES   = 10000
 SOCKS_BASE_PORT     = 20000
 
+# ДОБАВЛЕНО: диагностика — если после Stage 2 протокол пропадает,
+# ставим сюда его имя и получаем причины первых N падений в консоли
+DEBUG_PROTOCOL      = "trojan"
+DEBUG_MAX_SAMPLES   = 8
+_debug_shown        = 0
+
 # ИСПРАВЛЕНО: параметры дедупликации
 MAX_PER_ENDPOINT    = 1  # Максимум прокси на один IP:port
 MAX_PER_UUID        = 2  # Для VLESS/VMess/Trojan — макс. прокси с одинаковым UUID (CDN)
@@ -181,6 +187,15 @@ def get_uuid_from_uri(uri: str) -> str:
     except Exception:
         pass
     return ""
+
+
+def proto_breakdown(items: list[dict]) -> str:
+    """ДОБАВЛЕНО: короткая сводка 'протокол=количество' для диагностики стадий"""
+    counts: dict[str, int] = {}
+    for it in items:
+        proto = it.get("proto") or it["uri"].split("://")[0].lower()
+        counts[proto] = counts.get(proto, 0) + 1
+    return ", ".join(f"{k}={v}" for k, v in sorted(counts.items())) or "(пусто)"
 
 
 def is_ip_address(s: str) -> bool:
@@ -1193,8 +1208,10 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
 
 
 async def stage2_test(sem, idx: int, item: dict) -> dict | None:
+    global _debug_shown
     uri    = item["uri"]
     scheme = uri.split("://")[0].lower()
+    dbg    = (scheme == DEBUG_PROTOCOL) and (_debug_shown < DEBUG_MAX_SAMPLES)  # ДОБАВЛЕНО
 
     if scheme == "hysteria2":
         item["_socks_port"] = SOCKS_BASE_PORT + 10000 + idx
@@ -1204,6 +1221,9 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
     socks_port = SOCKS_BASE_PORT + idx
     cfg = make_xray_config(uri, socks_port)
     if cfg is None:
+        if dbg:  # ДОБАВЛЕНО
+            _debug_shown += 1
+            print(f"\n  🐞 [{scheme}] make_xray_config вернул None для: {uri[:100]}")
         return None
 
     async with sem:
@@ -1214,19 +1234,40 @@ async def stage2_test(sem, idx: int, item: dict) -> dict | None:
         try:
             proc = await asyncio.create_subprocess_exec(
                 str(XRAY_BIN), "run", "-c", cfg_path,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE if dbg else subprocess.DEVNULL,  # ДОБАВЛЕНО
             )
             await asyncio.sleep(TIMEOUT_XRAY_START)
+
+            if dbg and proc.returncode is not None:  # ДОБАВЛЕНО: xray уже упал
+                _debug_shown += 1
+                err = (await proc.stderr.read()).decode(errors="ignore")[-400:] if proc.stderr else ""
+                print(f"\n  🐞 [{scheme}] xray упал (code={proc.returncode}) для {uri[:80]}\n     stderr: {err.strip()}")
+                return None
+
             try:
                 http_lat = await asyncio.wait_for(
                     _curl_through_socks(socks_port), timeout=TIMEOUT_CURL + 5
                 )
             except asyncio.TimeoutError:
+                if dbg:  # ДОБАВЛЕНО
+                    _debug_shown += 1
+                    print(f"\n  🐞 [{scheme}] curl timeout для {uri[:80]}")
                 return None
             if http_lat is None:
+                if dbg:  # ДОБАВЛЕНО
+                    _debug_shown += 1
+                    err = ""
+                    if proc.stderr and proc.returncode is not None:
+                        err = (await proc.stderr.read()).decode(errors="ignore")[-400:]
+                    print(f"\n  🐞 [{scheme}] curl не получил живого кода ответа для {uri[:80]}"
+                          + (f"\n     xray stderr: {err.strip()}" if err else ""))
                 return None
             return {**item, "http_ms": http_lat}
-        except Exception:
+        except Exception as e:
+            if dbg:  # ДОБАВЛЕНО
+                _debug_shown += 1
+                print(f"\n  🐞 [{scheme}] исключение в stage2_test для {uri[:80]}: {e!r}")
             return None
         finally:
             if proc:
@@ -1302,6 +1343,7 @@ async def main():
             print(f"  … {done}/{len(filtered)} pinged, {len(tcp_alive)} alive")
     tcp_alive.sort(key=lambda x: (x["tcp_ms"] == 0, x["tcp_ms"]))
     print(f"  ✅ TCP-alive: {len(tcp_alive)}")
+    print(f"     По протоколам: {proto_breakdown(tcp_alive)}")  # ДОБАВЛЕНО
 
     if not tcp_alive:
         print("⚠️  No TCP-alive proxies.")
@@ -1315,7 +1357,8 @@ async def main():
     print(f"   → После (UUID+host:port):  {dedup_stats['after_uuid_server_dedup']} (-{dedup_stats['after_exact_dedup'] - dedup_stats['after_uuid_server_dedup']})")
     print(f"   → После (UUID/пароль):     {dedup_stats['after_uuid_cdn_dedup']} (-{dedup_stats['after_uuid_server_dedup'] - dedup_stats['after_uuid_cdn_dedup']})")
     print(f"   → Финал (host:port):       {dedup_stats['output']} (-{dedup_stats['after_uuid_cdn_dedup'] - dedup_stats['output']})")
-    print(f"   Итого удалено дублей:      {dedup_stats['input'] - dedup_stats['output']} ({(dedup_stats['input'] - dedup_stats['output']) / dedup_stats['input'] * 100:.1f}%)\n")
+    print(f"   Итого удалено дублей:      {dedup_stats['input'] - dedup_stats['output']} ({(dedup_stats['input'] - dedup_stats['output']) / dedup_stats['input'] * 100:.1f}%)")
+    print(f"   По протоколам после дедупа: {proto_breakdown(tcp_alive)}\n")  # ДОБАВЛЕНО
 
     print("🛠  Preparing binaries…")
     xray_ok = install_xray()
