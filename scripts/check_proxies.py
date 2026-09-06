@@ -1100,7 +1100,9 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                 }
             elif sec == "tls":
                 ss["security"] = "tls"
-                ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp, "allowInsecure": True}
+                # ИСПРАВЛЕНО: allowInsecure удалён из Xray-core с v26.2.6 (фев. 2026),
+                # конфиг с этим полем не стартует вовсе — просто не проверяем цепочку CA
+                ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp}
             if net == "ws":
                 ss["wsSettings"] = {"path": params.get("path", "/"),
                                      "headers": {"Host": params.get("host", host)}}
@@ -1136,7 +1138,8 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
                 }
             else:
                 ss["security"] = "tls"
-                ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp, "allowInsecure": True}
+                # ИСПРАВЛЕНО: allowInsecure удалён из Xray-core с v26.2.6 — конфиг с ним не стартует
+                ss["tlsSettings"] = {"serverName": sni, "fingerprint": fp}
             if net == "ws":
                 ss["wsSettings"] = {"path": params.get("path", "/"),
                                      "headers": {"Host": params.get("host", host)}}
@@ -1161,7 +1164,8 @@ def make_xray_config(uri: str, socks_port: int) -> dict | None:
             ss = outbound["streamSettings"]
             if tls == "tls":
                 ss["security"] = "tls"
-                ss["tlsSettings"] = {"serverName": sni, "allowInsecure": True}
+                # ИСПРАВЛЕНО: allowInsecure удалён из Xray-core с v26.2.6 — конфиг с ним не стартует
+                ss["tlsSettings"] = {"serverName": sni}
             if net == "ws":
                 ss["wsSettings"] = {"path": cfg.get("path", "/"),
                                      "headers": {"Host": cfg.get("host", host)}}
