@@ -54,24 +54,24 @@ dns:
 proxy-providers:
   MAIN:
     type: http
-    url: "https://raw.githubusercontent.com/Wind7077/vl-checker/refs/heads/main/output/proxies_b64.txt"
+    url: "https://raw.githubusercontent.com/Wind7077/tg-poxies-scan/refs/heads/main/proxy.txt"
     interval: 3600
     path: ./providers/main.yaml
     health-check:
       enable: true
-      url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+      url: https://api.telegram.org/robots.txt
       interval: 300
       lazy: true
 
   MOBILE_WL:
     type: http
     # raw.githack.com заменён на jsdelivr (стабильнее)
-    url: "https://raw.githubusercontent.com/Wind7077/tg-poxies-scan/refs/heads/main/proxy.txt"
+    url: "https://hub.mos.ru/kfwl/auto/raw/main/wl"
     interval: 3600
     path: ./providers/mobile_wl.yaml
     health-check:
       enable: true
-      url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+      url: https://api.telegram.org/robots.txt
       interval: 300
       lazy: true
 
@@ -82,7 +82,7 @@ proxy-providers:
     path: ./providers/vless_universal.yaml
     health-check:
       enable: true
-      url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+      url: https://api.telegram.org/robots.txt
       interval: 300
       lazy: true
 
@@ -96,7 +96,7 @@ proxy-groups:
       - MAIN
       - MOBILE_WL
       - VLESS_UNIVERSAL
-    url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+    url: https://api.telegram.org/robots.txt
     interval: 300
     tolerance: 50
     lazy: true
@@ -107,7 +107,7 @@ proxy-groups:
       - MAIN
       - MOBILE_WL
       - VLESS_UNIVERSAL
-    url: https://api.telegram.org/bot000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getMe
+    url: https://api.telegram.org/robots.txt
     interval: 300
     lazy: true
 
